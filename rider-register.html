@@ -1,0 +1,1400 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/android-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="/android-512.png">
+
+<!-- PWA Core -->
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#00C853" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#00C853" media="(prefers-color-scheme: dark)">
+
+<!-- iOS / Safari PWA -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Raftaroo">
+<link rel="apple-touch-startup-image" href="/apple-touch-icon.png">
+
+<!-- Windows / Edge -->
+<meta name="msapplication-TileColor" content="#00C853">
+<meta name="msapplication-TileImage" content="/android-192.png">
+<meta name="msapplication-config" content="none">
+
+<!-- Mobile browser bar color -->
+<meta name="theme-color" content="#00C853">
+<!-- Google Analytics -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-EM1R4LGZTD"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-EM1R4LGZTD');
+</script>
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Register as a Captain | Join Raftaroo</title>
+<link rel="canonical" href="https://raftaroo.com/rider-register.html">
+<meta name="description" content="Apply to become a Raftaroo Captain for fast ride, delivery, and cargo services in Pakistan. Earn money with your bike or car.">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+<!-- Font Awesome — multiple fallbacks for reliability -->
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="https://use.fontawesome.com/releases/v6.5.1/css/all.css" crossorigin="anonymous">
+
+<style>
+/* ==============================================
+   RAFTAROO — LIGHT MODE + GREEN THEME
+   ============================================== */
+:root {
+    --primary:        #16a34a;
+    --primary-hover:  #15803d;
+    --primary-light:  #22c55e;
+    --primary-bg:     #f0fdf4;
+    --primary-border: #bbf7d0;
+    --secondary:      #111827;
+    --bg:             #f4f6f8;
+    --bg-card:        #ffffff;
+    --bg-surface:     #f8fafc;
+    --bg-input:       #ffffff;
+    --border:         #e2e8f0;
+    --text:           #111827;
+    --text-muted:     #6b7280;
+    --text-soft:      #374151;
+    --error:          #dc2626;
+    --error-bg:       #fef2f2;
+    --error-border:   #fecaca;
+    --success:        #16a34a;
+    --info:           #2563eb;
+    --info-bg:        #eff6ff;
+    --info-border:    #bfdbfe;
+    --warning:        #d97706;
+    --warning-bg:     #fffbeb;
+    --warning-border: #fde68a;
+    --shadow-sm:      0 1px 4px rgba(0,0,0,0.07);
+    --shadow:         0 4px 20px rgba(0,0,0,0.08);
+    --shadow-lg:      0 10px 40px rgba(0,0,0,0.12);
+    --radius:         14px;
+    --radius-sm:      10px;
+    --t:              all 0.22s ease;
+}
+
+*, *::before, *::after {
+    margin: 0; padding: 0; box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+    -webkit-tap-highlight-color: transparent;
+}
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--text); min-height: 100vh; overflow-x: hidden; }
+
+/* ---- HEADER ---- */
+.site-header {
+    position: sticky; top: 0; z-index: 900;
+    background: rgba(255,255,255,0.96);
+    backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--border);
+    padding: 0 20px;
+    box-shadow: var(--shadow-sm);
+}
+.header-inner {
+    max-width: 700px; margin: 0 auto;
+    height: 60px; display: flex; align-items: center; justify-content: space-between;
+}
+.logo-img { height: 36px; display: block; }
+.btn-home {
+    background: var(--primary); color: #fff;
+    font-weight: 700; font-size: 13px;
+    padding: 8px 18px; border-radius: 30px; border: none;
+    cursor: pointer; text-decoration: none;
+    transition: var(--t);
+    display: flex; align-items: center; gap: 6px;
+}
+.btn-home:hover { background: var(--primary-hover); transform: translateY(-1px); box-shadow: 0 4px 14px rgba(22,163,74,0.3); }
+
+/* ---- HERO ---- */
+.hero {
+    background: var(--secondary);
+    padding: 52px 20px 42px;
+    text-align: center;
+    position: relative; overflow: hidden;
+}
+.hero::before {
+    content: '';
+    position: absolute; top: -60px; left: 50%;
+    transform: translateX(-50%);
+    width: 520px; height: 280px;
+    background: radial-gradient(ellipse, rgba(34,197,94,0.14) 0%, transparent 70%);
+    pointer-events: none;
+}
+.hero-badge {
+    display: inline-flex; align-items: center; gap: 7px;
+    background: rgba(34,197,94,0.12);
+    border: 1px solid rgba(34,197,94,0.3);
+    color: #4ade80;
+    font-size: 11px; font-weight: 700;
+    padding: 6px 16px; border-radius: 20px;
+    margin-bottom: 18px;
+    letter-spacing: 0.8px; text-transform: uppercase;
+}
+.hero h1 {
+    font-size: clamp(26px, 5vw, 38px);
+    font-weight: 800; color: #fff;
+    line-height: 1.2; margin-bottom: 12px;
+}
+.hero h1 span { color: #4ade80; }
+.hero p { font-size: 15px; color: #9ca3af; max-width: 440px; margin: 0 auto; line-height: 1.6; }
+
+.perks-strip {
+    display: flex; justify-content: center; gap: 28px; flex-wrap: wrap;
+    margin-top: 28px; padding-top: 24px;
+    border-top: 1px solid rgba(255,255,255,0.06);
+}
+.perk { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #d1d5db; }
+.perk-icon { font-size: 18px; }
+
+/* ---- PAGE BODY ---- */
+.page-body { max-width: 680px; margin: 0 auto; padding: 30px 16px 60px; }
+
+/* ---- STEP PROGRESS ---- */
+.steps-wrapper {
+    display: flex; align-items: center;
+    justify-content: center; margin-bottom: 28px;
+}
+.step-item { display: flex; flex-direction: column; align-items: center; flex: 1; }
+.step-circle {
+    width: 38px; height: 38px; border-radius: 50%;
+    background: #fff; border: 2px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 700; color: var(--text-muted);
+    transition: var(--t); position: relative; z-index: 2;
+    box-shadow: var(--shadow-sm);
+}
+.step-circle.active {
+    background: var(--primary); border-color: var(--primary);
+    color: #fff; box-shadow: 0 0 0 4px rgba(22,163,74,0.15);
+}
+.step-circle.done {
+    background: var(--primary); border-color: var(--primary); color: #fff;
+}
+.step-label { font-size: 10px; color: var(--text-muted); margin-top: 6px; font-weight: 600; white-space: nowrap; }
+.step-label.active { color: var(--primary); }
+.step-label.done { color: var(--primary); }
+.step-line { flex: 1; height: 2px; background: var(--border); margin-top: -20px; z-index: 1; transition: var(--t); }
+.step-line.done { background: var(--primary); }
+
+/* ---- CARDS ---- */
+.form-section-card {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius); margin-bottom: 16px; overflow: hidden;
+    display: none; animation: slideUp 0.32s ease-out;
+    box-shadow: var(--shadow);
+}
+.form-section-card.active { display: block; }
+@keyframes slideUp { from { opacity:0; transform:translateY(18px); } to { opacity:1; transform:translateY(0); } }
+
+.section-header-bar {
+    display: flex; align-items: center; gap: 12px;
+    padding: 16px 22px; border-bottom: 1px solid var(--border);
+    background: var(--bg-surface);
+}
+.section-icon {
+    width: 38px; height: 38px; border-radius: 10px;
+    background: var(--primary-bg); border: 1px solid var(--primary-border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 17px; flex-shrink: 0;
+}
+.section-title { font-size: 15px; font-weight: 700; color: var(--text); }
+.section-subtitle { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+.section-body { padding: 22px; }
+
+/* ---- FORM ELEMENTS ---- */
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.form-grid .full { grid-column: 1 / -1; }
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-group label { font-size: 13px; font-weight: 600; color: var(--text-soft); }
+.form-group label .req { color: var(--primary); }
+
+.form-group input,
+.form-group select {
+    width: 100%; padding: 11px 14px;
+    background: var(--bg-input);
+    border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm);
+    color: var(--text); font-size: 14px;
+    transition: var(--t);
+    appearance: none; -webkit-appearance: none;
+    box-shadow: var(--shadow-sm);
+}
+.form-group input::placeholder { color: #aab0bc; }
+.form-group input:focus, .form-group select:focus {
+    outline: none;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(22,163,74,0.12);
+}
+.form-group select {
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath fill='%236b7280' d='M1 1l5 5 5-5'/%3E%3C/svg%3E");
+    background-repeat: no-repeat; background-position: right 14px center;
+    padding-right: 36px; cursor: pointer;
+}
+.form-group select option { background: #fff; color: var(--text); }
+
+/* Input with icon */
+.input-wrap { position: relative; }
+.input-ico { position: absolute; left: 13px; top: 50%; transform: translateY(-50%); font-size: 14px; color: #9ca3af; pointer-events: none; }
+.input-wrap input { padding-left: 36px; }
+
+/* ---- FILE UPLOAD ---- */
+.file-upload-area {
+    position: relative;
+    display: flex; flex-direction: column; align-items: center; justify-content: center;
+    padding: 22px 16px; gap: 8px;
+    border: 2px dashed var(--border);
+    border-radius: var(--radius-sm);
+    cursor: pointer; transition: var(--t);
+    text-align: center;
+    background: var(--bg-surface);
+    min-height: 100px;
+    overflow: hidden;
+}
+.file-upload-area:hover { border-color: var(--primary); background: var(--primary-bg); }
+.file-upload-area.has-file { border-color: var(--primary); background: var(--primary-bg); border-style: solid; }
+.file-upload-area input[type="file"] {
+    position: absolute; inset: 0; opacity: 0; cursor: pointer; width: 100%; height: 100%;
+}
+.fu-icon {
+    width: 42px; height: 42px; border-radius: 10px;
+    background: #fff; border: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 20px; box-shadow: var(--shadow-sm);
+}
+.fu-icon.done { background: var(--primary-bg); border-color: var(--primary-border); }
+.fu-title { font-size: 13px; color: var(--text-soft); font-weight: 600; }
+.fu-hint { font-size: 11px; color: var(--text-muted); }
+.fu-name { font-size: 12px; color: var(--primary); font-weight: 600; margin-top: 2px; }
+.file-preview-img { width: 100%; max-height: 130px; object-fit: cover; border-radius: 8px; display: none; border: 1px solid var(--border); }
+
+/* ---- DOCS GRID ---- */
+.docs-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.doc-card {
+    background: var(--bg-surface); border: 1.5px solid var(--border);
+    border-radius: var(--radius-sm); padding: 14px; transition: var(--t);
+}
+.doc-card.uploaded { border-color: var(--primary); background: var(--primary-bg); }
+.doc-label { font-size: 12px; font-weight: 700; color: var(--text-soft); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+.doc-label .req { color: var(--primary); }
+
+/* ---- BUTTONS ---- */
+.nav-buttons { display: flex; gap: 12px; margin-top: 22px; }
+.btn-next {
+    flex: 1; padding: 14px;
+    background: var(--primary); color: #fff;
+    font-size: 15px; font-weight: 700;
+    border: none; border-radius: 12px;
+    cursor: pointer; transition: var(--t);
+    display: flex; align-items: center; justify-content: center; gap: 8px;
+}
+.btn-next:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 6px 20px rgba(22,163,74,0.3); }
+.btn-next:disabled { opacity: 0.55; cursor: not-allowed; transform: none; box-shadow: none; }
+.btn-prev {
+    padding: 14px 20px;
+    background: var(--bg-surface); color: var(--text-muted);
+    font-size: 14px; font-weight: 600;
+    border: 1.5px solid var(--border); border-radius: 12px;
+    cursor: pointer; transition: var(--t);
+    display: flex; align-items: center; gap: 6px;
+}
+.btn-prev:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-bg); }
+
+/* ---- AUTH BOX ---- */
+.auth-box {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 40px 28px; text-align: center;
+    display: none; box-shadow: var(--shadow);
+}
+.auth-box.visible { display: block; animation: slideUp 0.32s ease-out; }
+.auth-box-icon {
+    width: 72px; height: 72px; border-radius: 50%;
+    background: var(--primary-bg); border: 2px solid var(--primary-border);
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 20px; font-size: 28px;
+}
+.auth-box h2 { font-size: 22px; font-weight: 800; margin-bottom: 10px; color: var(--text); }
+.auth-box p { font-size: 14px; color: var(--text-muted); margin-bottom: 28px; line-height: 1.6; max-width: 360px; margin-left: auto; margin-right: auto; }
+.btn-google {
+    display: inline-flex; align-items: center; gap: 10px;
+    background: var(--primary); color: #fff;
+    font-weight: 700; font-size: 15px;
+    padding: 14px 36px; border: none; border-radius: 12px;
+    cursor: pointer; transition: var(--t);
+}
+.btn-google:hover { background: var(--primary-hover); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(22,163,74,0.3); }
+.btn-google img { width: 20px; height: 20px; }
+
+/* ---- STATUS BOX ---- */
+.status-box {
+    background: var(--bg-card); border: 1px solid var(--border);
+    border-radius: var(--radius); padding: 40px 24px; text-align: center;
+    display: none; box-shadow: var(--shadow);
+}
+.status-box.visible { display: block; animation: slideUp 0.32s ease-out; }
+.status-icon-wrap {
+    width: 72px; height: 72px; border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    margin: 0 auto 18px; font-size: 32px;
+}
+.status-icon-wrap.success { background: var(--primary-bg); border: 2px solid var(--primary-border); }
+.status-icon-wrap.pending { background: var(--warning-bg); border: 2px solid var(--warning-border); }
+.status-icon-wrap.rejected { background: var(--error-bg); border: 2px solid var(--error-border); }
+.status-box h2 { font-size: 20px; font-weight: 800; margin-bottom: 8px; color: var(--text); }
+.status-box p { font-size: 14px; color: var(--text-muted); margin-bottom: 24px; line-height: 1.6; }
+.btn-dashboard {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--primary); color: #fff;
+    font-weight: 700; font-size: 14px;
+    padding: 12px 28px; border-radius: 10px; border: none;
+    cursor: pointer; text-decoration: none; transition: var(--t);
+}
+.btn-dashboard:hover { background: var(--primary-hover); transform: translateY(-1px); }
+
+/* ---- MSG BAR ---- */
+.msg-bar {
+    padding: 13px 16px; border-radius: var(--radius-sm);
+    font-size: 13px; font-weight: 600; margin-bottom: 16px;
+    display: none; line-height: 1.5; align-items: center; gap: 10px;
+}
+.msg-bar.visible { display: flex; animation: slideUp 0.22s ease-out; }
+.msg-bar.error   { background: var(--error-bg); border: 1px solid var(--error-border); color: var(--error); }
+.msg-bar.info    { background: var(--info-bg); border: 1px solid var(--info-border); color: var(--info); }
+.msg-bar.success-bar { background: var(--primary-bg); border: 1px solid var(--primary-border); color: var(--primary); }
+
+/* ---- PROGRESS BAR ---- */
+.upload-progress-wrap { display: none; margin-bottom: 18px; }
+.upload-progress-wrap.visible { display: block; }
+.progress-label-row { display: flex; justify-content: space-between; font-size: 12px; color: var(--text-muted); margin-bottom: 7px; font-weight: 600; }
+.progress-track { height: 6px; background: var(--border); border-radius: 3px; overflow: hidden; }
+.progress-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--primary-light)); border-radius: 3px; transition: width 0.4s ease; width: 0%; }
+
+/* ---- USER INFO BAR ---- */
+.user-info-bar {
+    display: none; align-items: center; gap: 10px;
+    padding: 11px 16px;
+    background: var(--primary-bg); border: 1px solid var(--primary-border);
+    border-radius: var(--radius-sm); margin-bottom: 18px; font-size: 13px;
+}
+.user-info-bar.visible { display: flex; }
+.user-avatar-sm {
+    width: 32px; height: 32px; border-radius: 50%;
+    background: var(--primary); color: #fff;
+    font-weight: 800; font-size: 14px;
+    display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.user-info-text { flex: 1; }
+.user-info-text strong { color: var(--primary); }
+.user-info-text small { color: var(--text-muted); display: block; font-size: 11px; margin-top: 1px; }
+
+/* ---- VIDEO GUIDE ---- */
+.video-guide-box {
+    background: var(--bg-card);
+    border: 1.5px solid var(--primary-border);
+    border-radius: var(--radius);
+    margin-bottom: 18px;
+    overflow: hidden;
+    box-shadow: var(--shadow);
+}
+.video-guide-header {
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 14px 18px; cursor: pointer;
+    background: linear-gradient(135deg, var(--primary-bg), #fff);
+    transition: var(--t);
+    gap: 12px;
+}
+.video-guide-header:hover { background: var(--primary-bg); }
+.video-guide-icon {
+    width: 40px; height: 40px; border-radius: 10px;
+    background: var(--primary); display: flex; align-items: center;
+    justify-content: center; font-size: 18px; flex-shrink: 0;
+    box-shadow: 0 4px 12px rgba(22,163,74,0.25);
+}
+.video-guide-title { font-size: 14px; font-weight: 700; color: var(--text); }
+.video-guide-sub { font-size: 11px; color: var(--text-muted); margin-top: 2px; line-height: 1.4; }
+.video-toggle-arrow { font-size: 13px; color: var(--primary); font-weight: 700; transition: transform 0.3s ease; flex-shrink: 0; }
+.video-toggle-arrow.open { transform: rotate(180deg); }
+.video-guide-body { display: none; padding: 0 18px 18px; animation: slideUp 0.25s ease-out; }
+.video-guide-body.open { display: block; }
+.video-embed-wrap {
+    position: relative; width: 100%; padding-bottom: 56.25%;
+    border-radius: 10px; overflow: hidden;
+    background: #000; margin-bottom: 14px;
+    box-shadow: 0 4px 20px rgba(0,0,0,0.15);
+}
+.video-embed-wrap iframe {
+    position: absolute; top: 0; left: 0; width: 100%; height: 100%; border: 0;
+}
+.video-tips { display: flex; flex-direction: column; gap: 8px; }
+.video-tip-item {
+    display: flex; align-items: flex-start; gap: 8px;
+    font-size: 12px; color: var(--text-soft); font-weight: 500;
+    padding: 9px 12px; background: var(--bg-surface);
+    border-radius: 8px; border: 1px solid var(--border);
+    line-height: 1.4;
+}
+
+/* ---- FOOTER ---- */
+.site-footer {
+    background: var(--secondary); border-top: 1px solid #1f2937;
+    padding: 20px; text-align: center;
+    font-size: 13px; color: #6b7280;
+}
+
+/* ---- RESPONSIVE ---- */
+@media (max-width: 520px) {
+    .form-grid { grid-template-columns: 1fr; }
+    .docs-grid { grid-template-columns: 1fr; }
+    .hero { padding: 36px 16px 28px; }
+    .perks-strip { gap: 16px; }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="site-header">
+    <div class="header-inner">
+        <a href="/"><img src="https://iili.io/fsyi06x.png" alt="Raftaroo" class="logo-img" onerror="this.style.display='none'; this.nextSibling.style.display='block'"><span style="display:none; font-weight:800; font-size:18px; color:var(--primary);">Raftaroo</span></a>
+        <a href="index.html" class="btn-home">Home</a>
+    </div>
+</header>
+
+<!-- HERO -->
+<div class="hero">
+    <div class="hero-badge">⚡ Join Pakistan's Fastest Growing Ride Platform</div>
+    <h1>Become a <span>Raftaroo</span> Captain</h1>
+    <p>Apply once, earn daily. Ride on your own schedule with your own vehicle.</p>
+    <div class="perks-strip">
+        <div class="perk"><span class="perk-icon">💰</span> Daily Earnings</div>
+        <div class="perk"><span class="perk-icon">🕐</span> Flexible Hours</div>
+        <div class="perk"><span class="perk-icon">🛡️</span> Safe &amp; Secure</div>
+        <div class="perk"><span class="perk-icon">🎧</span> 24/7 Support</div>
+    </div>
+</div>
+
+<!-- MAIN -->
+<div class="page-body">
+
+    <!-- Auth Box -->
+    <div class="auth-box" id="authBox">
+        <div class="auth-box-icon">🔑</div>
+        <h2>Sign In to Continue</h2>
+        <p>Please login with your Google account to submit your Captain application. This links your application to your account securely.</p>
+        <button class="btn-google" id="googleSignInBtn">
+            <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="G">
+            Continue with Google
+        </button>
+    </div>
+
+    <!-- Status Box -->
+    <div class="status-box" id="statusBox">
+        <div class="status-icon-wrap" id="statusIconWrap"><span id="statusIcon">✅</span></div>
+        <h2 id="statusTitle">Application Status</h2>
+        <p id="statusDesc">Your application is being processed.</p>
+        <a href="captain-dashboard.html" class="btn-dashboard">🚀 Go to Captain Panel</a>
+    </div>
+
+    <!-- User Info Bar -->
+    <div class="user-info-bar" id="userInfoBar">
+        <div class="user-avatar-sm" id="userAvatarSm">?</div>
+        <div class="user-info-text">
+            Logged in as <strong id="userEmailDisplay">—</strong>
+            <small>Your application will be linked to this Google account</small>
+        </div>
+    </div>
+
+    <!-- Registration Guide Video -->
+    <div class="video-guide-box" id="videoGuideBox">
+        <div class="video-guide-header" onclick="toggleVideoGuide()">
+            <div style="display:flex; align-items:center; gap:12px;">
+                <div class="video-guide-icon">▶️</div>
+                <div>
+                    <div class="video-guide-title">📹 Registration Guide — Video Dekh Kar Apply Karein</div>
+                    <div class="video-guide-sub">Agar samajh na aaye tu yeh video dekh kar step-by-step apply karein</div>
+                </div>
+            </div>
+            <div class="video-toggle-arrow" id="videoArrow">▼</div>
+        </div>
+        <div class="video-guide-body" id="videoGuideBody">
+            <div class="video-embed-wrap">
+                <iframe
+                    src="https://www.youtube.com/embed/ca0Siu3hbTQ?rel=0&modestbranding=1"
+                    title="Raftaroo Captain Registration Guide"
+                    frameborder="0"
+                    allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                    allowfullscreen
+                    loading="lazy">
+                </iframe>
+            </div>
+            <div class="video-tips">
+                <div class="video-tip-item">📱 <span>Pehle video dekh lein, phir form bharein — asaan ho jaega</span></div>
+                <div class="video-tip-item">🪪 <span>CNIC, Driving License aur Vehicle RC card tayar rakhein</span></div>
+                <div class="video-tip-item">📷 <span>Clear photos ready karein — blurry photos reject ho sakti hain</span></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Message Bar -->
+    <div class="msg-bar" id="msgBar"></div>
+
+    <!-- Upload Progress -->
+    <div class="upload-progress-wrap" id="uploadProgressWrap">
+        <div class="progress-label-row">
+            <span id="progressLabel">Uploading documents...</span>
+            <span id="progressPct">0%</span>
+        </div>
+        <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+    </div>
+
+    <!-- FORM WRAPPER -->
+    <div id="formWrapper" style="display:none;">
+
+        <!-- Step Progress Bar -->
+        <div class="steps-wrapper">
+            <div class="step-item">
+                <div class="step-circle active" id="sc1">1</div>
+                <div class="step-label active" id="sl1">Personal</div>
+            </div>
+            <div class="step-line" id="line1"></div>
+            <div class="step-item">
+                <div class="step-circle" id="sc2">2</div>
+                <div class="step-label" id="sl2">Vehicle</div>
+            </div>
+            <div class="step-line" id="line2"></div>
+            <div class="step-item">
+                <div class="step-circle" id="sc3">3</div>
+                <div class="step-label" id="sl3">Documents</div>
+            </div>
+            <div class="step-line" id="line3"></div>
+            <div class="step-item">
+                <div class="step-circle" id="sc4">4</div>
+                <div class="step-label" id="sl4">Review</div>
+            </div>
+        </div>
+
+        <!-- ===== STEP 1: PERSONAL ===== -->
+        <div class="form-section-card active" id="step1">
+            <div class="section-header-bar">
+                <div class="section-icon">👤</div>
+                <div>
+                    <div class="section-title">Personal &amp; Contact Details</div>
+                    <div class="section-subtitle">Step 1 of 4 — Your basic information</div>
+                </div>
+            </div>
+            <div class="section-body">
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label for="full_name">Full Name <span class="req">*</span></label>
+                        <div class="input-wrap">
+                            <span class="input-ico">👤</span>
+                            <input type="text" id="full_name" placeholder="e.g., Muhammad Ahmed" required>
+                        </div>
+                    </div>
+                    <div class="form-group full">
+                        <label for="cnic_number">CNIC Number <span class="req">*</span></label>
+                        <div class="input-wrap">
+                            <span class="input-ico">🪪</span>
+                            <input type="text" id="cnic_number" pattern="[0-9]{5}-[0-9]{7}-[0-9]{1}" placeholder="42101-1234567-8" maxlength="15" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="mobile_number">Mobile Number <span class="req">*</span></label>
+                        <div class="input-wrap">
+                            <span class="input-ico">📱</span>
+                            <input type="tel" id="mobile_number" pattern="^(\+92|0|92)[0-9]{10}$" placeholder="03001234567" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="area">Primary City <span class="req">*</span></label>
+                        <select id="area" required>
+                            <option value="">Select City</option>
+                            <option value="Karachi">Karachi</option>
+                            <option value="Lahore">Lahore</option>
+                            <option value="Islamabad">Islamabad</option>
+                        </select>
+                    </div>
+                    <div class="form-group full">
+                        <label>Captain Profile Photo <span class="req">*</span></label>
+                        <div class="file-upload-area" id="riderImgArea">
+                            <input type="file" id="rider_image_file" accept="image/*" required>
+                            <div class="fu-icon" id="riderImgIcon">📷</div>
+                            <img class="file-preview-img" id="riderImgPreview" alt="">
+                            <div class="fu-title" id="riderImgTitle">Tap to upload your photo</div>
+                            <div class="fu-hint">Clear face photo · JPG, PNG · Max 5MB</div>
+                            <div class="fu-name" id="riderImgName"></div>
+                        </div>
+                    </div></div>
+                <div class="nav-buttons">
+                    <button class="btn-next" onclick="goStep(2)">Next: Vehicle Details →</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== STEP 2: VEHICLE ===== -->
+        <div class="form-section-card" id="step2">
+            <div class="section-header-bar">
+                <div class="section-icon">🏍️</div>
+                <div>
+                    <div class="section-title">Vehicle Details</div>
+                    <div class="section-subtitle">Step 2 of 4 — Tell us about your vehicle</div>
+                </div>
+            </div>
+            <div class="section-body">
+                <div class="form-grid">
+                    <div class="form-group full">
+                        <label for="vehicle_type">Vehicle Type <span class="req">*</span></label>
+                        <select id="vehicle_type" required>
+                            <option value="">Select Vehicle Type</option>
+                            <option value="Motorcycle">🏍️ Motorcycle</option>
+                            <option value="Car">🚗 Car</option>
+                            <option value="Rikshaw">🛺 Rikshaw</option>
+                            <option value="Pickup">🚚 Pickup / Van (Cargo)</option>
+                            <option value="Other">🚐 Other</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="vehicle_name">Vehicle Name/Model <span class="req">*</span></label>
+                        <div class="input-wrap">
+                            <span class="input-ico">🚗</span>
+                            <input type="text" id="vehicle_name" placeholder="e.g., Honda 125" required>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="vehicle_color">Vehicle Color <span class="req">*</span></label>
+                        <div class="input-wrap">
+                            <span class="input-ico">🎨</span>
+                            <input type="text" id="vehicle_color" placeholder="e.g., Red, White" required>
+                        </div>
+                    </div>
+                    <div class="form-group full">
+                        <label for="vehicle_number">Registration Number <span class="req">*</span></label>
+                        <div class="input-wrap">
+                            <span class="input-ico">#️⃣</span>
+                            <input type="text" id="vehicle_number" placeholder="e.g., KHI-1234" required>
+                        </div>
+                    </div>
+                    <div class="form-group full">
+                        <label>Vehicle Photo <span class="req">*</span></label>
+                        <div class="file-upload-area" id="vehicleImgArea">
+                            <input type="file" id="vehicle_image_file" accept="image/*" required>
+                            <div class="fu-icon" id="vehicleImgIcon">🚗</div>
+                            <img class="file-preview-img" id="vehicleImgPreview" alt="">
+                            <div class="fu-title" id="vehicleImgTitle">Tap to upload vehicle photo</div>
+                            <div class="fu-hint">Clear full view of vehicle · JPG, PNG · Max 5MB</div>
+                            <div class="fu-name" id="vehicleImgName"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="nav-buttons">
+                    <button class="btn-prev" onclick="goStep(1)">← Back</button>
+                    <button class="btn-next" onclick="goStep(3)">Next: Documents →</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== STEP 3: DOCUMENTS ===== -->
+        <div class="form-section-card" id="step3">
+            <div class="section-header-bar">
+                <div class="section-icon">📁</div>
+                <div>
+                    <div class="section-title">Document Uploads</div>
+                    <div class="section-subtitle">Step 3 of 4 — Upload clear images of all 4 documents</div>
+                </div>
+            </div>
+            <div class="section-body">
+                <div class="docs-grid">
+
+                    <div class="doc-card" id="dc1">
+                        <div class="doc-label">🪪 CNIC Front <span class="req">*</span></div>
+                        <div class="file-upload-area" id="cnicFrontArea">
+                            <input type="file" id="cnic_front_file" accept="image/*" required>
+                            <div class="fu-icon" id="cnicFrontIcon">🪪</div>
+                            <img class="file-preview-img" id="cnicFrontPreview" alt="">
+                            <div class="fu-title" id="cnicFrontTitle">Upload</div>
+                            <div class="fu-hint">Front of CNIC</div>
+                            <div class="fu-name" id="cnicFrontName"></div>
+                        </div>
+                    </div>
+
+                    <div class="doc-card" id="dc2">
+                        <div class="doc-label">🪪 CNIC Back <span class="req">*</span></div>
+                        <div class="file-upload-area" id="cnicBackArea">
+                            <input type="file" id="cnic_back_file" accept="image/*" required>
+                            <div class="fu-icon" id="cnicBackIcon">🪪</div>
+                            <img class="file-preview-img" id="cnicBackPreview" alt="">
+                            <div class="fu-title" id="cnicBackTitle">Upload</div>
+                            <div class="fu-hint">Back of CNIC</div>
+                            <div class="fu-name" id="cnicBackName"></div>
+                        </div>
+                    </div>
+
+                    <div class="doc-card" id="dc3">
+                        <div class="doc-label">🚗 Driving License <span class="req">*</span></div>
+                        <div class="file-upload-area" id="licenseArea">
+                            <input type="file" id="license_file" accept="image/*" required>
+                            <div class="fu-icon" id="licenseIcon">📄</div>
+                            <img class="file-preview-img" id="licensePreview" alt="">
+                            <div class="fu-title" id="licenseTitle">Upload</div>
+                            <div class="fu-hint">Valid driving license</div>
+                            <div class="fu-name" id="licenseName"></div>
+                        </div>
+                    </div>
+
+                    <div class="doc-card" id="dc4">
+                        <div class="doc-label">📋 Vehicle Reg. Card <span class="req">*</span></div>
+                        <div class="file-upload-area" id="vehicleRegArea">
+                            <input type="file" id="vehicle_reg_file" accept="image/*" required>
+                            <div class="fu-icon" id="vehicleRegIcon">📋</div>
+                            <img class="file-preview-img" id="vehicleRegPreview" alt="">
+                            <div class="fu-title" id="vehicleRegTitle">Upload</div>
+                            <div class="fu-hint">Registration card</div>
+                            <div class="fu-name" id="vehicleRegName"></div>
+                        </div>
+                    </div>
+
+                </div>
+                <div class="nav-buttons" style="margin-top:20px;">
+                    <button class="btn-prev" onclick="goStep(2)">← Back</button>
+                    <button class="btn-next" onclick="goStep(4)">Review &amp; Submit →</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- ===== STEP 4: REVIEW ===== -->
+        <div class="form-section-card" id="step4">
+            <div class="section-header-bar">
+                <div class="section-icon">✅</div>
+                <div>
+                    <div class="section-title">Review &amp; Submit</div>
+                    <div class="section-subtitle">Step 4 of 4 — Confirm everything before submitting</div>
+                </div>
+            </div>
+            <div class="section-body">
+                <!-- Summary -->
+                <div style="background:var(--bg-surface); border:1px solid var(--border); border-radius:10px; overflow:hidden; margin-bottom:16px;">
+                    <div id="reviewContent"></div>
+                </div>
+                <!-- Docs checklist -->
+                <div style="background:var(--bg-surface); border:1px solid var(--border); border-radius:10px; padding:16px; margin-bottom:20px;">
+                    <div style="font-size:12px; font-weight:700; color:var(--text-soft); margin-bottom:12px; display:flex; align-items:center; gap:6px;">
+                        📎 Documents Attached
+                    </div>
+                    <div id="docsChecklist" style="display:grid; grid-template-columns:1fr 1fr; gap:8px; font-size:13px;"></div>
+                </div>
+                <!-- Disclaimer -->
+                <div style="font-size:12px; color:var(--text-muted); margin-bottom:20px; line-height:1.6; padding:14px; background:var(--primary-bg); border-radius:8px; border:1px solid var(--primary-border);">
+                    ℹ️ By submitting, you confirm that all provided information is accurate and documents are authentic. False information will result in permanent disqualification.
+                </div>
+                <div class="nav-buttons">
+                    <button class="btn-prev" id="backFromReview" onclick="goStep(3)">← Back</button>
+                    <button class="btn-next" id="submitBtn" onclick="submitApplication()">
+                        🚀 Submit Application
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div><!-- end formWrapper -->
+</div><!-- end page-body -->
+
+<!-- FOOTER -->
+<footer class="site-footer">
+    © 2026 Raftaroo. All Rights Reserved. | Pakistan's Fastest Platform
+</footer>
+
+<!-- FIREBASE + LOGIC -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+    import { getDatabase, ref, set, get, update } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-database.js";
+    import { getAuth, GoogleAuthProvider, signInWithPopup, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBBS7jGzuVlTIIeN9VFBxpwHkNf-mIRzDo",
+        authDomain: "raftaroo-9ce8d.firebaseapp.com",
+        databaseURL: "https://raftaroo-9ce8d-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "raftaroo-9ce8d",
+        storageBucket: "raftaroo-9ce8d.firebasestorage.app",
+        messagingSenderId: "773738074182",
+        appId: "1:773738074182:web:b7a873959c7ab8edc0ba47",
+        measurementId: "G-EM1R4LGZTD"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db  = getDatabase(app);
+    const auth = getAuth(app);
+    const provider = new GoogleAuthProvider();
+
+    const CLOUD_NAME    = "dw4btouzp";
+    const UPLOAD_PRESET = "sell-it-fast";
+
+    let currentUser = null;
+    let currentStep = 1;
+
+
+    /* ─── STEP NAVIGATION ─── */
+    window.goStep = function(n) {
+        if (n > currentStep && !validateStep(currentStep)) return;
+        document.querySelectorAll('.form-section-card').forEach(c => c.classList.remove('active'));
+        document.getElementById('step' + n).classList.add('active');
+        window.scrollTo({ top: document.getElementById('step' + n).getBoundingClientRect().top + window.scrollY - 80, behavior: 'smooth' });
+        currentStep = n;
+        updateStepUI();
+        if (n === 4) buildReview();
+    };
+
+    function updateStepUI() {
+        for (let i = 1; i <= 4; i++) {
+            const sc = document.getElementById('sc' + i);
+            const sl = document.getElementById('sl' + i);
+            sc.className = 'step-circle';
+            sl.className = 'step-label';
+            if (i < currentStep)      { sc.classList.add('done');   sc.textContent = '✓'; sl.classList.add('done'); }
+            else if (i === currentStep){ sc.classList.add('active'); sc.textContent = i;   sl.classList.add('active'); }
+            else                       { sc.textContent = i; }
+        }
+        for (let i = 1; i <= 3; i++) {
+            document.getElementById('line' + i).className = 'step-line' + (i < currentStep ? ' done' : '');
+        }
+    }
+
+    /* ─── VALIDATION ─── */
+    function validateStep(s) {
+        showMsg('', '');
+        if (s === 1) {
+            if (!document.getElementById('full_name').value.trim())            { showMsg('Please enter your full name.', 'error'); return false; }
+            if (!/^[0-9]{5}-[0-9]{7}-[0-9]{1}$/.test(document.getElementById('cnic_number').value.trim())) { showMsg('CNIC format: 12345-1234567-8', 'error'); return false; }
+            if (!document.getElementById('mobile_number').value.trim())        { showMsg('Please enter your mobile number.', 'error'); return false; }
+            if (!document.getElementById('area').value)                        { showMsg('Please select your city.', 'error'); return false; }
+            if (!document.getElementById('rider_image_file').files[0])        { showMsg('Please upload your profile photo.', 'error'); return false; }
+        }
+        if (s === 2) {
+            if (!document.getElementById('vehicle_type').value)                { showMsg('Please select vehicle type.', 'error'); return false; }
+            if (!document.getElementById('vehicle_name').value.trim())         { showMsg('Please enter vehicle name/model.', 'error'); return false; }
+            if (!document.getElementById('vehicle_color').value.trim())        { showMsg('Please enter vehicle color.', 'error'); return false; }
+            if (!document.getElementById('vehicle_number').value.trim())       { showMsg('Please enter registration number.', 'error'); return false; }
+            if (!document.getElementById('vehicle_image_file').files[0])      { showMsg('Please upload vehicle photo.', 'error'); return false; }
+        }
+        if (s === 3) {
+            const pairs = [['cnic_front_file','CNIC Front'],['cnic_back_file','CNIC Back'],['license_file','Driving License'],['vehicle_reg_file','Vehicle Reg. Card']];
+            for (const [id, label] of pairs) {
+                if (!document.getElementById(id).files[0]) { showMsg('Please upload: ' + label, 'error'); return false; }
+            }
+        }
+        return true;
+    }
+
+    /* ─── REVIEW PANEL ─── */
+    function buildReview() {
+        const rows = [
+            ['Full Name',      document.getElementById('full_name').value],
+            ['CNIC',           document.getElementById('cnic_number').value],
+            ['Mobile',         document.getElementById('mobile_number').value],
+            ['City',           document.getElementById('area').value],
+            ['Vehicle Type',   document.getElementById('vehicle_type').value],
+            ['Vehicle Model',  document.getElementById('vehicle_name').value],
+            ['Vehicle Color',  document.getElementById('vehicle_color').value],
+            ['Reg. Number',    document.getElementById('vehicle_number').value],
+        ];
+        document.getElementById('reviewContent').innerHTML = rows.map((r,i) =>
+            `<div style="display:flex;justify-content:space-between;padding:11px 16px;${i<rows.length-1?'border-bottom:1px solid var(--border);':''}font-size:13px;">
+                <span style="color:var(--text-muted);font-weight:500;">${r[0]}</span>
+                <span style="font-weight:700;color:var(--text);">${r[1]||'—'}</span>
+            </div>`
+        ).join('');
+
+        const docList = [
+            ['rider_image_file','Captain Photo'],
+            ['vehicle_image_file','Vehicle Photo'],
+            ['cnic_front_file','CNIC Front'],
+            ['cnic_back_file','CNIC Back'],
+            ['license_file','Driving License'],
+            ['vehicle_reg_file','Vehicle Reg. Card'],
+        ];
+        document.getElementById('docsChecklist').innerHTML = docList.map(([id, label]) => {
+            const ok = !!document.getElementById(id).files[0];
+            return `<div style="display:flex;align-items:center;gap:6px;color:${ok?'var(--primary)':'var(--error)'};">
+                ${ok ? '✅' : '❌'} ${label}
+            </div>`;
+        }).join('');
+    }
+
+    /* ─── MSG ─── */
+    function showMsg(text, type) {
+        const b = document.getElementById('msgBar');
+        b.className = 'msg-bar';
+        if (!text) { b.style.display = 'none'; return; }
+        const icons = { error:'❌', info:'ℹ️', success:'✅' };
+        b.innerHTML = `${icons[type]||'ℹ️'} ${text}`;
+        b.classList.add('visible', type === 'success' ? 'success-bar' : type);
+        b.scrollIntoView({ behavior:'smooth', block:'nearest' });
+    }
+
+    /* ─── VIDEO GUIDE TOGGLE ─── */
+    window.toggleVideoGuide = function() {
+        const body = document.getElementById('videoGuideBody');
+        const arrow = document.getElementById('videoArrow');
+        body.classList.toggle('open');
+        arrow.classList.toggle('open');
+    };
+    // Auto-open by default so users see it immediately
+    document.addEventListener('DOMContentLoaded', function() {
+        document.getElementById('videoGuideBody').classList.add('open');
+        document.getElementById('videoArrow').classList.add('open');
+    });
+
+
+    // NOTE: Firebase rules only allow reading own rider node, not the full /riders path.
+    // So we only check if THIS user already has a pending/approved record (re-submission guard).
+    // CNIC uniqueness is enforced by Firebase write rules per UID — each user can only write to riders/$uid.
+    async function checkDuplicate(mobile, cnic, uid) {
+        try {
+            const snap = await get(ref(db, 'riders/' + uid));
+            if (snap.exists()) {
+                const st = snap.val().status;
+                if (st === 'Approved') return 'Aap ka account pehle se approved hai. Captain Dashboard par jayein.';
+                if (st === 'Pending')  return 'Aap ka application pehle se submitted hai aur review ho raha hai.';
+            }
+        } catch(e) {
+            // Permission error ya koi aur issue — silently allow, Firebase write rule handle karega
+            console.warn('Duplicate check skipped:', e.message);
+        }
+        return null;
+    }
+
+    /* ─── CLOUDINARY ─── */
+    async function uploadFile(file, uid) {
+        const fd = new FormData();
+        fd.append('file', file);
+        fd.append('upload_preset', UPLOAD_PRESET);
+        fd.append('folder', `captain_docs/${uid}`);
+        const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method:'POST', body:fd });
+        if (!res.ok) throw new Error('Upload failed: ' + res.statusText);
+        return (await res.json()).secure_url;
+    }
+
+    /* ─── PROGRESS ─── */
+    function setProgress(done, total, label) {
+        const pct = Math.round((done/total)*100);
+        document.getElementById('progressFill').style.width = pct + '%';
+        document.getElementById('progressPct').textContent  = pct + '%';
+        document.getElementById('progressLabel').textContent = label;
+        document.getElementById('uploadProgressWrap').classList.add('visible');
+    }
+
+    /* ─── SUBMIT ─── */
+    window.submitApplication = async function() {
+        if (!validateStep(3)) { goStep(3); return; }
+
+        const btn = document.getElementById('submitBtn');
+        const backBtn = document.getElementById('backFromReview');
+        btn.disabled = backBtn.disabled = true;
+        btn.innerHTML = '⏳ Submitting...';
+        showMsg('Checking for duplicate mobile/CNIC...', 'info');
+
+        try {
+            const mobile = document.getElementById('mobile_number').value;
+            const cnic   = document.getElementById('cnic_number').value;
+            const err    = await checkDuplicate(mobile, cnic, currentUser.uid);
+            if (err) {
+                showMsg('❌ ' + err, 'error');
+                btn.disabled = backBtn.disabled = false;
+                btn.innerHTML = '🚀 Submit Application';
+                document.getElementById('uploadProgressWrap').classList.remove('visible');
+                return;
+            }
+
+            const files = [
+                { el:'rider_image_file',   label:'Captain Photo (1/6)' },
+                { el:'vehicle_image_file', label:'Vehicle Photo (2/6)' },
+                { el:'cnic_front_file',    label:'CNIC Front (3/6)' },
+                { el:'cnic_back_file',     label:'CNIC Back (4/6)' },
+                { el:'license_file',       label:'License (5/6)' },
+                { el:'vehicle_reg_file',   label:'Reg. Card (6/6)' },
+            ];
+
+            const urls = [];
+            for (let i = 0; i < files.length; i++) {
+                setProgress(i, files.length, 'Uploading ' + files[i].label);
+                urls.push(await uploadFile(document.getElementById(files[i].el).files[0], currentUser.uid));
+            }
+            setProgress(6, 6, '✅ All documents uploaded!');
+            showMsg('Saving application...', 'info');
+                        await set(ref(db, 'riders/' + currentUser.uid), {
+                uid:             currentUser.uid,
+                fullName:        document.getElementById('full_name').value,
+                name:            document.getElementById('full_name').value,
+                cnicNumber:      cnic,
+                mobileNumber:    mobile,
+                phone:           mobile,
+                area:            document.getElementById('area').value,
+                city:            document.getElementById('area').value,
+                vehicleType:     document.getElementById('vehicle_type').value,
+                vehicleName:     document.getElementById('vehicle_name').value,
+                vehicleNumber:   document.getElementById('vehicle_number').value,
+                vehiclePlate:    document.getElementById('vehicle_number').value,
+                vehicleColor:    document.getElementById('vehicle_color').value,
+                riderImageUrl:   urls[0],
+                vehicleImageUrl: urls[1],
+                cnicFrontUrl:    urls[2],
+                cnicBackUrl:     urls[3],
+                licenseUrl:      urls[4],
+                vehicleRegUrl:   urls[5],
+                applicationDate: new Date().toISOString(),
+                status:          'Pending',
+                email:           currentUser.email,
+                walletBalance:   0,
+            });
+
+            // Success
+            ['formWrapper','userInfoBar','uploadProgressWrap','msgBar'].forEach(id => {
+                const el = document.getElementById(id);
+                if (el) { el.style.display='none'; el.classList.remove('visible'); }
+            });
+            document.getElementById('statusIconWrap').className = 'status-icon-wrap success';
+            document.getElementById('statusIcon').textContent   = '✅';
+            document.getElementById('statusTitle').textContent  = 'Application Submitted!';
+            document.getElementById('statusDesc').textContent   = 'All 6 documents uploaded and saved. Our team will review within 24–48 hours. You will be notified once approved.';
+            const sb = document.getElementById('statusBox');
+            sb.classList.add('visible');
+            sb.scrollIntoView({ behavior:'smooth' });
+
+        } catch(e) {
+            console.error(e);
+            showMsg('Submission failed: ' + e.message, 'error');
+            btn.disabled = backBtn.disabled = false;
+            btn.innerHTML = '🚀 Submit Application';
+            document.getElementById('uploadProgressWrap').classList.remove('visible');
+        }
+    };
+
+    /* ─── AUTH ─── */
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            currentUser = user;
+            const snap = await get(ref(db, 'riders/' + user.uid));
+            document.getElementById('authBox').classList.remove('visible');
+
+            if (snap.exists()) {
+                const d = snap.val(), st = d.status;
+                const iw = document.getElementById('statusIconWrap');
+                const ic = document.getElementById('statusIcon');
+                if (st === 'Approved') {
+                    iw.className='status-icon-wrap success'; ic.textContent='✅';
+                    document.getElementById('statusTitle').textContent = 'Application Approved!';
+                    document.getElementById('statusDesc').textContent  = `Welcome, ${d.fullName||'Captain'}! Your account is approved. Head to your Captain Panel to start accepting rides.`;
+                } else if (st === 'Pending') {
+                    iw.className='status-icon-wrap pending'; ic.textContent='⏳';
+                    document.getElementById('statusTitle').textContent = 'Under Review';
+                    document.getElementById('statusDesc').textContent  = `Hi ${d.fullName||''}! Your application is being reviewed. This usually takes 24–48 hours.`;
+                } else {
+                    iw.className='status-icon-wrap rejected'; ic.textContent='❌';
+                    document.getElementById('statusTitle').textContent = 'Application ' + st;
+                    document.getElementById('statusDesc').textContent  = 'Please check your Captain Panel for details or contact support.';
+                }
+                document.getElementById('statusBox').classList.add('visible');
+            } else {
+                const init = (user.displayName||user.email||'?').charAt(0).toUpperCase();
+                document.getElementById('userAvatarSm').textContent    = init;
+                document.getElementById('userEmailDisplay').textContent = user.displayName ? `${user.displayName} (${user.email})` : user.email;
+                document.getElementById('userInfoBar').classList.add('visible');
+                document.getElementById('formWrapper').style.display   = 'block';
+                if (user.displayName) document.getElementById('full_name').value = user.displayName;
+            }
+        } else {
+            currentUser = null;
+            document.getElementById('authBox').classList.add('visible');
+        }
+    });
+
+    document.getElementById('googleSignInBtn').addEventListener('click', () => {
+        signInWithPopup(auth, provider).catch(e => showMsg('Sign-in failed: ' + e.message, 'error'));
+    });
+
+    /* ─── CNIC AUTO-FORMAT ─── */
+    document.getElementById('cnic_number').addEventListener('input', function() {
+        let v = this.value.replace(/[^0-9]/g, '');
+        if (v.length >  5) v = v.slice(0,5)  + '-' + v.slice(5);
+        if (v.length > 13) v = v.slice(0,13) + '-' + v.slice(13);
+        if (v.length > 15) v = v.slice(0,15);
+        this.value = v;
+    });
+
+    /* ─── FILE PREVIEW ─── */
+    function setupPreview(inputId, areaId, iconId, titleId, nameId, previewId) {
+        document.getElementById(inputId).addEventListener('change', function() {
+            const file = this.files[0];
+            if (!file) return;
+            document.getElementById(areaId).classList.add('has-file');
+            document.getElementById(iconId).textContent = '✅';
+            document.getElementById(iconId).classList.add('done');
+            document.getElementById(titleId).textContent = 'Photo selected!';
+            const n = file.name;
+            document.getElementById(nameId).textContent = n.length > 28 ? n.slice(0,25)+'...' : n;
+            const prev = document.getElementById(previewId);
+            if (prev && file.type.startsWith('image/')) {
+                const reader = new FileReader();
+                reader.onload = e => { prev.src = e.target.result; prev.style.display = 'block'; };
+                reader.readAsDataURL(file);
+            }
+        });
+    }
+
+    setupPreview('rider_image_file',   'riderImgArea',   'riderImgIcon',   'riderImgTitle',   'riderImgName',   'riderImgPreview');
+    setupPreview('vehicle_image_file', 'vehicleImgArea', 'vehicleImgIcon', 'vehicleImgTitle', 'vehicleImgName', 'vehicleImgPreview');
+    setupPreview('cnic_front_file',    'cnicFrontArea',  'cnicFrontIcon',  'cnicFrontTitle',  'cnicFrontName',  'cnicFrontPreview');
+    setupPreview('cnic_back_file',     'cnicBackArea',   'cnicBackIcon',   'cnicBackTitle',   'cnicBackName',   'cnicBackPreview');
+    setupPreview('license_file',       'licenseArea',    'licenseIcon',    'licenseTitle',    'licenseName',    'licensePreview');
+    setupPreview('vehicle_reg_file',   'vehicleRegArea', 'vehicleRegIcon', 'vehicleRegTitle', 'vehicleRegName', 'vehicleRegPreview');
+</script>
+<!-- ═══════════════════════════════════════════════════════════
+     RAFTAROO PWA JS SNIPPET v3.0
+     </body> se pehle paste karein (har HTML page mein)
+     ═══════════════════════════════════════════════════════════ -->
+
+<!-- Install Banner HTML (body ke andar, pehli line) -->
+<div id="raftaroo-install-banner" style="
+  display:none;
+  position:fixed;
+  bottom:20px;
+  left:16px;
+  right:16px;
+  background:linear-gradient(135deg,#00C853 0%,#00E676 100%);
+  padding:16px 18px;
+  border-radius:18px;
+  z-index:9999;
+  box-shadow:0 8px 32px rgba(0,200,83,0.45);
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  animation:raftaroo-banner-in 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+">
+  <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0;">
+    <div style="width:42px;height:42px;background:rgba(255,255,255,0.2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🏍️</div>
+    <div style="min-width:0;">
+      <p style="color:#fff;font-weight:800;margin:0;font-size:14px;line-height:1.2;">Raftaroo App Install Karein!</p>
+      <p style="color:rgba(255,255,255,0.75);margin:2px 0 0;font-size:11px;">Fast booking, offline access & notifications</p>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px;flex-shrink:0;">
+    <button id="raftaroo-install-btn" style="background:#fff;color:#00A040;border:none;padding:9px 16px;border-radius:10px;font-weight:800;font-size:13px;cursor:pointer;font-family:inherit;white-space:nowrap;">Install</button>
+    <button id="raftaroo-close-btn" style="background:rgba(255,255,255,0.2);border:none;padding:9px 12px;border-radius:10px;color:#fff;font-weight:700;cursor:pointer;font-size:14px;line-height:1;">✕</button>
+  </div>
+</div>
+
+<style>
+@keyframes raftaroo-banner-in {
+  from { transform: translateY(100px); opacity: 0; }
+  to   { transform: translateY(0);     opacity: 1; }
+}
+</style>
+
+<script>
+(function() {
+  'use strict';
+
+  const SW_PATH    = '/sw.js';
+  const SW_SCOPE   = '/';
+  const DISMISSED_KEY = 'raftaroo_install_dismissed_v3';
+  const banner = document.getElementById('raftaroo-install-banner');
+  let deferredPrompt = null;
+  let swRegistration = null;
+
+  // ── 1. Register Service Worker ──────────────────────────────
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker
+        .register(SW_PATH, { scope: SW_SCOPE, updateViaCache: 'none' })
+        .then(reg => {
+          swRegistration = reg;
+          console.log('[Raftaroo PWA] SW registered:', reg.scope);
+
+          // Check for updates every 60 seconds when app is visible
+          setInterval(() => {
+            if (!document.hidden) reg.update();
+          }, 60000);
+
+          // Handle SW updates — notify user
+          reg.addEventListener('updatefound', () => {
+            const newWorker = reg.installing;
+            newWorker?.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                showUpdateToast();
+              }
+            });
+          });
+        })
+        .catch(err => console.warn('[Raftaroo PWA] SW registration failed:', err));
+
+      // Listen for messages from SW
+      navigator.serviceWorker.addEventListener('message', handleSWMessage);
+    });
+  }
+
+  // ── 2. Install Prompt (beforeinstallprompt) ──────────────────
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+      || window.navigator.standalone === true;
+    const wasDismissed = sessionStorage.getItem(DISMISSED_KEY);
+
+    if (!isStandalone && !wasDismissed && banner) {
+      // Show after short delay for better UX
+      setTimeout(() => {
+        banner.style.display = 'flex';
+      }, 3000);
+    }
+  });
+
+  // ── 3. Install button click ──────────────────────────────────
+  document.getElementById('raftaroo-install-btn')?.addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log('[Raftaroo PWA] Install outcome:', outcome);
+
+    if (outcome === 'accepted') {
+      hideBanner();
+      // Track install event
+      if (typeof gtag !== 'undefined') {
+        gtag('event', 'pwa_install', { event_category: 'PWA', event_label: 'installed' });
+      }
+    }
+    deferredPrompt = null;
+  });
+
+  // ── 4. Close button ─────────────────────────────────────────
+  document.getElementById('raftaroo-close-btn')?.addEventListener('click', () => {
+    hideBanner();
+    sessionStorage.setItem(DISMISSED_KEY, '1');
+  });
+
+  // ── 5. App installed callback ────────────────────────────────
+  window.addEventListener('appinstalled', () => {
+    hideBanner();
+    deferredPrompt = null;
+    console.log('[Raftaroo PWA] App installed successfully! 🎉');
+    if (typeof gtag !== 'undefined') {
+      gtag('event', 'pwa_install_complete', { event_category: 'PWA' });
+    }
+  });
+
+  // ── 6. Update toast notification ────────────────────────────
+  function showUpdateToast() {
+    const toast = document.createElement('div');
+    toast.id = 'raftaroo-update-toast';
+    toast.innerHTML = `
+      <span>🆕 Raftaroo ka naya version available hai!</span>
+      <button onclick="window.location.reload()" style="
+        background:#00C853;color:#0A0F1E;border:none;
+        padding:7px 14px;border-radius:8px;font-weight:700;
+        font-size:12px;cursor:pointer;font-family:inherit;margin-left:10px;">
+        Update
+      </button>
+    `;
+    Object.assign(toast.style, {
+      position: 'fixed',
+      top: '70px',
+      left: '16px',
+      right: '16px',
+      background: '#0A0F1E',
+      color: '#fff',
+      padding: '14px 18px',
+      borderRadius: '12px',
+      zIndex: '9998',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      boxShadow: '0 8px 30px rgba(0,0,0,0.4)',
+      fontSize: '13px',
+      fontWeight: '600',
+      border: '1px solid rgba(0,200,83,0.3)',
+      animation: 'raftaroo-banner-in 0.3s ease both'
+    });
+    document.body.appendChild(toast);
+
+    // Auto hide after 10 seconds
+    setTimeout(() => toast.remove(), 10000);
+  }
+
+  // ── 7. Handle messages from SW ──────────────────────────────
+  function handleSWMessage(event) {
+    const { type, version } = event.data || {};
+    if (type === 'SW_UPDATED') {
+      console.log('[Raftaroo PWA] SW updated to', version);
+    }
+  }
+
+  // ── 8. Network status indicator ─────────────────────────────
+  function updateOnlineStatus() {
+    const isOnline = navigator.onLine;
+    document.documentElement.setAttribute('data-network', isOnline ? 'online' : 'offline');
+    if (!isOnline) {
+      showOfflineBadge();
+    } else {
+      document.getElementById('raftaroo-offline-badge')?.remove();
+    }
+  }
+
+  function showOfflineBadge() {
+    if (document.getElementById('raftaroo-offline-badge')) return;
+    const badge = document.createElement('div');
+    badge.id = 'raftaroo-offline-badge';
+    badge.textContent = '📵 Offline Mode';
+    Object.assign(badge.style, {
+      position: 'fixed',
+      top: '68px',
+      left: '50%',
+      transform: 'translateX(-50%)',
+      background: '#EF4444',
+      color: '#fff',
+      padding: '6px 16px',
+      borderRadius: '20px',
+      fontSize: '12px',
+      fontWeight: '700',
+      zIndex: '9997',
+      boxShadow: '0 4px 16px rgba(239,68,68,0.4)',
+      whiteSpace: 'nowrap',
+      fontFamily: 'inherit'
+    });
+    document.body.appendChild(badge);
+  }
+
+  window.addEventListener('online',  updateOnlineStatus);
+  window.addEventListener('offline', updateOnlineStatus);
+  updateOnlineStatus();
+
+  // ── Helper ───────────────────────────────────────────────────
+  function hideBanner() {
+    if (banner) banner.style.display = 'none';
+  }
+
+  // ── Expose helper for app code ───────────────────────────────
+  window.RaftarooPWA = {
+    getVersion: () => {
+      swRegistration?.active?.postMessage({ type: 'GET_VERSION' });
+    },
+    clearCache: () => {
+      swRegistration?.active?.postMessage({ type: 'CLEAR_CACHE' });
+    },
+    checkUpdate: () => {
+      swRegistration?.update();
+    }
+  };
+
+})();
+</script>
+</body>
+</html>

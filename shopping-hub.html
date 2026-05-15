@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/android-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="/android-512.png">
+
+<!-- PWA Core -->
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#00C853" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#00C853" media="(prefers-color-scheme: dark)">
+
+<!-- iOS / Safari PWA -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Raftaroo">
+<link rel="apple-touch-startup-image" href="/apple-touch-icon.png">
+
+<!-- Windows / Edge -->
+<meta name="msapplication-TileColor" content="#00C853">
+<meta name="msapplication-TileImage" content="/android-192.png">
+<meta name="msapplication-config" content="none">
+
+<!-- Mobile browser bar color -->
+<meta name="theme-color" content="#00C853">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-EM1R4LGZTD"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-EM1R4LGZTD');</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Raftaroo Store | Official Brand Merchandise</title>
+<meta name="description" content="Official Raftaroo Store. Get branded helmets, shirts, and accessories on easy installments.">
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+:root{--primary:#00C853;--primary-hover:#00b548;--primary-bg:#e8f5e9;--primary-border:#a5d6a7;--secondary:#111827;--bg:#f4f6f8;--bg-card:#ffffff;--bg-surface:#f8fafc;--border:#e2e8f0;--text:#111827;--text-muted:#6b7280;--text-soft:#374151;--error:#dc2626;--error-bg:#fef2f2;--error-border:#fecaca;--success:#16a34a;--success-bg:#f0fdf4;--success-border:#bbf7d0;--info:#2563eb;--info-bg:#eff6ff;--info-border:#bfdbfe;--warning:#d97706;--warning-bg:#fffbeb;--warning-border:#fde68a;--shadow-sm:0 1px 4px rgba(0,0,0,0.07);--shadow:0 4px 20px rgba(0,0,0,0.08);--shadow-lg:0 10px 40px rgba(0,0,0,0.12);--radius:14px;--radius-sm:10px;--t:all 0.22s ease;}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;-webkit-tap-highlight-color:transparent;}
+html{scroll-behavior:smooth;}
+body{background:var(--bg);color:var(--text);min-height:100vh;overflow-x:hidden;}
+a{text-decoration:none;}
+.hidden{display:none!important;}
+
+/* HEADER */
+.site-header{position:sticky;top:0;z-index:900;background:rgba(255,255,255,0.96);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);border-bottom:1px solid var(--border);padding:0 20px;box-shadow:var(--shadow-sm);}
+.header-inner{max-width:1100px;margin:0 auto;height:60px;display:flex;align-items:center;justify-content:space-between;gap:12px;}
+.logo-img{height:36px;display:block;}
+.wallet-badge{background:var(--primary);padding:6px 14px;border-radius:20px;font-weight:700;font-size:13px;border:1px solid rgba(0,0,0,0.15);color:var(--secondary);}
+.btn-home{background:var(--secondary);color:var(--primary);font-weight:700;font-size:13px;padding:8px 16px;border-radius:30px;border:none;cursor:pointer;text-decoration:none;transition:var(--t);display:flex;align-items:center;gap:6px;}
+.btn-home:hover{background:#1f2937;transform:translateY(-1px);}
+
+/* HERO */
+.hero{background:var(--secondary);padding:48px 20px 38px;text-align:center;position:relative;overflow:hidden;}
+.hero::before{content:'';position:absolute;top:-60px;left:50%;transform:translateX(-50%);width:520px;height:280px;background:radial-gradient(ellipse,rgba(0,200,83,0.15) 0%,transparent 70%);pointer-events:none;}
+.hero-badge{display:inline-flex;align-items:center;gap:7px;background:rgba(0,200,83,0.12);border:1px solid rgba(0,200,83,0.3);color:var(--primary);font-size:11px;font-weight:700;padding:6px 16px;border-radius:20px;margin-bottom:16px;letter-spacing:.8px;text-transform:uppercase;}
+.hero h1{font-size:clamp(22px,4vw,34px);font-weight:800;color:#fff;margin-bottom:8px;}
+.hero h1 span{color:var(--primary);}
+.hero p{font-size:14px;color:#9ca3af;}
+
+/* PAGE BODY */
+.page-body{max-width:1100px;margin:0 auto;padding:32px 16px 60px;}
+
+/* ADMIN PANEL */
+.admin-panel{background:var(--bg-card);border:2px dashed var(--primary);border-radius:var(--radius);padding:20px;margin-bottom:24px;}
+.admin-panel h2{font-size:1rem;font-weight:700;margin-bottom:14px;color:var(--text);}
+.admin-inputs{display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:10px;}
+.admin-input{padding:10px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:14px;transition:var(--t);width:100%;}
+.admin-input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(0,200,83,0.2);}
+.admin-btn{padding:10px 20px;background:var(--primary);color:var(--secondary);font-weight:700;border:none;border-radius:var(--radius-sm);cursor:pointer;transition:var(--t);}
+.admin-btn:hover{background:var(--primary-hover);}
+
+/* ADMIN TABLE */
+.admin-orders{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);padding:24px;margin-bottom:24px;overflow-x:auto;box-shadow:var(--shadow-sm);}
+.admin-orders h2{font-size:1rem;font-weight:700;margin-bottom:14px;}
+table{width:100%;border-collapse:collapse;font-size:12px;}
+th,td{padding:10px 12px;border-bottom:1px solid var(--border);text-align:left;}
+th{background:var(--bg-surface);font-weight:700;color:var(--text-soft);}
+td a{color:var(--info);font-weight:600;}
+
+/* PRODUCT GRID */
+.product-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:20px;}
+.product-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;box-shadow:var(--shadow-sm);transition:var(--t);position:relative;}
+.product-card:hover{transform:translateY(-4px);box-shadow:var(--shadow);}
+.product-img{width:100%;height:220px;object-fit:cover;display:block;}
+.product-info{padding:16px 18px 18px;}
+.product-title{font-size:1rem;font-weight:700;margin-bottom:4px;color:var(--text);}
+.product-price{font-size:1.1rem;font-weight:800;color:var(--secondary);margin-bottom:14px;}
+.action-btns{display:flex;gap:8px;}
+.buy-btn{flex:1;padding:11px;border:none;background:var(--primary);color:var(--secondary);font-weight:700;font-size:13px;border-radius:var(--radius-sm);cursor:pointer;transition:var(--t);}
+.buy-btn:hover{background:var(--primary-hover);}
+.share-btn{width:40px;padding:11px;border:1.5px solid var(--border);background:var(--bg-surface);color:var(--text-muted);border-radius:var(--radius-sm);cursor:pointer;transition:var(--t);display:flex;align-items:center;justify-content:center;}
+.share-btn:hover{background:var(--primary-bg);border-color:var(--primary-border);color:var(--secondary);}
+
+/* MODAL */
+#checkoutBox{position:fixed;top:0;left:0;width:100%;height:100%;z-index:2000;display:flex;align-items:center;justify-content:center;}
+.overlay{position:absolute;width:100%;height:100%;background:rgba(0,0,0,0.75);backdrop-filter:blur(4px);}
+.modal-content{position:relative;background:var(--bg-card);width:95%;max-width:440px;border-radius:var(--radius);max-height:90vh;overflow-y:auto;box-shadow:var(--shadow-lg);animation:slideUp .3s ease-out;}
+@keyframes slideUp{from{opacity:0;transform:translateY(20px);}to{opacity:1;transform:translateY(0);}}
+.modal-header{padding:20px 24px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;}
+.modal-title{font-size:15px;font-weight:700;color:var(--text);}
+.modal-close{width:32px;height:32px;border-radius:8px;border:none;background:var(--bg-surface);cursor:pointer;font-size:16px;color:var(--text-muted);display:flex;align-items:center;justify-content:center;transition:var(--t);}
+.modal-close:hover{background:var(--error-bg);color:var(--error);}
+.modal-body{padding:20px 24px;}
+.tab-group{display:flex;gap:8px;margin-bottom:18px;}
+.tab-btn{flex:1;padding:10px;border-radius:var(--radius-sm);border:1.5px solid var(--border);cursor:pointer;font-weight:600;font-size:13px;text-align:center;background:var(--bg-surface);color:var(--text-muted);transition:var(--t);}
+.tab-btn.active{background:var(--secondary);color:var(--primary);border-color:var(--secondary);}
+.modal-input{padding:11px 14px;border:1.5px solid var(--border);border-radius:var(--radius-sm);color:var(--text);font-size:14px;transition:var(--t);width:100%;margin-bottom:10px;box-sizing:border-box;}
+.modal-input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(0,200,83,0.2);}
+.payment-notice{background:var(--success-bg);border:1px solid var(--success-border);padding:14px;border-radius:var(--radius-sm);margin-bottom:14px;text-align:center;font-size:13px;color:var(--warning);}
+.wallet-bal-box{background:var(--info-bg);border:1px solid var(--info-border);padding:16px;border-radius:var(--radius-sm);text-align:center;margin-bottom:14px;}
+.wallet-bal-box p{font-size:12px;color:var(--info);margin-bottom:4px;}
+.wallet-bal-box strong{font-size:1.4rem;font-weight:800;color:var(--info);}
+.confirm-btn{width:100%;padding:14px;background:var(--primary);color:var(--secondary);font-size:15px;font-weight:700;border:none;border-radius:12px;cursor:pointer;transition:var(--t);margin-top:4px;}
+.confirm-btn:hover{background:var(--primary-hover);transform:translateY(-2px);box-shadow:0 6px 20px rgba(0,200,83,0.35);}
+.confirm-btn:disabled{opacity:.55;cursor:not-allowed;transform:none;box-shadow:none;}
+
+/* TOAST */
+.share-toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--secondary);color:var(--primary);padding:11px 22px;border-radius:30px;font-size:13px;font-weight:700;z-index:3000;box-shadow:var(--shadow-lg);display:none;}
+
+.site-footer{background:var(--secondary);border-top:1px solid #1f2937;padding:22px;text-align:center;font-size:13px;color:#6b7280;}
+.site-footer span{color:var(--primary);font-weight:700;}
+
+@media(max-width:480px){.product-grid{grid-template-columns:1fr 1fr;}.hero{padding:36px 16px 26px;}}
+</style>
+</head>
+<body>
+
+<div id="shareToast" class="share-toast">🔗 Link Copied!</div>
+
+<header class="site-header">
+  <div class="header-inner">
+    <a href="/"><img src="https://iili.io/fsyi06x.png" alt="Raftaroo" class="logo-img" onerror="this.style.display='none'"></a>
+    <div id="walletDisplay" class="hidden"><span id="walletInfo" class="wallet-badge">Wallet: Rs. 0</span></div>
+    <a href="index.html" class="btn-home"><i class="fas fa-home"></i> Home</a>
+  </div>
+</header>
+
+<div class="hero">
+  <div class="hero-badge">🛒 Official Merchandise</div>
+  <h1><span>Raftaroo</span> Store</h1>
+  <p>Premium branded gear with easy installment plans</p>
+</div>
+
+<div class="page-body">
+
+  <!-- ADMIN ADD PRODUCT -->
+  <section id="adminPanel" class="admin-panel hidden">
+    <h2>⚙️ Admin: Add Product</h2>
+    <div class="admin-inputs">
+      <input type="text" id="pName" class="admin-input" placeholder="Product Name">
+      <input type="number" id="pPrice" class="admin-input" placeholder="Price (PKR)">
+      <input type="text" id="pImg" class="admin-input" placeholder="Image URL">
+      <button onclick="addProduct()" class="admin-btn">+ Add Product</button>
+    </div>
+  </section>
+
+  <!-- ADMIN ORDERS -->
+  <section id="adminOrders" class="admin-orders hidden">
+    <h2>📦 Recent Orders</h2>
+    <table>
+      <thead><tr><th>Date</th><th>Customer</th><th>Product</th><th>Method</th><th>Proof</th></tr></thead>
+      <tbody id="ordersList"></tbody>
+    </table>
+  </section>
+
+  <!-- PRODUCT GRID -->
+  <div class="product-grid" id="productDisplay">
+    <div style="grid-column:1/-1;text-align:center;padding:40px;color:var(--text-muted);font-size:14px;">Loading products...</div>
+  </div>
+</div>
+
+<!-- CHECKOUT MODAL -->
+<div id="checkoutBox" class="hidden">
+  <div class="overlay" onclick="closeModal()"></div>
+  <div class="modal-content">
+    <div class="modal-header">
+      <div class="modal-title" id="modalItemName">Product Name</div>
+      <button class="modal-close" onclick="closeModal()">✕</button>
+    </div>
+    <div class="modal-body">
+      <div class="tab-group">
+        <div id="tabOnline" class="tab-btn active" onclick="switchTab('online')">📱 EasyPaisa/JazzCash</div>
+        <div id="tabWallet" class="tab-btn" onclick="switchTab('wallet')">👛 Raftaroo Wallet</div>
+      </div>
+
+      <div id="onlineSection">
+        <div class="payment-notice">
+          💸 Send Payment to: <strong>03232477490</strong><br>
+          Account Name: <strong>Raftaroo Official</strong>
+        </div>
+        <input type="text" id="txnId" class="modal-input" placeholder="Transaction ID (TID)">
+        <input type="file" id="payImg" accept="image/*" class="modal-input" style="padding:8px;">
+        <small style="display:block;margin-bottom:10px;color:var(--text-muted);font-size:12px;">📷 Upload payment screenshot</small>
+      </div>
+
+      <div id="walletSection" class="hidden">
+        <div class="wallet-bal-box">
+          <p>Available Balance</p>
+          <strong id="currentBalText">Rs. 0</strong>
+        </div>
+      </div>
+
+      <input type="text" id="custName" class="modal-input" placeholder="Full Name *">
+      <input type="tel" id="custPhone" class="modal-input" placeholder="Phone Number *">
+      <textarea id="custAddr" class="modal-input" placeholder="Delivery Address *" rows="2" style="resize:vertical;font-family:'Poppins',sans-serif;"></textarea>
+
+      <select id="payPlan" class="modal-input" style="cursor:pointer;">
+        <option value="Full Payment">Full Payment</option>
+        <option value="Daily Installment">Daily Installment</option>
+        <option value="Weekly Installment">Weekly Installment</option>
+        <option value="Monthly Installment">Monthly Installment</option>
+      </select>
+
+      <button class="confirm-btn" id="btnSubmitOrder">✅ Confirm Order</button>
+    </div>
+  </div>
+</div>
+
+<footer class="site-footer">
+  © 2026 <span>Raftaroo</span>. All Rights Reserved. | Pakistan's Fastest Platform
+</footer>
+
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+  import { getDatabase, ref, push, onValue, update, get } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-database.js";
+  import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+
+  const firebaseConfig = {
+    apiKey: "AIzaSyBBS7jGzuVlTIIeN9VFBxpwHkNf-mIRzDo",
+    authDomain: "raftaroo-9ce8d.firebaseapp.com",
+    databaseURL: "https://raftaroo-9ce8d-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "raftaroo-9ce8d",
+    storageBucket: "raftaroo-9ce8d.firebasestorage.app",
+    appId: "1:773738074182:web:b7a873959c7ab8edc0ba47"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const db = getDatabase(app);
+  const auth = getAuth(app);
+
+  const ADMIN_UID = "YQV7Eq79nugmvI4ryZblQMXhpCg1";
+  const CLOUD_NAME = "dw4btouzp";
+  const UPLOAD_PRESET = "sell-it-fast";
+
+  let currentUser = null, captainData = null, selectedItem = null, currentTab = 'online', allProducts = {};
+
+  onAuthStateChanged(auth, async (user) => {
+    if (user) {
+      currentUser = user;
+      if (user.uid === ADMIN_UID) {
+        document.getElementById('adminPanel').classList.remove('hidden');
+        document.getElementById('adminOrders').classList.remove('hidden');
+        loadOrders();
+      }
+      const snap = await get(ref(db, `riders/${user.uid}`));
+      if (snap.exists()) {
+        captainData = snap.val();
+        document.getElementById('walletDisplay').classList.remove('hidden');
+        document.getElementById('walletInfo').textContent = "Wallet: Rs. " + (captainData.walletBalance || 0).toLocaleString();
+        document.getElementById('currentBalText').textContent = "Rs. " + (captainData.walletBalance || 0).toLocaleString();
+      }
+    }
+    loadProducts();
+  });
+
+  const createSlug = (t) => t.toLowerCase().replace(/ /g, '-').replace(/[^\w-]+/g, '');
+
+  window.addProduct = () => {
+    const name = document.getElementById('pName').value;
+    const price = document.getElementById('pPrice').value;
+    const img = document.getElementById('pImg').value;
+    if (!name || !price || !img) return alert("Fill all fields");
+    push(ref(db, 'shoppingProducts'), { name, price, img, slug: createSlug(name) });
+    alert("Product Added!");
+  };
+
+  function loadProducts() {
+    onValue(ref(db, 'shoppingProducts'), (snap) => {
+      const display = document.getElementById('productDisplay');
+      display.innerHTML = "";
+      if (snap.exists()) {
+        allProducts = snap.val();
+        Object.keys(allProducts).forEach(key => {
+          const p = allProducts[key];
+          display.innerHTML += `
+            <div class="product-card">
+              <img src="${p.img}" class="product-img" loading="lazy" onerror="this.style.display='none'">
+              <div class="product-info">
+                <div class="product-title">${p.name}</div>
+                <div class="product-price">Rs. ${Number(p.price).toLocaleString()}</div>
+                <div class="action-btns">
+                  <button class="buy-btn" onclick="openCheckout('${key}')">Order Now</button>
+                  <button class="share-btn" onclick="shareProduct('${p.slug}','${p.name}')"><i class="fas fa-share-alt"></i></button>
+                </div>
+              </div>
+            </div>`;
+        });
+        checkUrlSlug();
+      } else {
+        display.innerHTML = '<div style="grid-column:1/-1;text-align:center;padding:60px;color:var(--text-muted);">🛍️ No products yet. Check back soon!</div>';
+      }
+    });
+  }
+
+  function checkUrlSlug() {
+    const params = new URLSearchParams(window.location.search);
+    const itemSlug = params.get('item');
+    if (itemSlug) {
+      const key = Object.keys(allProducts).find(k => allProducts[k].slug === itemSlug);
+      if (key) openCheckout(key);
+    }
+  }
+
+  window.shareProduct = async (slug, name) => {
+    const url = `${window.location.origin}${window.location.pathname}?item=${slug}`;
+    if (navigator.share) {
+      try { await navigator.share({ title: 'Raftaroo Store', text: `Check out ${name}!`, url }); } catch (e) {}
+    } else {
+      navigator.clipboard.writeText(url);
+      const t = document.getElementById('shareToast');
+      t.style.display = 'block';
+      setTimeout(() => t.style.display = 'none', 2500);
+    }
+  };
+
+  window.openCheckout = (key) => {
+    selectedItem = allProducts[key];
+    document.getElementById('modalItemName').textContent = `${selectedItem.name} — Rs. ${Number(selectedItem.price).toLocaleString()}`;
+    document.getElementById('checkoutBox').classList.remove('hidden');
+  };
+
+  window.closeModal = () => document.getElementById('checkoutBox').classList.add('hidden');
+
+  window.switchTab = (tab) => {
+    if (tab === 'wallet' && !captainData) return alert("Only logged-in Captains can use Wallet.");
+    currentTab = tab;
+    document.getElementById('tabOnline').classList.toggle('active', tab === 'online');
+    document.getElementById('tabWallet').classList.toggle('active', tab === 'wallet');
+    document.getElementById('onlineSection').classList.toggle('hidden', tab === 'wallet');
+    document.getElementById('walletSection').classList.toggle('hidden', tab === 'online');
+  };
+
+  document.getElementById('btnSubmitOrder').onclick = async () => {
+    const name = document.getElementById('custName').value;
+    const phone = document.getElementById('custPhone').value;
+    const addr = document.getElementById('custAddr').value;
+    if (!name || !phone || !addr) return alert("Please fill all fields.");
+
+    const btn = document.getElementById('btnSubmitOrder');
+    btn.disabled = true; btn.textContent = "⏳ Processing...";
+
+    try {
+      let method = "Online Payment", proof = "N/A";
+      let txn = document.getElementById('txnId').value || "N/A";
+
+      if (currentTab === 'wallet') {
+        const bal = captainData.walletBalance || 0;
+        if (bal < selectedItem.price) { alert("Insufficient Wallet Balance."); return; }
+        const newBal = bal - Number(selectedItem.price);
+        await update(ref(db, `riders/${currentUser.uid}`), { walletBalance: newBal });
+        method = "Paid via Wallet"; txn = "WLT-" + Date.now();
+      } else {
+        const file = document.getElementById('payImg').files[0];
+        if (!file || txn === "N/A") { alert("Please provide TID and payment screenshot."); return; }
+        const fd = new FormData();
+        fd.append('file', file); fd.append('upload_preset', UPLOAD_PRESET);
+        const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method: 'POST', body: fd });
+        proof = (await res.json()).secure_url;
+      }
+
+      await push(ref(db, 'shoppingOrders'), {
+        customerName: name, phone, address: addr,
+        product: selectedItem.name, price: selectedItem.price,
+        method, proofUrl: proof, txnId: txn,
+        date: new Date().toLocaleString()
+      });
+
+      alert("✅ Order Placed Successfully!");
+      closeModal();
+    } catch (e) { alert("❌ Error: " + e.message); }
+    finally { btn.disabled = false; btn.textContent = "✅ Confirm Order"; }
+  };
+
+  function loadOrders() {
+    onValue(ref(db, 'shoppingOrders'), (snap) => {
+      const list = document.getElementById('ordersList');
+      list.innerHTML = "";
+      if (snap.exists()) {
+        Object.values(snap.val()).reverse().forEach(o => {
+          list.innerHTML += `<tr><td>${o.date}</td><td>${o.customerName}</td><td>${o.product}</td><td>${o.method}</td><td><a href="${o.proofUrl}" target="_blank">View</a></td></tr>`;
+        });
+      }
+    });
+  }
+</script>
+<!-- ═══════════════════════════════════════════════════════════
+     RAFTAROO PWA JS SNIPPET v3.0
+     </body> se pehle paste karein (har HTML page mein)
+     ═══════════════════════════════════════════════════════════ -->
+
+<!-- Install Banner HTML (body ke andar, pehli line) -->
+<div id="raftaroo-install-banner" style="
+  display:none;
+  position:fixed;
+  bottom:20px;
+  left:16px;
+  right:16px;
+  background:linear-gradient(135deg,#00C853 0%,#00E676 100%);
+  padding:16px 18px;
+  border-radius:18px;
+  z-index:9999;
+  box-shadow:0 8px 32px rgba(0,200,83,0.45);
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  animation:raftaroo-banner-in 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+">
+  <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0;">
+    <div style="width:42px;height:42px;background:rgba(255,255,255,0.2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🏍️</div>
+    <div style="min-width:0;">
+      <p style="color:#fff;font-weight:800;margin:0;font-size:14px;line-height:1.2;">Raftaroo App Install Karein!</p>
+      <p style="color:rgba(255,255,255,0.75);margin:2px 0 0;font-size:11px;">Fast booking, offline access & notifications</p>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px;flex-shrink:0;">
+    <button id="raftaroo-install-btn" style="background:#fff;color:#00A040;border:none;padding:9px 16px;border-radius:10px;font-weight:800;font-size:13px;cursor:pointer;font-family:inherit;white-space:nowrap;">Install</button>
+    <button id="raftaroo-close-btn" style="background:rgba(255,255,255,0.2);border:none;padding:9px 12px;border-radius:10px;color:#fff;font-weight:700;cursor:pointer;font-size:14px;line-height:1;">✕</button>
+  </div>
+</div>
+
+<style>
+@keyframes raftaroo-banner-in {
+  from { transform: translateY(100px); opacity: 0; }
+  to   { transform: translateY(0);     opacity: 1; }
+}
+</style>
+
+<script>
+(function() {
+  'use strict';
+
+  const SW_PATH    = '/sw.js';
+  const SW_SCOPE   = '/';
+  const DISMISSED_KEY = 'raftaroo_install_dismissed_v3';
+  const banner = document.getElementById('raftaroo-install-banner');
+  let deferredPrompt = null;
+  let swRegistration = null;
+
+  // ── 1. Register Service Worker ──────────────────────────────
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker
+        .register(SW_PATH, { scope: SW_SCOPE, updateViaCache: 'none' })
+        .then(reg => {
+          swRegistration = reg;
+          console.log('[Raftaroo PWA] SW registered:', reg.scope);
+
+          // Check for updates every 60 seconds when app is visible
+          setInterval(() => {
+            if (!document.hidden) reg.update();
+          }, 60000);
+
+          // Handle SW updates — notify user
+          reg.addEventListener('updatefound', () => {
+            const newWorker = reg.installing;
+            newWorker?.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                showUpdateToast();
+              }
+            });
+          });
+        })
+        .catch(err => console.warn('[Raftaroo PWA] SW registration failed:', err));
+
+      // Listen for messages from SW
+      navigator.serviceWorker.addEventListener('message', handleSWMessage);
+    });
+  }
+
+  // ── 2. Install Prompt (beforeinstallprompt) ──────────────────
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+      || window.navigator.standalone === true;
+    const wasDismissed = sessionStorage.getItem(DISMISSED_KEY);
+
+    if (!isStandalone && !wasDismissed && banner) {
+      // Show after short delay for better UX
+      setTimeout(() => {
+        banner.style.display = 'flex';
+      }, 3000);
+    }
+  });
+
+  // ── 3. Install button click ──────────────────────────────────
+  document.getElementById('raftaroo-install-btn')?.addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log('[Raftaroo PWA] Install outcome:', outcome);
+
+    if (outcome === 'accepted') {
+      hideBanner();
+      // Track install event
+      if (typeof gtag !== 'undefined') {
+        gtag('event', 'pwa_install', { event_category: 'PWA', event_label: 'installed' });
+      }
+    }
+    deferredPrompt = null;
+  });
+
+  // ── 4. Close button ─────────────────────────────────────────
+  document.getElementById('raftaroo-close-btn')?.addEventListener('click', () => {
+    hideBanner();
+    sessionStorage.setItem(DISMISSED_KEY, '1');
+  });
+
+  // ── 5. App installed callback ────────────────────────────────
+  window.addEventListener('appinstalled', () => {
+    hideBanner();
+    deferredPrompt = null;
+    console.log('[Raftaroo PWA] App installed successfully! 🎉');
+    if (typeof gtag !== 'undefined') {
+      gtag('event', 'pwa_install_complete', { event_category: 'PWA' });
+    }
+  });
+
+  // ── 6. Update toast notification ────────────────────────────
+  function showUpdateToast() {
+    const toast = document.createElement('div');
+    toast.id = 'raftaroo-update-toast';
+    toast.innerHTML = `
+      <span>🆕 Raftaroo ka naya version available hai!</span>
+      <button onclick="window.location.reload()" style="
+        background:#00C853;color:#0A0F1E;border:none;
+        padding:7px 14px;border-radius:8px;font-weight:700;
+        font-size:12px;cursor:pointer;font-family:inherit;margin-left:10px;">
+        Update
+      </button>
+    `;
+    Object.assign(toast.style, {
+      position: 'fixed',
+      top: '70px',
+      left: '16px',
+      right: '16px',
+      background: '#0A0F1E',
+      color: '#fff',
+      padding: '14px 18px',
+      borderRadius: '12px',
+      zIndex: '9998',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      boxShadow: '0 8px 30px rgba(0,0,0,0.4)',
+      fontSize: '13px',
+      fontWeight: '600',
+      border: '1px solid rgba(0,200,83,0.3)',
+      animation: 'raftaroo-banner-in 0.3s ease both'
+    });
+    document.body.appendChild(toast);
+
+    // Auto hide after 10 seconds
+    setTimeout(() => toast.remove(), 10000);
+  }
+
+  // ── 7. Handle messages from SW ──────────────────────────────
+  function handleSWMessage(event) {
+    const { type, version } = event.data || {};
+    if (type === 'SW_UPDATED') {
+      console.log('[Raftaroo PWA] SW updated to', version);
+    }
+  }
+
+  // ── 8. Network status indicator ─────────────────────────────
+  function updateOnlineStatus() {
+    const isOnline = navigator.onLine;
+    document.documentElement.setAttribute('data-network', isOnline ? 'online' : 'offline');
+    if (!isOnline) {
+      showOfflineBadge();
+    } else {
+      document.getElementById('raftaroo-offline-badge')?.remove();
+    }
+  }
+
+  function showOfflineBadge() {
+    if (document.getElementById('raftaroo-offline-badge')) return;
+    const badge = document.createElement('div');
+    badge.id = 'raftaroo-offline-badge';
+    badge.textContent = '📵 Offline Mode';
+    Object.assign(badge.style, {
+      position: 'fixed',
+      top: '68px',
+      left: '50%',
+      transform: 'translateX(-50%)',
+      background: '#EF4444',
+      color: '#fff',
+      padding: '6px 16px',
+      borderRadius: '20px',
+      fontSize: '12px',
+      fontWeight: '700',
+      zIndex: '9997',
+      boxShadow: '0 4px 16px rgba(239,68,68,0.4)',
+      whiteSpace: 'nowrap',
+      fontFamily: 'inherit'
+    });
+    document.body.appendChild(badge);
+  }
+
+  window.addEventListener('online',  updateOnlineStatus);
+  window.addEventListener('offline', updateOnlineStatus);
+  updateOnlineStatus();
+
+  // ── Helper ───────────────────────────────────────────────────
+  function hideBanner() {
+    if (banner) banner.style.display = 'none';
+  }
+
+  // ── Expose helper for app code ───────────────────────────────
+  window.RaftarooPWA = {
+    getVersion: () => {
+      swRegistration?.active?.postMessage({ type: 'GET_VERSION' });
+    },
+    clearCache: () => {
+      swRegistration?.active?.postMessage({ type: 'CLEAR_CACHE' });
+    },
+    checkUpdate: () => {
+      swRegistration?.update();
+    }
+  };
+
+})();
+</script>
+</body>
+</html>

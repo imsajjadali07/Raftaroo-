@@ -1,0 +1,16 @@
+User-agent: *
+Allow: /
+
+# Disallow internal pages that require login (Admin/Captain/Tracking)
+Disallow: /admin.html
+Disallow: /captain-dashboard.html
+Disallow: /captain-profile.html
+Disallow: /captain-ride-history.html
+Disallow: /captain-topup.html
+Disallow: /captain-bonuses.html
+Disallow: /captain-referral.html
+Disallow: /captain-active-ride.html
+Disallow: /track-live-rider.html
+
+# Location of your Sitemap file
+Sitemap: https://raftaroo.online/sitemap.xml

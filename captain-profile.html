@@ -1,0 +1,1228 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/android-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="/android-512.png">
+
+<!-- PWA Core -->
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#00C853" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#00C853" media="(prefers-color-scheme: dark)">
+
+<!-- iOS / Safari PWA -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Raftaroo">
+<link rel="apple-touch-startup-image" href="/apple-touch-icon.png">
+
+<!-- Windows / Edge -->
+<meta name="msapplication-TileColor" content="#00C853">
+<meta name="msapplication-TileImage" content="/android-192.png">
+<meta name="msapplication-config" content="none">
+
+<!-- Mobile browser bar color -->
+<meta name="theme-color" content="#00C853">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-EM1R4LGZTD"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  gtag('config', 'G-EM1R4LGZTD');
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>Captain Profile | Raftaroo</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+:root {
+    --primary: #00C853; --primary-dark: #00A040; --primary-light: #E8F5E9;
+    --primary-glow: rgba(0,200,83,0.25); --yellow: #FFDD00; --yellow-dark: #e6c800;
+    --yellow-light: #FFFDE7; --secondary: #0A0F1E; --bg: #F0F4F8; --white: #ffffff;
+    --text-main: #0A0F1E; --text-muted: #64748B; --text-light: #94A3B8;
+    --border: rgba(0,0,0,0.07); --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
+    --shadow-md: 0 4px 20px rgba(0,0,0,0.10); --shadow-lg: 0 8px 40px rgba(0,0,0,0.14);
+    --error: #EF4444; --success: #00C853; --info: #3B82F6; --warning: #F59E0B;
+    --gold: #FFD700; --silver: #C0C0C0; --bronze: #CD7F32;
+    --radius: 14px; --radius-sm: 10px; --radius-lg: 20px;
+}
+* { margin:0; padding:0; box-sizing:border-box; font-family:'Plus Jakarta Sans',sans-serif; -webkit-tap-highlight-color:transparent; }
+html { scroll-behavior:smooth; }
+body { background:var(--bg); color:var(--text-main); overflow-x:hidden; min-height:100vh; }
+.hidden { display:none !important; }
+#loadingScreen {
+position:fixed; inset:0; background:var(--secondary);
+display:flex; flex-direction:column; align-items:center; justify-content:center;
+z-index:9999; transition:opacity 0.5s ease;
+}
+.loading-logo {
+width:68px; height:68px; background:var(--primary); border-radius:20px;
+display:flex; align-items:center; justify-content:center;
+font-size:28px; font-weight:800; color:#fff;
+animation:pulseLoad 1.6s ease-in-out infinite; margin-bottom:18px;
+}
+@keyframes pulseLoad {
+0%,100% { transform:scale(1); box-shadow:0 0 0 0 var(--primary-glow); }
+50% { transform:scale(1.06); box-shadow:0 0 0 18px rgba(0,200,83,0); }
+}
+.loading-text { color:rgba(255,255,255,0.4); font-size:12px; font-weight:600; letter-spacing:2px; text-transform:uppercase; }
+
+.captain-header {
+background:var(--secondary); padding:0 18px; height:60px;
+display:flex; justify-content:space-between; align-items:center;
+position:sticky; top:0; z-index:600; box-shadow:0 2px 20px rgba(0,0,0,0.3);
+}
+.header-left { display:flex; align-items:center; gap:12px; }
+.header-title { font-size:17px; font-weight:700; color:#fff; letter-spacing:-0.3px; }
+.header-subtitle { font-size:11px; color:rgba(255,255,255,0.4); font-weight:500; }
+.back-btn {
+width:36px; height:36px; background:rgba(255,255,255,0.08); border-radius:10px;
+display:flex; align-items:center; justify-content:center;
+color:var(--primary); font-size:15px; text-decoration:none; transition:background 0.2s;
+}
+.back-btn:hover { background:rgba(0,200,83,0.15); }
+.logout-btn {
+background:rgba(239,68,68,0.12); border:1px solid rgba(239,68,68,0.25);
+color:#EF4444; padding:7px 14px; border-radius:10px;
+font-size:13px; font-weight:700; cursor:pointer;
+font-family:‘Plus Jakarta Sans’,sans-serif; transition:0.2s;
+}
+.logout-btn:hover { background:rgba(239,68,68,0.22); }
+.captain-tabs {
+display:flex; background:var(--white); border-bottom:1px solid var(--border);
+position:sticky; top:60px; z-index:500; overflow-x:auto; scrollbar-width:none;
+}
+.captain-tabs::-webkit-scrollbar { display:none; }
+.tab-button {
+flex:1; min-width:72px; padding:14px 8px; text-align:center; cursor:pointer;
+font-weight:600; font-size:12px; color:var(--text-muted);
+border-bottom:3px solid transparent; border-left:none; border-right:none; border-top:none;
+transition:0.25s; display:flex; align-items:center; justify-content:center;
+flex-direction:column; gap:3px; white-space:nowrap; background:none;
+font-family:‘Plus Jakarta Sans’,sans-serif;
+}
+.tab-button i { font-size:15px; }
+.tab-button.active { color:var(--primary); border-bottom-color:var(--primary); }
+
+.page-content { max-width:600px; margin:0 auto; padding:16px; }
+
+.profile-hero {
+background:var(--secondary); margin:-16px -16px 16px; padding:20px 18px 24px;
+position:relative; overflow:hidden;
+}
+.profile-hero::before {
+content:’’; position:absolute; top:-80px; right:-60px;
+width:240px; height:240px;
+background:radial-gradient(circle,rgba(0,200,83,0.12) 0%,transparent 70%);
+border-radius:50%; pointer-events:none;
+}
+.captain-card {
+background:linear-gradient(135deg,#1a1a2e 0%,#16213e 60%,#0f3460 100%);
+border-radius:var(--radius-lg); padding:18px;
+border:1px solid rgba(0,200,83,0.12); position:relative; overflow:hidden;
+}
+.captain-card::after {
+content:’’; position:absolute; bottom:-40px; right:-30px;
+width:150px; height:150px;
+background:radial-gradient(circle,rgba(0,200,83,0.07) 0%,transparent 70%);
+border-radius:50%;
+}
+.captain-card-top { display:flex; align-items:center; gap:14px; margin-bottom:16px; }
+.avatar-ring {
+width:58px; height:58px; border-radius:50%;
+background:linear-gradient(135deg,var(--primary),#00E676);
+display:flex; align-items:center; justify-content:center;
+font-size:22px; font-weight:800; color:#fff; flex-shrink:0;
+position:relative; box-shadow:0 0 0 3px rgba(0,200,83,0.25);
+}
+.online-dot {
+position:absolute; bottom:1px; right:1px; width:13px; height:13px;
+border-radius:50%; background:var(--primary); border:2.5px solid #1a1a2e;
+animation:blink 2s infinite;
+}
+@keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.5;} }
+.captain-info { flex:1; min-width:0; }
+.captain-name { font-size:17px; font-weight:800; color:#fff; margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.captain-phone { font-size:12px; color:rgba(255,255,255,0.4); font-weight:500; }
+.status-badge {
+font-size:11px; font-weight:700; padding:3px 9px; border-radius:50px;
+display:inline-block; margin-top:5px;
+background:rgba(0,200,83,0.18); color:var(--primary); border:1px solid rgba(0,200,83,0.25);
+}
+.status-badge.pending { background:rgba(245,158,11,0.18); color:var(--warning); border-color:rgba(245,158,11,0.25); }
+.status-badge.rejected { background:rgba(239,68,68,0.18); color:var(--error); border-color:rgba(239,68,68,0.25); }
+
+.wallet-display {
+background:rgba(0,200,83,0.08); border:1px solid rgba(0,200,83,0.18);
+border-radius:var(--radius-sm); padding:14px 16px;
+display:flex; align-items:center; justify-content:space-between;
+}
+.wallet-info .wallet-label { font-size:11px; color:rgba(255,255,255,0.35); font-weight:700; text-transform:uppercase; letter-spacing:0.5px; }
+.wallet-amount { font-size:28px; font-weight:800; color:var(--primary); line-height:1.1; margin-top:2px; }
+.wallet-sub { font-size:11px; color:rgba(255,255,255,0.25); margin-top:2px; }
+.topup-btn {
+background:var(--yellow); color:var(--secondary); border:none;
+padding:10px 16px; border-radius:10px; font-size:13px; font-weight:800;
+cursor:pointer; font-family:‘Plus Jakarta Sans’,sans-serif;
+transition:0.2s; display:flex; align-items:center; gap:5px; white-space:nowrap;
+}
+.topup-btn:active { background:var(--yellow-dark); transform:scale(0.97); }
+
+.stats-row { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:16px; }
+.stat-card {
+background:var(--white); border-radius:var(--radius); padding:14px 10px;
+text-align:center; box-shadow:var(--shadow-sm); border:1px solid var(--border);
+}
+.stat-card .stat-icon { font-size:18px; margin-bottom:6px; }
+.stat-card .stat-val { font-size:20px; font-weight:800; color:var(--text-main); }
+.stat-card .stat-label { font-size:10px; font-weight:600; color:var(--text-muted); margin-top:2px; text-transform:uppercase; letter-spacing:0.4px; }
+
+.section-card {
+background:var(--white); border-radius:var(--radius-lg); padding:18px;
+box-shadow:var(--shadow-sm); border:1px solid var(--border); margin-bottom:14px;
+animation:fadeUp 0.3s ease-out;
+}
+@keyframes fadeUp { from{opacity:0;transform:translateY(8px);} to{opacity:1;transform:translateY(0);} }
+.section-title {
+font-size:15px; font-weight:800; color:var(--text-main);
+display:flex; align-items:center; gap:8px; margin-bottom:14px;
+padding-bottom:12px; border-bottom:1px solid var(--border);
+}
+.section-title i { color:var(--primary); font-size:14px; }
+
+.account-info-box {
+background:linear-gradient(135deg,#EFF6FF 0%,#F0FFF4 100%);
+border:1px solid rgba(59,130,246,0.2);
+border-radius:var(--radius-sm); padding:14px; margin-bottom:14px;
+}
+.account-row { display:flex; align-items:center; justify-content:space-between; margin-bottom:8px; }
+.account-row:last-child { margin-bottom:0; }
+.account-label { font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; }
+.account-value { font-size:16px; font-weight:800; color:var(--text-main); }
+.copy-mini {
+background:var(--info); color:#fff; border:none;
+padding:5px 10px; border-radius:7px; font-size:11px; font-weight:700;
+cursor:pointer; font-family:‘Plus Jakarta Sans’,sans-serif; transition:0.2s;
+}
+.copy-mini:hover { background:#2563EB; }
+
+.input-field {
+width:100%; padding:12px 14px; margin-bottom:12px;
+border:1.5px solid var(--border); border-radius:var(--radius-sm);
+font-size:14px; font-weight:500; font-family:‘Plus Jakarta Sans’,sans-serif;
+background:#F8FAFC; color:var(--text-main); transition:border-color 0.2s;
+}
+.input-field:focus { border-color:var(--primary); outline:none; background:#fff; }
+.upload-btn {
+display:flex; align-items:center; justify-content:center; gap:8px;
+width:100%; padding:12px; margin-bottom:8px;
+background:#EFF6FF; color:var(--info);
+border:1.5px dashed rgba(59,130,246,0.4); border-radius:var(--radius-sm);
+cursor:pointer; font-size:14px; font-weight:700;
+font-family:‘Plus Jakarta Sans’,sans-serif; transition:0.2s;
+}
+.upload-btn:hover { background:#DBEAFE; }
+.upload-btn.file-selected { background:var(--primary-light); color:var(--primary-dark); border-color:rgba(0,200,83,0.4); }
+.upload-status { font-size:12px; color:var(--text-muted); text-align:center; margin-bottom:12px; min-height:16px; }
+.btn-primary {
+width:100%; padding:14px; background:var(--primary); color:#fff;
+border:none; border-radius:var(--radius-sm); font-size:15px; font-weight:800;
+cursor:pointer; font-family:‘Plus Jakarta Sans’,sans-serif;
+display:flex; align-items:center; justify-content:center; gap:8px; transition:background 0.2s;
+}
+.btn-primary:hover { background:var(--primary-dark); }
+.btn-primary:disabled { opacity:0.6; cursor:not-allowed; }
+
+.wallet-hero {
+background:linear-gradient(135deg,var(--primary),#00E676);
+border-radius:var(--radius-lg); padding:20px; text-align:center; margin-bottom:14px;
+box-shadow:0 6px 20px rgba(0,200,83,0.25); position:relative; overflow:hidden;
+}
+.wallet-hero::before {
+content:’’; position:absolute; top:-30px; right:-30px;
+width:100px; height:100px; background:rgba(255,255,255,0.12); border-radius:50%;
+}
+.wallet-hero-label { font-size:12px; font-weight:700; color:rgba(255,255,255,0.7); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:4px; }
+.wallet-hero-amount { font-size:36px; font-weight:800; color:#fff; }
+.wallet-hero-sub { font-size:12px; color:rgba(255,255,255,0.6); margin-top:4px; }
+
+.earnings-grid { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:14px; }
+.earn-card { background:var(--white); border-radius:var(--radius); padding:14px; box-shadow:var(--shadow-sm); border:1px solid var(--border); }
+.earn-card .ec-label { font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.4px; }
+.earn-card .ec-value { font-size:18px; font-weight:800; color:var(--text-main); margin-top:4px; }
+.earn-card.deduct .ec-value { color:var(--error); }
+
+.week-header { display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; }
+.week-title { font-size:15px; font-weight:800; display:flex; align-items:center; gap:8px; }
+.week-range { font-size:12px; font-weight:600; color:var(--info); }
+
+.rules-pill {
+background:#F8FAFC; border:1px solid var(--border);
+border-radius:var(--radius-sm); padding:10px 14px;
+font-size:11px; color:var(--text-muted); margin-top:12px;
+}
+.rules-pill strong { color:var(--text-main); }
+
+.ride-filter-row { display:flex; gap:8px; margin-bottom:14px; overflow-x:auto; scrollbar-width:none; padding-bottom:2px; }
+.ride-filter-row::-webkit-scrollbar { display:none; }
+.filter-chip {
+flex-shrink:0; padding:6px 14px; border-radius:50px;
+font-size:12px; font-weight:700; cursor:pointer;
+border:1.5px solid var(--border); background:var(--white); color:var(--text-muted);
+font-family:‘Plus Jakarta Sans’,sans-serif; transition:0.2s;
+}
+.filter-chip.active { background:var(--primary); color:#fff; border-color:var(--primary); }
+
+.ride-card {
+background:var(--white); border-radius:var(--radius); padding:14px; margin-bottom:10px;
+box-shadow:var(--shadow-sm); border:1px solid var(--border);
+border-left:4px solid var(--success); transition:box-shadow 0.2s,transform 0.2s;
+animation:fadeUp 0.3s ease-out;
+}
+.ride-card:hover { box-shadow:var(--shadow-md); transform:translateY(-1px); }
+.ride-card.cancelled { border-left-color:var(--error); }
+.ride-card.inprogress { border-left-color:var(--yellow); }
+
+.ride-card-head { display:flex; justify-content:space-between; align-items:flex-start; margin-bottom:10px; }
+.ride-date { font-size:12px; font-weight:600; color:var(--text-muted); }
+.ride-status-chip { font-size:11px; font-weight:800; padding:3px 9px; border-radius:50px; background:var(--primary-light); color:var(--primary-dark); }
+.ride-status-chip.cancelled { background:#FEE2E2; color:var(--error); }
+.ride-status-chip.pending { background:var(--yellow-light); color:#92400E; }
+
+.ride-card-detail { display:flex; align-items:flex-start; gap:8px; margin-bottom:7px; }
+.ride-card-detail i { font-size:12px; width:14px; margin-top:2px; flex-shrink:0; }
+.ride-card-detail.pickup i { color:var(--primary); }
+.ride-card-detail.dropoff i { color:var(--error); }
+.ride-card-detail span { font-size:12px; color:var(--text-main); line-height:1.4; }
+
+.ride-card-foot { display:flex; justify-content:space-between; align-items:center; padding-top:10px; border-top:1px solid var(--border); margin-top:4px; }
+.ride-fare { font-size:16px; font-weight:800; color:var(--text-main); }
+.ride-commission { font-size:12px; color:var(--error); font-weight:600; }
+.ride-tag { font-size:11px; font-weight:700; padding:3px 9px; border-radius:6px; background:#F1F5F9; color:var(--text-muted); }
+
+.history-empty { text-align:center; padding:50px 20px; color:var(--text-muted); }
+.history-empty i { font-size:40px; margin-bottom:12px; opacity:0.3; display:block; }
+.history-empty p { font-size:14px; font-weight:600; }
+
+.spinner { width:36px; height:36px; border:3px solid var(--primary-light); border-top:3px solid var(--primary); border-radius:50%; animation:spin 0.8s linear infinite; margin:30px auto; }
+@keyframes spin { to{transform:rotate(360deg);} }
+
+#toast {
+position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(80px);
+background:var(--secondary); color:#fff; padding:12px 20px; border-radius:50px;
+font-size:13px; font-weight:600; z-index:9000; box-shadow:var(--shadow-lg);
+transition:transform 0.35s cubic-bezier(0.34,1.4,0.64,1); white-space:nowrap;
+display:flex; align-items:center; gap:8px;
+}
+#toast.show { transform:translateX(-50%) translateY(0); }
+#toast.success i { color:var(--primary); }
+#toast.error i { color:var(--error); }
+#toast.info i { color:var(--info); }
+
+.msg-box {
+padding:16px 20px; margin:0; border-radius:var(--radius);
+text-align:center; font-weight:600; font-size:14px;
+background:#FEF2F2; color:var(--error); border:1px solid rgba(239,68,68,0.2);
+}
+</style>
+
+</head>
+<body>
+
+<div id="loadingScreen">
+    <div class="loading-logo">R</div>
+    <div class="loading-text">Captain Profile Loading...</div>
+</div>
+
+<header class="captain-header">
+    <div class="header-left">
+        <a href="captain-dashboard.html" class="back-btn"><i class="fas fa-arrow-left"></i></a>
+        <div>
+            <div class="header-title">Captain Profile</div>
+            <div class="header-subtitle" id="headerSubtitle">Raftaroo Captain</div>
+        </div>
+    </div>
+    <button class="logout-btn" id="logoutBtn"><i class="fas fa-sign-out-alt"></i> Logout</button>
+</header>
+
+<div id="authError" class="msg-box hidden" style="margin:20px;">
+    <i class="fas fa-exclamation-triangle"></i> Captain account not found.
+    <a href="index.html" style="color:var(--info)">Login Again</a>
+</div>
+
+<div id="mainContent" class="hidden">
+
+<nav class="captain-tabs">
+    <button class="tab-button active" data-tab="profile"><i class="fas fa-user"></i> Profile</button>
+    <button class="tab-button" data-tab="topup"><i class="fas fa-heart" style="color:#e74c3c;"></i> Support</button>
+
+    <button class="tab-button" data-tab="earnings"><i class="fas fa-trophy"></i> Earnings</button>
+    <button class="tab-button" data-tab="history"><i class="fas fa-clock-rotate-left"></i> History</button>
+</nav>
+
+<!-- ══════ PROFILE TAB ══════ -->
+<div id="tab-profile" class="page-content">
+    <div class="profile-hero">
+        <div class="captain-card">
+            <div class="captain-card-top">
+                <div class="avatar-ring">
+                    <div class="online-dot"></div>
+                    <span id="avatarInitial">R</span>
+                </div>
+                <div class="captain-info">
+                    <div class="captain-name" id="captainFullName">Loading...</div>
+                    <div class="captain-phone" id="captainPhone">—</div>
+                    <span class="status-badge" id="captainStatusBadge">Active</span>
+                </div>
+            </div>
+            <div class="wallet-display">
+                <div class="wallet-info">
+                    <div class="wallet-label">Wallet Balance</div>
+                    <div class="wallet-amount">Rs. <span id="walletBalanceMain">0</span></div>
+                    <div class="wallet-sub">Aap ki poori earning</div>
+                </div>
+                <button class="topup-btn" onclick="switchTab('topup')">
+                    <i class="fas fa-heart"></i> Support ❤️
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="stats-row">
+        <div class="stat-card">
+            <div class="stat-icon">🏍️</div>
+            <div class="stat-val" id="totalRidesProfile">—</div>
+            <div class="stat-label">Total Rides</div>
+        </div>
+        <div class="stat-card">
+            <div class="stat-icon">⭐</div>
+            <div class="stat-val" id="ratingProfile">—</div>
+            <div class="stat-label">Rating</div>
+        </div>
+
+    </div>
+
+    <div class="section-card">
+        <div class="section-title"><i class="fas fa-id-card"></i> Captain Details</div>
+        <div style="display:grid;gap:12px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);">
+                <span style="font-size:13px;color:var(--text-muted);font-weight:600;">Full Name</span>
+                <span style="font-size:13px;font-weight:700;" id="detailName">—</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);">
+                <span style="font-size:13px;color:var(--text-muted);font-weight:600;">Phone</span>
+                <span style="font-size:13px;font-weight:700;" id="detailPhone">—</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);">
+                <span style="font-size:13px;color:var(--text-muted);font-weight:600;">Vehicle</span>
+                <span style="font-size:13px;font-weight:700;" id="detailVehicle">—</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;border-bottom:1px solid var(--border);">
+                <span style="font-size:13px;color:var(--text-muted);font-weight:600;">Plate No.</span>
+                <span style="font-size:13px;font-weight:700;" id="detailPlate">—</span>
+            </div>
+            <div style="display:flex;justify-content:space-between;align-items:center;padding:10px 0;">
+                <span style="font-size:13px;color:var(--text-muted);font-weight:600;">Account Status</span>
+                <span style="font-size:13px;font-weight:700;" id="detailStatus">—</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="section-card">
+        <div class="section-title"><i class="fas fa-grid-2"></i> Quick Access</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+            <button onclick="switchTab('topup')" style="background:#FFF0F0;border:1px solid rgba(231,76,60,0.2);border-radius:var(--radius-sm);padding:14px;text-align:center;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;">
+                <div style="font-size:22px;margin-bottom:6px;">❤️</div>
+                <div style="font-size:13px;font-weight:700;color:#c0392b;">Support Raftaroo</div>
+                <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Platform ko support karein</div>
+            </button>
+
+            <button onclick="switchTab('earnings')" style="background:#FFFDE7;border:1px solid rgba(245,158,11,0.2);border-radius:var(--radius-sm);padding:14px;text-align:center;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;">
+                <div style="font-size:22px;margin-bottom:6px;">🎉</div>
+                <div style="font-size:13px;font-weight:700;color:#92400E;">My Earnings</div>
+                <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Zero commission!</div>
+            </button>
+            <button onclick="switchTab('history')" style="background:#F5F3FF;border:1px solid rgba(139,92,246,0.2);border-radius:var(--radius-sm);padding:14px;text-align:center;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;">
+                <div style="font-size:22px;margin-bottom:6px;">📋</div>
+                <div style="font-size:13px;font-weight:700;color:#6D28D9;">Ride History</div>
+                <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">All your rides</div>
+            </button>
+        </div>
+    </div>
+
+</div><!-- ══ END tab-profile ══ -->
+
+<!-- ══════ SUPPORT TAB ══════ -->
+<div id="tab-topup" class="page-content hidden">
+
+    <!-- Support banner -->
+    <div style="background:linear-gradient(135deg,#00A040,#00C853);border-radius:var(--radius-lg);padding:20px;text-align:center;margin-bottom:14px;box-shadow:0 6px 20px rgba(0,200,83,0.3);position:relative;overflow:hidden;">
+        <div style="position:absolute;top:-20px;right:-20px;width:80px;height:80px;background:rgba(255,255,255,0.08);border-radius:50%;"></div>
+        <div style="font-size:32px;margin-bottom:6px;"></div>
+        <div style="font-size:18px;font-weight:800;color:#fff;margin-bottom:4px;">Support Raftaroo</div>
+        <div style="font-size:12px;color:rgba(255,255,255,0.75);line-height:1.5;">Raftaroo bilkul commission-free hai.<br>Agar aap ko pasand hai toh donate kar ke support karein!</div>
+    </div>
+
+    <div class="section-card">
+        <div class="section-title"><i class="fas fa-building-columns"></i> Donate Via Bank / JazzCash / EasyPaisa</div>
+        <div class="account-info-box">
+            <div class="account-row">
+                <div>
+                    <div class="account-label">JazzCash / EasyPaisa</div>
+                    <div class="account-value">03232477490</div>
+                </div>
+                <button class="copy-mini" onclick="copyText('03232477490','Number copied!')">
+                    <i class="fas fa-copy"></i> Copy
+                </button>
+            </div>
+            <div style="border-top:1px solid rgba(0,0,0,0.08);margin:8px 0;padding-top:8px;">
+                <div class="account-label">Account Name</div>
+                <div style="font-size:14px;font-weight:700;color:var(--text-main);margin-top:3px;">Raftaroo Support</div>
+            </div>
+        </div>
+        <div style="background:#F0FFF4;border:1px solid rgba(0,200,83,0.2);border-radius:var(--radius-sm);padding:11px 13px;display:flex;gap:8px;align-items:flex-start;margin-bottom:14px;">
+            <i class="fas fa-heart" style="color:var(--primary);margin-top:2px;flex-shrink:0;"></i>
+            <span style="font-size:12px;color:var(--primary-dark);font-weight:600;">Ye poori tarah optional hai koi minimum amount nahi. Jitna dil kare utna donate karein.</span>
+        </div>
+    </div>
+
+    <div class="section-card">
+        <div class="section-title"><i class="fas fa-file-invoice"></i> Transaction Proof Bhejein</div>
+        <input type="number" class="input-field" id="depositAmount" placeholder="Donate Amount (Rs.) — Optional minimum" min="1">
+        <input type="text" class="input-field" id="depositTxnId" placeholder="Transaction ID / Sender Number (Optional)">
+        <button class="upload-btn" id="uploadFileButton">
+            <i class="fas fa-cloud-arrow-up"></i> Upload Transaction Screenshot
+        </button>
+        <input type="file" id="depositScreenshot" accept="image/*" style="display:none;">
+        <div class="upload-status" id="uploadStatus">No screenshot selected.</div>
+        <button class="btn-primary" id="submitDepositBtn">
+            <i class="fas fa-heart"></i> Support Bhejein
+        </button>
+    </div>
+
+    <!-- Where money goes — neeche form ke baad -->
+    <div class="section-card">
+        <div class="section-title"><i class="fas fa-chart-pie" style="color:var(--primary);"></i> Aap Ka Donation Kahan Jata Hai?</div>
+        <div style="display:flex;flex-direction:column;gap:10px;">
+
+            <div style="display:flex;align-items:center;gap:12px;padding:12px;background:#EFF6FF;border-radius:var(--radius-sm);border:1px solid rgba(59,130,246,0.15);">
+                <div style="width:42px;height:42px;background:#3B82F6;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;">📢</div>
+                <div style="flex:1;">
+                    <div style="font-size:13px;font-weight:800;color:#1e40af;">Marketing & Growth</div>
+                    <div style="font-size:11px;color:#3B82F6;font-weight:600;margin-bottom:3px;">~35%</div>
+                    <div style="font-size:11px;color:#64748B;line-height:1.4;">Naye riders aur captains tak Raftaroo ki awaz pahunchana ads, social media, aur campaigns.</div>
+                </div>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:12px;padding:12px;background:#F0FFF4;border-radius:var(--radius-sm);border:1px solid rgba(0,200,83,0.15);">
+                <div style="width:42px;height:42px;background:#00C853;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;">⚙️</div>
+                <div style="flex:1;">
+                    <div style="font-size:13px;font-weight:800;color:#00A040;">App Development</div>
+                    <div style="font-size:11px;color:#00C853;font-weight:600;margin-bottom:3px;">~30%</div>
+                    <div style="font-size:11px;color:#64748B;line-height:1.4;">Naye features, bug fixes, faster app, aur behtar experience sab aap ke liye.</div>
+                </div>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:12px;padding:12px;background:#FFFDE7;border-radius:var(--radius-sm);border:1px solid rgba(245,158,11,0.15);">
+                <div style="width:42px;height:42px;background:#F59E0B;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;">🏢</div>
+                <div style="flex:1;">
+                    <div style="font-size:13px;font-weight:800;color:#92400E;">Operations & Management</div>
+                    <div style="font-size:11px;color:#F59E0B;font-weight:600;margin-bottom:3px;">~20%</div>
+                    <div style="font-size:11px;color:#64748B;line-height:1.4;">Server costs, customer support, aur rozmarra ka platform chalana.</div>
+                </div>
+            </div>
+
+            <div style="display:flex;align-items:center;gap:12px;padding:12px;background:#F5F3FF;border-radius:var(--radius-sm);border:1px solid rgba(139,92,246,0.15);">
+                <div style="width:42px;height:42px;background:#8B5CF6;border-radius:10px;display:flex;align-items:center;justify-content:center;flex-shrink:0;font-size:18px;">👥</div>
+                <div style="flex:1;">
+                    <div style="font-size:13px;font-weight:800;color:#5B21B6;">Team Salaries</div>
+                    <div style="font-size:11px;color:#8B5CF6;font-weight:600;margin-bottom:3px;">~15%</div>
+                    <div style="font-size:11px;color:#64748B;line-height:1.4;">Woh log jo din raat Raftaroo ko behtar banate hain — aap ke liye kaam karte hain.</div>
+                </div>
+            </div>
+
+        </div>
+        <div style="margin-top:12px;padding:10px 14px;background:#F0FFF4;border-radius:var(--radius-sm);border:1px solid rgba(0,200,83,0.2);text-align:center;">
+            <span style="font-size:12px;color:var(--primary-dark);font-weight:600;">💡 Har rupya sirf Raftaroo ko behtar banane mein lagta hai koi personal profit nahi.</span>
+        </div>
+    </div>
+
+</div>
+
+
+
+<!-- ══════ EARNINGS TAB ══════ -->
+<div id="tab-earnings" class="page-content hidden">
+    <div class="wallet-hero">
+        <div class="wallet-hero-label">💰 Current Wallet Balance</div>
+        <div class="wallet-hero-amount">Rs. <span id="walletBalanceEarnings">0</span></div>
+        <div class="wallet-hero-sub">Real-time updated</div>
+    </div>
+
+    <div class="earnings-grid">
+        <div class="earn-card" style="grid-column:1/-1;background:var(--primary-light);border-color:rgba(0,200,83,0.2);">
+            <div class="ec-label" style="color:var(--primary-dark);">🎉 Total Kamai (Poori Aap Ki!)</div>
+            <div class="ec-value" style="color:var(--primary-dark);font-size:26px;">Rs. <span id="totalNetEarnings">—</span></div>
+        </div>
+        <div class="earn-card">
+            <div class="ec-label">🏍️ Completed Rides</div>
+            <div class="ec-value"><span id="totalGrossEarnings">—</span></div>
+        </div>
+        <div class="earn-card">
+            <div class="ec-label">❌ Cancelled Rides</div>
+            <div class="ec-value" style="color:var(--error);"><span id="totalCancelledEarnings">—</span></div>
+        </div>
+        <div class="earn-card">
+            <div class="ec-label">📊 Avg. Per Ride</div>
+            <div class="ec-value">Rs. <span id="avgPerRide">—</span></div>
+        </div>
+        <div class="earn-card">
+            <div class="ec-label">📅 This Week</div>
+            <div class="ec-value" style="color:var(--info);">Rs. <span id="weekEarnings">—</span></div>
+        </div>
+    </div>
+
+    <div class="section-card" style="text-align:center;padding:20px;">
+        <div style="font-size:40px;margin-bottom:8px;">🎉</div>
+        <div style="font-size:18px;font-weight:800;color:var(--primary-dark);">Zero Commission!</div>
+        <div style="font-size:14px;color:var(--text-muted);margin-top:6px;">Raftaroo par koi commission nahi aap ki poori earning aap ki hai!</div>
+    </div>
+</div>
+
+<!-- ══════ HISTORY TAB ══════ -->
+<div id="tab-history" class="page-content hidden">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;">
+        <div style="font-size:15px;font-weight:800;">All Rides</div>
+        <div style="font-size:13px;font-weight:700;color:var(--success);" id="completedCountBadge">— Completed</div>
+    </div>
+    <div class="ride-filter-row">
+        <button class="filter-chip active" data-filter="all">All</button>
+        <button class="filter-chip" data-filter="completed">Completed</button>
+        <button class="filter-chip" data-filter="cancelled">Cancelled</button>
+        <button class="filter-chip" data-filter="pending">Pending</button>
+    </div>
+    <div id="rideHistoryLoading" style="text-align:center;padding:20px;"><div class="spinner"></div></div>
+    <div id="rideHistoryList"></div>
+</div>
+
+</div>
+
+<div id="toast"><i class="fas fa-check-circle"></i> <span id="toastMsg">Done!</span></div>
+
+<script type="module">
+import { initializeApp }    from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+import { getDatabase, ref, get, update, set, push, onValue }
+                             from "https://www.gstatic.com/firebasejs/12.8.0/firebase-database.js";
+import { getAuth, onAuthStateChanged, signOut }
+                             from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+
+const firebaseConfig = {
+    apiKey:            "AIzaSyBBS7jGzuVlTIIeN9VFBxpwHkNf-mIRzDo",
+    authDomain:        "raftaroo-9ce8d.firebaseapp.com",
+    databaseURL:       "https://raftaroo-9ce8d-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId:         "raftaroo-9ce8d",
+    storageBucket:     "raftaroo-9ce8d.firebasestorage.app",
+    messagingSenderId: "773738074182",
+    appId:             "1:773738074182:web:b7a873959c7ab8edc0ba47",
+    measurementId:     "G-EM1R4LGZTD"
+};
+
+const app  = initializeApp(firebaseConfig);
+const db   = getDatabase(app);
+const auth = getAuth(app);
+
+const RIDES_TARGET    = 85;
+
+// Statuses saved by captain-active-ride.html when ride finishes
+const DONE_STATUSES = new Set(['completed','Completed','done','Done','finished','Finished','delivered','Delivered']);
+const CANCEL_KW     = ['cancel','reject'];
+
+let currentUser  = null;
+let captainData  = {};
+let allMyRides   = [];       // single source of truth – loaded once at auth
+let currentFilter = 'all';
+
+// ── tiny helpers ──────────────────────────────────────────────────────────
+const isDone   = s => DONE_STATUSES.has(s);
+const isCancel = s => CANCEL_KW.some(kw => (s||'').toLowerCase().includes(kw));
+
+function showToast(msg, type='success') {
+    const t = document.getElementById('toast');
+    document.getElementById('toastMsg').textContent = msg;
+    t.className = type;
+    t.querySelector('i').className =
+        type==='error' ? 'fas fa-circle-xmark' :
+        type==='info'  ? 'fas fa-circle-info'  : 'fas fa-check-circle';
+    t.classList.add('show');
+    setTimeout(()=>t.classList.remove('show'), 3000);
+}
+
+function isApproved(d) {
+    return d.isApproved===true || d.status==='Approved' ||
+           (d.status!=='Pending' && d.status!=='Rejected');
+}
+
+function getInitials(name) {
+    if (!name) return 'C';
+    return name.split(' ').map(w=>w[0]).join('').substring(0,2).toUpperCase();
+}
+
+function getStartOfWeekMs() {
+    const now=new Date(), day=now.getDay();
+    const diff=now.getDate()-day+(day===0?-6:1);
+    const mon=new Date(now); mon.setDate(diff); mon.setHours(0,0,0,0);
+    return mon.getTime();
+}
+
+// ── CORE: scan ALL /requests for this captain ─────────────────────────────
+// captain-active-ride.html sets  riderId = currentCaptain.uid  (via sendOffer → update riders/uid + requests/id)
+// Some rides may also have captainId. We check all three fields.
+async function fetchAllMyRides(uid) {
+    try {
+        const snap = await get(ref(db,'requests'));
+        if (!snap.exists()) return [];
+        const out = [];
+        snap.forEach(ch => {
+            const r = ch.val();
+            if (r.riderId===uid || r.captainId===uid || r.riderUid===uid)
+                out.push({ id:ch.key, ...r });
+        });
+        // Sort newest first (statusUpdateTime is set on complete; fallback chain)
+        out.sort((a,b)=>{
+            const ta=new Date(b.statusUpdateTime||b.requestedAt||b.createdAt||b.acceptedAt||0).getTime();
+            const tb=new Date(a.statusUpdateTime||a.requestedAt||a.createdAt||a.acceptedAt||0).getTime();
+            return ta-tb;
+        });
+        return out;
+    } catch(e) { console.error('fetchAllMyRides:',e); return []; }
+}
+
+// ── window-exposed ────────────────────────────────────────────────────────
+window.copyText = (text,msg) =>
+    navigator.clipboard.writeText(text)
+        .then(()=>showToast(msg||'Copied!','success'))
+        .catch(()=>showToast('Copy failed','error'));
+
+window.switchTab = tabName => {
+    document.querySelectorAll('.tab-button').forEach(b=>b.classList.remove('active'));
+    document.querySelectorAll('[id^="tab-"]').forEach(p=>p.classList.add('hidden'));
+    const btn=document.querySelector(`.tab-button[data-tab="${tabName}"]`);
+    if(btn) btn.classList.add('active');
+    const panel=document.getElementById(`tab-${tabName}`);
+    if(panel) panel.classList.remove('hidden');
+};
+
+
+// ── AUTH ──────────────────────────────────────────────────────────────────
+onAuthStateChanged(auth, async user=>{
+    if(!user){ window.location.href='index.html'; return; }
+    currentUser=user;
+
+    const snap=await get(ref(db,`riders/${user.uid}`));
+    if(!snap.exists()){
+        document.getElementById('loadingScreen').style.opacity='0';
+        setTimeout(()=>document.getElementById('loadingScreen').style.display='none',500);
+        document.getElementById('authError').classList.remove('hidden');
+        return;
+    }
+    captainData=snap.val();
+    // ── single full scan – powers everything ──
+    allMyRides=await fetchAllMyRides(user.uid);
+
+    // Hide loading
+    document.getElementById('loadingScreen').style.opacity='0';
+    setTimeout(()=>document.getElementById('loadingScreen').style.display='none',500);
+    document.getElementById('mainContent').classList.remove('hidden');
+
+    populateProfile();
+    setupWalletListener();
+    setupTabs();
+    setupLogout();
+    setupTopup();
+    setupEarnings();
+    setupHistory();
+});
+
+// ── PROFILE ───────────────────────────────────────────────────────────────
+function populateProfile(){
+    const name    = captainData.fullName||captainData.name||'Captain';
+    const phone   = captainData.mobileNumber||captainData.phone||captainData.phoneNumber||currentUser.email||'—';
+    const vehicle = captainData.vehicleType||captainData.vehicle||captainData.vehicleName||'—';
+    const plate   = captainData.vehicleNumber||captainData.vehiclePlate||captainData.plateNumber||captainData.plate||'—';
+
+    document.getElementById('captainFullName').textContent = name;
+    document.getElementById('captainPhone').textContent    = phone;
+    document.getElementById('avatarInitial').textContent   = getInitials(name);
+    document.getElementById('headerSubtitle').textContent  = name;
+    document.getElementById('detailName').textContent      = name;
+    document.getElementById('detailPhone').textContent     = phone;
+    document.getElementById('detailVehicle').textContent   = vehicle;
+    document.getElementById('detailPlate').textContent     = plate;
+
+    const statusEl  = document.getElementById('captainStatusBadge');
+    const detailEl  = document.getElementById('detailStatus');
+    const st        = captainData.status||'Pending';
+    if(isApproved(captainData)){
+        statusEl.textContent='✓ Active'; statusEl.className='status-badge';
+        detailEl.textContent='Approved ✓'; detailEl.style.color='var(--success)';
+    } else if(st==='Rejected'){
+        statusEl.textContent='✕ Rejected'; statusEl.className='status-badge rejected';
+        detailEl.textContent='Rejected'; detailEl.style.color='var(--error)';
+    } else {
+        statusEl.textContent='⏳ Pending'; statusEl.className='status-badge pending';
+        detailEl.textContent='Pending Approval'; detailEl.style.color='var(--warning)';
+    }
+
+    // Total completed rides
+    const completedRides = allMyRides.filter(r=>isDone(r.status));
+    document.getElementById('totalRidesProfile').textContent = completedRides.length;
+
+    // Rating — captain-active-ride.html saves field: customerRating
+    const ratedRides = completedRides.filter(r=>{
+        const v=r.customerRating||r.rating||r.ratingGiven;
+        return v && parseInt(v)>0;
+    });
+    if(ratedRides.length>0){
+        const avg=ratedRides.reduce((s,r)=>s+parseFloat(r.customerRating||r.rating||r.ratingGiven||0),0)/ratedRides.length;
+        document.getElementById('ratingProfile').textContent=avg.toFixed(1)+' ★';
+    } else {
+        document.getElementById('ratingProfile').textContent='—';
+    }
+}
+
+// ── WALLET LISTENER ───────────────────────────────────────────────────────
+function setupWalletListener(){
+    onValue(ref(db,`riders/${currentUser.uid}/walletBalance`),snap=>{
+        const bal=(snap.val()||0).toLocaleString();
+        document.getElementById('walletBalanceMain').textContent     = bal;
+        document.getElementById('walletBalanceEarnings').textContent = bal;
+        captainData.walletBalance=snap.val()||0;
+    });
+}
+
+// ── TABS ──────────────────────────────────────────────────────────────────
+function setupTabs(){
+    document.querySelectorAll('.tab-button').forEach(btn=>
+        btn.addEventListener('click',()=>window.switchTab(btn.dataset.tab)));
+}
+
+// ── LOGOUT ────────────────────────────────────────────────────────────────
+function setupLogout(){
+    document.getElementById('logoutBtn').onclick=async()=>{
+        if(confirm('Logout karna chahte hain?')){ await signOut(auth); window.location.href='index.html'; }
+    };
+}
+
+// ── TOP-UP ────────────────────────────────────────────────────────────────
+function setupTopup(){
+    document.getElementById('uploadFileButton').onclick=()=>
+        document.getElementById('depositScreenshot').click();
+
+    document.getElementById('depositScreenshot').onchange=e=>{
+        const f=e.target.files, st=document.getElementById('uploadStatus'),
+              btn=document.getElementById('uploadFileButton');
+        if(f.length){
+            st.textContent=`✓ ${f[0].name}`; st.style.color='var(--success)';
+            btn.classList.add('file-selected');
+            btn.innerHTML=`<i class="fas fa-check-circle"></i> Screenshot Selected`;
+        } else {
+            st.textContent='No screenshot selected.'; st.style.color='var(--text-muted)';
+            btn.classList.remove('file-selected');
+            btn.innerHTML=`<i class="fas fa-cloud-arrow-up"></i> Upload Transaction Screenshot`;
+        }
+    };
+    document.getElementById('submitDepositBtn').onclick=submitDeposit;
+}
+
+async function submitDeposit(){
+    const amount=document.getElementById('depositAmount').value;
+    const txnId=document.getElementById('depositTxnId').value;
+    const screenshot=document.getElementById('depositScreenshot').files;
+    const btn=document.getElementById('submitDepositBtn');
+
+    if(!amount||parseFloat(amount)<1){ showToast('Amount required','error'); return; }
+    if(!screenshot||screenshot.length===0){ showToast('Please upload a transaction screenshot','error'); return; }
+
+    btn.disabled=true; btn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Submitting...';
+    try{
+        await set(push(ref(db,'depositRequests')),{
+            captainId:   currentUser.uid,
+            captainName: captainData.fullName||captainData.name||'Captain',
+            amount:      parseFloat(amount), txnId:txnId||'',
+            fileName:    screenshot[0].name,
+            requestedAt: new Date().toISOString(),
+            status:'Pending', userType:'captain'
+        });
+        document.getElementById('depositAmount').value='';
+        document.getElementById('depositTxnId').value='';
+        document.getElementById('depositScreenshot').value=null;
+        document.getElementById('uploadStatus').textContent='No screenshot selected.';
+        document.getElementById('uploadStatus').style.color='var(--text-muted)';
+        document.getElementById('uploadFileButton').classList.remove('file-selected');
+        document.getElementById('uploadFileButton').innerHTML=`<i class="fas fa-cloud-arrow-up"></i> Upload Transaction Screenshot`;
+        showToast('Deposit submitted! Admin will verify soon.','success');
+        setTimeout(()=>window.switchTab('profile'),2000);
+    } catch(e){ showToast('Submission failed. Try again.','error'); console.error(e); }
+    finally{ btn.disabled=false; btn.innerHTML='<i class="fas fa-paper-plane"></i> Submit for Approval'; }
+}
+
+
+// ── EARNINGS ─────────────────────────────────────────────────────────────
+async function setupEarnings(){
+    let gross=0, totalRideCount=0, cancelledCount=0, weekEarn=0;
+    const weekStart=getStartOfWeekMs();
+
+    allMyRides.forEach(r=>{
+        if(isDone(r.status)){
+            const fare=parseFloat(r.fare||0);
+            gross+=fare;
+            totalRideCount++;
+            // This week
+            const rideTime=new Date(r.statusUpdateTime||r.requestedAt||r.createdAt||0).getTime();
+            if(rideTime>=weekStart) weekEarn+=fare;
+        } else if(isCancel(r.status)){
+            cancelledCount++;
+        }
+    });
+
+    const avg = totalRideCount>0 ? Math.round(gross/totalRideCount) : 0;
+
+    document.getElementById('totalGrossEarnings').textContent  = totalRideCount;
+    document.getElementById('totalCancelledEarnings').textContent = cancelledCount;
+    document.getElementById('totalNetEarnings').textContent    = Math.round(gross).toLocaleString();
+    document.getElementById('avgPerRide').textContent          = avg.toLocaleString();
+    document.getElementById('weekEarnings').textContent        = Math.round(weekEarn).toLocaleString();
+}
+
+// ── HISTORY ───────────────────────────────────────────────────────────────
+function setupHistory(){
+    document.getElementById('rideHistoryLoading').style.display='none';
+
+    const completedCount=allMyRides.filter(r=>isDone(r.status)).length;
+    document.getElementById('completedCountBadge').textContent=`${completedCount} Completed`;
+    // Keep total rides stat in sync
+    document.getElementById('totalRidesProfile').textContent=completedCount;
+
+    renderHistory('all');
+
+    document.querySelectorAll('.filter-chip').forEach(chip=>{
+        chip.addEventListener('click',()=>{
+            document.querySelectorAll('.filter-chip').forEach(c=>c.classList.remove('active'));
+            chip.classList.add('active');
+            currentFilter=chip.dataset.filter;
+            renderHistory(currentFilter);
+        });
+    });
+}
+
+function renderHistory(filter){
+    const list=document.getElementById('rideHistoryList');
+    list.innerHTML='';
+
+    let rides=[...allMyRides];
+    if(filter==='completed') rides=rides.filter(r=>isDone(r.status));
+    else if(filter==='cancelled') rides=rides.filter(r=>isCancel(r.status));
+    else if(filter==='pending')   rides=rides.filter(r=>!isDone(r.status)&&!isCancel(r.status));
+
+    if(rides.length===0){
+        list.innerHTML=`<div class="history-empty"><i class="fas fa-inbox"></i><p>Koi ride nahi mili</p></div>`;
+        return;
+    }
+
+    rides.forEach(ride=>{
+        const status=ride.status||'unknown';
+        const isComp=isDone(status), isCanc=isCancel(status);
+        const statusLabel=isComp?'Completed':isCanc?'Cancelled':status;
+        const chipClass=isComp?'':isCanc?'cancelled':'pending';
+        const cardClass=isComp?'':isCanc?'cancelled':'inprogress';
+
+        // Best timestamp (statusUpdateTime set on completion by active-ride.html)
+        const rawDate=ride.statusUpdateTime||ride.requestedAt||ride.createdAt||ride.acceptedAt||null;
+        const dateStr=rawDate
+            ? new Date(rawDate).toLocaleDateString('en-US',{day:'numeric',month:'short',year:'numeric',hour:'2-digit',minute:'2-digit'})
+            : '—';
+
+        const pickupAddr=(ride.pickup?.address||'N/A').substring(0,55);
+        const dropAddr  =(ride.destination?.address||'N/A').substring(0,55);
+
+        const fare=parseFloat(ride.fare||0);
+
+        // Rating saved as customerRating in captain-active-ride.html
+        const ratingVal=ride.customerRating||ride.rating||ride.ratingGiven;
+        const ratingStr=ratingVal&&parseInt(ratingVal)>0?` · ⭐ ${ratingVal}`:'';
+
+        const fareSection=isComp
+            ?`<div>
+                <div class="ride-fare">Rs. ${fare}</div>
+                <div class="ride-commission" style="color:var(--primary);">Poori aap ki${ratingStr}</div>
+              </div>`
+            :`<div class="ride-tag">${statusLabel}</div>`;
+
+        const el=document.createElement('div');
+        el.className=`ride-card ${cardClass}`;
+        el.innerHTML=`
+            <div class="ride-card-head">
+                <div class="ride-date">${dateStr}</div>
+                <span class="ride-status-chip ${chipClass}">${statusLabel}</span>
+            </div>
+            <div class="ride-card-detail pickup">
+                <i class="fas fa-circle-dot"></i>
+                <span>${pickupAddr}${(ride.pickup?.address||'').length>55?'...':''}</span>
+            </div>
+            <div class="ride-card-detail dropoff">
+                <i class="fas fa-location-dot"></i>
+                <span>${dropAddr}${(ride.destination?.address||'').length>55?'...':''}</span>
+            </div>
+            <div class="ride-card-foot">
+                ${fareSection}
+                ${isComp?`<span class="ride-tag"><i class="fas fa-road"></i> ${ride.distance||'—'} km</span>`:''}
+            </div>`;
+        list.appendChild(el);
+    });
+}
+</script>
+<!-- ═══════════════════════════════════════════════════════════
+     RAFTAROO PWA JS SNIPPET v3.0
+     </body> se pehle paste karein (har HTML page mein)
+     ═══════════════════════════════════════════════════════════ -->
+
+<!-- Install Banner HTML (body ke andar, pehli line) -->
+<div id="raftaroo-install-banner" style="
+  display:none;
+  position:fixed;
+  bottom:20px;
+  left:16px;
+  right:16px;
+  background:linear-gradient(135deg,#00C853 0%,#00E676 100%);
+  padding:16px 18px;
+  border-radius:18px;
+  z-index:9999;
+  box-shadow:0 8px 32px rgba(0,200,83,0.45);
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  animation:raftaroo-banner-in 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+">
+  <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0;">
+    <div style="width:42px;height:42px;background:rgba(255,255,255,0.2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🏍️</div>
+    <div style="min-width:0;">
+      <p style="color:#fff;font-weight:800;margin:0;font-size:14px;line-height:1.2;">Raftaroo App Install Karein!</p>
+      <p style="color:rgba(255,255,255,0.75);margin:2px 0 0;font-size:11px;">Fast booking, offline access & notifications</p>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px;flex-shrink:0;">
+    <button id="raftaroo-install-btn" style="background:#fff;color:#00A040;border:none;padding:9px 16px;border-radius:10px;font-weight:800;font-size:13px;cursor:pointer;font-family:inherit;white-space:nowrap;">Install</button>
+    <button id="raftaroo-close-btn" style="background:rgba(255,255,255,0.2);border:none;padding:9px 12px;border-radius:10px;color:#fff;font-weight:700;cursor:pointer;font-size:14px;line-height:1;">✕</button>
+  </div>
+</div>
+
+<style>
+@keyframes raftaroo-banner-in {
+  from { transform: translateY(100px); opacity: 0; }
+  to   { transform: translateY(0);     opacity: 1; }
+}
+</style>
+
+<script>
+(function() {
+  'use strict';
+
+  const SW_PATH    = '/sw.js';
+  const SW_SCOPE   = '/';
+  const DISMISSED_KEY = 'raftaroo_install_dismissed_v3';
+  const banner = document.getElementById('raftaroo-install-banner');
+  let deferredPrompt = null;
+  let swRegistration = null;
+
+  // ── 1. Register Service Worker ──────────────────────────────
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker
+        .register(SW_PATH, { scope: SW_SCOPE, updateViaCache: 'none' })
+        .then(reg => {
+          swRegistration = reg;
+          console.log('[Raftaroo PWA] SW registered:', reg.scope);
+
+          // Check for updates every 60 seconds when app is visible
+          setInterval(() => {
+            if (!document.hidden) reg.update();
+          }, 60000);
+
+          // Handle SW updates — notify user
+          reg.addEventListener('updatefound', () => {
+            const newWorker = reg.installing;
+            newWorker?.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                showUpdateToast();
+              }
+            });
+          });
+        })
+        .catch(err => console.warn('[Raftaroo PWA] SW registration failed:', err));
+
+      // Listen for messages from SW
+      navigator.serviceWorker.addEventListener('message', handleSWMessage);
+    });
+  }
+
+  // ── 2. Install Prompt (beforeinstallprompt) ──────────────────
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+      || window.navigator.standalone === true;
+    const wasDismissed = sessionStorage.getItem(DISMISSED_KEY);
+
+    if (!isStandalone && !wasDismissed && banner) {
+      // Show after short delay for better UX
+      setTimeout(() => {
+        banner.style.display = 'flex';
+      }, 3000);
+    }
+  });
+
+  // ── 3. Install button click ──────────────────────────────────
+  document.getElementById('raftaroo-install-btn')?.addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log('[Raftaroo PWA] Install outcome:', outcome);
+
+    if (outcome === 'accepted') {
+      hideBanner();
+      // Track install event
+      if (typeof gtag !== 'undefined') {
+        gtag('event', 'pwa_install', { event_category: 'PWA', event_label: 'installed' });
+      }
+    }
+    deferredPrompt = null;
+  });
+
+  // ── 4. Close button ─────────────────────────────────────────
+  document.getElementById('raftaroo-close-btn')?.addEventListener('click', () => {
+    hideBanner();
+    sessionStorage.setItem(DISMISSED_KEY, '1');
+  });
+
+  // ── 5. App installed callback ────────────────────────────────
+  window.addEventListener('appinstalled', () => {
+    hideBanner();
+    deferredPrompt = null;
+    console.log('[Raftaroo PWA] App installed successfully! 🎉');
+    if (typeof gtag !== 'undefined') {
+      gtag('event', 'pwa_install_complete', { event_category: 'PWA' });
+    }
+  });
+
+  // ── 6. Update toast notification ────────────────────────────
+  function showUpdateToast() {
+    const toast = document.createElement('div');
+    toast.id = 'raftaroo-update-toast';
+    toast.innerHTML = `
+      <span>🆕 Raftaroo ka naya version available hai!</span>
+      <button onclick="window.location.reload()" style="
+        background:#00C853;color:#0A0F1E;border:none;
+        padding:7px 14px;border-radius:8px;font-weight:700;
+        font-size:12px;cursor:pointer;font-family:inherit;margin-left:10px;">
+        Update
+      </button>
+    `;
+    Object.assign(toast.style, {
+      position: 'fixed',
+      top: '70px',
+      left: '16px',
+      right: '16px',
+      background: '#0A0F1E',
+      color: '#fff',
+      padding: '14px 18px',
+      borderRadius: '12px',
+      zIndex: '9998',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      boxShadow: '0 8px 30px rgba(0,0,0,0.4)',
+      fontSize: '13px',
+      fontWeight: '600',
+      border: '1px solid rgba(0,200,83,0.3)',
+      animation: 'raftaroo-banner-in 0.3s ease both'
+    });
+    document.body.appendChild(toast);
+
+    // Auto hide after 10 seconds
+    setTimeout(() => toast.remove(), 10000);
+  }
+
+  // ── 7. Handle messages from SW ──────────────────────────────
+  function handleSWMessage(event) {
+    const { type, version } = event.data || {};
+    if (type === 'SW_UPDATED') {
+      console.log('[Raftaroo PWA] SW updated to', version);
+    }
+  }
+
+  // ── 8. Network status indicator ─────────────────────────────
+  function updateOnlineStatus() {
+    const isOnline = navigator.onLine;
+    document.documentElement.setAttribute('data-network', isOnline ? 'online' : 'offline');
+    if (!isOnline) {
+      showOfflineBadge();
+    } else {
+      document.getElementById('raftaroo-offline-badge')?.remove();
+    }
+  }
+
+  function showOfflineBadge() {
+    if (document.getElementById('raftaroo-offline-badge')) return;
+    const badge = document.createElement('div');
+    badge.id = 'raftaroo-offline-badge';
+    badge.textContent = '📵 Offline Mode';
+    Object.assign(badge.style, {
+      position: 'fixed',
+      top: '68px',
+      left: '50%',
+      transform: 'translateX(-50%)',
+      background: '#EF4444',
+      color: '#fff',
+      padding: '6px 16px',
+      borderRadius: '20px',
+      fontSize: '12px',
+      fontWeight: '700',
+      zIndex: '9997',
+      boxShadow: '0 4px 16px rgba(239,68,68,0.4)',
+      whiteSpace: 'nowrap',
+      fontFamily: 'inherit'
+    });
+    document.body.appendChild(badge);
+  }
+
+  window.addEventListener('online',  updateOnlineStatus);
+  window.addEventListener('offline', updateOnlineStatus);
+  updateOnlineStatus();
+
+  // ── Helper ───────────────────────────────────────────────────
+  function hideBanner() {
+    if (banner) banner.style.display = 'none';
+  }
+
+  // ── Expose helper for app code ───────────────────────────────
+  window.RaftarooPWA = {
+    getVersion: () => {
+      swRegistration?.active?.postMessage({ type: 'GET_VERSION' });
+    },
+    clearCache: () => {
+      swRegistration?.active?.postMessage({ type: 'CLEAR_CACHE' });
+    },
+    checkUpdate: () => {
+      swRegistration?.update();
+    }
+  };
+
+})();
+</script>
+</body>
+</html>

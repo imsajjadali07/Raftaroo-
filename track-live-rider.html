@@ -1,0 +1,1701 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/android-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="/android-512.png">
+
+<!-- PWA Core -->
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#00C853" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#00C853" media="(prefers-color-scheme: dark)">
+
+<!-- iOS / Safari PWA -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Raftaroo">
+<link rel="apple-touch-startup-image" href="/apple-touch-icon.png">
+
+<!-- Windows / Edge -->
+<meta name="msapplication-TileColor" content="#00C853">
+<meta name="msapplication-TileImage" content="/android-192.png">
+<meta name="msapplication-config" content="none">
+
+<!-- Mobile browser bar color -->
+<meta name="theme-color" content="#00C853">
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-EM1R4LGZTD"></script>
+<script>window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments);}gtag('js',new Date());gtag('config','G-EM1R4LGZTD');</script>
+
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>Live Ride | Raftaroo</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css"/>
+
+<style>
+:root {
+    --primary: #00C853;
+    --primary-dark: #00A040;
+    --primary-light: #E8F5E9;
+    --primary-glow: rgba(0,200,83,0.25);
+    --secondary: #0A0F1E;
+    --white: #ffffff;
+    --bg: #F0F4F8;
+    --text-main: #0A0F1E;
+    --text-muted: #64748B;
+    --text-light: #94A3B8;
+    --border: rgba(0,0,0,0.07);
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+    --shadow-md: 0 4px 20px rgba(0,0,0,0.12);
+    --shadow-lg: 0 12px 50px rgba(0,0,0,0.2);
+    --error: #EF4444;
+    --success: #00C853;
+    --info: #3B82F6;
+    --warning: #F59E0B;
+    --whatsapp: #25D366;
+    --radius: 14px;
+    --radius-sm: 10px;
+    --radius-lg: 24px;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; font-family:'Plus Jakarta Sans',sans-serif; -webkit-tap-highlight-color:transparent; }
+html, body { height:100%; overflow:hidden; background:var(--bg); color:var(--text-main); }
+.hidden { display:none !important; }
+
+/* ─── FULL SCREEN MAP ─── */
+#map { position:fixed; inset:0; z-index:1; }
+
+/* ─── FINDING OVERLAY ─── */
+#finding-overlay {
+    position:fixed; inset:0; z-index:900;
+    background: linear-gradient(160deg, #0A0F1E 0%, #0f1f0f 100%);
+    display:none; flex-direction:column;
+    align-items:center; justify-content:center;
+    padding:40px 24px;
+}
+
+.finding-animation {
+    position:relative; width:120px; height:120px; margin-bottom:32px;
+}
+.finding-ring {
+    position:absolute; inset:0; border-radius:50%;
+    border:3px solid var(--primary);
+    opacity:0;
+    animation: ring-expand 2s ease-out infinite;
+}
+.finding-ring:nth-child(2) { animation-delay:0.6s; }
+.finding-ring:nth-child(3) { animation-delay:1.2s; }
+@keyframes ring-expand {
+    0% { transform:scale(0.3); opacity:0.8; }
+    100% { transform:scale(1.8); opacity:0; }
+}
+.finding-center {
+    position:absolute; inset:0; display:flex; align-items:center; justify-content:center;
+    background:var(--primary); border-radius:50%;
+    width:60px; height:60px; margin:auto;
+    color:#fff; font-size:24px;
+    box-shadow: 0 0 30px var(--primary-glow);
+    animation: pulse-center 2s ease-in-out infinite;
+}
+@keyframes pulse-center { 0%,100%{transform:scale(1);} 50%{transform:scale(1.08);} }
+
+.finding-title { font-size:22px; font-weight:800; color:#fff; margin-bottom:8px; }
+.finding-subtitle { font-size:14px; color:rgba(255,255,255,0.5); text-align:center; max-width:260px; line-height:1.6; }
+
+.finding-dots { display:flex; gap:6px; margin:20px 0; }
+.finding-dots span {
+    width:8px; height:8px; border-radius:50%; background:var(--primary);
+    animation: dot-bounce 1.4s ease-in-out infinite;
+}
+.finding-dots span:nth-child(2) { animation-delay:0.2s; }
+.finding-dots span:nth-child(3) { animation-delay:0.4s; }
+@keyframes dot-bounce { 0%,80%,100%{transform:scale(0.6); opacity:0.4;} 40%{transform:scale(1.2); opacity:1;} }
+
+.cancel-finding-btn {
+    margin-top:32px; background:rgba(239,68,68,0.15);
+    color:#EF4444; border:1.5px solid rgba(239,68,68,0.3);
+    padding:12px 28px; border-radius:12px;
+    font-weight:700; font-size:14px; cursor:pointer;
+    transition:0.2s;
+}
+.cancel-finding-btn:hover { background:var(--error); color:#fff; }
+
+/* ─── MAP TOP BUTTONS ─── */
+.back-btn-map {
+    position:fixed; top:16px; left:16px; z-index:500;
+    background:rgba(255,255,255,0.95);
+    backdrop-filter:blur(10px);
+    width:42px; height:42px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 2px 12px rgba(0,0,0,0.15);
+    cursor:pointer; color:var(--text-main); font-size:16px;
+    text-decoration:none; transition:0.2s;
+    border:1px solid rgba(0,0,0,0.05);
+}
+.back-btn-map:hover { background:#fff; transform:scale(1.05); }
+
+/* Raftaroo branding on map */
+.map-brand-pill {
+    position:fixed; top:16px; left:50%; transform:translateX(-50%); z-index:500;
+    background:rgba(10,15,30,0.9); backdrop-filter:blur(10px);
+    color:#fff; font-size:12px; font-weight:800;
+    padding:6px 14px; border-radius:50px;
+    display:flex; align-items:center; gap:6px;
+    border:1px solid rgba(0,200,83,0.3);
+    letter-spacing:0.5px;
+    pointer-events:none;
+}
+.map-brand-pill i { color:var(--primary); }
+
+/* ─── FLOATING ACTION BUTTONS ─── */
+#floating-actions {
+    position:fixed; right:14px; top:80px;
+    display:none; flex-direction:column; gap:10px; z-index:500;
+}
+.floating-action-btn {
+    width:48px; height:48px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 4px 16px rgba(0,0,0,0.2);
+    cursor:pointer; transition:transform 0.2s;
+    text-decoration:none; font-size:17px;
+    color:#fff; position:relative;
+    border:2.5px solid rgba(255,255,255,0.4);
+    backdrop-filter:blur(4px);
+}
+.floating-action-btn:active { transform:scale(0.9); }
+#openCallBtn { background:var(--success); }
+#openChatBtnContainer { background:var(--info); }
+#chat-badge {
+    position:absolute; top:-3px; right:-3px;
+    background:var(--error); color:#fff;
+    border-radius:50%; width:18px; height:18px;
+    font-size:10px; font-weight:800;
+    display:none; align-items:center; justify-content:center;
+    border:2px solid #fff;
+}
+
+/* ─── BOTTOM SHEET CARD ─── */
+#map-controls-container {
+    position:fixed; bottom:0; left:0; right:0;
+    background:var(--white);
+    border-radius:var(--radius-lg) var(--radius-lg) 0 0;
+    box-shadow:0 -6px 40px rgba(0,0,0,0.15);
+    z-index:1000;
+    display:flex; flex-direction:column;
+    max-height:90vh;
+    will-change:transform;
+    transition:none;
+}
+
+.drag-handle {
+    height:28px; width:100%;
+    display:flex; justify-content:center; align-items:center;
+    cursor:grab; touch-action:none;
+    position:sticky; top:0; background:var(--white);
+    z-index:1001; flex-shrink:0;
+    border-radius:var(--radius-lg) var(--radius-lg) 0 0;
+}
+.drag-handle::before {
+    content:''; width:36px; height:4px;
+    background:#CBD5E1; border-radius:2px;
+}
+
+/* Status banner strip */
+.status-banner {
+    margin:0 16px 14px;
+    border-radius:var(--radius);
+    padding:12px 16px;
+    display:flex; align-items:center; gap:12px;
+    transition: background 0.5s, border-color 0.5s;
+    border:1.5px solid transparent;
+}
+.status-banner.status-accepted { background:linear-gradient(135deg, #FFF8E1, #FFFDE7); border-color:rgba(245,158,11,0.3); }
+.status-banner.status-arrived { background:linear-gradient(135deg, var(--primary-light), #f0fff4); border-color:rgba(0,200,83,0.3); }
+.status-banner.status-in_progress { background:linear-gradient(135deg, #EFF6FF, #F0F9FF); border-color:rgba(59,130,246,0.3); }
+
+.status-banner-icon {
+    width:40px; height:40px; border-radius:12px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+    font-size:18px;
+}
+.status-accepted .status-banner-icon { background:rgba(245,158,11,0.15); color:var(--warning); }
+.status-arrived .status-banner-icon { background:rgba(0,200,83,0.15); color:var(--primary); }
+.status-in_progress .status-banner-icon { background:rgba(59,130,246,0.15); color:var(--info); }
+
+.status-banner-text h4 { font-size:14px; font-weight:800; }
+.status-banner-text p { font-size:12px; color:var(--text-muted); margin-top:2px; }
+.status-accepted .status-banner-text h4 { color:#92400E; }
+.status-arrived .status-banner-text h4 { color:var(--primary-dark); }
+.status-in_progress .status-banner-text h4 { color:#1D4ED8; }
+
+/* scrollable content */
+#card-content-wrapper {
+    overflow-y:auto; flex:1; padding:0 16px 28px;
+}
+
+/* Captain Info Row */
+.captain-info-row {
+    display:flex; align-items:center; gap:14px;
+    padding-bottom:14px; margin-bottom:14px;
+    border-bottom:1px solid var(--border);
+}
+
+.captain-avatar {
+    width:56px; height:56px; border-radius:50%; flex-shrink:0;
+    border:3px solid var(--primary);
+    background:var(--primary-light);
+    display:flex; align-items:center; justify-content:center;
+    font-size:22px; font-weight:800; color:var(--primary-dark);
+    overflow:hidden;
+    box-shadow:0 0 0 3px var(--primary-glow);
+}
+.captain-avatar img { width:100%; height:100%; object-fit:cover; border-radius:50%; }
+
+.captain-meta { flex:1; min-width:0; }
+.captain-meta h3 { font-size:17px; font-weight:800; color:var(--text-main); margin-bottom:2px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.captain-meta p { font-size:12px; color:var(--text-muted); font-weight:500; }
+
+.captain-rating-badge {
+    background:var(--primary-light); color:var(--primary-dark);
+    padding:4px 10px; border-radius:50px;
+    font-size:12px; font-weight:700;
+    display:flex; align-items:center; gap:4px;
+    flex-shrink:0;
+}
+.captain-rating-badge i { font-size:10px; color:#FBBF24; }
+
+/* Vehicle card */
+.vehicle-card {
+    background:#F8FAFC; border:1px solid var(--border);
+    border-radius:var(--radius); padding:12px 14px;
+    display:flex; align-items:center; gap:12px;
+    margin-bottom:12px;
+}
+.vehicle-img-wrap {
+    width:72px; height:52px; flex-shrink:0;
+    display:flex; align-items:center; justify-content:center;
+}
+.vehicle-img-wrap img { width:72px; height:52px; object-fit:contain; filter:drop-shadow(0 2px 6px rgba(0,0,0,0.15)); }
+.vehicle-info-details { flex:1; }
+.vehicle-info-details .v-type { font-size:13px; font-weight:800; color:var(--text-main); margin-bottom:4px; }
+.vehicle-info-details .v-plate {
+    display:inline-block; background:var(--secondary); color:#fff;
+    font-size:12px; font-weight:700; padding:2px 8px; border-radius:4px;
+    letter-spacing:1px; font-family:monospace;
+}
+.v-color-row { display:flex; align-items:center; gap:6px; margin-top:5px; font-size:12px; color:var(--text-muted); font-weight:600; }
+.vehicle-color-dot { width:12px; height:12px; border-radius:50%; border:1.5px solid rgba(0,0,0,0.15); flex-shrink:0; }
+
+/* Location strip */
+.location-strip {
+    background:#F8FAFC; border:1px solid var(--border);
+    border-radius:var(--radius); padding:12px 14px;
+    margin-bottom:12px;
+}
+.location-row-item { display:flex; align-items:flex-start; gap:10px; padding:4px 0; }
+.loc-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; margin-top:4px; }
+.loc-dot.pickup { background:var(--primary); box-shadow:0 0 0 3px rgba(0,200,83,0.15); }
+.loc-dot.dropoff { background:var(--error); box-shadow:0 0 0 3px rgba(239,68,68,0.12); }
+.loc-connector { width:2px; background:#E2E8F0; height:10px; margin-left:4px; margin-bottom:2px; }
+.loc-label { font-size:10px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; }
+.loc-addr { font-size:12px; font-weight:600; color:var(--text-main); line-height:1.4; }
+
+/* Fare row */
+.fare-row {
+    display:flex; justify-content:space-between; align-items:center;
+    background:var(--primary-light); border:1px solid rgba(0,200,83,0.2);
+    border-radius:var(--radius-sm); padding:12px 14px;
+    margin-bottom:14px;
+}
+.fare-row .label { font-size:13px; font-weight:600; color:var(--text-muted); }
+.fare-row .amount { font-size:20px; font-weight:800; color:var(--primary-dark); }
+
+/* Cancel button */
+.cancel-ride-btn {
+    width:100%; background:#FEF2F2; color:var(--error);
+    border:1.5px solid #FECACA; border-radius:var(--radius-sm);
+    padding:13px; font-weight:700; font-size:14px;
+    cursor:pointer; transition:0.2s;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+}
+.cancel-ride-btn:hover { background:var(--error); color:#fff; border-color:var(--error); }
+
+/* ─── CHAT ─── */
+#chat-container {
+    position:fixed; bottom:16px; right:16px;
+    width:calc(100% - 32px); max-width:330px;
+    height:68vh; max-height:500px;
+    border-radius:20px; background:#F8FAFC;
+    box-shadow:var(--shadow-lg); z-index:2000;
+    display:none; flex-direction:column; overflow:hidden;
+    animation:chatPop 0.3s ease-out;
+}
+@keyframes chatPop { from{opacity:0;transform:scale(0.92) translateY(20px);}to{opacity:1;transform:scale(1) translateY(0);} }
+
+.chat-header {
+    background:var(--secondary); padding:12px 16px;
+    display:flex; justify-content:space-between; align-items:center; flex-shrink:0;
+}
+.chat-header-left { display:flex; align-items:center; gap:10px; }
+.chat-header-avatar {
+    width:32px; height:32px; border-radius:50%; background:var(--primary);
+    display:flex; align-items:center; justify-content:center;
+    color:#fff; font-size:13px; font-weight:700;
+}
+.chat-header-name { font-size:14px; font-weight:700; color:#fff; }
+.chat-header-sub { font-size:11px; color:rgba(255,255,255,0.45); }
+.chat-close-btn { color:rgba(255,255,255,0.5); font-size:16px; cursor:pointer; padding:4px; }
+
+.quick-replies {
+    padding:10px 12px; display:flex; flex-wrap:wrap; gap:6px;
+    background:var(--white); border-bottom:1px solid var(--border); flex-shrink:0;
+}
+.quick-reply-btn {
+    background:#F1F5F9; color:var(--text-main);
+    border:1px solid var(--border); border-radius:20px;
+    padding:5px 11px; font-size:11px; font-weight:600;
+    cursor:pointer; white-space:nowrap;
+    display:flex; align-items:center; gap:4px;
+    transition:0.15s; font-family:'Plus Jakarta Sans',sans-serif;
+}
+.quick-reply-btn:hover { background:var(--primary-light); border-color:var(--primary); color:var(--primary-dark); }
+.quick-reply-btn.wa { background:#DCFCE7; border-color:#86EFAC; color:#15803D; }
+.quick-reply-btn.wa:hover { background:var(--whatsapp); color:#fff; border-color:var(--whatsapp); }
+
+#chat-messages {
+    flex:1; overflow-y:auto; padding:12px;
+    display:flex; flex-direction:column; gap:8px;
+}
+.chat-message {
+    max-width:82%; padding:9px 13px;
+    border-radius:14px; font-size:13px; line-height:1.45; word-wrap:break-word;
+}
+.message-customer {
+    background:var(--primary); color:#fff;
+    align-self:flex-end; border-bottom-right-radius:4px;
+}
+.message-captain {
+    background:var(--white); color:var(--text-main);
+    align-self:flex-start; border-bottom-left-radius:4px;
+    box-shadow:var(--shadow-sm);
+}
+.message-system {
+    background:#F1F5F9; color:var(--text-muted);
+    align-self:center; font-size:11px;
+    border-radius:8px; text-align:center; max-width:100%;
+}
+
+.chat-input-area {
+    padding:10px 12px; display:flex; gap:8px;
+    background:var(--white); border-top:1px solid var(--border); flex-shrink:0;
+}
+#chatInput {
+    flex:1; border:1.5px solid #E2E8F0; border-radius:10px;
+    padding:8px 12px; font-size:13px; resize:none; max-height:70px;
+    font-family:'Plus Jakarta Sans',sans-serif; outline:none; transition:0.2s;
+}
+#chatInput:focus { border-color:var(--primary); }
+#sendChatBtn {
+    background:var(--primary); color:#fff; border:none;
+    padding:8px 14px; border-radius:10px;
+    font-weight:700; font-size:13px; cursor:pointer;
+    display:flex; align-items:center; gap:5px;
+    transition:0.2s;
+}
+#sendChatBtn:hover { background:var(--primary-dark); }
+
+/* ─── RATING MODAL ─── */
+#ratingModalOverlay {
+    position:fixed; inset:0; z-index:3000;
+    background:rgba(10,15,30,0.92); backdrop-filter:blur(6px);
+    display:none; align-items:flex-end; justify-content:center;
+    padding:16px;
+}
+.rating-modal-content {
+    background:var(--white); border-radius:24px 24px 16px 16px;
+    padding:28px 24px 34px; width:100%; max-width:440px;
+    animation:slideUp 0.4s cubic-bezier(0.34,1.2,0.64,1);
+    text-align:center;
+}
+@keyframes slideUp { from{transform:translateY(80px);opacity:0;} to{transform:translateY(0);opacity:1;} }
+
+.rating-success-icon {
+    width:72px; height:72px; border-radius:50%;
+    background:var(--primary-light);
+    display:flex; align-items:center; justify-content:center;
+    font-size:32px; margin:0 auto 16px; color:var(--primary);
+}
+.rating-modal-content h3 { font-size:20px; font-weight:800; margin-bottom:6px; }
+.rating-modal-content p { font-size:13px; color:var(--text-muted); margin-bottom:20px; }
+
+.rating-stars {
+    font-size:38px; display:flex; justify-content:center;
+    gap:6px; margin-bottom:20px;
+}
+.rating-stars i { cursor:pointer; color:#CBD5E1; transition:transform 0.15s, color 0.15s; }
+.rating-stars i.rated { color:#FBBF24; }
+.rating-stars i:hover { transform:scale(1.2); }
+
+.rating-comment-input {
+    width:100%; border:1.5px solid #E2E8F0; border-radius:10px;
+    padding:10px 12px; font-size:13px; resize:none; height:72px;
+    font-family:'Plus Jakarta Sans',sans-serif; outline:none;
+    margin-bottom:18px; transition:0.2s;
+}
+.rating-comment-input:focus { border-color:var(--primary); }
+
+.rating-actions { display:flex; gap:10px; }
+.rating-actions button {
+    flex:1; padding:14px; font-size:15px; font-weight:700;
+    border-radius:12px; border:none; cursor:pointer; transition:0.2s;
+}
+#submitRatingBtn { background:var(--primary); color:#fff; box-shadow:0 4px 14px var(--primary-glow); }
+#submitRatingBtn:hover { background:var(--primary-dark); }
+#submitRatingBtn:disabled { background:#94A3B8; box-shadow:none; }
+#skipRatingBtn { background:#F1F5F9; color:var(--text-muted); }
+
+/* ─── MISC ─── */
+.leaflet-routing-container { display:none !important; }
+.leaflet-control-attribution { display:none !important; }
+.custom-div-icon { background:none; border:none; }
+::-webkit-scrollbar { width:4px; }
+::-webkit-scrollbar-thumb { background:#CBD5E1; border-radius:4px; }
+</style>
+</head>
+<body>
+
+<!-- MAP -->
+
+<div id="map"></div>
+
+<!-- MAP TOP UI -->
+
+<a class="back-btn-map" href="index.html"><i class="fas fa-arrow-left"></i></a>
+
+<div class="map-brand-pill"><i class="fas fa-bolt"></i> RAFTAROO LIVE</div>
+
+<!-- FLOATING ACTIONS (shown after captain accepted) -->
+
+<div id="floating-actions">
+    <a id="openCallBtn" class="floating-action-btn" href="#" title="Call Captain">
+        <i class="fas fa-phone-alt"></i>
+    </a>
+    <div id="openChatBtnContainer" class="floating-action-btn" onclick="toggleChat(true)" title="Chat">
+        <i class="fas fa-comment-dots"></i>
+        <span id="chat-badge" style="display:none;"></span>
+    </div>
+    <div id="shareRideBtn" class="floating-action-btn" onclick="openShareModal()" title="Ride Share Karein" style="background:linear-gradient(135deg,#8B5CF6,#7C3AED);">
+        <i class="fas fa-share-alt"></i>
+    </div>
+</div>
+
+<!-- SHARE RIDE MODAL -->
+<div id="shareRideOverlay" style="display:none;position:fixed;inset:0;z-index:4000;background:rgba(10,15,30,0.88);backdrop-filter:blur(6px);align-items:flex-end;justify-content:center;padding:0;">
+    <div id="shareRideModal" style="background:#fff;border-radius:28px 28px 0 0;width:100%;max-width:480px;padding:0 0 32px;animation:slideUp 0.35s cubic-bezier(0.34,1.2,0.64,1);overflow:hidden;">
+        <!-- Header -->
+        <div style="background:linear-gradient(135deg,#0A0F1E,#1a2640);padding:20px 20px 18px;position:relative;">
+            <div style="width:36px;height:4px;background:rgba(255,255,255,0.25);border-radius:2px;margin:0 auto 16px;"></div>
+            <div style="display:flex;align-items:center;gap:12px;">
+                <div style="width:46px;height:46px;border-radius:14px;background:linear-gradient(135deg,#8B5CF6,#7C3AED);display:flex;align-items:center;justify-content:center;font-size:20px;color:#fff;flex-shrink:0;">
+                    <i class="fas fa-share-nodes"></i>
+                </div>
+                <div>
+                    <h3 style="color:#fff;font-size:17px;font-weight:800;margin-bottom:2px;">Ride Share Karein</h3>
+                    <p style="color:rgba(255,255,255,0.5);font-size:12px;">Family/Friends ko apni live location bhejein</p>
+                </div>
+                <button onclick="closeShareModal()" style="margin-left:auto;background:rgba(255,255,255,0.1);border:none;width:34px;height:34px;border-radius:50%;color:rgba(255,255,255,0.7);font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+                    <i class="fas fa-times"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Ride Info Preview -->
+        <div id="shareRidePreview" style="margin:16px 20px;background:#F8FAFC;border:1.5px solid #E2E8F0;border-radius:14px;padding:14px 16px;">
+            <div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">
+                <span style="font-size:18px;">🏍️</span>
+                <div>
+                    <div style="font-size:13px;font-weight:800;color:#0A0F1E;" id="shareRiderName">Captain Loading...</div>
+                    <div style="font-size:11px;color:#64748B;" id="shareVehicleInfo">Vehicle Info</div>
+                </div>
+            </div>
+            <div style="display:flex;flex-direction:column;gap:6px;">
+                <div style="display:flex;align-items:flex-start;gap:8px;">
+                    <span style="width:8px;height:8px;border-radius:50%;background:#00C853;margin-top:4px;flex-shrink:0;"></span>
+                    <div style="font-size:11px;color:#64748B;font-weight:500;" id="sharePickupAddr">Pickup...</div>
+                </div>
+                <div style="width:1px;height:8px;background:#E2E8F0;margin-left:3px;"></div>
+                <div style="display:flex;align-items:flex-start;gap:8px;">
+                    <span style="width:8px;height:8px;border-radius:50%;background:#EF4444;margin-top:4px;flex-shrink:0;"></span>
+                    <div style="font-size:11px;color:#64748B;font-weight:500;" id="shareDropAddr">Dropoff...</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Share Options -->
+        <div style="padding:0 20px;">
+            <p style="font-size:12px;font-weight:700;color:#94A3B8;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:12px;">Kahan share karein?</p>
+            <div style="display:flex;flex-direction:column;gap:10px;">
+
+                <!-- WhatsApp -->
+                <button onclick="shareViaWhatsApp()" style="width:100%;background:#DCFCE7;border:1.5px solid #86EFAC;border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:0.2s;" onmouseover="this.style.background='#25D366';this.style.color='#fff'" onmouseout="this.style.background='#DCFCE7';this.style.color='inherit'">
+                    <div style="width:42px;height:42px;border-radius:12px;background:#25D366;display:flex;align-items:center;justify-content:center;font-size:20px;color:#fff;flex-shrink:0;">
+                        <i class="fab fa-whatsapp"></i>
+                    </div>
+                    <div style="text-align:left;">
+                        <div style="font-size:14px;font-weight:800;color:#15803D;">WhatsApp</div>
+                        <div style="font-size:11px;color:#16A34A;">Family ko directly message karein</div>
+                    </div>
+                    <i class="fas fa-chevron-right" style="margin-left:auto;color:#86EFAC;font-size:13px;"></i>
+                </button>
+
+                <!-- Copy Link -->
+                <button onclick="copyShareLink()" id="copyLinkBtn" style="width:100%;background:#EFF6FF;border:1.5px solid #BFDBFE;border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:0.2s;">
+                    <div style="width:42px;height:42px;border-radius:12px;background:#3B82F6;display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;flex-shrink:0;">
+                        <i class="fas fa-link"></i>
+                    </div>
+                    <div style="text-align:left;">
+                        <div style="font-size:14px;font-weight:800;color:#1D4ED8;">Link Copy Karein</div>
+                        <div style="font-size:11px;color:#3B82F6;" id="copyLinkStatus">Kisi bhi app mein paste karein</div>
+                    </div>
+                    <i class="fas fa-chevron-right" style="margin-left:auto;color:#BFDBFE;font-size:13px;"></i>
+                </button>
+
+                <!-- SMS -->
+                <button onclick="shareViaSMS()" style="width:100%;background:#FFF7ED;border:1.5px solid #FED7AA;border-radius:14px;padding:14px 16px;display:flex;align-items:center;gap:14px;cursor:pointer;transition:0.2s;">
+                    <div style="width:42px;height:42px;border-radius:12px;background:#F97316;display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;flex-shrink:0;">
+                        <i class="fas fa-sms"></i>
+                    </div>
+                    <div style="text-align:left;">
+                        <div style="font-size:14px;font-weight:800;color:#C2410C;">SMS</div>
+                        <div style="font-size:11px;color:#EA580C;">Text message bhejein</div>
+                    </div>
+                    <i class="fas fa-chevron-right" style="margin-left:auto;color:#FED7AA;font-size:13px;"></i>
+                </button>
+
+                <!-- Native Share (if supported) -->
+                <button onclick="nativeShare()" id="nativeShareBtn" style="display:none;width:100%;background:#F5F3FF;border:1.5px solid #DDD6FE;border-radius:14px;padding:14px 16px;align-items:center;gap:14px;cursor:pointer;transition:0.2s;">
+                    <div style="width:42px;height:42px;border-radius:12px;background:linear-gradient(135deg,#8B5CF6,#7C3AED);display:flex;align-items:center;justify-content:center;font-size:18px;color:#fff;flex-shrink:0;">
+                        <i class="fas fa-share"></i>
+                    </div>
+                    <div style="text-align:left;">
+                        <div style="font-size:14px;font-weight:800;color:#6D28D9;">More Options</div>
+                        <div style="font-size:11px;color:#7C3AED;">Kisi aur app mein share karein</div>
+                    </div>
+                    <i class="fas fa-chevron-right" style="margin-left:auto;color:#DDD6FE;font-size:13px;"></i>
+                </button>
+
+            </div>
+
+            <!-- Safety Note -->
+            <div style="margin-top:16px;background:#FFFBEB;border:1px solid #FDE68A;border-radius:10px;padding:10px 12px;display:flex;gap:10px;align-items:flex-start;">
+                <span style="font-size:16px;flex-shrink:0;">🔒</span>
+                <p style="font-size:11px;color:#92400E;line-height:1.5;font-weight:500;">Ye link sirf aap ki current ride track karne ke liye hai. Ride khatam hone par link expire ho jata hai.</p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- FINDING CAPTAIN OVERLAY -->
+
+<div id="finding-overlay">
+    <div class="finding-animation">
+        <div class="finding-ring"></div>
+        <div class="finding-ring"></div>
+        <div class="finding-ring"></div>
+        <div class="finding-center"><i class="fas fa-motorcycle"></i></div>
+    </div>
+    <div class="finding-title">Captain Dhundh Rahe Hain...</div>
+    <div class="finding-dots"><span></span><span></span><span></span></div>
+    <div class="finding-subtitle" id="findingRiderStatus">Aap ke najdeek available Captains ko notification bhej di gayi hai. Thoda wait karein.</div>
+    <button class="cancel-finding-btn" onclick="cancelRide()">
+        <i class="fas fa-times-circle"></i> Cancel (Koi fee nahi)
+    </button>
+</div>
+
+<!-- BOTTOM SHEET CARD -->
+
+<div id="map-controls-container" style="display:none;">
+    <div id="dragHandle" class="drag-handle"></div>
+<!-- Status Banner -->
+<div id="statusBanner" class="status-banner status-accepted">
+    <div class="status-banner-icon" id="statusBannerIcon">
+        <i class="fas fa-car" id="statusBannerIconEl"></i>
+    </div>
+    <div class="status-banner-text">
+        <h4 id="rideStatusMessage">Captain On The Way</h4>
+        <p id="rideStatusSub">Please be ready at pickup</p>
+    </div>
+</div>
+
+<div id="card-content-wrapper">
+
+    <!-- Captain info -->
+    <div class="captain-info-row">
+        <div class="captain-avatar" id="captainProfilePic">
+            <i class="fas fa-user" style="font-size:22px;color:var(--primary);"></i>
+        </div>
+        <div class="captain-meta">
+            <h3 id="riderNameDisplay">Loading Captain...</h3>
+            <p>Your Captain</p>
+        </div>
+        <div class="captain-rating-badge">
+            <i class="fas fa-star"></i>
+            <span id="captainRatingDisplay">5.0</span>
+        </div>
+    </div>
+
+    <!-- Vehicle -->
+    <div class="vehicle-card">
+        <div class="vehicle-img-wrap">
+            <img id="vehicleImage" src="https://via.placeholder.com/72x46/E8F5E9/00A040?text=Bike" alt="Vehicle">
+        </div>
+        <div class="vehicle-info-details">
+            <div class="v-type" id="riderVehicleDisplay">Motorcycle</div>
+            <span class="v-plate" id="vehiclePlateDisplay">—</span>
+            <div class="v-color-row">
+                <span class="vehicle-color-dot" id="colorDot"></span>
+                <span id="vehicleColorDisplay">N/A</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Locations -->
+    <div class="location-strip">
+        <div class="location-row-item">
+            <div class="loc-dot pickup"></div>
+            <div>
+                <div class="loc-label">Pickup</div>
+                <div class="loc-addr" id="acceptedPickupAddr">Loading...</div>
+            </div>
+        </div>
+        <div class="loc-connector" style="margin-left:4px;"></div>
+        <div class="location-row-item">
+            <div class="loc-dot dropoff"></div>
+            <div>
+                <div class="loc-label">Dropoff</div>
+                <div class="loc-addr" id="acceptedDestinationAddr">Loading...</div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Fare -->
+    <div class="fare-row">
+        <span class="label">💰 Agreed Fare</span>
+        <span class="amount">Rs. <span id="finalTripFare">0</span></span>
+    </div>
+
+    <!-- Cancel button -->
+    <button id="cancelAcceptedRideBtn" class="cancel-ride-btn" onclick="cancelRide()">
+        <i class="fas fa-times-circle"></i> Cancel Ride (Fee may apply)
+    </button>
+
+</div>
+</div>
+
+<!-- CHAT PANEL -->
+
+<div id="chat-container">
+    <div class="chat-header">
+        <div class="chat-header-left">
+            <div class="chat-header-avatar" id="chatAvatarLetter">C</div>
+            <div>
+                <div class="chat-header-name">Chat with Captain</div>
+                <div class="chat-header-sub" id="chatCaptainSub">In-App Secure Chat</div>
+            </div>
+        </div>
+        <i class="fas fa-times chat-close-btn" onclick="toggleChat(false)"></i>
+    </div>
+    <div class="quick-replies" id="readyMessagesContainer"></div>
+    <div id="chat-messages"></div>
+    <div class="chat-input-area">
+        <textarea id="chatInput" placeholder="Message likhein..." rows="2"></textarea>
+        <button id="sendChatBtn"><i class="fas fa-paper-plane"></i></button>
+    </div>
+</div>
+
+<!-- RATING MODAL -->
+
+<div id="ratingModalOverlay">
+    <div class="rating-modal-content">
+        <div class="rating-success-icon">⭐</div>
+        <h3>Ride Mukammal!</h3>
+        <p id="ratingHeader">Apne Captain ko rate karein</p>
+        <div class="rating-stars">
+            <i class="fas fa-star" data-rating="1"></i>
+            <i class="fas fa-star" data-rating="2"></i>
+            <i class="fas fa-star" data-rating="3"></i>
+            <i class="fas fa-star" data-rating="4"></i>
+            <i class="fas fa-star" data-rating="5"></i>
+        </div>
+        <textarea id="ratingComment" class="rating-comment-input" placeholder="Optional: Koi comment likhein..."></textarea>
+        <div class="rating-actions">
+            <button id="submitRatingBtn"><i class="fas fa-paper-plane"></i> Submit</button>
+            <button id="skipRatingBtn">Skip</button>
+        </div>
+    </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+<script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+    import { getDatabase, ref, update, onValue, get, push, set } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-database.js";
+    import { getAuth } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+
+    const firebaseConfig = {
+        apiKey: "AIzaSyBBS7jGzuVlTIIeN9VFBxpwHkNf-mIRzDo",
+        authDomain: "raftaroo-9ce8d.firebaseapp.com",
+        databaseURL: "https://raftaroo-9ce8d-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "raftaroo-9ce8d",
+        storageBucket: "raftaroo-9ce8d.firebasestorage.app",
+        messagingSenderId: "773738074182",
+        appId: "1:773738074182:web:b7a873959c7ab8edc0ba47",
+        measurementId: "G-EM1R4LGZTD"
+    };
+
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+    const auth = getAuth(app);
+
+    // ─── STATE ───
+    let map, pickupMarker, destinationMarker, riderMarker, routingControl;
+    const bookingId = localStorage.getItem('activeBookingId');
+    let activeBookingRef, activeBookingListener = null, messageListener = null;
+    let nearbyRiderMarkers = {};
+    let currentRating = 0;
+    let currentCompletedRequest = null;
+
+    // ─── NOTIFICATION SOUND ───
+    const MSG_SOUND_URL = 'https://orangefreesounds.com/wp-content/uploads/2024/04/Message-alert-sound.mp3';
+    const msgAudio = new Audio(MSG_SOUND_URL);
+    msgAudio.preload = 'auto';
+    let audioUnlocked = false;
+    let lastMessageCount = 0;
+
+    function unlockAudio() {
+        if (audioUnlocked) return;
+        msgAudio.volume = 0;
+        msgAudio.play().then(() => {
+            msgAudio.pause();
+            msgAudio.currentTime = 0;
+            msgAudio.volume = 1;
+            audioUnlocked = true;
+        }).catch(() => {});
+    }
+    document.addEventListener('click',  unlockAudio, { once: false });
+    document.addEventListener('touchstart', unlockAudio, { once: false });
+
+    function playMsgSound() {
+        if (!audioUnlocked) return;
+        try {
+            msgAudio.currentTime = 0;
+            msgAudio.volume = 1;
+            msgAudio.play().catch(() => {});
+        } catch(e) {}
+    }
+
+    // ─── VEHICLE ICONS ───
+    const VEHICLE_ICONS = {
+        'bike': 'https://iili.io/ftViNi7.png',
+        'motorcycle': 'https://iili.io/ftViNi7.png',
+        'rickshaw': 'https://iili.io/ftV61st.png',
+        'auto-rickshaw': 'https://iili.io/ftV61st.png',
+        'car': 'https://iili.io/ftV4mOl.png',
+        'car-economy': 'https://iili.io/ftV4mOl.png',
+        'car-comfort': 'https://iili.io/ftV4mOl.png',
+        'car-luxury': 'https://iili.io/ftV4mOl.png',
+        'pickup': 'https://iili.io/ftVPMZB.png',
+        'cargo': 'https://iili.io/ftVPMZB.png',
+        'truck': 'https://iili.io/ftVPMZB.png',
+        'default': 'https://iili.io/ftViNi7.png'
+    };
+
+    // ─── MAP ICONS ───
+    const pickupIcon = L.divIcon({
+        html: `<div style="background:#00C853;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:3px solid #fff;box-shadow:0 2px 10px rgba(0,200,83,0.4);">
+                 <i class="fas fa-circle" style="color:#fff;font-size:9px;"></i>
+               </div>`,
+        className:'custom-div-icon', iconSize:[28,28], iconAnchor:[14,14]
+    });
+
+    const destinationIcon = L.divIcon({
+        html: `<div style="background:#EF4444;width:32px;height:44px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;border:3px solid #fff;box-shadow:0 3px 12px rgba(239,68,68,0.4);">
+                 <i class="fas fa-flag" style="color:#fff;font-size:12px;transform:rotate(45deg);"></i>
+               </div>`,
+        className:'custom-div-icon', iconSize:[32,44], iconAnchor:[16,44]
+    });
+
+    const captainRiderIcon = (vehicle) => {
+        const v = (vehicle||'bike').toLowerCase().replace(/\s+/g,'-');
+        let key = 'default';
+        if (v.includes('car') || v.includes('sedan') || v.includes('suv')) key = 'car';
+        else if (v.includes('rickshaw') || v.includes('auto')) key = 'rickshaw';
+        else if (v.includes('pickup') || v.includes('cargo') || v.includes('truck')) key = 'pickup';
+        else if (v.includes('bike') || v.includes('moto') || v.includes('cycle')) key = 'bike';
+        else key = v;
+        const iconUrl = VEHICLE_ICONS[key] || VEHICLE_ICONS.default;
+        return L.divIcon({
+            html: `<div style="width:54px;height:54px;display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 4px 10px rgba(0,200,83,0.7));">
+                     <img src="${iconUrl}" style="width:54px;height:54px;object-fit:contain;" onerror="this.style.display='none';this.parentElement.innerHTML='<i class=\\'fas fa-motorcycle\\' style=\\'color:#00C853;font-size:26px;\\'></i>'"/>
+                   </div>`,
+            className:'custom-div-icon', iconSize:[54,54], iconAnchor:[27,27]
+        });
+    };
+
+    // ─── UTILS ───
+    function getDistance(lat1,lon1,lat2,lon2) {
+        const R=6371, dLat=(lat2-lat1)*Math.PI/180, dLon=(lon2-lon1)*Math.PI/180;
+        const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+        return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+    }
+
+    function getCssColor(name) {
+        const map = { white:'#ffffff', black:'#000000', red:'#EF4444', blue:'#3B82F6', silver:'#CBD5E1', grey:'#64748B', gray:'#64748B', green:'#00C853', yellow:'#FBBF24' };
+        return name ? (map[name.toLowerCase().replace(/\s/g,'')] || name) : '#E2E8F0';
+    }
+
+    // ─── MAP INIT ───
+    function initializeMap(request, isFindingMode=false) {
+        if (!map) {
+            map = L.map('map', { zoomControl:false, attributionControl:false }).setView([request.pickup.lat, request.pickup.lng], 14);
+            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { maxZoom:19 }).addTo(map);
+        }
+        map.eachLayer(layer => { if (layer instanceof L.Marker) map.removeLayer(layer); });
+        if (routingControl) { map.removeControl(routingControl); routingControl=null; }
+        nearbyRiderMarkers = {};
+
+        pickupMarker = L.marker([request.pickup.lat, request.pickup.lng], {icon:pickupIcon})
+            .addTo(map).bindPopup('<b>📍 Aap ka Pickup</b>');
+        if (!isFindingMode) {
+            destinationMarker = L.marker([request.destination.lat, request.destination.lng], {icon:destinationIcon})
+                .addTo(map).bindPopup('<b>🏁 Aap ki Destination</b>');
+        }
+        map.setView([request.pickup.lat, request.pickup.lng], 14);
+        map.invalidateSize();
+    }
+
+    // ─── LIVE TRACKING ───
+    function startLiveTracking(request) {
+        initializeMap(request);
+        let waypoints=[], zoomFit=false;
+
+        if (request.status==='accepted'||request.status==='arrived') {
+            waypoints.push(L.latLng(request.pickup.lat, request.pickup.lng));
+            zoomFit=true;
+        } else if (request.status==='in_progress') {
+            waypoints=[L.latLng(request.pickup.lat,request.pickup.lng), L.latLng(request.destination.lat,request.destination.lng)];
+            zoomFit=true;
+        }
+
+        if (waypoints.length > 0) {
+            try {
+                routingControl = L.Routing.control({
+                    waypoints, router:L.Routing.osrmv1({serviceUrl:'https://router.project-osrm.org/route/v1'}),
+                    routeWhileDragging:false, showAlternatives:false, fitSelectedRoutes:zoomFit,
+                    collapsible:true, collapsed:true,
+                    lineOptions:{ styles:[{color:'#00C853', opacity:0.85, weight:5}] },
+                    createMarker:(i,wp,n) => {
+                        if (i===0) return L.marker(wp.latLng,{icon:pickupIcon}).bindPopup('Pickup');
+                        if (i===n-1 && request.status==='in_progress') return L.marker(wp.latLng,{icon:destinationIcon}).bindPopup('Destination');
+                        return null;
+                    }
+                }).addTo(map);
+                if (request.status==='accepted'||request.status==='arrived') {
+                    L.marker([request.destination.lat,request.destination.lng],{icon:destinationIcon}).addTo(map).bindPopup('Aap ki Destination');
+                }
+            } catch(e) { console.warn('Routing error:',e); }
+        }
+
+        // ── FIX: Fetch captain's full rider profile from Firebase riders node ──
+        get(ref(db,`riders/${request.riderId}`)).then(snap => {
+            const riderData = snap.val();
+            if (!riderData) return;
+
+            // Profile pic
+            const picEl = document.getElementById('captainProfilePic');
+            if (riderData.riderImageUrl) {
+                picEl.innerHTML = `<img src="${riderData.riderImageUrl}" alt="Captain" onerror="this.parentElement.innerHTML='<i class=\\'fas fa-user\\' style=\\'font-size:22px;color:var(--primary);\\'/>'"/>`;
+            }
+
+            // Rating
+            if (riderData.rating) {
+                document.getElementById('captainRatingDisplay').textContent = parseFloat(riderData.rating).toFixed(1);
+            }
+
+            // Vehicle image
+            const vImg = document.getElementById('vehicleImage');
+            if (riderData.vehicleType) {
+                const vKey = riderData.vehicleType.toLowerCase().replace(/\s/g,'');
+                vImg.src = VEHICLE_ICONS[vKey] || VEHICLE_ICONS.default;
+            }
+
+            // Vehicle color
+            const vColor = riderData.vehicleColor || request.riderVehicle || 'N/A';
+            document.getElementById('vehicleColorDisplay').textContent = vColor.charAt(0).toUpperCase()+vColor.slice(1);
+            document.getElementById('colorDot').style.background = getCssColor(vColor);
+
+            // ── FIX: Plate number — riders node se seedha lo (vehicleNumber ya vehiclePlate) ──
+            const plateFromRider = riderData.vehicleNumber || riderData.vehiclePlate || riderData.vehicleRegistration || riderData.registrationNumber;
+            if (plateFromRider) {
+                document.getElementById('vehiclePlateDisplay').textContent = plateFromRider.toUpperCase();
+            }
+
+            // Chat avatar
+            const nameInitial = (request.riderName||'C').charAt(0).toUpperCase();
+            document.getElementById('chatAvatarLetter').textContent = nameInitial;
+            document.getElementById('chatCaptainSub').textContent = `Captain: ${request.riderName||''}`;
+        });
+
+        // Live location listener
+        onValue(ref(db,`riders/${request.riderId}`), snap => {
+            const rd = snap.val();
+            if (rd?.location) {
+                const {lat,lng} = rd.location;
+                const newLL = L.latLng(lat,lng);
+                if (!riderMarker) {
+                    riderMarker = L.marker([lat,lng], {icon:captainRiderIcon(request.riderVehicle)}).addTo(map).bindPopup('Aap ka Captain');
+                } else {
+                    riderMarker.setLatLng(newLL);
+                }
+                if (routingControl) {
+                    if (request.status==='accepted'||request.status==='arrived') {
+                        routingControl.setWaypoints([newLL, L.latLng(request.pickup.lat,request.pickup.lng)]);
+                    } else if (request.status==='in_progress') {
+                        routingControl.setWaypoints([newLL, L.latLng(request.destination.lat,request.destination.lng)]);
+                    }
+                }
+                if (getDistance(lat,lng,request.pickup.lat,request.pickup.lng) < 1) map.setView([lat,lng]);
+            }
+        });
+    }
+
+    // ─── UPDATE UI DETAILS ───
+    function updateDetails(request) {
+        const name = (request.riderName||'Captain').split(' ').map(w=>w.charAt(0).toUpperCase()+w.slice(1).toLowerCase()).join(' ');
+        document.getElementById('riderNameDisplay').textContent = name;
+        const vehicleType = (request.riderVehicle||'bike').toLowerCase().replace(/\s+/g,'-');
+        document.getElementById('riderVehicleDisplay').textContent = (request.riderVehicle||'N/A').toUpperCase();
+        document.getElementById('finalTripFare').textContent = request.fare;
+        document.getElementById('acceptedPickupAddr').textContent = request.pickup?.address || '—';
+        document.getElementById('acceptedDestinationAddr').textContent = request.destination?.address || '—';
+
+        // Set vehicle image based on type
+        const vehicleImg = document.getElementById('vehicleImage');
+        const iconUrl = VEHICLE_ICONS[vehicleType] || VEHICLE_ICONS['default'];
+        vehicleImg.src = iconUrl;
+        vehicleImg.alt = request.riderVehicle || 'Vehicle';
+
+        // ── FIX: Plate — check all possible field names including vehicleNumber ──
+        const plate = request.riderPlate || request.vehiclePlate || request.vehicleNumber
+                   || request.bikeNumber || request.plateNumber || request.registrationNumber || '—';
+        const color = request.riderColor || request.vehicleColor || '';
+        document.getElementById('vehiclePlateDisplay').textContent = plate !== '—' ? plate.toUpperCase() : '—';
+        document.getElementById('vehicleColorDisplay').textContent = color || 'N/A';
+        document.getElementById('colorDot').style.background = getCssColor(color);
+
+        // Captain rating
+        if (request.captainRating || request.riderRating) {
+            document.getElementById('captainRatingDisplay').textContent = (request.captainRating || request.riderRating || 5.0).toFixed(1);
+        }
+
+        // Profile pic
+        if (request.riderPhoto || request.captainPhoto) {
+            const pic = document.getElementById('captainProfilePic');
+            pic.innerHTML = `<img src="${request.riderPhoto||request.captainPhoto}" alt="Captain">`;
+        } else {
+            const initials = name.split(' ').map(n=>n[0]).join('').substring(0,2).toUpperCase();
+            document.getElementById('captainProfilePic').innerHTML = `<span style="font-size:20px;font-weight:800;color:var(--primary-dark);">${initials}</span>`;
+        }
+
+        // Call link
+        const phone = request.riderPhone ? (request.riderPhone.startsWith('+') ? request.riderPhone : `+92${request.riderPhone}`) : '#';
+        document.getElementById('openCallBtn').href = phone !== '#' ? `tel:${phone}` : '#';
+
+        // Chat avatar
+        document.getElementById('chatAvatarLetter').textContent = name.charAt(0).toUpperCase();
+        document.getElementById('chatCaptainSub').textContent = request.riderVehicle ? `${request.riderVehicle} - ${plate}` : 'In-App Secure Chat';
+
+        // ── Populate share data ──
+        shareRideData = {
+            riderName:   name,
+            vehicleInfo: `${request.riderVehicle || 'Vehicle'} · ${plate}`,
+            pickupAddr:  request.pickup?.address   || '—',
+            dropAddr:    request.destination?.address || '—',
+            plate:       plate !== '—' ? plate : ''
+        };
+
+        startLiveTracking(request);
+        updateStatusBanner(request);
+        listenForMessages();
+        document.getElementById('floating-actions').style.display = 'flex';
+        addReadyMessages(request.riderPhone);
+    }
+
+    function updateStatusBanner(request) {
+        const banner = document.getElementById('statusBanner');
+        const msg = document.getElementById('rideStatusMessage');
+        const sub = document.getElementById('rideStatusSub');
+        const icon = document.getElementById('statusBannerIconEl');
+        const cancelBtn = document.getElementById('cancelAcceptedRideBtn');
+
+        const v = (request.riderVehicle||'bike').toLowerCase();
+        let vehicleIconClass = 'fas fa-motorcycle';
+        let vehicleEmoji = '🏍️';
+        if (v.includes('car') || v.includes('sedan') || v.includes('suv')) {
+            vehicleIconClass = 'fas fa-car'; vehicleEmoji = '🚗';
+        } else if (v.includes('rickshaw') || v.includes('auto')) {
+            vehicleIconClass = 'fas fa-taxi'; vehicleEmoji = '🛺';
+        } else if (v.includes('pickup') || v.includes('cargo') || v.includes('truck')) {
+            vehicleIconClass = 'fas fa-truck'; vehicleEmoji = '🚛';
+        }
+
+        banner.className = 'status-banner';
+
+        if (request.status==='accepted') {
+            banner.classList.add('status-accepted');
+            icon.className=vehicleIconClass;
+            msg.textContent = `${vehicleEmoji} Captain On The Way`;
+            sub.textContent = 'Pickup ke liye ready raho!';
+            cancelBtn.style.display='flex';
+        } else if (request.status==='arrived') {
+            banner.classList.add('status-arrived');
+            icon.className='fas fa-map-marker-alt';
+            msg.textContent = '✅ Captain Aa Gaya!';
+            sub.textContent = 'Please pickup point par tashire lao.';
+            cancelBtn.style.display='flex';
+        } else if (request.status==='in_progress') {
+            banner.classList.add('status-in_progress');
+            icon.className='fas fa-route';
+            msg.textContent = '🛣️ Ride Chal Rahi Hai!';
+            sub.textContent = 'Enjoy your trip — aap ke destination par ja rahe hain.';
+            cancelBtn.style.display='none';
+        }
+    }
+
+    // ─── BOOKING LISTENER ───
+    function startBookingListener(requestRef) {
+        if (activeBookingListener) activeBookingListener();
+        activeBookingListener = onValue(requestRef, snap => {
+            const request = snap.val();
+            if (!request) { if(bookingId) alert("Ride record nahi mili. Home par ja rahe hain."); returnToDashboard(); return; }
+            currentCompletedRequest = request;
+
+            if (['accepted','arrived','in_progress'].includes(request.status)) {
+                document.getElementById('finding-overlay').style.display='none';
+                const card = document.getElementById('map-controls-container');
+                card.style.display='flex';
+                setupShutterDrag();
+                updateDetails(request);
+            } else if (request.status==='completed') {
+                document.getElementById('map-controls-container').style.display='none';
+                document.getElementById('floating-actions').style.display='none';
+                if (!request.isRated) showRatingModal(request);
+                else returnToDashboard();
+            } else if (['pending','counter_offered'].includes(request.status)) {
+                document.getElementById('finding-overlay').style.display='flex';
+                document.getElementById('findingRiderStatus').textContent="Captain ka jawab intezaar hai...";
+            } else if (request.status?.includes('Cancelled') || request.status?.includes('Rejected')) {
+                alert("Ride cancel ho gayi. Home par ja rahe hain.");
+                returnToDashboard();
+            }
+        });
+    }
+
+    function returnToDashboard() {
+        localStorage.removeItem('activeBookingId');
+        if (activeBookingListener) activeBookingListener();
+        if (messageListener) messageListener();
+        if (routingControl && map) { map.removeControl(routingControl); routingControl=null; }
+        window.location.href='index.html';
+    }
+
+    window.cancelRide = async () => {
+        if (!activeBookingRef) { alert("Active request nahi mili."); returnToDashboard(); return; }
+        const snap = await get(activeBookingRef);
+        const s = snap.val()?.status;
+        const msg = (s==='pending'||s==='counter_offered') ? "Ride request cancel karna chahte hain?" : "Ride cancel karna chahte hain?\n(Cancellation fee lag sakti hai.)";
+        if (!confirm(msg)) return;
+
+        const acceptedBtn = document.getElementById('cancelAcceptedRideBtn');
+        const findingBtn = document.getElementById('cancelFindingRideBtn');
+        if (acceptedBtn) { acceptedBtn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Cancel ho rahi hai...'; acceptedBtn.disabled=true; }
+        if (findingBtn) { findingBtn.innerHTML='<i class="fas fa-spinner fa-spin"></i> Cancel ho rahi hai...'; findingBtn.disabled=true; }
+
+        try {
+            await update(activeBookingRef, { status:'CancelledByCustomer', cancelledAt:new Date().toLocaleString() });
+        } catch(e) {
+            alert(`Cancel nahi hua: ${e.message}`);
+            if (acceptedBtn) { acceptedBtn.innerHTML='<i class="fas fa-times-circle"></i> Cancel Ride (Fee may apply)'; acceptedBtn.disabled=false; }
+            if (findingBtn) { findingBtn.innerHTML='Cancel (Koi fee nahi)'; findingBtn.disabled=false; }
+        }
+    };
+
+    // ─── RATING ───
+    function showRatingModal(request) {
+        document.getElementById('ratingHeader').textContent = `${request.riderName||'Aap ke Captain'} ko rate karein`;
+        currentRating = 0;
+        document.getElementById('ratingComment').value='';
+        document.querySelectorAll('.rating-stars i').forEach(s=>s.classList.remove('rated'));
+        document.getElementById('ratingModalOverlay').style.display='flex';
+        document.getElementById('map-controls-container').style.display='none';
+        document.getElementById('floating-actions').style.display='none';
+    }
+
+    window.selectRating = (rating) => {
+        currentRating = rating;
+        document.querySelectorAll('.rating-stars i').forEach(s=>{
+            s.classList.toggle('rated', parseInt(s.dataset.rating) <= rating);
+        });
+    };
+
+    window.submitRating = async (ratingOverride=currentRating) => {
+        const request = currentCompletedRequest; if (!request) return;
+        const submitBtn=document.getElementById('submitRatingBtn'), skipBtn=document.getElementById('skipRatingBtn');
+        const comment=document.getElementById('ratingComment').value.trim();
+        if (ratingOverride===0 && !confirm("Rating skip karna chahte hain?")) return;
+        if (ratingOverride>0 && (ratingOverride<1||ratingOverride>5)) { alert("1-5 stars select karein ya Skip karein."); return; }
+        submitBtn.disabled=true; skipBtn.disabled=true;
+        submitBtn.innerHTML=ratingOverride===0?'<i class="fas fa-spinner fa-spin"></i> Skip...':'<i class="fas fa-spinner fa-spin"></i> Submit...';
+
+        try {
+            await update(activeBookingRef, { captainRating:ratingOverride, captainComment:comment, isRated:true, ratedAt:Date.now() });
+            document.getElementById('ratingModalOverlay').style.display='none';
+            returnToDashboard();
+        } catch(e) {
+            alert("Rating submit nahi hui. Try again."); submitBtn.disabled=false; skipBtn.disabled=false;
+            submitBtn.innerHTML='<i class="fas fa-paper-plane"></i> Submit';
+        }
+    };
+
+    // ─── CHAT ───
+    window.toggleChat = (open) => {
+        const chat=document.getElementById('chat-container');
+        chat.style.display=open?'flex':'none';
+        if (open) {
+            chat.classList.add('open');
+            document.getElementById('chat-badge').style.display='none';
+            const msgs=document.getElementById('chat-messages');
+            msgs.scrollTop=msgs.scrollHeight;
+        } else { chat.classList.remove('open'); }
+    };
+
+    const READY_MESSAGES = [
+        {type:'chat', text:"Please jaldi ayen!"},
+        {type:'chat', text:"Aap kahan hain?"},
+        {type:'chat', text:"Main gate par hoon."},
+        {type:'chat', text:"2 min aur chahiye."},
+        {type:'chat', text:"Main laal shirt mein hoon."},
+        {type:'wa', text:"Main entrance par intezaar kar raha hoon.", wa:"I am waiting at the main entrance."},
+        {type:'wa', text:"Pickup confirm karein.", wa:"Can you confirm the pickup point?"},
+        {type:'wa', text:"5 min delay hai.", wa:"There is a delay of about 5 minutes."},
+        {type:'wa', text:"Extra luggage hai.", wa:"I have extra luggage with me."},
+        {type:'wa', text:"Baby ke saath hoon.", wa:"I am traveling with a baby/child."},
+    ];
+
+    function addReadyMessages(riderPhone) {
+        const container = document.getElementById('readyMessagesContainer');
+        container.innerHTML = READY_MESSAGES.map(msg => {
+            if (msg.type==='chat') {
+                return `<button class="quick-reply-btn" onclick="sendReadyMessage('${msg.text.replace(/'/g,"\\'")}')"><i class="fas fa-comment-alt"></i> ${msg.text}</button>`;
+            } else {
+                return `<button class="quick-reply-btn wa" onclick="openWhatsAppChat('${encodeURIComponent(msg.wa)}')"><i class="fab fa-whatsapp"></i> ${msg.text}</button>`;
+            }
+        }).join('');
+    }
+
+    // ─── SHARE RIDE ───
+    let shareRideData = {};
+
+    function buildShareLink() {
+        const bId = bookingId || '';
+        const baseUrl = window.location.origin + window.location.pathname;
+        return `${baseUrl}?shareView=1&booking=${encodeURIComponent(bId)}`;
+    }
+
+    function buildShareMessage() {
+        const name   = shareRideData.riderName   || 'Captain';
+        const pickup = shareRideData.pickupAddr  || 'Pickup';
+        const drop   = shareRideData.dropAddr    || 'Destination';
+        const plate  = shareRideData.plate       || '';
+        const link   = buildShareLink();
+        return `🚖 *Raftaroo Live Ride*\n\nMain abhi ride par hoon!\n\n👤 Captain: ${name}${plate ? '\n🏍️ Plate: ' + plate : ''}\n📍 Pickup: ${pickup}\n🏁 Drop: ${drop}\n\n🔴 Live Track Karein:\n${link}\n\n_Raftaroo se powered_`;
+    }
+
+    window.openShareModal = function() {
+        const overlay = document.getElementById('shareRideOverlay');
+        overlay.style.display = 'flex';
+        document.getElementById('shareRiderName').textContent   = shareRideData.riderName   || 'Captain';
+        document.getElementById('shareVehicleInfo').textContent = shareRideData.vehicleInfo  || 'Vehicle';
+        document.getElementById('sharePickupAddr').textContent  = shareRideData.pickupAddr   || 'Loading...';
+        document.getElementById('shareDropAddr').textContent    = shareRideData.dropAddr     || 'Loading...';
+        if (navigator.share) document.getElementById('nativeShareBtn').style.display = 'flex';
+        document.getElementById('copyLinkStatus').textContent = 'Kisi bhi app mein paste karein';
+    };
+
+    window.closeShareModal = function() {
+        document.getElementById('shareRideOverlay').style.display = 'none';
+    };
+
+    window.shareViaWhatsApp = function() {
+        const msg = buildShareMessage();
+        window.open(`https://wa.me/?text=${encodeURIComponent(msg)}`, '_blank');
+        closeShareModal();
+    };
+
+    window.shareViaSMS = function() {
+        const msg = buildShareMessage();
+        window.open(`sms:?body=${encodeURIComponent(msg)}`, '_self');
+        closeShareModal();
+    };
+
+    window.copyShareLink = async function() {
+        const msg = buildShareMessage();
+        try {
+            await navigator.clipboard.writeText(msg);
+        } catch(e) {
+            const ta = document.createElement('textarea');
+            ta.value = msg; document.body.appendChild(ta);
+            ta.select(); document.execCommand('copy');
+            document.body.removeChild(ta);
+        }
+        document.getElementById('copyLinkStatus').textContent = '✅ Copy ho gaya!';
+        setTimeout(() => { document.getElementById('copyLinkStatus').textContent = 'Kisi bhi app mein paste karein'; }, 2500);
+    };
+
+    window.nativeShare = async function() {
+        if (!navigator.share) return;
+        try {
+            await navigator.share({ title: 'Raftaroo Live Ride', text: buildShareMessage(), url: buildShareLink() });
+            closeShareModal();
+        } catch(e) {}
+    };
+
+    document.getElementById('shareRideOverlay').addEventListener('click', function(e) {
+        if (e.target === this) closeShareModal();
+    });
+
+    // Patch updateDetails to store share data
+    const _origUpdateDetails = window.updateDetails;
+
+    window.sendReadyMessage = (msg) => sendMessage(msg);
+
+    window.openWhatsAppChat = (encodedMsg) => {
+        if (!currentCompletedRequest?.riderPhone) { alert("Captain ka phone number abhi available nahi hai."); return; }
+        const phone = currentCompletedRequest.riderPhone.replace(/\s/g,'');
+        window.open(`https://wa.me/${phone}?text=${encodedMsg}`,'_blank');
+        sendMessage(`[System] WhatsApp message bheja: "${decodeURIComponent(encodedMsg)}"`, true);
+    };
+
+    async function sendMessage(text=document.getElementById('chatInput').value.trim(), isSystem=false) {
+        if (!bookingId || !text) return;
+        const sendBtn=document.getElementById('sendChatBtn'); sendBtn.disabled=true;
+        try {
+            await set(push(ref(db,`requests/${bookingId}/messages`)), {
+                sender: isSystem?'system':'customer',
+                text, timestamp:Date.now()
+            });
+            if (!isSystem) document.getElementById('chatInput').value='';
+        } catch(e) { alert("Message nahi bheja ja saka."); }
+        finally { sendBtn.disabled=false; }
+    }
+
+    document.getElementById('chatInput').addEventListener('keydown', e=>{
+        if (e.key==='Enter' && !e.shiftKey) { e.preventDefault(); sendMessage(); }
+    });
+    document.getElementById('sendChatBtn').onclick=()=>sendMessage();
+
+    function listenForMessages() {
+        if (messageListener) messageListener();
+        messageListener = onValue(ref(db,`requests/${bookingId}/messages`), snap => {
+            const msgs = snap.val();
+            const chatMsgs = document.getElementById('chat-messages');
+            chatMsgs.innerHTML = '';
+            let unread = 0;
+            const isOpen = document.getElementById('chat-container').classList.contains('open');
+            const allMsgs = msgs ? Object.values(msgs).sort((a,b) => a.timestamp - b.timestamp) : [];
+
+            allMsgs.forEach(msg => {
+                const isCustomer = msg.sender === 'customer';
+                const isSystem   = msg.sender === 'system';
+
+                const row = document.createElement('div');
+                row.className = `message-row ${isSystem ? 'row-system' : isCustomer ? 'row-customer' : 'row-captain'}`;
+
+                if (isSystem) {
+                    const bubble = document.createElement('div');
+                    bubble.className = 'chat-message message-system';
+                    bubble.textContent = msg.text;
+                    row.appendChild(bubble);
+                } else {
+                    const col = document.createElement('div');
+                    col.className = 'msg-col';
+                    const bubble = document.createElement('div');
+                    bubble.className = `chat-message message-${msg.sender}`;
+                    bubble.textContent = msg.text;
+                    const time = document.createElement('div');
+                    time.className = `msg-time ${isCustomer ? 'time-right' : 'time-left'}`;
+                    const ts = msg.timestamp ? new Date(msg.timestamp) : new Date();
+                    time.textContent = ts.toLocaleTimeString('en-PK', { hour:'2-digit', minute:'2-digit' });
+                    col.appendChild(bubble);
+                    col.appendChild(time);
+                    row.appendChild(col);
+                }
+                chatMsgs.appendChild(row);
+
+                if (!isCustomer && !isSystem && !isOpen) unread++;
+            });
+
+            const newCount = allMsgs.length;
+            if (newCount > lastMessageCount) {
+                const newMsgs = allMsgs.slice(lastMessageCount);
+                const hasCaptainMsg = newMsgs.some(m => m.sender !== 'customer');
+                if (hasCaptainMsg) playMsgSound();
+            }
+            lastMessageCount = newCount;
+
+            const badge = document.getElementById('chat-badge');
+            if (unread > 0 && !isOpen) { badge.textContent = unread; badge.style.display = 'flex'; }
+            else badge.style.display = 'none';
+            setTimeout(() => { chatMsgs.scrollTop = chatMsgs.scrollHeight; }, 30);
+        });
+    }
+
+    // ─── DRAG / SHUTTER ───
+    let isDragging=false, startY=0, startTop=0, card;
+    const SNAP_RATIOS=[0, 0.45, 0.72];
+
+    function getTranslateY() {
+        const m=new WebKitCSSMatrix(window.getComputedStyle(card).transform);
+        return m.m42;
+    }
+
+    function snapTo(currentTop) {
+        const vh=window.innerHeight;
+        const currentRatio=currentTop/vh;
+        let best=SNAP_RATIOS[SNAP_RATIOS.length-1], minDiff=1;
+        SNAP_RATIOS.forEach(r=>{ const d=Math.abs(currentRatio-r); if(d<minDiff){minDiff=d;best=r;} });
+        const targetTop=vh*best;
+        card.style.transition='transform 0.3s cubic-bezier(0.17,0.84,0.44,1)';
+        card.style.transform=`translateY(${targetTop}px)`;
+        document.getElementById('card-content-wrapper').style.overflowY=targetTop<100?'auto':'hidden';
+        setTimeout(()=>card.style.transition='',300);
+    }
+
+    function setupShutterDrag() {
+        card=document.getElementById('map-controls-container');
+        const handle=document.getElementById('dragHandle');
+        if (!handle||!card) return;
+
+        const initialTop=window.innerHeight*0.45;
+        card.style.transform=`translateY(${initialTop}px)`;
+        document.getElementById('card-content-wrapper').style.overflowY='auto';
+
+        const startDrag=(e)=>{
+            if (e.touches?.length>1) return;
+            const cw=document.getElementById('card-content-wrapper');
+            if (cw.scrollTop>0 && getTranslateY()<100) return;
+            e.preventDefault();
+            isDragging=true;
+            startY=e.touches?e.touches[0].clientY:e.clientY;
+            startTop=getTranslateY();
+            card.style.transition='none';
+        };
+        const onDrag=(e)=>{
+            if (!isDragging) return;
+            e.preventDefault();
+            const cy=e.touches?e.touches[0].clientY:e.clientY;
+            const newTop=Math.max(0, Math.min(startTop+(cy-startY), window.innerHeight*0.85));
+            card.style.transform=`translateY(${newTop}px)`;
+        };
+        const endDrag=()=>{ if(!isDragging)return; isDragging=false; snapTo(getTranslateY()); };
+
+        handle.removeEventListener('touchstart',startDrag);
+        handle.removeEventListener('mousedown',startDrag);
+        handle.addEventListener('touchstart',startDrag,{passive:false});
+        handle.addEventListener('mousedown',startDrag);
+        document.addEventListener('touchmove',onDrag,{passive:false});
+        document.addEventListener('touchend',endDrag);
+        document.addEventListener('mousemove',onDrag);
+        document.addEventListener('mouseup',endDrag);
+        window.addEventListener('resize',()=>snapTo(getTranslateY()));
+    }
+
+    // ─── RATING STARS ───
+    document.querySelectorAll('.rating-stars i').forEach(star=>{
+        star.addEventListener('click',e=>window.selectRating(parseInt(e.target.dataset.rating)));
+    });
+    document.getElementById('submitRatingBtn').addEventListener('click',()=>window.submitRating(currentRating));
+    document.getElementById('skipRatingBtn').addEventListener('click',()=>window.submitRating(0));
+
+    // ─── INIT ───
+    document.addEventListener('DOMContentLoaded', ()=>{
+        window.addEventListener('resize',()=>{ if(map) map.invalidateSize(); });
+
+        if (!bookingId) { window.location.href='index.html'; return; }
+
+        activeBookingRef = ref(db,`requests/${bookingId}`);
+
+        get(activeBookingRef).then(snap=>{
+            const req=snap.val();
+            if (!req) { window.location.href='index.html'; return; }
+            if (['pending','counter_offered'].includes(req.status)) {
+                document.getElementById('finding-overlay').style.display='flex';
+            }
+        });
+
+        startBookingListener(activeBookingRef);
+    });
+</script>
+
+<script>
+if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").catch(e=>console.log(e));
+</script>
+<!-- ═══════════════════════════════════════════════════════════
+     RAFTAROO PWA JS SNIPPET v3.0
+     </body> se pehle paste karein (har HTML page mein)
+     ═══════════════════════════════════════════════════════════ -->
+
+<!-- Install Banner HTML (body ke andar, pehli line) -->
+<div id="raftaroo-install-banner" style="
+  display:none;
+  position:fixed;
+  bottom:20px;
+  left:16px;
+  right:16px;
+  background:linear-gradient(135deg,#00C853 0%,#00E676 100%);
+  padding:16px 18px;
+  border-radius:18px;
+  z-index:9999;
+  box-shadow:0 8px 32px rgba(0,200,83,0.45);
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  animation:raftaroo-banner-in 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
+">
+  <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0;">
+    <div style="width:42px;height:42px;background:rgba(255,255,255,0.2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🏍️</div>
+    <div style="min-width:0;">
+      <p style="color:#fff;font-weight:800;margin:0;font-size:14px;line-height:1.2;">Raftaroo App Install Karein!</p>
+      <p style="color:rgba(255,255,255,0.75);margin:2px 0 0;font-size:11px;">Fast booking, offline access & notifications</p>
+    </div>
+  </div>
+  <div style="display:flex;gap:8px;flex-shrink:0;">
+    <button id="raftaroo-install-btn" style="background:#fff;color:#00A040;border:none;padding:9px 16px;border-radius:10px;font-weight:800;font-size:13px;cursor:pointer;font-family:inherit;white-space:nowrap;">Install</button>
+    <button id="raftaroo-close-btn" style="background:rgba(255,255,255,0.2);border:none;padding:9px 12px;border-radius:10px;color:#fff;font-weight:700;cursor:pointer;font-size:14px;line-height:1;">✕</button>
+  </div>
+</div>
+
+<style>
+@keyframes raftaroo-banner-in {
+  from { transform: translateY(100px); opacity: 0; }
+  to   { transform: translateY(0);     opacity: 1; }
+}
+</style>
+
+<script>
+(function() {
+  'use strict';
+
+  const SW_PATH    = '/sw.js';
+  const SW_SCOPE   = '/';
+  const DISMISSED_KEY = 'raftaroo_install_dismissed_v3';
+  const banner = document.getElementById('raftaroo-install-banner');
+  let deferredPrompt = null;
+  let swRegistration = null;
+
+  // ── 1. Register Service Worker ──────────────────────────────
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker
+        .register(SW_PATH, { scope: SW_SCOPE, updateViaCache: 'none' })
+        .then(reg => {
+          swRegistration = reg;
+          console.log('[Raftaroo PWA] SW registered:', reg.scope);
+
+          // Check for updates every 60 seconds when app is visible
+          setInterval(() => {
+            if (!document.hidden) reg.update();
+          }, 60000);
+
+          // Handle SW updates — notify user
+          reg.addEventListener('updatefound', () => {
+            const newWorker = reg.installing;
+            newWorker?.addEventListener('statechange', () => {
+              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                showUpdateToast();
+              }
+            });
+          });
+        })
+        .catch(err => console.warn('[Raftaroo PWA] SW registration failed:', err));
+
+      // Listen for messages from SW
+      navigator.serviceWorker.addEventListener('message', handleSWMessage);
+    });
+  }
+
+  // ── 2. Install Prompt (beforeinstallprompt) ──────────────────
+  window.addEventListener('beforeinstallprompt', (e) => {
+    e.preventDefault();
+    deferredPrompt = e;
+
+    const isStandalone = window.matchMedia('(display-mode: standalone)').matches
+      || window.navigator.standalone === true;
+    const wasDismissed = sessionStorage.getItem(DISMISSED_KEY);
+
+    if (!isStandalone && !wasDismissed && banner) {
+      // Show after short delay for better UX
+      setTimeout(() => {
+        banner.style.display = 'flex';
+      }, 3000);
+    }
+  });
+
+  // ── 3. Install button click ──────────────────────────────────
+  document.getElementById('raftaroo-install-btn')?.addEventListener('click', async () => {
+    if (!deferredPrompt) return;
+    deferredPrompt.prompt();
+    const { outcome } = await deferredPrompt.userChoice;
+    console.log('[Raftaroo PWA] Install outcome:', outcome);
+
+    if (outcome === 'accepted') {
+      hideBanner();
+      // Track install event
+      if (typeof gtag !== 'undefined') {
+        gtag('event', 'pwa_install', { event_category: 'PWA', event_label: 'installed' });
+      }
+    }
+    deferredPrompt = null;
+  });
+
+  // ── 4. Close button ─────────────────────────────────────────
+  document.getElementById('raftaroo-close-btn')?.addEventListener('click', () => {
+    hideBanner();
+    sessionStorage.setItem(DISMISSED_KEY, '1');
+  });
+
+  // ── 5. App installed callback ────────────────────────────────
+  window.addEventListener('appinstalled', () => {
+    hideBanner();
+    deferredPrompt = null;
+    console.log('[Raftaroo PWA] App installed successfully! 🎉');
+    if (typeof gtag !== 'undefined') {
+      gtag('event', 'pwa_install_complete', { event_category: 'PWA' });
+    }
+  });
+
+  // ── 6. Update toast notification ────────────────────────────
+  function showUpdateToast() {
+    const toast = document.createElement('div');
+    toast.id = 'raftaroo-update-toast';
+    toast.innerHTML = `
+      <span>🆕 Raftaroo ka naya version available hai!</span>
+      <button onclick="window.location.reload()" style="
+        background:#00C853;color:#0A0F1E;border:none;
+        padding:7px 14px;border-radius:8px;font-weight:700;
+        font-size:12px;cursor:pointer;font-family:inherit;margin-left:10px;">
+        Update
+      </button>
+    `;
+    Object.assign(toast.style, {
+      position: 'fixed',
+      top: '70px',
+      left: '16px',
+      right: '16px',
+      background: '#0A0F1E',
+      color: '#fff',
+      padding: '14px 18px',
+      borderRadius: '12px',
+      zIndex: '9998',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'space-between',
+      boxShadow: '0 8px 30px rgba(0,0,0,0.4)',
+      fontSize: '13px',
+      fontWeight: '600',
+      border: '1px solid rgba(0,200,83,0.3)',
+      animation: 'raftaroo-banner-in 0.3s ease both'
+    });
+    document.body.appendChild(toast);
+
+    // Auto hide after 10 seconds
+    setTimeout(() => toast.remove(), 10000);
+  }
+
+  // ── 7. Handle messages from SW ──────────────────────────────
+  function handleSWMessage(event) {
+    const { type, version } = event.data || {};
+    if (type === 'SW_UPDATED') {
+      console.log('[Raftaroo PWA] SW updated to', version);
+    }
+  }
+
+  // ── 8. Network status indicator ─────────────────────────────
+  function updateOnlineStatus() {
+    const isOnline = navigator.onLine;
+    document.documentElement.setAttribute('data-network', isOnline ? 'online' : 'offline');
+    if (!isOnline) {
+      showOfflineBadge();
+    } else {
+      document.getElementById('raftaroo-offline-badge')?.remove();
+    }
+  }
+
+  function showOfflineBadge() {
+    if (document.getElementById('raftaroo-offline-badge')) return;
+    const badge = document.createElement('div');
+    badge.id = 'raftaroo-offline-badge';
+    badge.textContent = '📵 Offline Mode';
+    Object.assign(badge.style, {
+      position: 'fixed',
+      top: '68px',
+      left: '50%',
+      transform: 'translateX(-50%)',
+      background: '#EF4444',
+      color: '#fff',
+      padding: '6px 16px',
+      borderRadius: '20px',
+      fontSize: '12px',
+      fontWeight: '700',
+      zIndex: '9997',
+      boxShadow: '0 4px 16px rgba(239,68,68,0.4)',
+      whiteSpace: 'nowrap',
+      fontFamily: 'inherit'
+    });
+    document.body.appendChild(badge);
+  }
+
+  window.addEventListener('online',  updateOnlineStatus);
+  window.addEventListener('offline', updateOnlineStatus);
+  updateOnlineStatus();
+
+  // ── Helper ───────────────────────────────────────────────────
+  function hideBanner() {
+    if (banner) banner.style.display = 'none';
+  }
+
+  // ── Expose helper for app code ───────────────────────────────
+  window.RaftarooPWA = {
+    getVersion: () => {
+      swRegistration?.active?.postMessage({ type: 'GET_VERSION' });
+    },
+    clearCache: () => {
+      swRegistration?.active?.postMessage({ type: 'CLEAR_CACHE' });
+    },
+    checkUpdate: () => {
+      swRegistration?.update();
+    }
+  };
+
+})();
+</script>
+</body>
+</html>
