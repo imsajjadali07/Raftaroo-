@@ -2067,12 +2067,13 @@ input:checked + .slider:before {
         const availableRiderIcon = (vehicle) => {
             const v = (vehicle||'bike').toLowerCase().replace(/\s+/g,'-');
             let imgUrl = VEHICLE_ICONS['default'];
-            if (v.includes('car') || v.includes('sedan') || v.includes('suv') || v.includes('economy') || v.includes('comfort')) {
-                imgUrl = VEHICLE_ICONS['car-economy'];
-            } else if (v.includes('rickshaw') || v.includes('auto')) {
+            // Rickshaw check PEHLE karo (bike se pehle) — nahi to qingqi/auto/rickshaw bike ban jata
+            if (v.includes('rickshaw') || v.includes('auto') || v.includes('qingqi')) {
                 imgUrl = VEHICLE_ICONS['rickshaw'];
             } else if (v.includes('pickup') || v.includes('cargo') || v.includes('truck')) {
                 imgUrl = VEHICLE_ICONS['pickup'];
+            } else if (v.includes('car') || v.includes('sedan') || v.includes('suv') || v.includes('economy') || v.includes('comfort')) {
+                imgUrl = VEHICLE_ICONS['car-economy'];
             } else if (v.includes('bike') || v.includes('moto')) {
                 imgUrl = VEHICLE_ICONS['bike'];
             } else {
@@ -2080,7 +2081,7 @@ input:checked + .slider:before {
             }
 
             return L.divIcon({
-                html: `<img src="${imgUrl}" style="width:44px;height:44px;object-fit:contain;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.3));" onerror="this.src='https://iili.io/ftViNi7.png'"/>`,
+                html: `<img src="${imgUrl}" style="width:44px;height:44px;object-fit:contain;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.3));" onerror="this.src='https://iili.io/ftV61st.png'"/>`,
                 className: 'custom-div-icon',
                 iconSize: [44, 44],
                 iconAnchor: [22, 22],
@@ -2165,7 +2166,7 @@ input:checked + .slider:before {
                 }
                 // Rickshaw
                 if (sv.includes('rickshaw') || sv.includes('auto')) {
-                    return rv.includes('rickshaw') || rv.includes('auto');
+                    return rv.includes('rickshaw') || rv.includes('auto') || rv.includes('qingqi');
                 }
                 // Cargo/Pickup/Truck
                 if (sv.includes('pickup') || sv.includes('cargo') || sv.includes('truck')) {

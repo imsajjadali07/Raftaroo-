@@ -756,17 +756,29 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
     function isVehicleMatch(cap, req) {
         if(!cap||!req) return false;
         const c=cap.toLowerCase().trim(), r=req.toLowerCase().trim();
-        const bikes=['bike','motorcycle','motorbike'], cars=['car','sedan','suv','hatchback'], ricks=['rickshaw','auto','auto rickshaw','qingqi'];
-        if(bikes.some(t=>c.includes(t))&&bikes.some(t=>r.includes(t))) return true;
-        if(cars.some(t=>c.includes(t))&&cars.some(t=>r.includes(t))) return true;
-        if(ricks.some(t=>c.includes(t))&&ricks.some(t=>r.includes(t))) return true;
+        // ── Vehicle groups ──
+        const bikes=['bike','motorcycle','motorbike','moto'];
+        // car-economy aur car-comfort dono "car" group mein hain
+        const cars=['car','sedan','suv','hatchback','economy','comfort','car-economy','car-comfort'];
+        const ricks=['rickshaw','auto','qingqi','chingchi','three-wheel'];
+        const cargos=['pickup','cargo','truck'];
+
+        const inBikes = (s) => bikes.some(t=>s.includes(t));
+        const inCars  = (s) => cars.some(t=>s.includes(t));
+        const inRicks = (s) => ricks.some(t=>s.includes(t));
+        const inCargo = (s) => cargos.some(t=>s.includes(t));
+
+        if(inBikes(c) && inBikes(r)) return true;
+        if(inCars(c)  && inCars(r))  return true;
+        if(inRicks(c) && inRicks(r)) return true;
+        if(inCargo(c) && inCargo(r)) return true;
         return c===r;
     }
 
-    // Captain car wala hai ya nahi
+    // Captain car wala hai ya nahi (car-economy aur car-comfort bhi include)
     function isCaptainCar() {
         const v = (captainData.vehicleType||'').toLowerCase().trim();
-        return ['car','sedan','suv','hatchback'].some(t => v.includes(t));
+        return ['car','sedan','suv','hatchback','economy','comfort'].some(t => v.includes(t));
     }
 
     // AC mode UI update
@@ -816,7 +828,9 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
                 Object.keys(rd).forEach(key=>{
                     const req=rd[key];
                     if(req.status==='pending'&&!req.riderId){
-                        if(!isVehicleMatch(cv,req.vehicle||req.service||'')) return;
+                        // vehicle aur service dono combine karke match karo
+                        const reqVehicleStr = [req.vehicle||'', req.service||''].join(' ').toLowerCase();
+                        if(!isVehicleMatch(cv, reqVehicleStr)) return;
                         // AC Filter — sirf car walon ke liye
                         if(isCaptainCar()) {
                             const reqAc = req.acRequired === true || req.ac === true || (req.service||'').toLowerCase().includes('ac') || (req.vehicle||'').toLowerCase().includes('ac');

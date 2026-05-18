@@ -604,25 +604,35 @@ window.setFilter = (filter, btn) => {
 };
 
 // ── MAP ICONS ──
+const VEHICLE_ICONS_ADMIN = {
+    'bike':     'https://iili.io/ftViNi7.png',
+    'rickshaw': 'https://iili.io/ftV61st.png',
+    'car':      'https://iili.io/ftV4mOl.png',
+    'pickup':   'https://iili.io/ftVPMZB.png',
+    'default':  'https://iili.io/ftViNi7.png'
+};
+
 const getCaptainIcon = (vehicle, status) => {
-    let icon = 'motorcycle';
     const v = (vehicle||'').toLowerCase();
-    if (v.includes('car')) icon = 'car-side';
-    else if (v.includes('pickup') || v.includes('truck')) icon = 'truck-moving';
-    else if (v.includes('rickshaw')) icon = 'truck';
+    let imgUrl = VEHICLE_ICONS_ADMIN['default'];
+    if (v.includes('rickshaw') || v.includes('auto') || v.includes('qingqi')) imgUrl = VEHICLE_ICONS_ADMIN['rickshaw'];
+    else if (v.includes('pickup') || v.includes('cargo') || v.includes('truck')) imgUrl = VEHICLE_ICONS_ADMIN['pickup'];
+    else if (v.includes('car') || v.includes('sedan') || v.includes('suv')) imgUrl = VEHICLE_ICONS_ADMIN['car'];
+    else if (v.includes('bike') || v.includes('moto')) imgUrl = VEHICLE_ICONS_ADMIN['bike'];
 
     const colors = { active: '#00C853', 'on-trip': '#3D9EFF', inactive: '#555' };
     const color = colors[status] || '#555';
-    const size = status === 'on-trip' ? 28 : 24;
-    const shadow = status !== 'inactive' ? `filter:drop-shadow(0 0 6px ${color}80)` : '';
+    const size = status === 'on-trip' ? 52 : 44;
+    const shadow = status !== 'inactive' ? `filter:drop-shadow(0 2px 6px ${color}80)` : 'opacity:0.5';
 
     return L.divIcon({
         html: `<div style="position:relative;display:inline-block;">
-            <i class="fas fa-${icon}" style="color:${color};font-size:${size}px;${shadow}"></i>
-            ${status !== 'inactive' ? `<span style="position:absolute;top:-2px;right:-6px;width:8px;height:8px;background:${color};border-radius:50%;border:2px solid #080b0d;"></span>` : ''}
+            <img src="${imgUrl}" style="width:${size}px;height:${size}px;object-fit:contain;${shadow}" onerror="this.src='https://iili.io/ftViNi7.png'"/>
+            ${status !== 'inactive' ? `<span style="position:absolute;top:-2px;right:-4px;width:10px;height:10px;background:${color};border-radius:50%;border:2px solid #080b0d;"></span>` : ''}
         </div>`,
         className: '',
-        iconAnchor: [14, 14]
+        iconSize: [size, size],
+        iconAnchor: [size/2, size/2]
     });
 };
 
