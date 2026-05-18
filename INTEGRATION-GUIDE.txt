@@ -1,0 +1,128 @@
+================================================================
+  RAFTAROO PUSH NOTIFICATIONS — INTEGRATION GUIDE
+================================================================
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 1: VAPID KEY LENA (sirf ek baar)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Firebase Console → Project Settings (gear icon)
+2. "Cloud Messaging" tab click karein
+3. "Web Push certificates" section mein "Generate key pair" click karein
+4. Jo key mili woh copy karein
+5. fcm-init.js mein YAHAN_APNI_VAPID_KEY_PASTE_KAREIN ki jagah paste karein
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 2: FILES DEPLOY KAREIN
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Yeh files apni website ke ROOT mein upload karein:
+  ✅ sw.js          (root mein hona ZAROORI hai)
+  ✅ fcm-init.js    (root ya /js/ folder mein)
+
+Cloud Function deploy karein:
+  cd functions
+  npm install
+  firebase deploy --only functions
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 3: track-live-rider.html mein add karein (CUSTOMER)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+</head> tag se PEHLE yeh line add karein:
+
+  <script src="/fcm-init.js"></script>
+
+Phir JavaScript mein "onAuthStateChanged" ya jahan user
+ka UID milta hai, wahan ke BAAD yeh code add karein:
+
+────────────────────────────────────────────────────────
+// CUSTOMER: Push notification setup
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    // Thodi der baad call karo taake page load ho jaye
+    setTimeout(() => {
+      initPushNotifications(app, db, "customer", user.uid);
+    }, 2000);
+  }
+});
+────────────────────────────────────────────────────────
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 4: captain-active-ride.html mein add karein (CAPTAIN)
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Same — </head> se pehle:
+
+  <script src="/fcm-init.js"></script>
+
+Phir jahan captain authenticate hota hai
+(onAuthStateChanged ke andar), wahan add karein:
+
+────────────────────────────────────────────────────────
+// CAPTAIN: Push notification setup
+onAuthStateChanged(auth, async (user) => {
+  if (user) {
+    currentCaptain = user;
+    setTimeout(() => {
+      initPushNotifications(app, db, "captain", user.uid);
+    }, 2000);
+  }
+});
+────────────────────────────────────────────────────────
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 5: Firebase Database Rules update karein
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+Firebase Console → Realtime Database → Rules mein
+ensure karein ke fcmToken save ho sake:
+
+  "users": {
+    "$uid": {
+      ".read": "$uid === auth.uid",
+      ".write": "$uid === auth.uid"
+    }
+  },
+  "riders": {
+    "$uid": {
+      ".read": "auth != null",
+      ".write": "$uid === auth.uid"
+    }
+  }
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+STEP 6: Test karein
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+1. Website kholo → browser notification permission allow karein
+2. Firebase DB mein users/{uid}/fcmToken check karein — token
+   wahan save hona chahiye
+3. Doosre device se message bhejein
+4. Pehle device pe notification aani chahiye (even if closed)
+
+Firebase Console → Functions → Logs mein dekh sakte hain
+ke notification send hua ya error aaya.
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+FLOW DIAGRAM
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+  User opens site
+       ↓
+  Permission popup
+       ↓
+  FCM token saved in Firebase DB
+  (users/{uid}/fcmToken  OR  riders/{uid}/fcmToken)
+       ↓
+  Captain/Customer sends message
+       ↓
+  Firebase DB: requests/{id}/messages/{newId} created
+       ↓
+  Cloud Function triggers automatically
+       ↓
+  Reads recipient's FCM token from DB
+       ↓
+  Sends push via FCM API
+       ↓
+  sw.js receives it (even if app closed)
+       ↓
+  Phone/browser pe notification show hoti hai
+       ↓
+  User click kare toh correct page khulta hai
+
+================================================================

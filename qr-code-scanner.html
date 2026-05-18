@@ -1,0 +1,987 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Standard Favicon -->
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+
+<!-- ICO fallback -->
+<link rel="icon" href="/favicon.ico">
+
+<!-- Apple Touch Icon -->
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+
+<!-- Android Icons -->
+<link rel="icon" type="image/png" sizes="192x192" href="/android-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="/android-512.png">
+
+<meta name="theme-color" content="#00C853">
+</script>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-EM1R4LGZTD"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  
+  // یہاں آپ کا Measurement ID درج ہے
+  gtag('config', 'G-EM1R4LGZTD'); 
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>Raftaroo QR Generator | Free QR Code Maker</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<a href="https://raftaroo.online" target="_blank">
+  <img src="https://iili.io/ftkFxix.jpg" alt="Click and Book Your Ride Today - Raftaroo" style="width:100%; max-width:728px; display:block;">
+</a>
+<style>
+:root {
+    --primary: #28a745;
+    --secondary: #000000;
+    --bg-light: #f8f9fa;
+    --white: #ffffff;
+    --text-main: #1a1a1a;
+    --text-muted: #707070;
+    --shadow: 0 4px 20px rgba(0,0,0,0.08);
+    --error: #e74c3c;
+    --success: #2ecc71;
+    --info: #3498db;
+    --card-bg: var(--white);
+    --header-bg: var(--white);
+    --input-bg: #fafafa;
+    --border: #e8e8e8;
+}
+.dark-mode {
+    --primary: #28A745;
+    --secondary: #FFFFFF;
+    --bg-light: #121212;
+    --white: #1e1e1e;
+    --text-main: #e0e0e0;
+    --text-muted: #aaaaaa;
+    --shadow: 0 4px 20px rgba(255,255,255,0.06);
+    --card-bg: #1e1e1e;
+    --header-bg: #1e1e1e;
+    --input-bg: #2a2a2a;
+    --border: #333;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; font-family:'Poppins',sans-serif; -webkit-tap-highlight-color:transparent; }
+
+body {
+    background-color: var(--bg-light);
+    color: var(--text-main);
+    overflow-x: hidden;
+    min-height: 100vh;
+    transition: background-color 0.3s;
+    padding-bottom: 85px;
+}
+
+/* HEADER */
+.app-header {
+    background: var(--header-bg);
+    padding: 14px 20px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: 0;
+    z-index: 200;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+.header-left { display:flex; align-items:center; gap:12px; }
+.header-logo {
+    width:42px; height:42px;
+    background: var(--primary);
+    border-radius:13px;
+    display:flex; align-items:center; justify-content:center;
+    font-size:20px; color:#fff;
+}
+.header-title h1 { font-size:16px; font-weight:700; color:var(--text-main); line-height:1.2; }
+.header-title p  { font-size:11px; color:var(--text-muted); }
+.header-right { display:flex; align-items:center; gap:8px; }
+.icon-btn {
+    width:40px; height:40px;
+    background:var(--bg-light);
+    border:none; border-radius:12px;
+    cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    color:var(--text-main); font-size:16px;
+    transition:0.2s;
+}
+.icon-btn:active { transform:scale(0.92); }
+
+/* PAGE CONTENT */
+.page { padding:0 16px 16px; }
+
+/* SECTION LABELS */
+.sec-lbl {
+    font-size:11px; font-weight:700;
+    color:var(--text-muted);
+    text-transform:uppercase;
+    letter-spacing:1.2px;
+    margin:18px 0 10px;
+}
+
+/* TYPE CHIPS */
+.chips-scroll {
+    display:flex; gap:9px;
+    overflow-x:auto; padding-bottom:4px;
+    scrollbar-width:none; -ms-overflow-style:none;
+    margin:0 -16px; padding-left:16px; padding-right:16px;
+}
+.chips-scroll::-webkit-scrollbar { display:none; }
+.chip {
+    display:flex; align-items:center; gap:7px;
+    padding:10px 16px;
+    background:var(--card-bg);
+    border:2px solid transparent;
+    border-radius:30px;
+    font-size:13px; font-weight:600;
+    color:var(--text-muted);
+    cursor:pointer; white-space:nowrap;
+    box-shadow:var(--shadow);
+    transition:all 0.25s;
+    flex-shrink:0;
+}
+.chip i { font-size:13px; }
+.chip.active {
+    border-color:var(--primary);
+    color:var(--primary);
+}
+
+/* CARDS */
+.card {
+    background:var(--card-bg);
+    border-radius:18px;
+    box-shadow:var(--shadow);
+    padding:20px;
+    margin-bottom:14px;
+}
+
+/* INPUT CARD HEADER */
+.ic-header { display:flex; align-items:center; gap:12px; margin-bottom:18px; }
+.ic-icon {
+    width:40px; height:40px;
+    background:#eafbef;
+    border-radius:12px;
+    display:flex; align-items:center; justify-content:center;
+    color:var(--primary); font-size:16px;
+    flex-shrink:0;
+}
+.dark-mode .ic-icon { background:rgba(40,167,69,0.15); }
+.ic-info h3 { font-size:15px; font-weight:700; color:var(--text-main); }
+.ic-info p  { font-size:12px; color:var(--text-muted); }
+
+/* INPUTS */
+.lbl { display:block; font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.8px; margin-bottom:6px; }
+.inp {
+    width:100%; padding:14px 15px;
+    border:1.5px solid var(--border);
+    border-radius:12px; font-size:15px;
+    font-family:'Poppins',sans-serif;
+    outline:none; transition:0.3s;
+    background:var(--input-bg);
+    color:var(--text-main);
+    margin-bottom:13px;
+    display:block;
+}
+.inp:focus { border-color:var(--primary); background:var(--card-bg); }
+.inp::placeholder { color:var(--text-muted); }
+textarea.inp { resize:vertical; min-height:90px; }
+select.inp { cursor:pointer; appearance:none; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='14' height='14' viewBox='0 0 24 24'%3E%3Cpath fill='%23707070' d='M7 10l5 5 5-5z'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:right 14px center; }
+
+.row2 { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+.row2 .inp { margin-bottom:0; }
+.row2-wrap { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:13px; }
+.row2-wrap > div { display:flex; flex-direction:column; }
+
+/* SECTION SWITCHER */
+.isec { display:none; }
+.isec.active { display:block; }
+
+/* GENERATE BTN */
+.btn-gen {
+    width:100%; padding:15px;
+    background:var(--secondary); color:var(--bg-light);
+    border:none; border-radius:12px;
+    font-size:16px; font-weight:700;
+    font-family:'Poppins',sans-serif;
+    cursor:pointer; transition:0.3s;
+    display:flex; align-items:center; justify-content:center; gap:10px;
+}
+.btn-gen:active { transform:scale(0.98); }
+.btn-gen.green { background:var(--primary); color:#fff; }
+
+/* QR PREVIEW */
+.qr-card {
+    background:var(--card-bg);
+    border-radius:18px;
+    box-shadow:var(--shadow);
+    padding:22px 20px;
+    margin-bottom:14px;
+    text-align:center;
+}
+.qr-frame {
+    width:230px; height:230px;
+    margin:0 auto 16px;
+    background:var(--bg-light);
+    border-radius:18px;
+    display:flex; align-items:center; justify-content:center;
+    position:relative;
+    overflow:hidden;
+}
+.qr-frame #qr-display {
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width:200px; height:200px;
+}
+/* Corner brackets */
+.qr-frame::before { content:''; position:absolute; top:10px; left:10px; width:26px; height:26px; border-left:3px solid var(--primary); border-top:3px solid var(--primary); border-radius:4px 0 0 0; }
+.qr-frame::after  { content:''; position:absolute; bottom:10px; right:10px; width:26px; height:26px; border-right:3px solid var(--primary); border-bottom:3px solid var(--primary); border-radius:0 0 4px 0; }
+.qr-corner-tr { position:absolute; top:10px; right:10px; width:26px; height:26px; border-right:3px solid var(--primary); border-top:3px solid var(--primary); border-radius:0 4px 0 0; }
+.qr-corner-bl { position:absolute; bottom:10px; left:10px; width:26px; height:26px; border-left:3px solid var(--primary); border-bottom:3px solid var(--primary); border-radius:0 0 0 4px; }
+
+#qr-display canvas, #qr-display img { border-radius:8px !important; display:block !important; }
+
+.qr-empty-state { display:flex; flex-direction:column; align-items:center; gap:8px; }
+.qr-empty-state i { font-size:52px; color:var(--border); }
+.qr-empty-state span { font-size:13px; color:var(--text-muted); font-weight:500; }
+
+/* QR Badge row */
+.qr-meta { display:flex; align-items:center; justify-content:center; gap:10px; margin-bottom:16px; }
+.qr-badge {
+    display:inline-flex; align-items:center; gap:5px;
+    background:#eafbef; color:var(--primary);
+    font-size:12px; font-weight:700;
+    padding:5px 12px; border-radius:20px;
+}
+.dark-mode .qr-badge { background:rgba(40,167,69,0.15); }
+.qr-badge .dot { width:6px; height:6px; background:var(--primary); border-radius:50%; animation:blink 1.5s infinite; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.qr-chars { font-size:12px; color:var(--text-muted); font-weight:500; }
+
+/* DOWNLOAD BUTTONS */
+.dl-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:10px; margin-bottom:10px; }
+.dl-btn {
+    padding:12px 6px;
+    background:var(--bg-light);
+    border:1.5px solid var(--border);
+    border-radius:12px;
+    font-size:12px; font-weight:700;
+    font-family:'Poppins',sans-serif;
+    color:var(--text-main);
+    cursor:pointer; transition:0.2s;
+    display:flex; flex-direction:column; align-items:center; gap:5px;
+}
+.dl-btn i { font-size:20px; color:var(--primary); }
+.dl-btn:active { transform:scale(0.95); }
+.share-btn {
+    width:100%; padding:13px;
+    background:var(--bg-light);
+    border:1.5px solid var(--primary);
+    border-radius:12px;
+    font-size:14px; font-weight:700;
+    font-family:'Poppins',sans-serif;
+    color:var(--primary);
+    cursor:pointer; transition:0.2s;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+}
+.share-btn:active { background:#eafbef; }
+
+/* CUSTOMIZE */
+.cust-toggle {
+    display:flex; align-items:center; justify-content:space-between;
+    padding:14px 0; cursor:pointer;
+    border-top:1px solid var(--bg-light);
+    user-select:none;
+}
+.cust-left { display:flex; align-items:center; gap:10px; font-size:14px; font-weight:600; color:var(--text-main); }
+.cust-left i { color:var(--primary); width:18px; text-align:center; }
+.arr { color:var(--text-muted); font-size:11px; transition:transform 0.3s; }
+.arr.open { transform:rotate(180deg); }
+.cust-body { display:none; padding-top:12px; }
+.cust-body.open { display:block; }
+
+.color-pair { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:12px; }
+.color-pick {
+    position:relative;
+    display:flex; align-items:center; gap:10px;
+    padding:12px 14px;
+    background:var(--bg-light);
+    border:1.5px solid var(--border);
+    border-radius:12px; cursor:pointer; overflow:hidden;
+}
+.color-pick input[type="color"] { position:absolute; inset:0; width:100%; height:100%; opacity:0; cursor:pointer; padding:0; border:none; }
+.cswatch { width:26px; height:26px; border-radius:8px; border:2px solid rgba(0,0,0,0.08); flex-shrink:0; }
+.clbl { font-size:12px; font-weight:600; color:var(--text-muted); }
+
+.presets { display:flex; gap:10px; flex-wrap:wrap; margin-bottom:14px; }
+.pdot { width:30px; height:30px; border-radius:50%; cursor:pointer; border:2px solid var(--border); box-shadow:0 2px 6px rgba(0,0,0,0.15); transition:0.2s; }
+.pdot:active { transform:scale(0.85); }
+
+.slider-row { margin-bottom:14px; }
+.slider-hdr { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; }
+.slider-lbl { font-size:11px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.8px; }
+.slider-val { font-size:12px; font-weight:700; color:var(--primary); background:#eafbef; padding:3px 10px; border-radius:20px; }
+.dark-mode .slider-val { background:rgba(40,167,69,0.15); }
+
+input[type="range"] { -webkit-appearance:none; width:100%; height:5px; background:var(--border); border-radius:3px; border:none; outline:none; padding:0; }
+input[type="range"]::-webkit-slider-thumb { -webkit-appearance:none; width:22px; height:22px; background:var(--primary); border-radius:50%; cursor:pointer; box-shadow:0 2px 8px rgba(40,167,69,0.35); border:3px solid #fff; }
+
+.logo-drop {
+    border:2px dashed var(--border); border-radius:12px;
+    padding:18px; text-align:center; cursor:pointer;
+    position:relative; overflow:hidden; transition:0.3s; margin-bottom:10px;
+}
+.logo-drop.drag-over, .logo-drop:hover { border-color:var(--primary); background:#eafbef; }
+.dark-mode .logo-drop:hover { background:rgba(40,167,69,0.08); }
+.logo-drop input { position:absolute; inset:0; width:100%; height:100%; opacity:0; cursor:pointer; }
+.logo-drop i { font-size:26px; color:var(--text-muted); margin-bottom:5px; display:block; }
+.logo-drop p { font-size:13px; color:var(--text-muted); font-weight:600; }
+.logo-drop small { font-size:11px; color:var(--text-muted); }
+#logo-preview { display:none; text-align:center; margin-bottom:10px; }
+#logo-preview img { max-height:54px; border-radius:10px; border:1.5px solid var(--border); margin-bottom:6px; }
+.rm-logo { background:none; border:1px solid var(--border); border-radius:8px; padding:5px 12px; font-size:12px; color:var(--text-muted); cursor:pointer; font-family:'Poppins',sans-serif; }
+
+/* STATS */
+.stats-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin-bottom:14px; }
+.scard { background:var(--card-bg); border-radius:14px; padding:14px 10px; text-align:center; box-shadow:var(--shadow); }
+.snum { font-size:24px; font-weight:700; color:var(--primary); }
+.slbl { font-size:10px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.8px; margin-top:2px; }
+
+/* HISTORY */
+.hist-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:10px; }
+.hitem { background:var(--bg-light); border-radius:10px; padding:8px; cursor:pointer; border:1.5px solid transparent; transition:0.2s; text-align:center; }
+.hitem:hover { border-color:var(--primary); }
+.hitem img { width:100%; border-radius:6px; display:block; }
+.hitem span { font-size:10px; color:var(--text-muted); font-weight:600; margin-top:4px; display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+
+/* BOTTOM NAV */
+.bottom-nav {
+    position:fixed; bottom:0; left:0; right:0;
+    background:var(--header-bg);
+    display:flex;
+    border-top:1px solid var(--bg-light);
+    z-index:300;
+    padding-bottom:env(safe-area-inset-bottom,0);
+    box-shadow:0 -2px 10px rgba(0,0,0,0.06);
+}
+.nav-item {
+    flex:1;
+    display:flex; flex-direction:column; align-items:center;
+    padding:10px 4px 8px;
+    cursor:pointer; color:var(--text-muted);
+    font-size:10px; font-weight:600;
+    transition:0.2s; gap:3px;
+    border:none; background:none;
+    font-family:'Poppins',sans-serif;
+}
+.nav-item i { font-size:20px; }
+.nav-item.active { color:var(--primary); }
+
+/* TOAST */
+.toast-wrap {
+    position:fixed; bottom:90px; left:50%;
+    transform:translateX(-50%) translateY(16px);
+    z-index:9999; pointer-events:none;
+    transition:all 0.3s; opacity:0;
+}
+.toast-wrap.show { transform:translateX(-50%) translateY(0); opacity:1; }
+.toast {
+    background:var(--secondary); color:var(--bg-light);
+    padding:11px 20px; border-radius:30px;
+    font-size:13px; font-weight:600;
+    white-space:nowrap; box-shadow:0 8px 25px rgba(0,0,0,0.2);
+    display:flex; align-items:center; gap:8px;
+}
+.toast i { font-size:14px; }
+
+/* LOC BTN */
+.loc-btn {
+    width:100%; padding:12px;
+    background:var(--bg-light);
+    border:1.5px solid var(--info);
+    border-radius:12px; font-size:13px; font-weight:600;
+    font-family:'Poppins',sans-serif;
+    color:var(--info); cursor:pointer;
+    display:flex; align-items:center; justify-content:center; gap:8px;
+    transition:0.2s; margin-bottom:12px;
+}
+.loc-btn:active { background:#e8f4fd; }
+
+@media(max-width:380px) {
+    .row2, .row2-wrap { grid-template-columns:1fr; }
+    .dl-grid { grid-template-columns:1fr 1fr; }
+    .hist-grid { grid-template-columns:repeat(3,1fr); }
+}
+
+/* Fade-in for QR */
+#qr-display { animation:none; }
+#qr-display.fresh { animation:zoomIn 0.35s cubic-bezier(0.34,1.56,0.64,1); }
+@keyframes zoomIn { from{opacity:0;transform:scale(0.85)} to{opacity:1;transform:scale(1)} }
+
+/* FIX: qrcodejs generates both canvas + img — hide the img, keep only canvas */
+#qr-display img { display:none !important; }
+#qr-display canvas { display:block !important; border-radius:8px !important; max-width:100% !important; }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="app-header">
+    <div class="header-left">
+        <div class="header-logo"><i class="fas fa-qrcode"></i></div>
+        <div class="header-title">
+            <h1>QR Generator</h1>
+            <p>Raftaroo Tools</p>
+        </div>
+    </div>
+    <div class="header-right">
+        <button class="icon-btn" onclick="toggleDark()" id="dark-btn"><i class="fas fa-moon"></i></button>
+    </div>
+</div>
+
+<!-- PAGE -->
+<div class="page">
+
+    <!-- TYPE SELECT -->
+    <p class="sec-lbl">QR Type Select Karein</p>
+    <div class="chips-scroll">
+        <div class="chip active"  onclick="sw('url',this)"><i class="fas fa-link"></i> URL</div>
+        <div class="chip" onclick="sw('text',this)"><i class="fas fa-font"></i> Text</div>
+        <div class="chip" onclick="sw('wifi',this)"><i class="fas fa-wifi"></i> WiFi</div>
+        <div class="chip" onclick="sw('vcard',this)"><i class="fas fa-user"></i> Contact</div>
+        <div class="chip" onclick="sw('email',this)"><i class="fas fa-envelope"></i> Email</div>
+        <div class="chip" onclick="sw('sms',this)"><i class="fas fa-comment-sms"></i> SMS</div>
+        <div class="chip" onclick="sw('loc',this)"><i class="fas fa-map-marker-alt"></i> Location</div>
+        <div class="chip" onclick="sw('upi',this)"><i class="fas fa-money-bill-wave"></i> Payment</div>
+    </div>
+
+    <!-- INPUT CARD -->
+    <p class="sec-lbl">Details Darj Karein</p>
+    <div class="card">
+        <div class="ic-header">
+            <div class="ic-icon" id="t-icon"><i class="fas fa-link"></i></div>
+            <div class="ic-info">
+                <h3 id="t-title">Website URL</h3>
+                <p id="t-desc">Koi bhi website ka link paste karein</p>
+            </div>
+        </div>
+
+        <!-- URL -->
+        <div class="isec active" id="isec-url">
+            <label class="lbl">Website Link</label>
+            <input class="inp" type="url" id="url-i" placeholder="https://raftaroo.com" value="https://">
+        </div>
+
+        <!-- Text -->
+        <div class="isec" id="isec-text">
+            <label class="lbl">Text Likhen</label>
+            <textarea class="inp" id="text-i" placeholder="Koi bhi text ya message..."></textarea>
+        </div>
+
+        <!-- WiFi -->
+        <div class="isec" id="isec-wifi">
+            <label class="lbl">Network Name (SSID)</label>
+            <input class="inp" type="text" id="wifi-ssid" placeholder="MyWifi_Home">
+            <label class="lbl">Password</label>
+            <input class="inp" type="text" id="wifi-pass" placeholder="mypassword123">
+            <label class="lbl">Security Type</label>
+            <select class="inp" id="wifi-sec">
+                <option value="WPA">WPA / WPA2 (Common)</option>
+                <option value="WEP">WEP</option>
+                <option value="">Open (No password)</option>
+            </select>
+        </div>
+
+        <!-- vCard -->
+        <div class="isec" id="isec-vcard">
+            <div class="row2-wrap">
+                <div><label class="lbl">First Name</label><input class="inp" type="text" id="vc-fn" placeholder="Ali"></div>
+                <div><label class="lbl">Last Name</label><input class="inp" type="text" id="vc-ln" placeholder="Khan"></div>
+            </div>
+            <label class="lbl">Phone</label>
+            <input class="inp" type="tel" id="vc-ph" placeholder="+92 300 0000000">
+            <label class="lbl">Email</label>
+            <input class="inp" type="email" id="vc-em" placeholder="ali@raftaroo.com">
+            <div class="row2-wrap">
+                <div><label class="lbl">Company</label><input class="inp" type="text" id="vc-co" placeholder="Raftaroo"></div>
+                <div><label class="lbl">Website</label><input class="inp" type="text" id="vc-wb" placeholder="https://..."></div>
+            </div>
+        </div>
+
+        <!-- Email -->
+        <div class="isec" id="isec-email">
+            <label class="lbl">Recipient Email</label>
+            <input class="inp" type="email" id="em-to" placeholder="someone@example.com">
+            <label class="lbl">Subject</label>
+            <input class="inp" type="text" id="em-sb" placeholder="Hello!">
+            <label class="lbl">Message</label>
+            <textarea class="inp" id="em-bd" placeholder="Apna message yahan likhen..." rows="3"></textarea>
+        </div>
+
+        <!-- SMS -->
+        <div class="isec" id="isec-sms">
+            <label class="lbl">Phone Number</label>
+            <input class="inp" type="tel" id="sms-no" placeholder="+92 300 0000000">
+            <label class="lbl">Message</label>
+            <textarea class="inp" id="sms-ms" placeholder="Apna message yahan..." rows="3"></textarea>
+        </div>
+
+        <!-- Location -->
+        <div class="isec" id="isec-loc">
+            <button class="loc-btn" onclick="getMyLoc()"><i class="fas fa-crosshairs"></i> Meri Location Use Karein</button>
+            <div class="row2-wrap">
+                <div><label class="lbl">Latitude</label><input class="inp" type="text" id="loc-la" placeholder="24.8607"></div>
+                <div><label class="lbl">Longitude</label><input class="inp" type="text" id="loc-lo" placeholder="67.0011"></div>
+            </div>
+        </div>
+
+        <!-- UPI Payment -->
+        <div class="isec" id="isec-upi">
+            <label class="lbl">UPI ID</label>
+            <input class="inp" type="text" id="upi-id" placeholder="yourname@bank">
+            <label class="lbl">Naam</label>
+            <input class="inp" type="text" id="upi-nm" placeholder="Ali Khan">
+            <label class="lbl">Amount (Optional)</label>
+            <input class="inp" type="number" id="upi-am" placeholder="500">
+        </div>
+
+        <button class="btn-gen green" onclick="generateQR()">
+            <i class="fas fa-qrcode"></i> QR Code Banayein
+        </button>
+    </div>
+
+    <!-- QR PREVIEW -->
+    <div id="qr-area" style="display:none">
+        <p class="sec-lbl">Aapka QR Code</p>
+        <div class="qr-card">
+            <div class="qr-frame" id="qr-frame">
+                <div class="qr-corner-tr"></div>
+                <div class="qr-corner-bl"></div>
+                <div id="qr-display">
+                    <div class="qr-empty-state">
+                        <i class="fas fa-qrcode"></i>
+                        <span>QR yahan aayega</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="qr-meta">
+                <div class="qr-badge"><div class="dot"></div><span id="q-type">URL</span></div>
+                <span class="qr-chars" id="q-chars">0 chars</span>
+            </div>
+
+            <div class="dl-grid">
+                <button class="dl-btn" onclick="dlQR('png')"><i class="fas fa-image"></i>PNG</button>
+                <button class="dl-btn" onclick="dlQR('jpg')"><i class="fas fa-file-image"></i>JPG</button>
+                <button class="dl-btn" onclick="cpQR()"><i class="fas fa-copy"></i>Copy</button>
+            </div>
+            <button class="share-btn" id="share-btn" onclick="shareQR()">
+                <i class="fas fa-share-alt"></i> Share Karein
+            </button>
+        </div>
+    </div>
+
+    <!-- CUSTOMIZE -->
+    <p class="sec-lbl">QR Customize Karein</p>
+    <div class="card">
+        <!-- Colors -->
+        <div class="cust-toggle" onclick="tog('c-colors','arr-c')">
+            <div class="cust-left"><i class="fas fa-palette"></i> Rang (Colors)</div>
+            <i class="fas fa-chevron-down arr" id="arr-c"></i>
+        </div>
+        <div class="cust-body" id="c-colors">
+            <div class="color-pair">
+                <div class="color-pick">
+                    <div class="cswatch" id="fg-sw" style="background:#000"></div>
+                    <span class="clbl">Foreground</span>
+                    <input type="color" id="fg-c" value="#000000" oninput="document.getElementById('fg-sw').style.background=this.value">
+                </div>
+                <div class="color-pick">
+                    <div class="cswatch" id="bg-sw" style="background:#fff;border-color:#e0e0e0"></div>
+                    <span class="clbl">Background</span>
+                    <input type="color" id="bg-c" value="#ffffff" oninput="document.getElementById('bg-sw').style.background=this.value">
+                </div>
+            </div>
+            <label class="lbl">Quick Presets</label>
+            <div class="presets">
+                <div class="pdot" style="background:#000"          onclick="pr('#000000','#ffffff')" title="Classic Black"></div>
+                <div class="pdot" style="background:#28a745"       onclick="pr('#28a745','#ffffff')" title="Raftaroo Green"></div>
+                <div class="pdot" style="background:#e74c3c"       onclick="pr('#e74c3c','#fff5f5')" title="Red"></div>
+                <div class="pdot" style="background:#3498db"       onclick="pr('#1a5276','#ebf5fb')" title="Blue"></div>
+                <div class="pdot" style="background:#9b59b6"       onclick="pr('#6c3483','#f4ecf7')" title="Purple"></div>
+                <div class="pdot" style="background:#f39c12"       onclick="pr('#7d6608','#fef9e7')" title="Gold"></div>
+                <div class="pdot" style="background:#1e272e"       onclick="pr('#1e272e','#ffd32a')" title="Night"></div>
+            </div>
+        </div>
+
+        <!-- Size -->
+        <div class="cust-toggle" onclick="tog('c-size','arr-s')">
+            <div class="cust-left"><i class="fas fa-expand-arrows-alt"></i> Size aur Quality</div>
+            <i class="fas fa-chevron-down arr" id="arr-s"></i>
+        </div>
+        <div class="cust-body" id="c-size">
+            <div class="slider-row">
+                <div class="slider-hdr">
+                    <span class="slider-lbl">QR Size</span>
+                    <span class="slider-val" id="sv-size">256px</span>
+                </div>
+                <input type="range" id="qr-sz" min="128" max="600" value="256" step="8" oninput="document.getElementById('sv-size').textContent=this.value+'px'">
+            </div>
+            <label class="lbl">Error Correction Level</label>
+            <select class="inp" id="ecl">
+                <option value="L">Low (7%) — Chhota QR</option>
+                <option value="M" selected>Medium (15%) — Balanced</option>
+                <option value="Q">Quartile (25%) — Better scan</option>
+                <option value="H">High (30%) — Logo ke liye best</option>
+            </select>
+        </div>
+
+        <!-- Logo -->
+        <div class="cust-toggle" onclick="tog('c-logo','arr-l')">
+            <div class="cust-left"><i class="fas fa-image"></i> Logo / Icon Add Karein</div>
+            <i class="fas fa-chevron-down arr" id="arr-l"></i>
+        </div>
+        <div class="cust-body" id="c-logo">
+            <div class="logo-drop" id="logo-drop">
+                <i class="fas fa-cloud-upload-alt"></i>
+                <p>Tap karein ya drag karein</p>
+                <small>PNG, JPG, SVG recommended</small>
+                <input type="file" accept="image/*" onchange="addLogo(event)">
+            </div>
+            <div id="logo-preview">
+                <img id="lp-img" src="" alt="logo">
+                <br><button class="rm-logo" onclick="rmLogo()"><i class="fas fa-times"></i> Remove</button>
+            </div>
+            <div class="slider-row">
+                <div class="slider-hdr">
+                    <span class="slider-lbl">Logo Size</span>
+                    <span class="slider-val" id="sv-logo">20%</span>
+                </div>
+                <input type="range" id="logo-sz" min="10" max="35" value="20" oninput="document.getElementById('sv-logo').textContent=this.value+'%'">
+            </div>
+        </div>
+    </div>
+
+    <!-- STATS -->
+    <p class="sec-lbl">Session Stats</p>
+    <div class="stats-grid">
+        <div class="scard"><div class="snum" id="st-gen">0</div><div class="slbl">Generate</div></div>
+        <div class="scard"><div class="snum" id="st-dl">0</div><div class="slbl">Download</div></div>
+        <div class="scard"><div class="snum">8</div><div class="slbl">Types</div></div>
+    </div>
+
+    <!-- HISTORY -->
+    <div id="hist-area" style="display:none">
+        <p class="sec-lbl">Recent QR Codes</p>
+        <div class="card" style="padding:14px">
+            <div class="hist-grid" id="hist-list"></div>
+        </div>
+    </div>
+
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+    <button class="nav-item active" id="nav-gen" onclick="navClick(0)"><i class="fas fa-qrcode"></i><span>Generate</span></button>
+    <button class="nav-item" id="nav-hist" onclick="navClick(1)"><i class="fas fa-history"></i><span>History</span></button>
+    <button class="nav-item" id="nav-cust" onclick="navClick(2)"><i class="fas fa-sliders-h"></i><span>Customize</span></button>
+    <button class="nav-item" id="nav-tip" onclick="navClick(3)"><i class="fas fa-lightbulb"></i><span>Tip</span></button>
+</div>
+
+<!-- TOAST -->
+<div class="toast-wrap" id="twrap">
+    <div class="toast"><i class="fas fa-check-circle" id="t-ico" style="color:var(--primary)"></i><span id="t-msg">Done!</span></div>
+</div>
+
+<script>
+// ======= STATE =======
+let curType = 'url';
+let logoURL = null;
+let genN = 0, dlN = 0;
+let hist = [];
+let lastData = '';
+
+const T = {
+    url:   { icon:'fa-link',            title:'Website URL',     desc:'Koi bhi website ka link paste karein' },
+    text:  { icon:'fa-font',            title:'Plain Text',      desc:'Koi bhi text ya message' },
+    wifi:  { icon:'fa-wifi',            title:'WiFi Network',    desc:'Apni WiFi share karein scan se' },
+    vcard: { icon:'fa-user',            title:'Contact Card',    desc:'Apni contact info share karein' },
+    email: { icon:'fa-envelope',        title:'Email Composer',  desc:'Pre-filled email link' },
+    sms:   { icon:'fa-comment-sms',     title:'SMS Message',     desc:'Scan karke message bhejein' },
+    loc:   { icon:'fa-map-marker-alt',  title:'GPS Location',    desc:'Coordinates ya map link' },
+    upi:   { icon:'fa-money-bill-wave', title:'UPI Payment',     desc:'Payment receive karein QR se' },
+};
+
+// Type switch
+function sw(type, el) {
+    curType = type;
+    document.querySelectorAll('.chip').forEach(c => c.classList.remove('active'));
+    el.classList.add('active');
+    document.querySelectorAll('.isec').forEach(s => s.classList.remove('active'));
+    document.getElementById('isec-'+type).classList.add('active');
+    const cfg = T[type];
+    document.getElementById('t-icon').innerHTML = `<i class="fas ${cfg.icon}"></i>`;
+    document.getElementById('t-title').textContent = cfg.title;
+    document.getElementById('t-desc').textContent = cfg.desc;
+}
+
+// Build QR data
+function buildData() {
+    switch(curType) {
+        case 'url':   return (document.getElementById('url-i').value.trim()) || 'https://raftaroo.com';
+        case 'text':  return (document.getElementById('text-i').value.trim()) || 'Raftaroo';
+        case 'wifi':  {
+            const s = document.getElementById('wifi-ssid').value;
+            const p = document.getElementById('wifi-pass').value;
+            const e = document.getElementById('wifi-sec').value;
+            return `WIFI:T:${e};S:${s};P:${p};;`;
+        }
+        case 'vcard': return `BEGIN:VCARD\nVERSION:3.0\nFN:${document.getElementById('vc-fn').value} ${document.getElementById('vc-ln').value}\nN:${document.getElementById('vc-ln').value};${document.getElementById('vc-fn').value}\nTEL:${document.getElementById('vc-ph').value}\nEMAIL:${document.getElementById('vc-em').value}\nORG:${document.getElementById('vc-co').value}\nURL:${document.getElementById('vc-wb').value}\nEND:VCARD`;
+        case 'email': return `mailto:${document.getElementById('em-to').value}?subject=${encodeURIComponent(document.getElementById('em-sb').value)}&body=${encodeURIComponent(document.getElementById('em-bd').value)}`;
+        case 'sms':   return `sms:${document.getElementById('sms-no').value}?body=${encodeURIComponent(document.getElementById('sms-ms').value)}`;
+        case 'loc':   return `https://maps.google.com/?q=${document.getElementById('loc-la').value||'24.8607'},${document.getElementById('loc-lo').value||'67.0011'}`;
+        case 'upi':   {
+            const id = document.getElementById('upi-id').value;
+            const nm = encodeURIComponent(document.getElementById('upi-nm').value);
+            const am = document.getElementById('upi-am').value;
+            return `upi://pay?pa=${id}&pn=${nm}${am?'&am='+am:''}`;
+        }
+    }
+    return 'https://raftaroo.com';
+}
+
+// Generate
+function generateQR() {
+    const data = buildData();
+    if (!data || data.length < 3) { toast('⚠️ Pehle kuch enter karein!', true); return; }
+    lastData = data;
+
+    const sz  = 200; // Always render at 200px in preview; high-res export uses slider value
+    const fg  = document.getElementById('fg-c').value;
+    const bg  = document.getElementById('bg-c').value;
+    const ecl = document.getElementById('ecl').value;
+    const d   = document.getElementById('qr-display');
+
+    d.innerHTML = '';
+    d.classList.remove('fresh');
+
+    try {
+        new QRCode(d, { text:data, width:sz, height:sz, colorDark:fg, colorLight:bg, correctLevel:QRCode.CorrectLevel[ecl] });
+        if (logoURL) setTimeout(() => putLogo(d), 200);
+        void d.offsetWidth;
+        d.classList.add('fresh');
+
+        document.getElementById('qr-area').style.display = 'block';
+        document.getElementById('q-type').textContent = T[curType].title;
+        document.getElementById('q-chars').textContent = data.length + ' chars';
+        document.getElementById('share-btn').style.display = navigator.share ? 'flex' : 'none';
+
+        genN++;
+        document.getElementById('st-gen').textContent = genN;
+        saveHist(data, d);
+        toast('✅ QR Code tayar hai!');
+        setTimeout(() => document.getElementById('qr-area').scrollIntoView({behavior:'smooth',block:'nearest'}), 100);
+    } catch(e) {
+        toast('⚠️ Content bohat lamba hai, chhota karein.', true);
+    }
+}
+
+// Logo overlay
+function putLogo(container) {
+    const cv = container.querySelector('canvas');
+    if (!cv || !logoURL) return;
+    const ctx = cv.getContext('2d');
+    const img = new Image();
+    img.src = logoURL;
+    img.onload = () => {
+        const pct = parseInt(document.getElementById('logo-sz').value)/100;
+        const lw  = cv.width * pct;
+        const lh  = lw * (img.height/img.width);
+        const lx  = (cv.width-lw)/2;
+        const ly  = (cv.height-lh)/2;
+        const p   = 8;
+        ctx.fillStyle = '#fff';
+        ctx.beginPath();
+        if(ctx.roundRect) ctx.roundRect(lx-p,ly-p,lw+p*2,lh+p*2,8); else ctx.rect(lx-p,ly-p,lw+p*2,lh+p*2);
+        ctx.fill();
+        ctx.drawImage(img,lx,ly,lw,lh);
+    };
+}
+
+// History
+function saveHist(data, container) {
+    const cv = container.querySelector('canvas');
+    if (!cv) return;
+    hist.unshift({ data, img:cv.toDataURL('image/png'), type:curType });
+    if (hist.length > 8) hist.pop();
+    renderHist();
+}
+
+function renderHist() {
+    if (!hist.length) return;
+    document.getElementById('hist-area').style.display = 'block';
+    document.getElementById('hist-list').innerHTML = hist.map((h,i)=>`
+        <div class="hitem" onclick="loadHist(${i})">
+            <img src="${h.img}">
+            <span>${T[h.type]?.title||h.type}</span>
+        </div>`).join('');
+}
+
+function loadHist(i) {
+    const h = hist[i];
+    const d = document.getElementById('qr-display');
+    d.innerHTML = `<img src="${h.img}" style="width:200px;border-radius:8px;">`;
+    document.getElementById('qr-area').style.display = 'block';
+    document.getElementById('q-type').textContent = T[h.type]?.title||h.type;
+    document.getElementById('q-chars').textContent = h.data.length+' chars';
+    lastData = h.data;
+    document.getElementById('qr-area').scrollIntoView({behavior:'smooth',block:'nearest'});
+    toast('📋 Previous QR load ho gaya!');
+}
+
+// Downloads
+function getCV() { return document.getElementById('qr-display').querySelector('canvas'); }
+
+function dlQR(fmt) {
+    const cv = getCV();
+    if (!cv) { toast('⚠️ Pehle QR generate karein!', true); return; }
+    const sz = parseInt(document.getElementById('qr-sz').value);
+    const off = document.createElement('canvas');
+    off.width = sz; off.height = sz;
+    const ctx = off.getContext('2d');
+    if (fmt==='jpg') { ctx.fillStyle = document.getElementById('bg-c').value; ctx.fillRect(0,0,sz,sz); }
+    ctx.drawImage(cv,0,0,sz,sz);
+    const a = document.createElement('a');
+    a.download = `raftaroo-qr-${curType}-${Date.now()}.${fmt}`;
+    a.href = off.toDataURL(fmt==='jpg'?'image/jpeg':'image/png', 0.95);
+    a.click();
+    dlN++; document.getElementById('st-dl').textContent = dlN;
+    toast(`⬇ ${fmt.toUpperCase()} download ho gaya!`);
+}
+
+async function cpQR() {
+    const cv = getCV();
+    if (!cv) { toast('⚠️ Pehle QR generate karein!', true); return; }
+    try {
+        cv.toBlob(async b => {
+            await navigator.clipboard.write([new ClipboardItem({'image/png':b})]);
+            toast('📋 QR clipboard mein copy ho gaya!');
+        });
+    } catch(e) { toast('⚠️ Aapka browser clipboard support nahi karta'); }
+}
+
+async function shareQR() {
+    const cv = getCV();
+    if (!cv || !navigator.share) return;
+    cv.toBlob(async b => {
+        try {
+            await navigator.share({files:[new File([b],'qr.png',{type:'image/png'})], title:'QR Code', text:lastData});
+            toast('↗ Share ho gaya!');
+        } catch(e) {}
+    });
+}
+
+// Logo
+function addLogo(e) {
+    const file = e.target.files[0];
+    if (!file) return;
+    const r = new FileReader();
+    r.onload = ev => {
+        logoURL = ev.target.result;
+        document.getElementById('lp-img').src = logoURL;
+        document.getElementById('logo-preview').style.display = 'block';
+        document.getElementById('ecl').value = 'H';
+        toast('🖼️ Logo add! ECL High set ho gaya.');
+    };
+    r.readAsDataURL(file);
+}
+function rmLogo() { logoURL=null; document.getElementById('logo-preview').style.display='none'; toast('Logo hata diya'); }
+
+// Location
+function getMyLoc() {
+    if (!navigator.geolocation) { toast('⚠️ Browser support nahi karta', true); return; }
+    toast('📡 Location dhundh raha hai...');
+    navigator.geolocation.getCurrentPosition(p=>{
+        document.getElementById('loc-la').value = p.coords.latitude.toFixed(6);
+        document.getElementById('loc-lo').value = p.coords.longitude.toFixed(6);
+        toast('📍 Location mil gayi!');
+    }, ()=>toast('⚠️ Location permission deny hai', true));
+}
+
+// Presets
+function pr(fg, bg) {
+    document.getElementById('fg-c').value = fg;
+    document.getElementById('bg-c').value = bg;
+    document.getElementById('fg-sw').style.background = fg;
+    document.getElementById('bg-sw').style.background = bg;
+    toast('🎨 Preset apply ho gaya!');
+}
+
+// Toggle sections
+function tog(id, arrId) {
+    document.getElementById(id).classList.toggle('open');
+    document.getElementById(arrId).classList.toggle('open');
+}
+
+// Dark mode
+function toggleDark() {
+    document.body.classList.toggle('dark-mode');
+    const d = document.body.classList.contains('dark-mode');
+    document.getElementById('dark-btn').innerHTML = d ? '<i class="fas fa-sun"></i>' : '<i class="fas fa-moon"></i>';
+    localStorage.setItem('rqr_dk', d?'1':'0');
+}
+
+// Nav
+const navIds = ['nav-gen','nav-hist','nav-cust','nav-tip'];
+function navClick(i) {
+    navIds.forEach((n,j)=>{ document.getElementById(n).classList.toggle('active', i===j); });
+    if(i===0) window.scrollTo({top:0,behavior:'smooth'});
+    else if(i===1) { if(!hist.length){toast('⚠️ Koi QR nahi bana abhi!',true);return;} document.getElementById('hist-area').scrollIntoView({behavior:'smooth'}); }
+    else if(i===2) document.querySelector('.cust-toggle').closest('.card')?.scrollIntoView({behavior:'smooth'});
+    else if(i===3) {
+        const tips=['💡 Logo ke saath ECL "High" use karein!','💡 Zoom in karein QR scan ke liye.','💡 Light background pe dark foreground best kaam karta hai.','💡 WiFi QR share karein mehmanon ke liye!','💡 vCard se apna contact share karein ek scan mein.'];
+        toast(tips[Math.floor(Math.random()*tips.length)]);
+    }
+}
+
+// Toast
+let ttm;
+function toast(msg, err=false) {
+    document.getElementById('t-msg').textContent = msg;
+    const ico = document.getElementById('t-ico');
+    ico.className = err ? 'fas fa-exclamation-circle' : 'fas fa-check-circle';
+    ico.style.color = err ? 'var(--error)' : 'var(--primary)';
+    const w = document.getElementById('twrap');
+    w.classList.add('show');
+    clearTimeout(ttm);
+    ttm = setTimeout(()=>w.classList.remove('show'), 2800);
+}
+
+// Drag drop for logo
+const ld = document.getElementById('logo-drop');
+ld.addEventListener('dragover', e=>{e.preventDefault();ld.classList.add('drag-over');});
+ld.addEventListener('dragleave', ()=>ld.classList.remove('drag-over'));
+ld.addEventListener('drop', e=>{
+    e.preventDefault(); ld.classList.remove('drag-over');
+    const f = e.dataTransfer.files[0];
+    if(f && f.type.startsWith('image/')) addLogo({target:{files:[f]}});
+});
+
+// Enter to generate
+document.getElementById('url-i').addEventListener('keydown', e=>{ if(e.key==='Enter') generateQR(); });
+
+// Init
+if(localStorage.getItem('rqr_dk')==='1') {
+    document.body.classList.add('dark-mode');
+    document.getElementById('dark-btn').innerHTML='<i class="fas fa-sun"></i>';
+}
+setTimeout(()=>toast('👋 Raftaroo QR Generator mein khush aamdeed!'), 500);
+</script>
+</body>
+</html>

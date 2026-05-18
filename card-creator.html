@@ -1,0 +1,1056 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<!-- Standard Favicon -->
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+
+<!-- ICO fallback -->
+<link rel="icon" href="/favicon.ico">
+
+<!-- Apple Touch Icon -->
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+
+<!-- Android Icons -->
+<link rel="icon" type="image/png" sizes="192x192" href="/android-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="/android-512.png">
+
+<meta name="theme-color" content="#00C853">
+</script>
+<!-- Google tag (gtag.js) -->
+<script async src="https://www.googletagmanager.com/gtag/js?id=G-EM1R4LGZTD"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){dataLayer.push(arguments);}
+  gtag('js', new Date());
+  
+  // یہاں آپ کا Measurement ID درج ہے
+  gtag('config', 'G-EM1R4LGZTD'); 
+</script>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>Raftaroo | Rider QR Card Generator</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+<style>
+:root {
+  --primary: #28a745;
+  --primary-dark: #1e7e34;
+  --primary-light: #d4edda;
+  --secondary: #111111;
+  --bg: #f0f2f5;
+  --white: #ffffff;
+  --card-bg: #ffffff;
+  --text: #1a1a1a;
+  --muted: #6c757d;
+  --border: #e0e4ea;
+  --shadow: 0 2px 16px rgba(0,0,0,0.07);
+  --shadow-lg: 0 8px 32px rgba(0,0,0,0.13);
+  --radius: 16px;
+  --radius-sm: 10px;
+}
+.dark-mode {
+  --bg: #0f0f13;
+  --white: #1a1a24;
+  --card-bg: #1a1a24;
+  --text: #f0f0f0;
+  --muted: #9090a0;
+  --border: #2a2a38;
+  --shadow: 0 4px 24px rgba(0,0,0,0.3);
+  --primary-light: rgba(40,167,69,0.15);
+}
+
+*{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;-webkit-tap-highlight-color:transparent;}
+body{background:var(--bg);color:var(--text);min-height:100vh;padding-bottom:80px;transition:background .3s;overflow-x:hidden;}
+
+/* HEADER */
+.hdr{background:var(--card-bg);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:300;box-shadow:0 1px 8px rgba(0,0,0,0.08);}
+.hdr-left{display:flex;align-items:center;gap:10px;}
+.hdr-logo{width:38px;height:38px;background:linear-gradient(135deg,#28a745,#1e7e34);border-radius:11px;display:flex;align-items:center;justify-content:center;color:#fff;font-size:18px;flex-shrink:0;}
+.hdr-info h1{font-size:14px;font-weight:800;color:var(--text);line-height:1;}
+.hdr-info p{font-size:10px;color:var(--muted);}
+.hdr-right{display:flex;gap:6px;}
+.ico-btn{width:36px;height:36px;background:var(--bg);border:none;border-radius:10px;cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text);font-size:14px;transition:.2s;}
+.ico-btn:active{transform:scale(.9);}
+
+/* STEPS */
+.steps-bar{display:flex;align-items:center;justify-content:center;padding:14px 16px 8px;}
+.step-item{display:flex;flex-direction:column;align-items:center;gap:3px;flex:1;position:relative;}
+.step-item:not(:last-child)::after{content:'';position:absolute;top:14px;left:calc(50% + 14px);right:calc(-50% + 14px);height:2px;background:var(--border);transition:background .4s;}
+.step-item.done:not(:last-child)::after{background:var(--primary);}
+.step-circle{width:28px;height:28px;border-radius:50%;border:2px solid var(--border);background:var(--card-bg);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--muted);transition:all .3s;z-index:1;}
+.step-item.active .step-circle{border-color:var(--primary);background:var(--primary);color:#fff;box-shadow:0 0 0 4px rgba(40,167,69,.15);}
+.step-item.done .step-circle{border-color:var(--primary);background:var(--primary);color:#fff;}
+.step-lbl{font-size:9px;font-weight:600;color:var(--muted);text-align:center;}
+.step-item.active .step-lbl,.step-item.done .step-lbl{color:var(--primary);}
+
+/* PAGE */
+.pg{padding:12px 14px;}
+.sec-lbl{font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:1.2px;margin:12px 0 8px;}
+
+/* CARD */
+.card{background:var(--card-bg);border-radius:var(--radius);box-shadow:var(--shadow);padding:16px;margin-bottom:12px;}
+
+/* INPUTS */
+.fld-lbl{display:block;font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-bottom:5px;}
+.inp{width:100%;padding:12px 14px;border:1.5px solid var(--border);border-radius:10px;font-size:14px;font-family:'Poppins',sans-serif;outline:none;transition:.3s;background:var(--bg);color:var(--text);margin-bottom:12px;display:block;}
+.inp:focus{border-color:var(--primary);background:var(--card-bg);box-shadow:0 0 0 3px rgba(40,167,69,.1);}
+.inp::placeholder{color:var(--muted);}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.row2>div{display:flex;flex-direction:column;}
+.row2 .inp{margin-bottom:0;}
+
+/* PHOTO UPLOAD */
+.photo-upload-area{border:2px dashed var(--border);border-radius:12px;padding:18px;text-align:center;cursor:pointer;position:relative;overflow:hidden;transition:.3s;margin-bottom:12px;}
+.photo-upload-area:hover,.photo-upload-area.drag-over{border-color:var(--primary);background:rgba(40,167,69,.04);}
+.photo-upload-area input{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;}
+.pu-icon{width:52px;height:52px;background:rgba(40,167,69,.1);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 8px;color:var(--primary);font-size:22px;}
+.pu-text{font-size:13px;font-weight:600;color:var(--text);}
+.pu-hint{font-size:11px;color:var(--muted);margin-top:3px;}
+
+#photo-preview-wrap{display:none;text-align:center;margin-bottom:12px;}
+#photo-preview-wrap img{width:80px;height:80px;border-radius:50%;object-fit:cover;border:3px solid var(--primary);box-shadow:0 4px 14px rgba(40,167,69,.3);}
+.rm-photo{margin-top:7px;background:none;border:1px solid var(--border);border-radius:8px;padding:4px 12px;font-size:11px;color:var(--muted);cursor:pointer;font-family:'Poppins',sans-serif;}
+
+/* IMAGE EDITOR MODAL */
+.modal-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:500;align-items:flex-end;justify-content:center;}
+.modal-overlay.show{display:flex;animation:fadeIn .2s ease;}
+.modal-box{background:var(--card-bg);border-radius:22px 22px 0 0;width:100%;max-width:540px;max-height:92vh;overflow-y:auto;padding:20px 16px 32px;}
+.modal-handle{width:40px;height:4px;background:var(--border);border-radius:2px;margin:0 auto 16px;}
+.modal-title{font-size:16px;font-weight:800;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.modal-title i{color:var(--primary);}
+
+/* Image editor canvas */
+#img-edit-wrap{position:relative;width:100%;border-radius:12px;overflow:hidden;background:#111;display:flex;align-items:center;justify-content:center;min-height:240px;margin-bottom:14px;}
+#img-edit-canvas{max-width:100%;max-height:320px;display:block;touch-action:none;}
+.editor-controls{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px;}
+.ctrl-row{display:flex;align-items:center;gap:8px;margin-bottom:10px;}
+.ctrl-lbl{font-size:11px;font-weight:700;color:var(--muted);min-width:58px;}
+.ctrl-slider{flex:1;accent-color:var(--primary);}
+.filter-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:14px;}
+.filter-btn{border-radius:8px;overflow:hidden;cursor:pointer;border:2px solid transparent;transition:.2s;}
+.filter-btn.active{border-color:var(--primary);}
+.filter-btn canvas{width:100%!important;height:auto!important;display:block;}
+.filter-label{font-size:9px;font-weight:700;text-align:center;color:var(--muted);padding:3px 0;background:var(--bg);}
+
+/* TEMPLATE GRID */
+.tpl-categories{display:flex;gap:8px;margin-bottom:12px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none;}
+.tpl-categories::-webkit-scrollbar{display:none;}
+.tpl-cat-btn{padding:6px 14px;border-radius:20px;border:1.5px solid var(--border);background:var(--card-bg);color:var(--muted);font-size:11px;font-weight:700;cursor:pointer;white-space:nowrap;font-family:'Poppins',sans-serif;transition:.2s;}
+.tpl-cat-btn.active{background:var(--primary);color:#fff;border-color:var(--primary);}
+.tpl-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:4px;}
+.tpl-card{border-radius:12px;overflow:hidden;cursor:pointer;position:relative;border:3px solid transparent;transition:all .25s;box-shadow:var(--shadow);}
+.tpl-card.selected{border-color:var(--primary);box-shadow:0 0 0 2px var(--primary),0 6px 20px rgba(40,167,69,.25);}
+.tpl-card canvas{width:100%!important;height:auto!important;display:block;}
+.tpl-check{position:absolute;top:7px;right:7px;width:24px;height:24px;border-radius:50%;background:var(--primary);color:#fff;display:none;align-items:center;justify-content:center;font-size:12px;box-shadow:0 2px 8px rgba(0,0,0,.2);}
+.tpl-card.selected .tpl-check{display:flex;}
+.tpl-name{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(transparent,rgba(0,0,0,.72));color:#fff;font-size:10px;font-weight:700;padding:12px 8px 7px;text-align:center;text-transform:uppercase;letter-spacing:1px;}
+
+/* PREVIEW CARD */
+.preview-wrap{display:flex;align-items:center;justify-content:center;padding:16px;background:var(--bg);border-radius:12px;margin-bottom:14px;min-height:260px;position:relative;overflow:hidden;}
+#final-canvas{border-radius:14px;max-width:100%;box-shadow:var(--shadow-lg);display:block;}
+
+/* BUTTONS */
+.btn-primary{width:100%;padding:13px;background:var(--secondary);color:#fff;border:none;border-radius:11px;font-size:15px;font-weight:700;font-family:'Poppins',sans-serif;cursor:pointer;transition:.3s;display:flex;align-items:center;justify-content:center;gap:9px;margin-bottom:8px;}
+.btn-primary:active{transform:scale(.98);}
+.btn-green{background:linear-gradient(135deg,#28a745,#1e7e34);color:#fff;}
+.btn-outline{width:100%;padding:11px;background:transparent;border:1.5px solid var(--primary);border-radius:11px;font-size:13px;font-weight:700;font-family:'Poppins',sans-serif;color:var(--primary);cursor:pointer;transition:.2s;display:flex;align-items:center;justify-content:center;gap:7px;margin-bottom:8px;}
+.btn-outline:active{background:rgba(40,167,69,.06);}
+.btn-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;}
+.btn-sm{padding:11px 6px;background:var(--bg);border:1.5px solid var(--border);border-radius:11px;font-size:12px;font-weight:700;font-family:'Poppins',sans-serif;color:var(--text);cursor:pointer;transition:.2s;display:flex;flex-direction:column;align-items:center;gap:4px;}
+.btn-sm i{font-size:18px;color:var(--primary);}
+.btn-sm:active{transform:scale(.96);}
+
+/* NAV */
+.nav-btns{display:flex;gap:8px;margin-top:4px;}
+.nav-btns .btn-primary{margin-bottom:0;}
+
+/* STEP PANELS */
+.step-panel{display:none;}
+.step-panel.active{display:block;animation:fadeUp .3s ease;}
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+@keyframes fadeIn{from{opacity:0}to{opacity:1}}
+
+/* BOTTOM NAV */
+.bottom-nav{position:fixed;bottom:0;left:0;right:0;background:var(--card-bg);display:flex;border-top:1px solid var(--border);z-index:300;padding-bottom:env(safe-area-inset-bottom,0);box-shadow:0 -2px 10px rgba(0,0,0,.06);}
+.nav-tab{flex:1;display:flex;flex-direction:column;align-items:center;padding:9px 4px 7px;cursor:pointer;color:var(--muted);font-size:9px;font-weight:600;gap:2px;border:none;background:none;font-family:'Poppins',sans-serif;transition:.2s;}
+.nav-tab i{font-size:19px;}
+.nav-tab.active{color:var(--primary);}
+
+/* TOAST */
+.toast-w{position:fixed;bottom:88px;left:50%;transform:translateX(-50%) translateY(16px);z-index:9999;pointer-events:none;transition:all .3s;opacity:0;}
+.toast-w.show{transform:translateX(-50%) translateY(0);opacity:1;}
+.toast{background:var(--secondary);color:#fff;padding:10px 18px;border-radius:28px;font-size:12px;font-weight:600;white-space:nowrap;box-shadow:0 8px 25px rgba(0,0,0,.22);display:flex;align-items:center;gap:7px;}
+.toast i{font-size:13px;}
+
+/* LOADER */
+.loader-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9998;align-items:center;justify-content:center;flex-direction:column;gap:14px;}
+.loader-overlay.show{display:flex;}
+.spinner{width:44px;height:44px;border:4px solid rgba(255,255,255,.2);border-top-color:var(--primary);border-radius:50%;animation:spin .8s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg)}}
+.loader-text{color:#fff;font-size:13px;font-weight:600;}
+
+#qr-temp-render{position:fixed;left:-9999px;top:-9999px;width:0;height:0;overflow:hidden;}
+
+/* STATS */
+.stat-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px;}
+.stat-c{background:var(--card-bg);border-radius:12px;padding:12px 6px;text-align:center;box-shadow:var(--shadow);}
+.stat-n{font-size:20px;font-weight:800;color:var(--primary);}
+.stat-l{font-size:9px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.7px;margin-top:1px;}
+
+/* BADGE */
+.badge{display:inline-flex;align-items:center;gap:5px;background:rgba(40,167,69,.1);color:var(--primary);font-size:10px;font-weight:700;padding:3px 9px;border-radius:18px;}
+.badge .dot{width:6px;height:6px;background:var(--primary);border-radius:50%;animation:blink 1.5s infinite;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:.3}}
+
+/* QR HINT */
+.qr-hint{background:rgba(40,167,69,.07);border-radius:9px;padding:9px 12px;margin-bottom:12px;font-size:12px;color:var(--muted);border-left:3px solid var(--primary);}
+
+/* INFO TIP */
+.tip-box{background:var(--primary-light);border-radius:10px;padding:10px 12px;font-size:12px;color:var(--primary);margin-bottom:12px;display:flex;gap:8px;align-items:flex-start;}
+.tip-box i{margin-top:1px;flex-shrink:0;}
+
+/* SCROLLBAR */
+::-webkit-scrollbar{width:3px;}
+::-webkit-scrollbar-thumb{background:var(--border);border-radius:2px;}
+
+/* PROMOTION BADGE */
+.promo-badge{background:linear-gradient(135deg,#ff6b35,#f7c59f);color:#fff;font-size:9px;font-weight:800;padding:2px 7px;border-radius:10px;text-transform:uppercase;letter-spacing:.5px;margin-left:6px;}
+
+@media(max-width:360px){.row2{grid-template-columns:1fr}.btn-row{grid-template-columns:1fr}.tpl-grid{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+
+<!-- LOADER -->
+<div class="loader-overlay" id="loader">
+  <div class="spinner"></div>
+  <p class="loader-text">Card tayar ho raha hai...</p>
+</div>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-left">
+    <div class="hdr-logo"><i class="fas fa-motorcycle"></i></div>
+    <div class="hdr-info"><h1>Raftaroo Card</h1><p>raftaroo.online</p></div>
+  </div>
+  <div class="hdr-right">
+    <button class="ico-btn" id="dark-btn" onclick="toggleDark()"><i class="fas fa-moon"></i></button>
+  </div>
+</div>
+
+<!-- STEPS -->
+<div class="steps-bar">
+  <div class="step-item active" id="st0"><div class="step-circle">1</div><span class="step-lbl">Info</span></div>
+  <div class="step-item" id="st1"><div class="step-circle">2</div><span class="step-lbl">QR</span></div>
+  <div class="step-item" id="st2"><div class="step-circle">3</div><span class="step-lbl">Design</span></div>
+  <div class="step-item" id="st3"><div class="step-circle">4</div><span class="step-lbl">Download</span></div>
+</div>
+
+<div id="qr-temp-render"></div>
+
+<div class="pg">
+
+<!-- ═══ STEP 1 ═══ -->
+<div class="step-panel active" id="panel-0">
+  <p class="sec-lbl">Captain ki Information</p>
+  <div class="card">
+    <label class="fld-lbl">Profile Photo (Optional)</label>
+    <div class="photo-upload-area" id="pu-area">
+      <input type="file" accept="image/*" onchange="handlePhoto(event)">
+      <div class="pu-icon"><i class="fas fa-camera"></i></div>
+      <p class="pu-text">Photo Upload Karein</p>
+      <p class="pu-hint">Tap karein ya drag karein</p>
+    </div>
+    <div id="photo-preview-wrap">
+      <img id="photo-prev" src="" alt="Photo">
+      <br>
+      <button class="rm-photo" onclick="rmPhoto()"><i class="fas fa-times"></i> Remove</button>
+      <button class="rm-photo" onclick="openImgEditor()" style="margin-left:6px;border-color:var(--primary);color:var(--primary)"><i class="fas fa-magic"></i> Edit Photo</button>
+    </div>
+
+    <label class="fld-lbl">Apna Naam *</label>
+    <input class="inp" id="r-name" type="text" placeholder="Ali Khan" maxlength="30">
+
+    <label class="fld-lbl">Captain ID / Badge No.</label>
+    <input class="inp" id="r-id" type="text" placeholder="CAP-00123">
+
+    <div class="row2">
+      <div>
+        <label class="fld-lbl">Phone Number</label>
+        <input class="inp" id="r-phone" type="tel" placeholder="+92 300 0000000">
+      </div>
+      <div>
+        <label class="fld-lbl">City</label>
+        <input class="inp" id="r-city" type="text" placeholder="Karachi">
+      </div>
+    </div>
+
+    <label class="fld-lbl">Vehicle Type</label>
+    <select class="inp" id="r-vehicle">
+      <option value="🏍️ Bike">🏍️ Bike</option>
+      <option value="🚗 Car">🚗 Car</option>
+      <option value="🛻 Pickup">🛻 Pickup</option>
+      <option value="🚐 Van">🚐 Van</option>
+      <option value="🚚 Truck">🚚 Truck</option>
+    </select>
+
+    <label class="fld-lbl">Card Type</label>
+    <select class="inp" id="r-cardtype">
+      <option value="rider">🏍️ Rider ID Card</option>
+      <option value="promo">📣 Promotion Card</option>
+      <option value="referral">🎁 Referral Card</option>
+      <option value="discount">💸 Discount Card</option>
+    </select>
+
+    <div id="promo-fields" style="display:none">
+      <label class="fld-lbl">Promotion Headline</label>
+      <input class="inp" id="r-promo-title" type="text" placeholder="50% OFF First Ride!" maxlength="40">
+      <label class="fld-lbl">Promo Code</label>
+      <input class="inp" id="r-promo-code" type="text" placeholder="RAFT50" maxlength="15">
+      <label class="fld-lbl">Offer Details</label>
+      <input class="inp" id="r-promo-detail" type="text" placeholder="Valid till 31st March" maxlength="50">
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn-primary btn-green" onclick="goStep(1)"><i class="fas fa-arrow-right"></i> Agla Step</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ STEP 2 ═══ -->
+<div class="step-panel" id="panel-1">
+  <p class="sec-lbl">QR Mein Kya Dalein?</p>
+  <div class="card">
+    <label class="fld-lbl">QR Type</label>
+    <select class="inp" id="qr-type" onchange="updateQRHint()">
+      <option value="whatsapp">💬 WhatsApp Chat</option>
+      <option value="phone">📞 Phone Call</option>
+      <option value="url">🔗 Website / Profile Link</option>
+      <option value="text">📝 Custom Message</option>
+      <option value="vcard">👤 Contact Card (vCard)</option>
+    </select>
+
+    <div class="qr-hint" id="qr-hint-box">💡 Scan karne wala directly WhatsApp par message bhej sakta hai</div>
+
+    <div id="qr-inputs">
+      <label class="fld-lbl" id="qi-lbl">WhatsApp Number</label>
+      <input class="inp" id="qi-main" type="text" placeholder="+923000000000">
+      <label class="fld-lbl" id="qi-lbl2" style="display:none">Message (Optional)</label>
+      <textarea class="inp" id="qi-extra" rows="2" placeholder="Aap se ride book karni hai..." style="display:none;resize:none;"></textarea>
+    </div>
+
+    <div class="nav-btns">
+      <button class="btn-outline" onclick="goStep(0)"><i class="fas fa-arrow-left"></i> Back</button>
+      <button class="btn-primary btn-green" onclick="goStep(2)"><i class="fas fa-arrow-right"></i> Agla</button>
+    </div>
+  </div>
+</div>
+
+<!-- ═══ STEP 3 ═══ -->
+<div class="step-panel" id="panel-2">
+  <p class="sec-lbl">Card Design Select Karein</p>
+
+  <div class="tpl-categories" id="tpl-cats">
+    <button class="tpl-cat-btn active" onclick="filterTpls('all',this)">All</button>
+    <button class="tpl-cat-btn" onclick="filterTpls('rider',this)">🏍️ Rider</button>
+    <button class="tpl-cat-btn" onclick="filterTpls('promo',this)">📣 Promo</button>
+    <button class="tpl-cat-btn" onclick="filterTpls('dark',this)">🌑 Dark</button>
+    <button class="tpl-cat-btn" onclick="filterTpls('minimal',this)">✨ Minimal</button>
+  </div>
+
+  <div class="tpl-grid" id="tpl-grid"></div>
+
+  <div class="nav-btns" style="margin-top:6px">
+    <button class="btn-outline" onclick="goStep(1)"><i class="fas fa-arrow-left"></i> Back</button>
+    <button class="btn-primary btn-green" onclick="goStep(3)"><i class="fas fa-qrcode"></i> Card Banayein</button>
+  </div>
+</div>
+
+<!-- ═══ STEP 4 ═══ -->
+<div class="step-panel" id="panel-3">
+  <p class="sec-lbl">Aapka Card Tayar Hai! 🎉</p>
+  <div class="card">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px">
+      <div class="badge"><div class="dot"></div> Ready to Share</div>
+      <span style="font-size:11px;color:var(--muted)" id="card-size-lbl">1080×1520</span>
+    </div>
+    <div class="preview-wrap" id="preview-wrap">
+      <canvas id="final-canvas"></canvas>
+    </div>
+
+    <div class="btn-row">
+      <button class="btn-sm" onclick="downloadCard()"><i class="fas fa-download"></i>Download PNG</button>
+      <button class="btn-sm" onclick="downloadCardJPG()"><i class="fas fa-image"></i>Download JPG</button>
+    </div>
+    <div class="btn-row">
+      <button class="btn-sm" onclick="shareCard()"><i class="fas fa-share-alt"></i>Share</button>
+      <button class="btn-sm" onclick="copyCard()"><i class="fas fa-copy"></i>Copy</button>
+    </div>
+    <button class="btn-outline" onclick="goStep(2)"><i class="fas fa-paint-brush"></i> Template Badlein</button>
+    <button class="btn-outline" onclick="goStep(0)" style="border-color:var(--border);color:var(--muted)"><i class="fas fa-redo"></i> Naya Card Banayein</button>
+  </div>
+
+  <div class="stat-row">
+    <div class="stat-c"><div class="stat-n" id="s-cards">0</div><div class="stat-l">Cards Made</div></div>
+    <div class="stat-c"><div class="stat-n" id="s-dl">0</div><div class="stat-l">Downloads</div></div>
+    <div class="stat-c"><div class="stat-n" id="s-tpls">9</div><div class="stat-l">Templates</div></div>
+  </div>
+</div>
+
+</div><!-- end .pg -->
+
+<!-- IMAGE EDITOR MODAL -->
+<div class="modal-overlay" id="img-editor-modal">
+  <div class="modal-box">
+    <div class="modal-handle"></div>
+    <div class="modal-title"><i class="fas fa-magic"></i> Photo Editor</div>
+
+    <div id="img-edit-wrap">
+      <canvas id="img-edit-canvas"></canvas>
+    </div>
+
+    <div class="ctrl-row"><span class="ctrl-lbl">Brightness</span><input class="ctrl-slider" type="range" id="ed-bright" min="-100" max="100" value="0" oninput="applyEdits()"></div>
+    <div class="ctrl-row"><span class="ctrl-lbl">Contrast</span><input class="ctrl-slider" type="range" id="ed-contrast" min="-100" max="100" value="0" oninput="applyEdits()"></div>
+    <div class="ctrl-row"><span class="ctrl-lbl">Saturation</span><input class="ctrl-slider" type="range" id="ed-sat" min="-100" max="100" value="0" oninput="applyEdits()"></div>
+    <div class="ctrl-row"><span class="ctrl-lbl">Blur</span><input class="ctrl-slider" type="range" id="ed-blur" min="0" max="10" value="0" step="0.5" oninput="applyEdits()"></div>
+
+    <label class="fld-lbl" style="margin-bottom:8px">Filters</label>
+    <div class="filter-grid" id="filter-grid"></div>
+
+    <div style="display:flex;gap:8px">
+      <button class="btn-outline" style="flex:1;margin-bottom:0" onclick="resetEdits()"><i class="fas fa-undo"></i> Reset</button>
+      <button class="btn-primary btn-green" style="flex:1;margin-bottom:0" onclick="saveEdit()"><i class="fas fa-check"></i> Save</button>
+    </div>
+    <button class="btn-outline" style="margin-top:8px;border-color:var(--border);color:var(--muted)" onclick="closeImgEditor()"><i class="fas fa-times"></i> Cancel</button>
+  </div>
+</div>
+
+<!-- BOTTOM NAV -->
+<div class="bottom-nav">
+  <button class="nav-tab active" id="nav0" onclick="navGo(0)"><i class="fas fa-id-card"></i><span>My Card</span></button>
+  <button class="nav-tab" id="nav1" onclick="navGo(1)"><i class="fas fa-images"></i><span>Preview</span></button>
+  <button class="nav-tab" id="nav2" onclick="navGo(2)"><i class="fas fa-share-nodes"></i><span>Share</span></button>
+  <button class="nav-tab" id="nav3" onclick="navGo(3)"><i class="fas fa-circle-info"></i><span>Help</span></button>
+</div>
+
+<!-- TOAST -->
+<div class="toast-w" id="tw"><div class="toast"><i class="fas fa-check-circle" id="t-ico"></i><span id="t-msg">Done!</span></div></div>
+
+<script>
+// ── STATE ──
+let curStep=0,photoDataURL=null,editedPhotoURL=null,selectedTpl=0,cardsMade=0,dlCount=0,generatedCanvas=null;
+let currentFilter='none';
+let originalImgData=null;
+
+const qrHints={
+  whatsapp:'💡 Scan karne wala directly WhatsApp par message bhej sakta hai',
+  phone:'💡 Scan karne wala seedha aapko call kar sakta hai',
+  url:'💡 Apna Raftaroo profile ya koi bhi website link dale',
+  text:'💡 Koi bhi custom message ya information dale',
+  vcard:'💡 Scan karte hi contact phone mein save ho jayega',
+};
+
+// ── PROMO FIELDS TOGGLE ──
+document.getElementById('r-cardtype').addEventListener('change',function(){
+  const pf=document.getElementById('promo-fields');
+  pf.style.display=['promo','referral','discount'].includes(this.value)?'block':'none';
+});
+
+// ── QR HINT ──
+function updateQRHint(){
+  const t=document.getElementById('qr-type').value;
+  document.getElementById('qr-hint-box').textContent=qrHints[t]||'';
+  const lbl=document.getElementById('qi-lbl'),lbl2=document.getElementById('qi-lbl2');
+  const main=document.getElementById('qi-main'),extra=document.getElementById('qi-extra');
+  extra.style.display='none';lbl2.style.display='none';
+  if(t==='whatsapp'){lbl.textContent='WhatsApp Number';main.placeholder='+92 300 0000000';main.type='tel';lbl2.textContent='Pre-fill Message (Optional)';lbl2.style.display='block';extra.style.display='block';extra.placeholder='Aap se ride book karni hai...';}
+  else if(t==='phone'){lbl.textContent='Phone Number';main.placeholder='+92 300 0000000';main.type='tel';}
+  else if(t==='url'){lbl.textContent='Website / Profile Link';main.placeholder='https://raftaroo.online/captain/ali';main.type='url';}
+  else if(t==='text'){lbl.textContent='Message / Info';main.placeholder='Mera naam Ali hai, Raftaroo Captain...';main.type='text';}
+  else if(t==='vcard'){lbl.textContent='Phone Number';main.placeholder='+92 300 0000000';main.type='tel';}
+}
+
+function buildQRData(){
+  const t=document.getElementById('qr-type').value;
+  const m=document.getElementById('qi-main').value.trim();
+  const x=document.getElementById('qi-extra').value.trim();
+  const name=document.getElementById('r-name').value.trim();
+  const phone=document.getElementById('r-phone').value.trim();
+  switch(t){
+    case 'whatsapp':{const num=m.replace(/\D/g,'');const msg=x?encodeURIComponent(x):'';return `https://wa.me/${num}${msg?'?text='+msg:''}`;}
+    case 'phone':return `tel:${m}`;
+    case 'url':return m||'https://raftaroo.online';
+    case 'text':return m||name;
+    case 'vcard':return `BEGIN:VCARD\nVERSION:3.0\nFN:${name}\nTEL:${m||phone}\nORG:Raftaroo Captain\nURL:https://raftaroo.online\nEND:VCARD`;
+  }
+  return m||'https://raftaroo.online';
+}
+
+// ── STEP NAV ──
+function goStep(n){
+  if(n===1){const nm=document.getElementById('r-name').value.trim();if(!nm){showToast('⚠️ Pehle apna naam darj karein!',true);return;}}
+  if(n===2)renderTemplatePreviews();
+  if(n===3)buildFinalCard();
+  curStep=n;
+  document.querySelectorAll('.step-panel').forEach((p,i)=>p.classList.toggle('active',i===n));
+  for(let i=0;i<4;i++){const el=document.getElementById('st'+i);el.classList.toggle('active',i===n);el.classList.toggle('done',i<n);}
+  document.getElementById('nav0').classList.toggle('active',n<3);
+  document.getElementById('nav1').classList.toggle('active',n===3);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ── PHOTO HANDLER ──
+function handlePhoto(e){
+  const file=e.target.files[0];if(!file)return;
+  const r=new FileReader();
+  r.onload=ev=>{
+    photoDataURL=ev.target.result;editedPhotoURL=ev.target.result;
+    document.getElementById('photo-prev').src=photoDataURL;
+    document.getElementById('photo-preview-wrap').style.display='block';
+    document.getElementById('pu-area').style.display='none';
+    showToast('📸 Photo add ho gayi!');
+  };
+  r.readAsDataURL(file);
+}
+function rmPhoto(){photoDataURL=null;editedPhotoURL=null;document.getElementById('photo-preview-wrap').style.display='none';document.getElementById('pu-area').style.display='block';}
+
+// ── IMAGE EDITOR ──
+function openImgEditor(){
+  if(!photoDataURL){showToast('⚠️ Pehle photo upload karein!',true);return;}
+  document.getElementById('img-editor-modal').classList.add('show');
+  const cv=document.getElementById('img-edit-canvas');
+  const ctx=cv.getContext('2d');
+  const img=new Image();
+  img.onload=()=>{
+    const maxW=Math.min(300,window.innerWidth-64);
+    const ratio=img.height/img.width;
+    cv.width=maxW;cv.height=Math.round(maxW*ratio);
+    ctx.drawImage(img,0,0,cv.width,cv.height);
+    originalImgData=ctx.getImageData(0,0,cv.width,cv.height);
+    buildFilterPreviews(img);
+    resetEdits(false);
+  };
+  img.src=photoDataURL;
+}
+
+function closeImgEditor(){document.getElementById('img-editor-modal').classList.remove('show');}
+
+function buildFilterPreviews(img){
+  const filters=['none','grayscale','sepia','vivid','cool','warm','fade','noir','vintage'];
+  const names=['Normal','B&W','Sepia','Vivid','Cool','Warm','Fade','Noir','Vintage'];
+  const grid=document.getElementById('filter-grid');
+  grid.innerHTML='';
+  filters.forEach((f,i)=>{
+    const wrap=document.createElement('div');
+    wrap.className='filter-btn'+(f===currentFilter?' active':'');
+    wrap.onclick=()=>{currentFilter=f;document.querySelectorAll('.filter-btn').forEach((b,j)=>b.classList.toggle('active',j===i));applyEdits();};
+    const cv=document.createElement('canvas');cv.width=60;cv.height=60;
+    const ctx2=cv.getContext('2d');ctx2.drawImage(img,0,0,60,60);
+    applyFilterToCtx(ctx2,f,60,60);
+    wrap.appendChild(cv);
+    const lbl=document.createElement('div');lbl.className='filter-label';lbl.textContent=names[i];
+    wrap.appendChild(lbl);
+    grid.appendChild(wrap);
+  });
+}
+
+function applyFilterToCtx(ctx,filter,w,h){
+  const id=ctx.getImageData(0,0,w,h);const d=id.data;
+  for(let i=0;i<d.length;i+=4){
+    let r=d[i],g=d[i+1],b=d[i+2];
+    if(filter==='grayscale'){const gr=0.299*r+0.587*g+0.114*b;r=g=b=gr;}
+    else if(filter==='sepia'){const rr=r*0.393+g*0.769+b*0.189,gg=r*0.349+g*0.686+b*0.168,bb=r*0.272+g*0.534+b*0.131;r=rr;g=gg;b=bb;}
+    else if(filter==='vivid'){r=Math.min(255,r*1.2);g=Math.min(255,g*1.1);b=Math.min(255,b*0.9);}
+    else if(filter==='cool'){b=Math.min(255,b*1.2);r=r*0.9;}
+    else if(filter==='warm'){r=Math.min(255,r*1.2);b=b*0.85;}
+    else if(filter==='fade'){r=r*0.85+30;g=g*0.85+20;b=b*0.85+20;}
+    else if(filter==='noir'){const gr=0.299*r+0.587*g+0.114*b;r=g=b=gr;r=r*0.8;g=g*0.8;b=b*0.8;}
+    else if(filter==='vintage'){r=Math.min(255,r*1.1+20);b=Math.max(0,b-30);}
+    d[i]=Math.max(0,Math.min(255,r));d[i+1]=Math.max(0,Math.min(255,g));d[i+2]=Math.max(0,Math.min(255,b));
+  }
+  ctx.putImageData(id,0,0);
+}
+
+function applyEdits(){
+  const cv=document.getElementById('img-edit-canvas');
+  const ctx=cv.getContext('2d');
+  ctx.putImageData(originalImgData,0,0);
+  const bright=parseInt(document.getElementById('ed-bright').value);
+  const contrast=parseInt(document.getElementById('ed-contrast').value);
+  const sat=parseInt(document.getElementById('ed-sat').value);
+  const blur=parseFloat(document.getElementById('ed-blur').value);
+  if(blur>0){ctx.filter=`blur(${blur}px)`;const cv2=document.createElement('canvas');cv2.width=cv.width;cv2.height=cv.height;const ctx2=cv2.getContext('2d');ctx2.drawImage(cv,0,0);ctx.filter='none';ctx.drawImage(cv2,0,0);}
+  const id=ctx.getImageData(0,0,cv.width,cv.height);const d=id.data;
+  for(let i=0;i<d.length;i+=4){
+    let r=d[i],g=d[i+1],b=d[i+2];
+    // Brightness
+    r+=bright;g+=bright;b+=bright;
+    // Contrast
+    const f=(259*(contrast+255))/(255*(259-contrast));
+    r=f*(r-128)+128;g=f*(g-128)+128;b=f*(b-128)+128;
+    // Saturation
+    const gr2=0.299*r+0.587*g+0.114*b;
+    r=gr2+(r-gr2)*(1+sat/100);g=gr2+(g-gr2)*(1+sat/100);b=gr2+(b-gr2)*(1+sat/100);
+    d[i]=Math.max(0,Math.min(255,r));d[i+1]=Math.max(0,Math.min(255,g));d[i+2]=Math.max(0,Math.min(255,b));
+  }
+  ctx.putImageData(id,0,0);
+  if(currentFilter!=='none')applyFilterToCtx(ctx,currentFilter,cv.width,cv.height);
+}
+
+function resetEdits(doApply=true){
+  document.getElementById('ed-bright').value=0;
+  document.getElementById('ed-contrast').value=0;
+  document.getElementById('ed-sat').value=0;
+  document.getElementById('ed-blur').value=0;
+  currentFilter='none';
+  document.querySelectorAll('.filter-btn').forEach((b,i)=>b.classList.toggle('active',i===0));
+  if(doApply)applyEdits();
+}
+
+function saveEdit(){
+  const cv=document.getElementById('img-edit-canvas');
+  editedPhotoURL=cv.toDataURL('image/jpeg',0.95);
+  photoDataURL=editedPhotoURL;
+  document.getElementById('photo-prev').src=photoDataURL;
+  closeImgEditor();
+  showToast('✅ Photo edit save ho gayi!');
+}
+
+// ── QR CANVAS ──
+async function generateQRCanvas(data,size,fg,bg){
+  return new Promise((resolve)=>{
+    const wrap=document.getElementById('qr-temp-render');
+    wrap.innerHTML='';
+    const div=document.createElement('div');
+    wrap.appendChild(div);
+    try{
+      new QRCode(div,{text:data,width:size,height:size,colorDark:fg,colorLight:bg,correctLevel:QRCode.CorrectLevel.H});
+      setTimeout(()=>{const cv=div.querySelector('canvas');resolve(cv||null);},200);
+    }catch(e){resolve(null);}
+  });
+}
+
+// ── HELPERS ──
+function roundRect(ctx,x,y,w,h,r){
+  ctx.beginPath();ctx.moveTo(x+r,y);ctx.lineTo(x+w-r,y);ctx.quadraticCurveTo(x+w,y,x+w,y+r);ctx.lineTo(x+w,y+h-r);ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);ctx.lineTo(x+r,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-r);ctx.lineTo(x,y+r);ctx.quadraticCurveTo(x,y,x+r,y);ctx.closePath();
+}
+function loadImg(src){return new Promise((res,rej)=>{const img=new Image();img.onload=()=>res(img);img.onerror=rej;img.src=src;});}
+
+function getInfo(){
+  return{
+    name:document.getElementById('r-name').value.trim()||'Captain',
+    id:document.getElementById('r-id').value.trim(),
+    phone:document.getElementById('r-phone').value.trim(),
+    city:document.getElementById('r-city').value.trim()||'Pakistan',
+    vehicle:document.getElementById('r-vehicle').value,
+    photo:photoDataURL,
+    cardType:document.getElementById('r-cardtype').value,
+    promoTitle:document.getElementById('r-promo-title').value.trim()||'50% OFF First Ride!',
+    promoCode:document.getElementById('r-promo-code').value.trim()||'RAFT50',
+    promoDetail:document.getElementById('r-promo-detail').value.trim()||'Valid on raftaroo.online',
+  };
+}
+
+// ════════════════════════════════════════
+//  TEMPLATES
+// ════════════════════════════════════════
+const templates=[
+  // ─── 0: Classic Green ───
+  {id:0,name:'Classic Green',cat:'rider',
+  draw:async(ctx,W,H,info,qrCanvas)=>{
+    ctx.fillStyle='#fff';ctx.fillRect(0,0,W,H);
+    const g=ctx.createLinearGradient(0,0,W,H*0.3);g.addColorStop(0,'#1e7e34');g.addColorStop(1,'#28a745');
+    ctx.fillStyle=g;
+    ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(W,0);ctx.lineTo(W,H*0.28);ctx.quadraticCurveTo(W/2,H*0.36,0,H*0.28);ctx.closePath();ctx.fill();
+    ctx.fillStyle='rgba(255,255,255,0.1)';ctx.font=`bold ${W*0.075}px Poppins`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('RAFTAROO',W/2,H*0.13);
+    ctx.fillStyle='rgba(255,255,255,0.06)';ctx.beginPath();ctx.arc(W*0.85,H*0.04,W*0.25,0,Math.PI*2);ctx.fill();
+    // Card shadow
+    ctx.fillStyle='#fff';ctx.shadowColor='rgba(0,0,0,0.1)';ctx.shadowBlur=30;ctx.shadowOffsetY=8;
+    roundRect(ctx,W*0.04,H*0.22,W*0.92,H*0.74,W*0.04);ctx.fill();ctx.shadowBlur=0;ctx.shadowOffsetY=0;
+    // Photo
+    const cx=W/2,cy=H*0.28;
+    ctx.save();ctx.beginPath();ctx.arc(cx,cy,W*0.12,0,Math.PI*2);ctx.clip();
+    if(info.photo){const img=await loadImg(info.photo);ctx.drawImage(img,cx-W*0.12,cy-W*0.12,W*0.24,W*0.24);}
+    else{ctx.fillStyle='#e8f5e9';ctx.fillRect(cx-W*0.12,cy-W*0.12,W*0.24,W*0.24);ctx.fillStyle='#28a745';ctx.font=`bold ${W*0.08}px Poppins`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(info.name.charAt(0).toUpperCase(),cx,cy);}
+    ctx.restore();
+    ctx.strokeStyle='#28a745';ctx.lineWidth=W*0.007;ctx.beginPath();ctx.arc(cx,cy,W*0.122,0,Math.PI*2);ctx.stroke();
+    ctx.strokeStyle='rgba(255,255,255,0.7)';ctx.lineWidth=W*0.004;ctx.beginPath();ctx.arc(cx,cy,W*0.115,0,Math.PI*2);ctx.stroke();
+    // Badge
+    const bg2=ctx.createLinearGradient(cx-W*0.12,0,cx+W*0.12,0);bg2.addColorStop(0,'#28a745');bg2.addColorStop(1,'#52c464');
+    ctx.fillStyle=bg2;roundRect(ctx,cx-W*0.13,cy+W*0.1,W*0.26,W*0.055,W*0.03);ctx.fill();
+    ctx.fillStyle='#fff';ctx.font=`bold ${W*0.022}px Poppins`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('⚡ RAFTAROO CAPTAIN',cx,cy+W*0.128);
+    // Name
+    ctx.fillStyle='#111';ctx.font=`800 ${W*0.065}px Poppins`;ctx.textAlign='center';ctx.textBaseline='alphabetic';ctx.fillText(info.name,cx,cy+W*0.22);
+    ctx.fillStyle='#555';ctx.font=`${W*0.038}px Poppins`;ctx.fillText(`${info.vehicle}  •  ${info.city}`,cx,cy+W*0.27);
+    if(info.id){ctx.fillStyle='#28a745';ctx.font=`bold ${W*0.032}px Poppins`;ctx.fillText(`ID: ${info.id}`,cx,cy+W*0.31);}
+    // QR
+    if(qrCanvas){const qs=W*0.44,qx=(W-qs)/2,qy=cy+W*0.34;
+      ctx.fillStyle='#f8f9fa';ctx.shadowColor='rgba(0,0,0,0.06)';ctx.shadowBlur=16;roundRect(ctx,qx-W*0.04,qy-W*0.03,qs+W*0.08,qs+W*0.1,W*0.03);ctx.fill();ctx.shadowBlur=0;
+      ctx.drawImage(qrCanvas,qx,qy,qs,qs);
+      ctx.fillStyle='#888';ctx.font=`${W*0.03}px Poppins`;ctx.textAlign='center';ctx.textBaseline='alphabetic';ctx.fillText('📱 Scan karein aur contact karein',cx,qy+qs+W*0.05);}
+    // Footer
+    const fg=ctx.createLinearGradient(0,H-W*0.1,W,H-W*0.1);fg.addColorStop(0,'#1e7e34');fg.addColorStop(1,'#28a745');
+    ctx.fillStyle=fg;ctx.fillRect(0,H-W*0.1,W,W*0.1);
+    ctx.fillStyle='#fff';ctx.font=`bold ${W*0.034}px Poppins`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('www.raftaroo.online  •  Fast & Reliable',cx,H-W*0.05);
+  }},
+
+  // ─── 1: Black Premium ───
+  {id:1,name:'Black Premium',cat:'dark',
+  draw:async(ctx,W,H,info,qrCanvas)=>{
+    ctx.fillStyle='#0a0a0a';ctx.fillRect(0,0,W,H);
+    ctx.strokeStyle='#28a745';ctx.lineWidth=4;ctx.beginPath();ctx.moveTo(0,0);ctx.lineTo(W,0);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(0,H);ctx.lineTo(W,H);ctx.stroke();
+    ctx.strokeStyle='rgba(40,167,69,0.05)';ctx.lineWidth=1;
+    for(let x=0;x<W;x+=50){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,H);ctx.stroke();}
+    for(let y=0;y<H;y+=50){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(W,y);ctx.stroke();}
+    // Glow circle
+    const grd=ctx.createRadialGradient(W*0.8,H*0.1,10,W*0.8,H*0.1,W*0.4);grd.addColorStop(0,'rgba(40,167,69,0.15)');grd.addColorStop(1,'transparent');
+    ctx.fillStyle=grd;ctx.fillRect(0,0,W,H);
+    // Logo area
+    ctx.fillStyle='#28a745';ctx.font=`800 ${W*0.055}px Poppins`;ctx.textAlign='left';ctx.textBaseline='middle';ctx.fillText('RAFTAROO',W*0.07,H*0.07);
+    ctx.fillStyle='rgba(255,255,255,0.3)';ctx.font=`${W*0.032}px Poppins`;ctx.fillText('Captain ID Card',W*0.07,H*0.1);
+    ctx.strokeStyle='rgba(40,167,69,0.3)';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(W*0.05,H*0.14);ctx.lineTo(W*0.95,H*0.14);ctx.stroke();
+    // Photo
+    const cx=W*0.22,cy=H*0.28;const pr=W*0.13;
+    ctx.save();ctx.beginPath();ctx.arc(cx,cy,pr,0,Math.PI*2);ctx.clip();
+    if(info.photo){const img=await loadImg(info.photo);ctx.drawImage(img,cx-pr,cy-pr,pr*2,pr*2);}
+    else{ctx.fillStyle='#1a1a1a';ctx.fillRect(cx-pr,cy-pr,pr*2,pr*2);ctx.fillStyle='#28a745';ctx.font=`bold ${W*0.09}px Poppins`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(info.name.charAt(0).toUpperCase(),cx,cy);}
+    ctx.restore();
+    ctx.strokeStyle='#28a745';ctx.lineWidth=3;ctx.beginPath();ctx.arc(cx,cy,pr+4,0,Math.PI*2);ctx.stroke();
+    // Info
+    ctx.fillStyle='#fff';ctx.font=`800 ${W*0.065}px Poppins`;ctx.textAlign='left';ctx.textBaseline='alphabetic';ctx.fillText(info.name,W*0.4,H*0.245);
+    ctx.fillStyle='#28a745';ctx.font=`bold ${W*0.033}px Poppins`;ctx.fillText('⚡ Raftaroo Captain',W*0.4,H*0.285);
+    ctx.fillStyle='rgba(255,255,255,0.5)';ctx.font=`${W*0.032}px Poppins`;ctx.fillText(`${info.vehicle}   ${info.city}`,W*0.4,H*0.32);
+    if(info.id){ctx.fillStyle='rgba(255,255,255,0.3)';ctx.font=`${W*0.026}px Poppins`;ctx.fillText(`ID: ${info.id}`,W*0.4,H*0.35);}
+    // QR
+    if(qrCanvas){const qs=W*0.44,qx=(W-qs)/2,qy=H*0.42;
+      ctx.fillStyle='#fff';ctx.shadowColor='rgba(40,167,69,0.3)';ctx.shadowBlur=24;roundRect(ctx,qx-W*0.04,qy-W*0.03,qs+W*0.08,qs+W*0.09,W*0.03);ctx.fill();ctx.shadowBlur=0;
+      ctx.drawImage(qrCanvas,qx,qy,qs,qs);
+      ctx.fillStyle='rgba(255,255,255,0.4)';ctx.font=`${W*0.028}px Poppins`;ctx.textAlign='center';ctx.textBaseline='alphabetic';ctx.fillText('📱 Scan karein',W/2,qy+qs+W*0.045);}
+    // Footer
+    const bg3=ctx.createLinearGradient(0,H-W*0.1,W,0);bg3.addColorStop(0,'#28a745');bg3.addColorStop(1,'#1e7e34');
+    ctx.fillStyle=bg3;roundRect(ctx,W*0.05,H-W*0.12,W*0.9,W*0.09,W*0.02);ctx.fill();
+    ctx.fillStyle='#fff';ctx.font=`bold ${W*0.033}px Poppins`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('www.raftaroo.online',W/2,H-W*0.075);
+  }},
+
+  // ─── 2: Gradient Pro ───
+  {id:2,name:'Gradient Pro',cat:'rider',
+  draw:async(ctx,W,H,info,qrCanvas)=>{
+    const bg=ctx.createLinearGradient(0,0,W,H);bg.addColorStop(0,'#064e1e');bg.addColorStop(0.5,'#0d6e2b');bg.addColorStop(1,'#041a0c');
+    ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+    ctx.fillStyle='rgba(40,167,69,0.1)';ctx.beginPath();ctx.arc(W*0.9,H*0.08,W*0.35,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='rgba(40,167,69,0.06)';ctx.beginPath();ctx.arc(W*0.1,H*0.85,W*0.3,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='rgba(255,255,255,0.9)';ctx.font=`800 ${W*0.06}px Poppins`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('RAFTAROO',W/2,H*0.06);
+    ctx.fillStyle='rgba(255,255,255,0.4)';ctx.font=`${W*0.028}px Poppins`;ctx.fillText('CAPTAIN CARD',W/2,H*0.09);
+    ctx.fillStyle='rgba(255,255,255,0.07)';roundRect(ctx,W*0.04,H*0.12,W*0.92,H*0.78,W*0.04);ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,0.12)';ctx.lineWidth=1;roundRect(ctx,W*0.04,H*0.12,W*0.92,H*0.78,W*0.04);ctx.stroke();
+    const cx=W/2,cy=H*0.27;const pr=W*0.125;
+    ctx.save();ctx.beginPath();ctx.arc(cx,cy,pr,0,Math.PI*2);ctx.clip();
+    if(info.photo){const img=await loadImg(info.photo);ctx.drawImage(img,cx-pr,cy-pr,pr*2,pr*2);}
+    else{ctx.fillStyle='rgba(40,167,69,0.3)';ctx.fillRect(cx-pr,cy-pr,pr*2,pr*2);ctx.fillStyle='#fff';ctx.font=`bold ${W*0.09}px Poppins`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(info.name.charAt(0).toUpperCase(),cx,cy);}
+    ctx.restore();
+    ctx.strokeStyle='rgba(255,255,255,0.6)';ctx.lineWidth=3;ctx.beginPath();ctx.arc(cx,cy,pr+3,0,Math.PI*2);ctx.stroke();
+    ctx.strokeStyle='#28a745';ctx.lineWidth=2;ctx.globalAlpha=0.5;ctx.beginPath();ctx.arc(cx,cy,pr+8,0,Math.PI*2);ctx.stroke();ctx.globalAlpha=1;
+    ctx.fillStyle='#fff';ctx.font=`800 ${W*0.06}px Poppins`;ctx.textAlign='center';ctx.textBaseline='alphabetic';ctx.fillText(info.name,cx,cy+pr+W*0.085);
+    ctx.fillStyle='rgba(255,255,255,0.5)';ctx.font=`${W*0.035}px Poppins`;ctx.fillText(`${info.vehicle}  ·  ${info.city}`,cx,cy+pr+W*0.128);
+    const bg2=ctx.createLinearGradient(cx-W*0.12,0,cx+W*0.12,0);bg2.addColorStop(0,'#28a745');bg2.addColorStop(1,'#52c464');
+    ctx.fillStyle=bg2;roundRect(ctx,cx-W*0.13,cy+pr+W*0.135,W*0.26,W*0.055,W*0.03);ctx.fill();
+    ctx.fillStyle='#fff';ctx.font=`bold ${W*0.022}px Poppins`;ctx.textBaseline='middle';ctx.fillText('⚡ VERIFIED CAPTAIN',cx,cy+pr+W*0.163);
+    if(qrCanvas){const qs=W*0.44,qx=(W-qs)/2,qy=cy+pr+W*0.22;
+      ctx.fillStyle='rgba(255,255,255,0.95)';roundRect(ctx,qx-W*0.04,qy-W*0.03,qs+W*0.08,qs+W*0.09,W*0.03);ctx.fill();
+      ctx.drawImage(qrCanvas,qx,qy,qs,qs);
+      ctx.fillStyle='rgba(255,255,255,0.5)';ctx.font=`${W*0.028}px Poppins`;ctx.textAlign='center';ctx.textBaseline='alphabetic';ctx.fillText('📱 Scan karein',cx,qy+qs+W*0.045);}
+    ctx.fillStyle='rgba(255,255,255,0.12)';ctx.fillRect(0,H-W*0.1,W,W*0.1);
+    ctx.fillStyle='rgba(255,255,255,0.65)';ctx.font=`${W*0.03}px Poppins`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('www.raftaroo.online',cx,H-W*0.05);
+  }},
+
+  // ─── 3: Bold Yellow ───
+  {id:3,name:'Bold Yellow',cat:'rider',
+  draw:async(ctx,W,H,info,qrCanvas)=>{
+    ctx.fillStyle='#FFDD00';ctx.fillRect(0,0,W,H);
+    ctx.fillStyle='#111';ctx.fillRect(0,0,W,H*0.18);
+    ctx.fillStyle='#FFDD00';ctx.font=`800 ${W*0.08}px Poppins`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('RAFTAROO',W/2,H*0.09);
+    ctx.fillStyle='#111';ctx.beginPath();ctx.moveTo(0,H*0.18);ctx.lineTo(W,H*0.16);ctx.lineTo(W,H*0.2);ctx.lineTo(0,H*0.22);ctx.closePath();ctx.fill();
+    const cx=W/2,cy=H*0.38;const pr=W*0.14;
+    ctx.save();ctx.beginPath();ctx.arc(cx,cy,pr,0,Math.PI*2);ctx.clip();
+    if(info.photo){const img=await loadImg(info.photo);ctx.drawImage(img,cx-pr,cy-pr,pr*2,pr*2);}
+    else{ctx.fillStyle='#111';ctx.fillRect(cx-pr,cy-pr,pr*2,pr*2);ctx.fillStyle='#FFDD00';ctx.font=`bold ${W*0.1}px Poppins`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(info.name.charAt(0).toUpperCase(),cx,cy);}
+    ctx.restore();
+    ctx.strokeStyle='#111';ctx.lineWidth=W*0.01;ctx.beginPath();ctx.arc(cx,cy,pr+4,0,Math.PI*2);ctx.stroke();
+    ctx.fillStyle='#111';ctx.font=`800 ${W*0.065}px Poppins`;ctx.textAlign='center';ctx.textBaseline='alphabetic';ctx.fillText(info.name,cx,cy+pr+W*0.07);
+    ctx.font=`bold ${W*0.038}px Poppins`;ctx.fillText(`${info.vehicle}  ·  ${info.city}`,cx,cy+pr+W*0.115);
+    if(info.id){ctx.font=`${W*0.028}px Poppins`;ctx.fillStyle='rgba(0,0,0,0.5)';ctx.fillText(`Captain ID: ${info.id}`,cx,cy+pr+W*0.15);}
+    if(qrCanvas){const qs=W*0.43,qx=(W-qs)/2,qy=cy+pr+W*0.17;
+      ctx.fillStyle='#fff';ctx.shadowColor='rgba(0,0,0,0.15)';ctx.shadowBlur=16;roundRect(ctx,qx-W*0.035,qy-W*0.025,qs+W*0.07,qs+W*0.08,W*0.025);ctx.fill();ctx.shadowBlur=0;
+      ctx.drawImage(qrCanvas,qx,qy,qs,qs);
+      ctx.fillStyle='rgba(0,0,0,0.5)';ctx.font=`${W*0.028}px Poppins`;ctx.textAlign='center';ctx.textBaseline='alphabetic';ctx.fillText('📱 Scan karein',cx,qy+qs+W*0.042);}
+    ctx.fillStyle='#111';ctx.fillRect(0,H-W*0.11,W,W*0.11);
+    ctx.fillStyle='#FFDD00';ctx.font=`bold ${W*0.038}px Poppins`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('Fast · Reliable · Trusted',cx,H-W*0.055);
+  }},
+
+  // ─── 4: Minimal White ───
+  {id:4,name:'Minimal White',cat:'minimal',
+  draw:async(ctx,W,H,info,qrCanvas)=>{
+    ctx.fillStyle='#fff';ctx.fillRect(0,0,W,H);
+    ctx.fillStyle='#28a745';ctx.fillRect(0,0,W*0.018,H);
+    ctx.fillStyle='rgba(40,167,69,0.05)';for(let r=0;r<6;r++)for(let c=0;c<8;c++){ctx.beginPath();ctx.arc(W-W*0.08+c*W*0.02,H*0.04+r*W*0.02,3,0,Math.PI*2);ctx.fill();}
+    ctx.fillStyle='#111';ctx.font=`800 ${W*0.055}px Poppins`;ctx.textAlign='left';ctx.textBaseline='alphabetic';ctx.fillText('RAFTAROO',W*0.07,H*0.07);
+    ctx.fillStyle='#28a745';ctx.font=`bold ${W*0.028}px Poppins`;ctx.fillText('CAPTAIN CARD',W*0.07,H*0.1);
+    ctx.strokeStyle='#eee';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(W*0.05,H*0.125);ctx.lineTo(W*0.95,H*0.125);ctx.stroke();
+    const cx=W*0.22,cy=H*0.26;const pr=W*0.13;
+    ctx.save();ctx.beginPath();ctx.arc(cx,cy,pr,0,Math.PI*2);ctx.clip();
+    if(info.photo){const img=await loadImg(info.photo);ctx.drawImage(img,cx-pr,cy-pr,pr*2,pr*2);}
+    else{ctx.fillStyle='#f0f7f0';ctx.fillRect(cx-pr,cy-pr,pr*2,pr*2);ctx.fillStyle='#28a745';ctx.font=`bold ${W*0.09}px Poppins`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(info.name.charAt(0).toUpperCase(),cx,cy);}
+    ctx.restore();
+    ctx.strokeStyle='#e0e0e0';ctx.lineWidth=2;ctx.beginPath();ctx.arc(cx,cy,pr+2,0,Math.PI*2);ctx.stroke();
+    ctx.fillStyle='#111';ctx.font=`800 ${W*0.065}px Poppins`;ctx.textAlign='left';ctx.textBaseline='alphabetic';ctx.fillText(info.name,W*0.4,H*0.22);
+    ctx.fillStyle='#28a745';ctx.font=`bold ${W*0.028}px Poppins`;ctx.fillText('⚡ Raftaroo Captain',W*0.4,H*0.255);
+    ctx.fillStyle='#666';ctx.font=`${W*0.03}px Poppins`;ctx.fillText(info.vehicle,W*0.4,H*0.288);ctx.fillText(info.city,W*0.4,H*0.318);
+    if(info.id){ctx.fillStyle='#aaa';ctx.font=`${W*0.025}px Poppins`;ctx.fillText(`ID: ${info.id}`,W*0.4,H*0.346);}
+    ctx.strokeStyle='#f0f0f0';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(W*0.05,H*0.375);ctx.lineTo(W*0.95,H*0.375);ctx.stroke();
+    if(qrCanvas){const qs=W*0.44,qx=(W-qs)/2,qy=H*0.395;
+      ctx.fillStyle='#f9f9f9';roundRect(ctx,qx-W*0.035,qy-W*0.025,qs+W*0.07,qs+W*0.08,W*0.025);ctx.fill();
+      ctx.drawImage(qrCanvas,qx,qy,qs,qs);
+      ctx.fillStyle='#aaa';ctx.font=`${W*0.027}px Poppins`;ctx.textAlign='center';ctx.textBaseline='alphabetic';ctx.fillText('📱 Scan karein',W/2,qy+qs+W*0.042);}
+    ctx.strokeStyle='#28a745';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(W*0.05,H-W*0.1);ctx.lineTo(W*0.95,H-W*0.1);ctx.stroke();
+    ctx.fillStyle='#777';ctx.font=`${W*0.026}px Poppins`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('www.raftaroo.online',W/2,H-W*0.057);
+  }},
+
+  // ─── 5: Promo Red Hot ───
+  {id:5,name:'Promo Hot Deal',cat:'promo',
+  draw:async(ctx,W,H,info,qrCanvas)=>{
+    const bg=ctx.createLinearGradient(0,0,W,H);bg.addColorStop(0,'#c0392b');bg.addColorStop(0.5,'#e74c3c');bg.addColorStop(1,'#922b21');
+    ctx.fillStyle=bg;ctx.fillRect(0,0,W,H);
+    ctx.fillStyle='rgba(255,255,255,0.05)';ctx.beginPath();ctx.arc(W*0.85,H*0.15,W*0.4,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='rgba(0,0,0,0.2)';ctx.beginPath();ctx.arc(W*0.1,H*0.8,W*0.35,0,Math.PI*2);ctx.fill();
+    ctx.fillStyle='#FFDD00';ctx.font=`900 ${W*0.12}px Poppins`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('RAFTAROO',W/2,H*0.08);
+    ctx.fillStyle='rgba(255,255,255,0.8)';ctx.font=`${W*0.03}px Poppins`;ctx.fillText('SPECIAL OFFER',W/2,H*0.115);
+    // Big promo text
+    ctx.fillStyle='#fff';ctx.font=`900 ${W*0.09}px Poppins`;ctx.textAlign='center';ctx.textBaseline='alphabetic';
+    const lines=wrapText(ctx,info.promoTitle,W*0.85,W*0.09);
+    let ly=H*0.22;lines.forEach(l=>{ctx.fillText(l,W/2,ly);ly+=W*0.1;});
+    // Promo code box
+    ctx.fillStyle='#FFDD00';roundRect(ctx,W*0.12,ly,W*0.76,W*0.11,W*0.025);ctx.fill();
+    ctx.fillStyle='#c0392b';ctx.font=`900 ${W*0.055}px Poppins`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(info.promoCode,W/2,ly+W*0.055);
+    ly+=W*0.12;
+    ctx.fillStyle='rgba(255,255,255,0.7)';ctx.font=`${W*0.03}px Poppins`;ctx.textBaseline='alphabetic';ctx.fillText(info.promoDetail,W/2,ly+W*0.04);
+    // QR
+    if(qrCanvas){const qs=W*0.4,qx=(W-qs)/2,qy=ly+W*0.08;
+      ctx.fillStyle='rgba(255,255,255,0.95)';roundRect(ctx,qx-W*0.04,qy-W*0.03,qs+W*0.08,qs+W*0.09,W*0.03);ctx.fill();
+      ctx.drawImage(qrCanvas,qx,qy,qs,qs);
+      ctx.fillStyle='rgba(255,255,255,0.6)';ctx.font=`${W*0.027}px Poppins`;ctx.textAlign='center';ctx.textBaseline='alphabetic';ctx.fillText('📱 Scan & Redeem',W/2,qy+qs+W*0.042);}
+    ctx.fillStyle='rgba(0,0,0,0.3)';ctx.fillRect(0,H-W*0.1,W,W*0.1);
+    ctx.fillStyle='#FFDD00';ctx.font=`bold ${W*0.032}px Poppins`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('www.raftaroo.online',W/2,H-W*0.05);
+  }},
+
+  // ─── 6: Referral Card ───
+  {id:6,name:'Refer & Earn',cat:'promo',
+  draw:async(ctx,W,H,info,qrCanvas)=>{
+    ctx.fillStyle='#0d1b2a';ctx.fillRect(0,0,W,H);
+    const star=ctx.createRadialGradient(W/2,H*0.3,10,W/2,H*0.3,W*0.5);star.addColorStop(0,'rgba(255,200,0,0.15)');star.addColorStop(1,'transparent');
+    ctx.fillStyle=star;ctx.fillRect(0,0,W,H);
+    ctx.fillStyle='rgba(255,200,0,0.08)';for(let i=0;i<20;i++){ctx.beginPath();ctx.arc(Math.random()*W,Math.random()*H,2,0,Math.PI*2);ctx.fill();}
+    ctx.fillStyle='#FFD700';ctx.font=`900 ${W*0.075}px Poppins`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('RAFTAROO',W/2,H*0.07);
+    const bg2=ctx.createLinearGradient(0,0,W,0);bg2.addColorStop(0,'#FFD700');bg2.addColorStop(1,'#FFA500');
+    ctx.fillStyle=bg2;ctx.font=`900 ${W*0.14}px Poppins`;ctx.textBaseline='alphabetic';ctx.fillText('REFER',W/2,H*0.2);
+    ctx.fillStyle='rgba(255,255,255,0.9)';ctx.font=`800 ${W*0.065}px Poppins`;ctx.fillText('& EARN',W/2,H*0.26);
+    ctx.fillStyle='rgba(255,255,255,0.5)';ctx.font=`${W*0.032}px Poppins`;ctx.fillText('Share karo, paisa kamao!',W/2,H*0.29);
+    // Rider info small
+    const cx=W/2,cy=H*0.38;
+    ctx.save();ctx.beginPath();ctx.arc(cx,cy,W*0.1,0,Math.PI*2);ctx.clip();
+    if(info.photo){const img=await loadImg(info.photo);ctx.drawImage(img,cx-W*0.1,cy-W*0.1,W*0.2,W*0.2);}
+    else{ctx.fillStyle='#1a2a3a';ctx.fillRect(cx-W*0.1,cy-W*0.1,W*0.2,W*0.2);ctx.fillStyle='#FFD700';ctx.font=`bold ${W*0.07}px Poppins`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(info.name.charAt(0).toUpperCase(),cx,cy);}
+    ctx.restore();
+    ctx.strokeStyle='#FFD700';ctx.lineWidth=3;ctx.beginPath();ctx.arc(cx,cy,W*0.102,0,Math.PI*2);ctx.stroke();
+    ctx.fillStyle='#fff';ctx.font=`bold ${W*0.042}px Poppins`;ctx.textAlign='center';ctx.textBaseline='alphabetic';ctx.fillText(info.name,cx,cy+W*0.13);
+    ctx.fillStyle='#FFD700';ctx.font=`${W*0.027}px Poppins`;ctx.fillText('Referral Code:',cx,cy+W*0.17);
+    ctx.fillStyle='#FFD700';ctx.font=`900 ${W*0.065}px Poppins`;ctx.fillText(info.promoCode||info.id||'RAFT50',cx,cy+W*0.235);
+    if(qrCanvas){const qs=W*0.42,qx=(W-qs)/2,qy=cy+W*0.25;
+      ctx.fillStyle='rgba(255,255,255,0.9)';roundRect(ctx,qx-W*0.03,qy-W*0.02,qs+W*0.06,qs+W*0.08,W*0.025);ctx.fill();
+      ctx.drawImage(qrCanvas,qx,qy,qs,qs);
+      ctx.fillStyle='rgba(255,255,255,0.5)';ctx.font=`${W*0.025}px Poppins`;ctx.textAlign='center';ctx.textBaseline='alphabetic';ctx.fillText('Scan karo aur join karo',cx,qy+qs+W*0.038);}
+    ctx.fillStyle='rgba(255,215,0,0.15)';ctx.fillRect(0,H-W*0.1,W,W*0.1);
+    ctx.fillStyle='#FFD700';ctx.font=`bold ${W*0.03}px Poppins`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('www.raftaroo.online',cx,H-W*0.05);
+  }},
+
+  // ─── 7: Discount Blue ───
+  {id:7,name:'Discount Blue',cat:'promo',
+  draw:async(ctx,W,H,info,qrCanvas)=>{
+    ctx.fillStyle='#1a237e';ctx.fillRect(0,0,W,H);
+    const bg=ctx.createLinearGradient(0,0,0,H*0.5);bg.addColorStop(0,'#283593');bg.addColorStop(1,'#1a237e');
+    ctx.fillStyle=bg;ctx.fillRect(0,0,W,H*0.5);
+    ctx.fillStyle='rgba(255,255,255,0.05)';for(let i=0;i<5;i++){ctx.beginPath();ctx.arc(Math.random()*W,Math.random()*H*0.4,W*0.15,0,Math.PI*2);ctx.fill();}
+    ctx.fillStyle='#fff';ctx.font=`900 ${W*0.07}px Poppins`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('RAFTAROO',W/2,H*0.07);
+    // Big discount circle
+    const discGrad=ctx.createRadialGradient(W/2,H*0.22,0,W/2,H*0.22,W*0.2);discGrad.addColorStop(0,'#2196f3');discGrad.addColorStop(1,'#1565c0');
+    ctx.fillStyle=discGrad;ctx.beginPath();ctx.arc(W/2,H*0.22,W*0.22,0,Math.PI*2);ctx.fill();
+    ctx.strokeStyle='rgba(255,255,255,0.3)';ctx.lineWidth=2;ctx.beginPath();ctx.arc(W/2,H*0.22,W*0.24,0,Math.PI*2);ctx.stroke();
+    ctx.fillStyle='#fff';ctx.font=`900 ${W*0.12}px Poppins`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(info.promoTitle.includes('%')?info.promoTitle.split('%')[0]+'%':'50%',W/2,H*0.21);
+    ctx.font=`bold ${W*0.035}px Poppins`;ctx.fillText('OFF',W/2,H*0.245);
+    ctx.fillStyle='rgba(255,255,255,0.85)';ctx.font=`${W*0.032}px Poppins`;ctx.textBaseline='alphabetic';ctx.fillText(info.promoDetail,W/2,H*0.42);
+    ctx.fillStyle='rgba(255,255,255,0.5)';ctx.font=`${W*0.025}px Poppins`;ctx.fillText(`Use code: ${info.promoCode}  by ${info.name}`,W/2,H*0.45);
+    if(qrCanvas){const qs=W*0.44,qx=(W-qs)/2,qy=H*0.47;
+      ctx.fillStyle='rgba(255,255,255,0.95)';roundRect(ctx,qx-W*0.03,qy-W*0.02,qs+W*0.06,qs+W*0.08,W*0.025);ctx.fill();
+      ctx.drawImage(qrCanvas,qx,qy,qs,qs);
+      ctx.fillStyle='rgba(255,255,255,0.5)';ctx.font=`${W*0.025}px Poppins`;ctx.textAlign='center';ctx.textBaseline='alphabetic';ctx.fillText('Scan & Book Now',W/2,qy+qs+W*0.038);}
+    ctx.fillStyle='#2196f3';ctx.fillRect(0,H-W*0.1,W,W*0.1);
+    ctx.fillStyle='#fff';ctx.font=`bold ${W*0.03}px Poppins`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('www.raftaroo.online  •  Book Rides Fast',W/2,H-W*0.05);
+  }},
+
+  // ─── 8: Ultra Minimal ───
+  {id:8,name:'Ultra Minimal',cat:'minimal',
+  draw:async(ctx,W,H,info,qrCanvas)=>{
+    ctx.fillStyle='#fafafa';ctx.fillRect(0,0,W,H);
+    ctx.fillStyle='#28a745';ctx.fillRect(0,0,W,W*0.02);
+    ctx.fillStyle='#111';ctx.font=`300 ${W*0.04}px Poppins`;ctx.textAlign='center';ctx.textBaseline='alphabetic';ctx.fillText('RAFTAROO.ONLINE',W/2,H*0.07);
+    ctx.strokeStyle='#ddd';ctx.lineWidth=1;ctx.beginPath();ctx.moveTo(W*0.1,H*0.085);ctx.lineTo(W*0.9,H*0.085);ctx.stroke();
+    const cx=W/2,cy=H*0.22;const pr=W*0.13;
+    ctx.save();ctx.beginPath();ctx.arc(cx,cy,pr,0,Math.PI*2);ctx.clip();
+    if(info.photo){const img=await loadImg(info.photo);ctx.drawImage(img,cx-pr,cy-pr,pr*2,pr*2);}
+    else{ctx.fillStyle='#f0f0f0';ctx.fillRect(cx-pr,cy-pr,pr*2,pr*2);ctx.fillStyle='#aaa';ctx.font=`300 ${W*0.08}px Poppins`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText(info.name.charAt(0).toUpperCase(),cx,cy);}
+    ctx.restore();
+    ctx.fillStyle='#111';ctx.font=`600 ${W*0.065}px Poppins`;ctx.textAlign='center';ctx.textBaseline='alphabetic';ctx.fillText(info.name,cx,cy+pr+W*0.07);
+    ctx.fillStyle='#28a745';ctx.font=`${W*0.025}px Poppins`;ctx.fillText('CAPTAIN',cx,cy+pr+W*0.1);
+    ctx.fillStyle='#999';ctx.font=`${W*0.03}px Poppins`;ctx.fillText(`${info.city}  /  ${info.vehicle}`,cx,cy+pr+W*0.135);
+    if(info.id){ctx.fillStyle='#ccc';ctx.font=`${W*0.022}px Poppins`;ctx.fillText(info.id,cx,cy+pr+W*0.165);}
+    if(qrCanvas){const qs=W*0.46,qx=(W-qs)/2,qy=cy+pr+W*0.18;
+      ctx.drawImage(qrCanvas,qx,qy,qs,qs);
+      ctx.fillStyle='#ccc';ctx.font=`${W*0.022}px Poppins`;ctx.textAlign='center';ctx.textBaseline='alphabetic';ctx.fillText('SCAN TO CONTACT',cx,qy+qs+W*0.035);}
+    ctx.strokeStyle='#28a745';ctx.lineWidth=2;ctx.beginPath();ctx.moveTo(W*0.1,H-W*0.08);ctx.lineTo(W*0.9,H-W*0.08);ctx.stroke();
+    ctx.fillStyle='#ccc';ctx.font=`${W*0.022}px Poppins`;ctx.textAlign='center';ctx.textBaseline='middle';ctx.fillText('www.raftaroo.online',cx,H-W*0.048);
+  }}
+];
+
+// ── TEXT WRAP HELPER ──
+function wrapText(ctx,text,maxW,fontSize){
+  const words=text.split(' ');const lines=[];let cur='';
+  words.forEach(w=>{const test=cur?cur+' '+w:w;if(ctx.measureText(test).width>maxW&&cur){lines.push(cur);cur=w;}else cur=test;});
+  if(cur)lines.push(cur);return lines;
+}
+
+// ── TEMPLATE FILTER ──
+let currentCatFilter='all';
+function filterTpls(cat,btn){
+  currentCatFilter=cat;
+  document.querySelectorAll('.tpl-cat-btn').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  renderTemplatePreviews();
+}
+
+// ── TEMPLATE PREVIEWS ──
+async function renderTemplatePreviews(){
+  const grid=document.getElementById('tpl-grid');
+  grid.innerHTML='';
+  const info=getInfo();
+  const qrData=buildQRData()||'https://raftaroo.online';
+  const visible=templates.filter(t=>currentCatFilter==='all'||t.cat===currentCatFilter);
+  for(let i=0;i<visible.length;i++){
+    const t=visible[i];
+    const idx=templates.indexOf(t);
+    const wrap=document.createElement('div');
+    wrap.className='tpl-card'+(idx===selectedTpl?' selected':'');
+    wrap.onclick=()=>selectTpl(idx);
+    const cv=document.createElement('canvas');cv.width=300;cv.height=420;
+    const ctx=cv.getContext('2d');
+    const qrCv=await generateQRCanvas(qrData,80,'#000','#fff');
+    const off=document.createElement('canvas');off.width=1080;off.height=1520;
+    const octx=off.getContext('2d');
+    await t.draw(octx,1080,1520,info,qrCv);
+    ctx.drawImage(off,0,0,1080,1520,0,0,300,420);
+    wrap.appendChild(cv);
+    const check=document.createElement('div');check.className='tpl-check';check.innerHTML='<i class="fas fa-check"></i>';wrap.appendChild(check);
+    const nm=document.createElement('div');nm.className='tpl-name';nm.textContent=t.name;wrap.appendChild(nm);
+    grid.appendChild(wrap);
+  }
+}
+
+function selectTpl(i){
+  selectedTpl=i;
+  document.querySelectorAll('.tpl-card').forEach(c=>c.classList.remove('selected'));
+  // Find the card with this template index
+  const visible=templates.filter(t=>currentCatFilter==='all'||t.cat===currentCatFilter);
+  const visIdx=visible.findIndex(t=>templates.indexOf(t)===i);
+  if(visIdx>=0)document.querySelectorAll('.tpl-card')[visIdx].classList.add('selected');
+}
+
+// ── BUILD FINAL CARD ──
+async function buildFinalCard(){
+  showLoader(true);
+  const info=getInfo();
+  const qrData=buildQRData();
+  try{
+    const qrCv=await generateQRCanvas(qrData,320,'#000','#fff');
+    const W=1080,H=1520;
+    const cv=document.getElementById('final-canvas');
+    cv.width=W;cv.height=H;
+    const ctx=cv.getContext('2d');
+    await templates[selectedTpl].draw(ctx,W,H,info,qrCv);
+    generatedCanvas=cv;
+    cardsMade++;document.getElementById('s-cards').textContent=cardsMade;
+    const wrap=document.getElementById('preview-wrap');
+    const maxW=wrap.clientWidth-28;
+    cv.style.width=Math.round(W*(maxW/W))+'px';cv.style.height='auto';
+    document.getElementById('card-size-lbl').textContent=`${W}×${H} px`;
+    showToast('🎉 Card tayar hai!');
+  }catch(e){showToast('⚠️ Card banane mein masla aaya',true);console.error(e);}
+  finally{showLoader(false);}
+}
+
+// ── DOWNLOAD / SHARE / COPY ──
+function downloadCard(){
+  if(!generatedCanvas){showToast('⚠️ Pehle card banayein!',true);return;}
+  const name=document.getElementById('r-name').value.trim()||'captain';
+  const a=document.createElement('a');a.download=`raftaroo-${name.replace(/\s+/g,'-')}-${Date.now()}.png`;a.href=generatedCanvas.toDataURL('image/png',1.0);a.click();
+  dlCount++;document.getElementById('s-dl').textContent=dlCount;showToast('⬇ PNG download ho gaya!');
+}
+function downloadCardJPG(){
+  if(!generatedCanvas){showToast('⚠️ Pehle card banayein!',true);return;}
+  const name=document.getElementById('r-name').value.trim()||'captain';
+  const a=document.createElement('a');a.download=`raftaroo-${name.replace(/\s+/g,'-')}-${Date.now()}.jpg`;a.href=generatedCanvas.toDataURL('image/jpeg',0.92);a.click();
+  dlCount++;document.getElementById('s-dl').textContent=dlCount;showToast('⬇ JPG download ho gaya!');
+}
+async function shareCard(){
+  if(!generatedCanvas||!navigator.share){showToast('⚠️ Share support nahi ya card nahi bana',true);return;}
+  generatedCanvas.toBlob(async blob=>{
+    const name=document.getElementById('r-name').value.trim()||'captain';
+    const file=new File([blob],`raftaroo-${name}.png`,{type:'image/png'});
+    try{await navigator.share({files:[file],title:'Mera Raftaroo QR Card',text:'Scan karein aur contact karein!'});showToast('↗ Share ho gaya!');}
+    catch(e){}
+  });
+}
+async function copyCard(){
+  if(!generatedCanvas){showToast('⚠️ Pehle card banayein!',true);return;}
+  try{generatedCanvas.toBlob(async blob=>{await navigator.clipboard.write([new ClipboardItem({'image/png':blob})]);showToast('📋 Card copy ho gaya!');});}
+  catch(e){showToast('⚠️ Copy supported nahi',true);}
+}
+
+// ── UI HELPERS ──
+function showLoader(v){document.getElementById('loader').classList.toggle('show',v);}
+function toggleDark(){document.body.classList.toggle('dark-mode');const d=document.body.classList.contains('dark-mode');document.getElementById('dark-btn').innerHTML=d?'<i class="fas fa-sun"></i>':'<i class="fas fa-moon"></i>';localStorage.setItem('rqr_dk',d?'1':'0');}
+let tt;
+function showToast(msg,err=false){document.getElementById('t-msg').textContent=msg;const ico=document.getElementById('t-ico');ico.className=err?'fas fa-exclamation-circle':'fas fa-check-circle';ico.style.color=err?'#e74c3c':'#28a745';const w=document.getElementById('tw');w.classList.add('show');clearTimeout(tt);tt=setTimeout(()=>w.classList.remove('show'),2800);}
+
+function navGo(i){
+  document.querySelectorAll('.nav-tab').forEach((n,j)=>n.classList.toggle('active',i===j));
+  if(i===0)window.scrollTo({top:0,behavior:'smooth'});
+  else if(i===1){if(cardsMade===0){showToast('⚠️ Pehle card banayein!',true);return;}goStep(3);}
+  else if(i===2){if(!generatedCanvas){showToast('⚠️ Pehle card banayein!',true);return;}shareCard();}
+  else if(i===3){showToast('💡 Step 1: Info → Step 2: QR → Step 3: Template → Download!');}
+}
+
+// Drag drop
+const pua=document.getElementById('pu-area');
+pua.addEventListener('dragover',e=>{e.preventDefault();pua.classList.add('drag-over');});
+pua.addEventListener('dragleave',()=>pua.classList.remove('drag-over'));
+pua.addEventListener('drop',e=>{e.preventDefault();pua.classList.remove('drag-over');const f=e.dataTransfer.files[0];if(f&&f.type.startsWith('image/'))handlePhoto({target:{files:[f]}});});
+
+// Init
+if(localStorage.getItem('rqr_dk')==='1'){document.body.classList.add('dark-mode');document.getElementById('dark-btn').innerHTML='<i class="fas fa-sun"></i>';}
+updateQRHint();
+setTimeout(()=>showToast('👋 Raftaroo Card Generator mein khush aamdeed!'),600);
+</script>
+</body>
+</html>

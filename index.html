@@ -4,31 +4,41 @@
 <meta name="google-site-verification" content="iTI1AZDaJ49BWXo56as9GPKB_u57UgHQg6vgftHT5po" />
 <script async src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-2272210342287916"
      crossorigin="anonymous"></script>
+<meta name="monetag" content="3c0fdbb3a3a1318cb852c871d2b5614f">
+<!-- Standard Favicon -->
 <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
 <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+
+<!-- ICO fallback -->
 <link rel="icon" href="/favicon.ico">
+
+<!-- Apple Touch Icon -->
 <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+
+<!-- Android Icons -->
 <link rel="icon" type="image/png" sizes="192x192" href="/android-192.png">
 <link rel="icon" type="image/png" sizes="512x512" href="/android-512.png">
 
-<!-- PWA Core -->
-<link rel="manifest" href="/manifest.json">
-<meta name="theme-color" content="#00C853" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#00C853" media="(prefers-color-scheme: dark)">
-
-<!-- iOS / Safari PWA -->
-<meta name="apple-mobile-web-app-capable" content="yes">
-<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Raftaroo">
-<link rel="apple-touch-startup-image" href="/apple-touch-icon.png">
-
-<!-- Windows / Edge -->
-<meta name="msapplication-TileColor" content="#00C853">
-<meta name="msapplication-TileImage" content="/android-192.png">
-<meta name="msapplication-config" content="none">
-
-<!-- Mobile browser bar color -->
 <meta name="theme-color" content="#00C853">
+<!-- PWA Meta Tags -->
+<link rel="manifest" href="/manifest.json">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black">
+<meta name="theme-color" content="#00C853">
+
+<!-- Install App Banner -->
+<div id="installBanner">
+    <div class="install-content">
+        <img src="https://iili.io/qfJHzZu.png" alt="Raftaroo Logo" class="install-logo">
+        <div class="install-text">
+            <h3>Raftaroo App Install Karein</h3>
+            <p>Fast booking aur easy access ke liye abhi install karein!</p>
+        </div>
+        <div class="install-buttons">
+            <button id="installBtn">Install Now</button>
+            <button id="closeBtn">✕</button>
+        </div>
+    </div>
 </div>
 
 <style>
@@ -1187,7 +1197,94 @@ input:checked + .slider:before {
 }
 /* --- END: CHAT MODAL STYLES --- */
 
-
+/* NEW: Referral View Styles */
+.referral-card {
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: 15px;
+    box-shadow: var(--shadow);
+    text-align: center;
+    margin-top: 20px;
+}
+.referral-card h3 {
+    color: var(--primary);
+    margin-bottom: 10px;
+}
+.referral-bonus-box {
+    background: linear-gradient(135deg, #28a745 0%, #20c957 100%);
+    color: #fff;
+    border-radius: 14px;
+    padding: 16px 20px;
+    margin: 18px 0 10px;
+    text-align: center;
+}
+.referral-bonus-box .bonus-label { font-size: 13px; opacity: 0.9; margin-bottom: 4px; }
+.referral-bonus-box .bonus-amount { font-size: 28px; font-weight: 700; letter-spacing: 1px; }
+.withdraw-form {
+    background: var(--bg-light);
+    border-radius: 12px;
+    padding: 16px;
+    margin-top: 14px;
+    text-align: left;
+}
+.withdraw-form h4 { font-size: 14px; font-weight: 700; margin-bottom: 12px; color: var(--text-main); }
+.withdraw-form input, .withdraw-form select {
+    width: 100%;
+    padding: 10px 14px;
+    border-radius: 10px;
+    border: 1px solid #ddd;
+    background: var(--input-bg);
+    color: var(--text-main);
+    font-size: 14px;
+    margin-bottom: 10px;
+    outline: none;
+}
+.withdraw-status-badge {
+    display: inline-block;
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 12px;
+    font-weight: 600;
+    margin-top: 8px;
+}
+.withdraw-status-badge.pending { background: #fff3cd; color: #856404; }
+.withdraw-status-badge.approved { background: #d4edda; color: #155724; }
+.withdraw-status-badge.rejected { background: #f8d7da; color: #721c24; }
+.withdraw-history-item {
+    background: var(--card-bg);
+    border-radius: 10px;
+    padding: 12px 14px;
+    margin-bottom: 8px;
+    border-left: 4px solid var(--primary);
+    font-size: 13px;
+}
+.referral-link-display {
+    background: var(--bg-light);
+    padding: 15px;
+    border-radius: 10px;
+    margin: 15px 0;
+    word-break: break-all;
+    font-weight: 600;
+    color: var(--text-main);
+    border: 1px solid var(--text-muted);
+}
+.btn-copy-share {
+    padding: 12px;
+    border-radius: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+    width: 100%;
+    margin-top: 10px;
+}
+#btnCopyLink {
+    background: var(--secondary);
+    color: var(--white);
+}
+#btnShareLink {
+    background: var(--success);
+    color: var(--white);
+}
 /* Leaflet GPS/Locate button - compact circular */
 .leaflet-bar a {
     width: 38px !important;
@@ -1208,14 +1305,14 @@ input:checked + .slider:before {
 
     <!-- SPLASH SCREEN -->
     <div id="splash-screen">
-        <img src="https://iili.io/BiXrZYv.png" alt="Raftaroo Logo" style="height: 100px; width: auto; margin-bottom: 20px;">
+        <img src="https://iili.io/fsyi06x.png" alt="Raftaroo Logo" style="height: 100px; width: auto; margin-bottom: 20px;">
         <!-- Removed the yellow spinner -->
     </div>
 
     <!-- AUTH SCREEN (Login/Register) -->
     <div id="auth-screen" class="auth-screen">
         <div class="auth-box">
-            <img src="https://iili.io/BiXrZYv.png" alt="Raftaroo Logo" style="width: 60px; margin-bottom: 10px;">
+            <img src="https://iili.io/fsyi06x.png" alt="Raftaroo Logo" style="width: 60px; margin-bottom: 10px;">
             <h1 id="authTitle" data-lang-key="authTitle">Welcome to Raftaroo</h1>
             
             <!-- Google Login (Always Visible) -->
@@ -1231,7 +1328,8 @@ input:checked + .slider:before {
                 <h2 style="font-size: 18px; margin-bottom: 15px;" data-lang-key="profileCompletionHeader">Complete Your Profile</h2>
                 <input type="text" id="completeName" class="input-field" placeholder="Full Name" data-lang-key="placeholderName" required>
                 <input type="tel" id="completePhone" class="input-field" placeholder="Mobile Number (+92XXXXXXXXXX)" data-lang-key="placeholderPhone" required>
-
+                <!-- NEW: Hidden field to capture the referrer ID -->
+                <input type="hidden" id="referrerIdField" value=""> 
                 <button id="btnCompleteProfile" class="btn-primary" style="margin-bottom: 15px;" data-lang-key="btnCompleteProfile">Continue to Dashboard</button>
                 <div class="error-text" id="profileError"></div>
             </div>
@@ -1277,7 +1375,10 @@ input:checked + .slider:before {
                  <div class="menu-item" onclick="showView('wallet-view')">
                     <i class="fas fa-wallet"></i> <span data-lang-key="menuWallet">My Wallet</span>
                 </div>
-
+                <!-- NEW ADDITION: Refer & Earn Link -->
+                <div class="menu-item" onclick="showView('refer-earn-view')">
+                    <i class="fas fa-hand-holding-usd" style="color: var(--success);"></i> <span data-lang-key="menuReferEarn">Refer & Earn</span>
+                </div>
                 <!-- NEW: Dark Mode Switch -->
                 <div class="menu-item" style="justify-content: space-between;" id="darkModeMenuItem">
                     <span data-lang-key="menuDarkMode"><i class="fas fa-moon"></i> Dark Mode</span>
@@ -1363,7 +1464,7 @@ input:checked + .slider:before {
                         <span data-lang-key="carEconomyDesc">Ride without A/C</span>
                     </div>
                     <div class="service-card" data-vehicle="car-comfort">
-                        <img src="https://iili.io/BsJfnYg.png" alt="Car Comfort Icon">
+                        <img src="https://iili.io/ftVa6nn.jpg" alt="Car Comfort Icon">
                         <h3 data-lang-key="carComfortTitle">Raftaroo Comfort</h3>
                         <span data-lang-key="carComfortDesc">Ride with A/C</span>
                     </div>
@@ -1440,7 +1541,64 @@ input:checked + .slider:before {
                 </div>
             </div>
             
+            <!-- NEW ADDITION: REFER & EARN VIEW -->
+                 <div id="refer-earn-view" class="view-panel hidden">
+                <div class="view-header">
+                    <i class="fas fa-arrow-left" onclick="showView('home-view')"></i>
+                    <h2 data-lang-key="referHeader">Refer &amp; Earn 5% Lifetime Bonus</h2>
+                </div>
+                
+                <div class="referral-card">
+                    <p data-lang-key="referDescription" style="margin-bottom: 20px;">Share your link. You and your friend get a 5% bonus on every completed ride, credited to your wallet.</p>
+                    
+                    <!-- Referral Bonus Balance Box -->
+                    <div class="referral-bonus-box">
+                        <div class="bonus-label">&#x1F4B0; Referral Bonus Balance</div>
+                        <div class="bonus-amount">Rs. <span id="referralBonusBalance">0</span></div>
+                        <small style="opacity:0.85; font-size:12px;">Withdrawable via JazzCash / EasyPaisa</small>
+                    </div>
 
+                    <h3 data-lang-key="yourReferralLink">Your Referral Link:</h3>
+                    <div id="referralLinkDisplay" class="referral-link-display"></div>
+                    
+                    <button id="btnCopyLink" class="btn-copy-share">
+                        <i class="fas fa-copy"></i> <span data-lang-key="btnCopyLink">Copy Referral Link</span>
+                    </button>
+                    <button id="btnShareLink" class="btn-copy-share" style="background: var(--primary); color: var(--secondary);">
+                        <i class="fas fa-share-alt"></i> <span data-lang-key="btnShareLink">Share Link</span>
+                    </button>
+                </div>
+
+                <!-- Withdrawal Request Form -->
+                <div class="withdraw-form" style="margin-top: 20px;">
+                    <h4><i class="fas fa-money-bill-wave" style="color:var(--primary); margin-right:6px;"></i>Referral Bonus Withdraw Karein</h4>
+                    <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px;">Minimum withdrawal: Rs. 200 | Admin 24-48 hours mein process karega.</p>
+                    <input type="number" id="withdrawAmount" placeholder="Amount (Rs.)" min="200">
+                    <select id="withdrawMethod">
+                        <option value="">-- Payment Method --</option>
+                        <option value="jazzcash">JazzCash</option>
+                        <option value="easypaisa">EasyPaisa</option>
+                        <option value="bank">Bank Transfer</option>
+                    </select>
+                    <input type="text" id="withdrawAccount" placeholder="JazzCash/EasyPaisa Number ya Account #">
+                    <input type="text" id="withdrawName" placeholder="Account Holder Name">
+                    <button class="btn-primary" style="margin-top:4px;" onclick="submitWithdrawalRequest()">
+                        <i class="fas fa-paper-plane"></i> Withdrawal Request Bhejein
+                    </button>
+                    <small id="withdrawMsg" style="display:block; margin-top:8px; text-align:center; font-weight:600;"></small>
+                </div>
+
+                <!-- Withdrawal History -->
+                <div style="margin-top: 20px;">
+                    <h4 style="font-size:14px; font-weight:700; margin-bottom:10px; color:var(--text-main);">
+                        <i class="fas fa-history" style="color:var(--primary); margin-right:6px;"></i>Withdrawal History
+                    </h4>
+                    <div id="withdrawalHistoryList">
+                        <p style="color:var(--text-muted); font-size:13px; text-align:center;">Koi request nahi mili.</p>
+                    </div>
+                </div>
+            </div>
+            <!-- END ADDITION: REFER & EARN VIEW -->
 
 
             <!-- NEW: PARCEL DETAILS VIEW (Delivery Mode Step 2) -->
@@ -1680,6 +1838,7 @@ input:checked + .slider:before {
         let nearbyRiderMarkers = {}; 
         let currentActiveRequestId = null; // ADDITION: Store active request ID for chat
         let chatListener = null; // ADDITION: Store chat listener reference
+        const BASE_URL = 'https://raftaroo.online/'; // User's requested base URL for referral link
         
         // --- NEW: Language Variables and Map ---
         let currentLanguage = localStorage.getItem('raftaroo_language') || 'en';
@@ -1698,7 +1857,16 @@ input:checked + .slider:before {
             activeRide: { en: "Active Ride:", ur: "فعال سواری:" },
             menuHistory: { en: "Ride History", ur: "سفر کی تاریخ" },
             menuWallet: { en: "My Wallet", ur: "میرا والٹ" },
-
+            // START ADDITION: Referral Translations
+            menuReferEarn: { en: "Refer & Earn", ur: "ریفر کریں اور کمائیں" },
+            referHeader: { en: "Refer & Earn 5% Lifetime Bonus", ur: "ریفر کریں اور 5% لائف ٹائم بونس کمائیں" },
+            referDescription: { en: "Share your link. You and your friend get a 5% bonus on every completed ride, credited to your wallet for future rides.", ur: "اپنا لنک شیئر کریں۔ آپ اور آپ کے دوست کو ہر مکمل سواری پر 5% بونس ملے گا، جو آپ کے والٹ میں اگلی سواریوں کے لیے کریڈٹ ہو گا۔" },
+            yourReferralLink: { en: "Your Referral Link:", ur: "آپ کا ریفرل لنک:" },
+            btnCopyLink: { en: "Copy Referral Link", ur: "ریفرل لنک کاپی کریں" },
+            btnShareLink: { en: "Share Link", ur: "لنک شیئر کریں" },
+            linkCopied: { en: "Link Copied!", ur: "لنک کاپی ہو گیا!" },
+            referBenefits: { en: "Withdraw your referral bonus anytime via JazzCash/EasyPaisa.", ur: "اپنا ریفرل بونس جب چاہیں جاز کیش/ایزی پیسہ کے ذریعے نکالیں۔" },
+            // END ADDITION: Referral Translations
             menuDarkMode: { en: "Dark Mode", ur: "ڈارک موڈ" },
             menuLanguage: { en: "Language", ur: "زبان" },
             menuBecomeCaptain: { en: "Become a Captain", ur: "کیپٹن بنیں" },
@@ -1814,7 +1982,76 @@ input:checked + .slider:before {
         };
         // --- END: Vehicle Image Links ---
         
+        // --- NEW ADDITION: Referral ID Handling ---
 
+        // Function to extract referrer ID from URL on initial load
+        function getReferrerIdFromUrl() {
+            const urlParams = new URLSearchParams(window.location.search);
+            const referrerId = urlParams.get('ref');
+            
+            // Basic validation: ensure it looks like a Firebase UID (at least 20 chars, alphanumeric)
+            if (referrerId && referrerId.length > 20 && /^[a-zA-Z0-9_-]+$/.test(referrerId)) {
+                // Store in localStorage for use after Google Auth completes
+                localStorage.setItem('raftaroo_referrer_id', referrerId);
+                // Pre-fill the hidden field on the profile completion form
+                document.getElementById('referrerIdField').value = referrerId;
+                return referrerId;
+            }
+            return null;
+        }
+        
+        // Call immediately on script load
+        getReferrerIdFromUrl();
+        
+        // Function to generate the customer's referral link
+        function generateReferralLink() {
+            if (currentUser && currentUser.uid) {
+                // Ensure the URL ends with a slash for clean parameter appending
+                const url = BASE_URL.endsWith('/') ? BASE_URL : BASE_URL + '/';
+                return url + `?ref=${currentUser.uid}`;
+            }
+            return translations.setPickupLocation[currentLanguage]; // Placeholder/Error message
+        }
+        
+        document.getElementById('btnCopyLink').onclick = copyReferralLink;
+        document.getElementById('btnShareLink').onclick = shareReferralLink;
+        
+        async function copyReferralLink() {
+            const link = generateReferralLink();
+            if (link) {
+                try {
+                    await navigator.clipboard.writeText(link);
+                    const btn = document.getElementById('btnCopyLink').querySelector('span');
+                    const originalText = btn.innerText;
+                    btn.innerText = translations.linkCopied[currentLanguage];
+                    setTimeout(() => {
+                        btn.innerText = originalText;
+                    }, 2000);
+                } catch (err) {
+                    alert(currentLanguage === 'ur' ? 'کاپی کرنے میں ناکام رہا: ' + err : 'Failed to copy: ' + err);
+                }
+            }
+        }
+        
+        function shareReferralLink() {
+             const link = generateReferralLink();
+             if (navigator.share) {
+                 navigator.share({
+                     title: 'Refer & Earn with Raftaroo',
+                     text: currentLanguage === 'ur' ? 'میرے ریفرل لنک کے ساتھ رفتارو پر سائن اپ کریں اور ہر سواری پر 5% لائف ٹائم بونس حاصل کریں!' : 'Sign up for Raftaroo with my referral link and earn a 5% lifetime bonus on every ride!',
+                     url: link
+                 }).then(() => {
+                     console.log('Successful share');
+                 }).catch((error) => {
+                     console.log('Error sharing', error);
+                     alert(currentLanguage === 'ur' ? 'شیئرنگ ناکام رہی۔ براہ کرم کاپی کریں اور دستی طور پر بھیجیں!' : 'Sharing failed. Please copy and send manually!');
+                 });
+             } else {
+                 copyReferralLink(); // Fallback to copy
+             }
+        }
+        
+        // --- END NEW ADDITION: Referral ID Handling ---
 
 
         // --- Utility Functions ---
@@ -2252,7 +2489,7 @@ input:checked + .slider:before {
             return data.secure_url; 
         }
 
-        // --- View Switching Logic ---
+        // --- View Switching Logic (Modified for Refer & Earn) ---
         window.showView = (viewId) => {
             document.getElementById('sidebar').classList.remove('active');
             document.getElementById('sidebar-overlay').style.display = 'none';
@@ -2270,10 +2507,15 @@ input:checked + .slider:before {
                  // Set the selected vehicle display
                  document.getElementById('selectedParcelVehicle').innerText = selectedVehicle.toUpperCase().replace('-', ' ');
                  document.getElementById('parcelError').innerText = ""; // Clear errors
+            } else if (viewId === 'refer-earn-view') {
+                 // NEW: Load the referral link when the view is opened
+                 document.getElementById('referralLinkDisplay').innerText = generateReferralLink();
+                 loadReferralBonusBalance();
+                 loadWithdrawalHistory();
             }
         };
 
-        // --- AUTH Logic ---
+        // --- AUTH Logic (Modified to Capture Referrer ID) ---
         
         document.getElementById('btnGoogleLogin').onclick = () => {
              // Disable button on click
@@ -2288,6 +2530,7 @@ input:checked + .slider:before {
         document.getElementById('btnCompleteProfile').onclick = async () => {
             const name = document.getElementById('completeName').value;
             const phone = document.getElementById('completePhone').value;
+            const referrerId = document.getElementById('referrerIdField').value; // Get the referrer ID
             const user = auth.currentUser;
 
             if (!user || !name || !phone) {
@@ -2316,6 +2559,11 @@ input:checked + .slider:before {
                      wallet: 0,
                      registeredAt: new Date().toISOString()
                  };
+                 // ADDITION: Include referredBy field if a valid ID was captured
+                 if (referrerId) {
+                     userData.referredBy = referrerId;
+                     localStorage.removeItem('raftaroo_referrer_id'); // Clear it after saving
+                 }
 
                  await set(ref(db, `users/${user.uid}`), userData);
                  
@@ -2388,6 +2636,12 @@ input:checked + .slider:before {
 
                  // Pre-fill name if available from Google
                  document.getElementById('completeName').value = user.displayName || '';
+                 
+                 // ADDITION: Set referrer ID in the hidden field if it was captured from URL
+                 const referrerId = localStorage.getItem('raftaroo_referrer_id');
+                 if (referrerId) {
+                      document.getElementById('referrerIdField').value = referrerId;
+                 }
                  
                  document.getElementById('profileError').innerText = "";
                  document.getElementById('btnGoogleLogin').disabled = false; // Reset button state
@@ -3585,6 +3839,215 @@ input:checked + .slider:before {
              });
         }
         
+        /* 
+        // --- REFERRAL BONUS STUB ---
+        // This logic is typically executed on the server or in the Captain's completion flow 
+        // but is included here as a documentation stub for the required backend/admin logic:
+
+        async function processReferralBonus(requestId, finalFare) {
+             const BONUS_RATE = 0.05; // 5%
+             
+             // 1. Calculate Bonus (5% of the final fare)
+             const bonusAmount = Math.floor(finalFare * BONUS_RATE);
+             
+             // 2. Get customer's referrer ID (if they have one)
+             const customerSnapshot = await get(ref(db, `users/${currentUser.uid}`));
+             const referredBy = customerSnapshot.val().referredBy;
+             
+             // 3. Credit Customer (The new user)
+             await update(ref(db, `users/${currentUser.uid}`), { 
+                 wallet: increment(bonusAmount) // Firebase Realtime DB doesn't have native increment in client SDK, assuming utility exists
+             });
+             // Log transaction...
+             
+             // 4. Credit Referrer (The existing user)
+             if (referredBy) {
+                 await update(ref(db, `users/${referredBy}`), { 
+                     wallet: increment(bonusAmount)
+                 });
+                 // Log transaction...
+             }
+
+             // In a real application, replace 'increment' with a secure transaction block or a Cloud Function/backend process.
+        }
+        // --- END REFERRAL BONUS STUB ---
+        */
+
+
+        // --- REFERRAL BONUS & WITHDRAWAL SYSTEM ---
+
+        // Load referral bonus balance (stored separately from main wallet)
+        function loadReferralBonusBalance() {
+            if (!currentUser) return;
+            onValue(ref(db, `users/${currentUser.uid}/referralBonus`), (snapshot) => {
+                const bonus = snapshot.val() || 0;
+                const el = document.getElementById('referralBonusBalance');
+                if (el) el.innerText = bonus.toLocaleString('en-US');
+            });
+        }
+
+        // Submit withdrawal request to Firebase
+        async function submitWithdrawalRequest() {
+            if (!currentUser) return;
+
+            const amount = parseInt(document.getElementById('withdrawAmount').value);
+            const method = document.getElementById('withdrawMethod').value;
+            const account = document.getElementById('withdrawAccount').value.trim();
+            const name = document.getElementById('withdrawName').value.trim();
+            const msgEl = document.getElementById('withdrawMsg');
+
+            // Validation
+            if (!amount || amount < 200) {
+                msgEl.style.color = 'var(--error)';
+                msgEl.innerText = 'Minimum withdrawal amount Rs. 200 hai.';
+                return;
+            }
+            if (!method) {
+                msgEl.style.color = 'var(--error)';
+                msgEl.innerText = 'Payment method select karein.';
+                return;
+            }
+            if (!account) {
+                msgEl.style.color = 'var(--error)';
+                msgEl.innerText = 'Account number darj karein.';
+                return;
+            }
+            if (!name) {
+                msgEl.style.color = 'var(--error)';
+                msgEl.innerText = 'Account holder ka naam darj karein.';
+                return;
+            }
+
+            // Check current referral bonus balance
+            const bonusSnap = await get(ref(db, `users/${currentUser.uid}/referralBonus`));
+            const currentBonus = bonusSnap.val() || 0;
+
+            if (amount > currentBonus) {
+                msgEl.style.color = 'var(--error)';
+                msgEl.innerText = `Insufficient bonus balance. Aapke paas sirf Rs. ${currentBonus} hai.`;
+                return;
+            }
+
+            // Check for already pending request
+            const pendingCheck = await get(ref(db, `withdrawalRequests`));
+            let hasPending = false;
+            if (pendingCheck.exists()) {
+                pendingCheck.forEach(child => {
+                    const r = child.val();
+                    if (r.userId === currentUser.uid && r.status === 'pending') {
+                        hasPending = true;
+                    }
+                });
+            }
+            if (hasPending) {
+                msgEl.style.color = 'var(--error)';
+                msgEl.innerText = 'Aapki ek request already pending hai. Admin ke approve karne ka intezar karein.';
+                return;
+            }
+
+            try {
+                msgEl.style.color = 'var(--text-muted)';
+                msgEl.innerText = 'Bhej raha hai...';
+
+                // Get user name
+                const userSnap = await get(ref(db, `users/${currentUser.uid}`));
+                const userData = userSnap.val();
+
+                // Create withdrawal request node
+                const requestRef = ref(db, `withdrawalRequests`);
+                const newReq = {
+                    userId: currentUser.uid,
+                    userName: userData.name || 'N/A',
+                    userPhone: userData.phone || currentUser.phoneNumber || 'N/A',
+                    userType: 'customer',
+                    amount: amount,
+                    method: method,
+                    accountNumber: account,
+                    accountName: name,
+                    status: 'pending',
+                    requestedAt: new Date().toISOString()
+                };
+
+                await push(requestRef, newReq);
+
+                // Deduct from referral bonus (hold until approved)
+                await update(ref(db, `users/${currentUser.uid}`), {
+                    referralBonus: currentBonus - amount,
+                    referralBonusOnHold: (userData.referralBonusOnHold || 0) + amount
+                });
+
+                msgEl.style.color = 'var(--success)';
+                msgEl.innerText = `Rs. ${amount} ki request bhej di gayi! Admin 24-48 ghante mein process karega.`;
+
+                // Clear form
+                document.getElementById('withdrawAmount').value = '';
+                document.getElementById('withdrawMethod').value = '';
+                document.getElementById('withdrawAccount').value = '';
+                document.getElementById('withdrawName').value = '';
+
+                loadWithdrawalHistory();
+
+            } catch (e) {
+                console.error(e);
+                msgEl.style.color = 'var(--error)';
+                msgEl.innerText = 'Error aaya. Dobara try karein.';
+            }
+        }
+        window.submitWithdrawalRequest = submitWithdrawalRequest;
+
+        // Load withdrawal history for current user
+        async function loadWithdrawalHistory() {
+            if (!currentUser) return;
+            const listEl = document.getElementById('withdrawalHistoryList');
+            if (!listEl) return;
+
+            listEl.innerHTML = '<p style="color:var(--text-muted);font-size:13px;text-align:center;">Load ho raha hai...</p>';
+
+            try {
+                const snap = await get(ref(db, 'withdrawalRequests'));
+                const items = [];
+                if (snap.exists()) {
+                    snap.forEach(child => {
+                        const r = child.val();
+                        if (r.userId === currentUser.uid) {
+                            items.push({ id: child.key, ...r });
+                        }
+                    });
+                }
+
+                items.sort((a, b) => new Date(b.requestedAt) - new Date(a.requestedAt));
+
+                if (items.length === 0) {
+                    listEl.innerHTML = '<p style="color:var(--text-muted);font-size:13px;text-align:center;">Koi withdrawal request nahi mili.</p>';
+                    return;
+                }
+
+                listEl.innerHTML = '';
+                items.forEach(item => {
+                    const statusClass = item.status === 'approved' ? 'approved' : item.status === 'rejected' ? 'rejected' : 'pending';
+                    const statusLabel = item.status === 'approved' ? '✅ Approved' : item.status === 'rejected' ? '❌ Rejected' : '⏳ Pending';
+                    const date = new Date(item.requestedAt).toLocaleDateString('en-PK', { day: 'numeric', month: 'short', year: 'numeric' });
+                    const methodLabel = item.method === 'jazzcash' ? 'JazzCash' : item.method === 'easypaisa' ? 'EasyPaisa' : 'Bank';
+
+                    const div = document.createElement('div');
+                    div.className = 'withdraw-history-item';
+                    div.innerHTML = `
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+                            <strong style="font-size:15px;">Rs. ${item.amount}</strong>
+                            <span class="withdraw-status-badge ${statusClass}">${statusLabel}</span>
+                        </div>
+                        <div style="color:var(--text-muted);font-size:12px;">${methodLabel} — ${item.accountNumber}</div>
+                        <div style="color:var(--text-muted);font-size:11px;margin-top:3px;">${date}</div>
+                        ${item.adminNote ? `<div style="font-size:12px;color:var(--info);margin-top:4px;">Note: ${item.adminNote}</div>` : ''}
+                    `;
+                    listEl.appendChild(div);
+                });
+            } catch(e) {
+                listEl.innerHTML = '<p style="color:var(--error);font-size:13px;text-align:center;">Load nahi ho saka.</p>';
+            }
+        }
+
+        // --- END REFERRAL BONUS & WITHDRAWAL SYSTEM ---
 
                 // --- End Wallet/History Load Logic ---
         
@@ -3626,414 +4089,6 @@ onMessage(messaging, payload => {
     icon: "/icons/icon-192.png"
   });
 });
-</script>
-<!-- ═══════════════════════════════════════════════════════════
-     RAFTAROO PWA JS SNIPPET v3.0
-     </body> se pehle paste karein (har HTML page mein)
-     ═══════════════════════════════════════════════════════════ -->
-
-<!-- Install Banner HTML (body ke andar, pehli line) -->
-<div id="raftaroo-install-banner" style="
-  display:none;
-  position:fixed;
-  bottom:20px;
-  left:16px;
-  right:16px;
-  background:linear-gradient(135deg,#00C853 0%,#00E676 100%);
-  padding:16px 18px;
-  border-radius:18px;
-  z-index:9999;
-  box-shadow:0 8px 32px rgba(0,200,83,0.45);
-  align-items:center;
-  justify-content:space-between;
-  gap:12px;
-  animation:raftaroo-banner-in 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
-">
-  <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0;">
-    <div style="width:42px;height:42px;background:rgba(255,255,255,0.2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🏍️</div>
-    <div style="min-width:0;">
-      <p style="color:#fff;font-weight:800;margin:0;font-size:14px;line-height:1.2;">Raftaroo App Install Karein!</p>
-      <p style="color:rgba(255,255,255,0.75);margin:2px 0 0;font-size:11px;">Fast booking, offline access & notifications</p>
-    </div>
-  </div>
-  <div style="display:flex;gap:8px;flex-shrink:0;">
-    <button id="raftaroo-install-btn" style="background:#fff;color:#00A040;border:none;padding:9px 16px;border-radius:10px;font-weight:800;font-size:13px;cursor:pointer;font-family:inherit;white-space:nowrap;">Install</button>
-    <button id="raftaroo-close-btn" style="background:rgba(255,255,255,0.2);border:none;padding:9px 12px;border-radius:10px;color:#fff;font-weight:700;cursor:pointer;font-size:14px;line-height:1;">✕</button>
-  </div>
-</div>
-
-<style>
-@keyframes raftaroo-banner-in {
-  from { transform: translateY(100px); opacity: 0; }
-  to   { transform: translateY(0);     opacity: 1; }
-}
-</style>
-
-<script>
-(function() {
-  'use strict';
-
-  const SW_PATH    = '/sw.js';
-  const SW_SCOPE   = '/';
-  const DISMISSED_KEY = 'raftaroo_install_dismissed_v3';
-  const banner = document.getElementById('raftaroo-install-banner');
-  let deferredPrompt = null;
-  let swRegistration = null;
-
-  // ── 1. Register Service Worker ──────────────────────────────
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker
-        .register(SW_PATH, { scope: SW_SCOPE, updateViaCache: 'none' })
-        .then(reg => {
-          swRegistration = reg;
-          console.log('[Raftaroo PWA] SW registered:', reg.scope);
-
-          // Check for updates every 60 seconds when app is visible
-          setInterval(() => {
-            if (!document.hidden) reg.update();
-          }, 60000);
-
-          // Handle SW updates — notify user
-          reg.addEventListener('updatefound', () => {
-            const newWorker = reg.installing;
-            newWorker?.addEventListener('statechange', () => {
-              if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
-                showUpdateToast();
-              }
-            });
-          });
-        })
-        .catch(err => console.warn('[Raftaroo PWA] SW registration failed:', err));
-
-      // Listen for messages from SW
-      navigator.serviceWorker.addEventListener('message', handleSWMessage);
-    });
-  }
-
-  // ── 2. Install Prompt (beforeinstallprompt) ──────────────────
-  window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-
-    const isStandalone = window.matchMedia('(display-mode: standalone)').matches
-      || window.navigator.standalone === true;
-    const wasDismissed = sessionStorage.getItem(DISMISSED_KEY);
-
-    if (!isStandalone && !wasDismissed && banner) {
-      // Show after short delay for better UX
-      setTimeout(() => {
-        banner.style.display = 'flex';
-      }, 3000);
-    }
-  });
-
-  // ── 3. Install button click ──────────────────────────────────
-  document.getElementById('raftaroo-install-btn')?.addEventListener('click', async () => {
-    if (!deferredPrompt) return;
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    console.log('[Raftaroo PWA] Install outcome:', outcome);
-
-    if (outcome === 'accepted') {
-      hideBanner();
-      // Track install event
-      if (typeof gtag !== 'undefined') {
-        gtag('event', 'pwa_install', { event_category: 'PWA', event_label: 'installed' });
-      }
-    }
-    deferredPrompt = null;
-  });
-
-  // ── 4. Close button ─────────────────────────────────────────
-  document.getElementById('raftaroo-close-btn')?.addEventListener('click', () => {
-    hideBanner();
-    sessionStorage.setItem(DISMISSED_KEY, '1');
-  });
-
-  // ── 5. App installed callback ────────────────────────────────
-  window.addEventListener('appinstalled', () => {
-    hideBanner();
-    deferredPrompt = null;
-    console.log('[Raftaroo PWA] App installed successfully! 🎉');
-    if (typeof gtag !== 'undefined') {
-      gtag('event', 'pwa_install_complete', { event_category: 'PWA' });
-    }
-  });
-
-  // ── 6. Update toast notification ────────────────────────────
-  function showUpdateToast() {
-    const toast = document.createElement('div');
-    toast.id = 'raftaroo-update-toast';
-    toast.innerHTML = `
-      <span>🆕 Raftaroo ka naya version available hai!</span>
-      <button onclick="window.location.reload()" style="
-        background:#00C853;color:#0A0F1E;border:none;
-        padding:7px 14px;border-radius:8px;font-weight:700;
-        font-size:12px;cursor:pointer;font-family:inherit;margin-left:10px;">
-        Update
-      </button>
-    `;
-    Object.assign(toast.style, {
-      position: 'fixed',
-      top: '70px',
-      left: '16px',
-      right: '16px',
-      background: '#0A0F1E',
-      color: '#fff',
-      padding: '14px 18px',
-      borderRadius: '12px',
-      zIndex: '9998',
-      display: 'flex',
-      alignItems: 'center',
-      justifyContent: 'space-between',
-      boxShadow: '0 8px 30px rgba(0,0,0,0.4)',
-      fontSize: '13px',
-      fontWeight: '600',
-      border: '1px solid rgba(0,200,83,0.3)',
-      animation: 'raftaroo-banner-in 0.3s ease both'
-    });
-    document.body.appendChild(toast);
-
-    // Auto hide after 10 seconds
-    setTimeout(() => toast.remove(), 10000);
-  }
-
-  // ── 7. Handle messages from SW ──────────────────────────────
-  function handleSWMessage(event) {
-    const { type, version } = event.data || {};
-    if (type === 'SW_UPDATED') {
-      console.log('[Raftaroo PWA] SW updated to', version);
-    }
-  }
-
-  // ── 8. Network status indicator ─────────────────────────────
-  function updateOnlineStatus() {
-    const isOnline = navigator.onLine;
-    document.documentElement.setAttribute('data-network', isOnline ? 'online' : 'offline');
-    if (!isOnline) {
-      showOfflineBadge();
-    } else {
-      document.getElementById('raftaroo-offline-badge')?.remove();
-    }
-  }
-
-  function showOfflineBadge() {
-    if (document.getElementById('raftaroo-offline-badge')) return;
-    const badge = document.createElement('div');
-    badge.id = 'raftaroo-offline-badge';
-    badge.textContent = '📵 Offline Mode';
-    Object.assign(badge.style, {
-      position: 'fixed',
-      top: '68px',
-      left: '50%',
-      transform: 'translateX(-50%)',
-      background: '#EF4444',
-      color: '#fff',
-      padding: '6px 16px',
-      borderRadius: '20px',
-      fontSize: '12px',
-      fontWeight: '700',
-      zIndex: '9997',
-      boxShadow: '0 4px 16px rgba(239,68,68,0.4)',
-      whiteSpace: 'nowrap',
-      fontFamily: 'inherit'
-    });
-    document.body.appendChild(badge);
-  }
-
-  window.addEventListener('online',  updateOnlineStatus);
-  window.addEventListener('offline', updateOnlineStatus);
-  updateOnlineStatus();
-
-  // ── Helper ───────────────────────────────────────────────────
-  function hideBanner() {
-    if (banner) banner.style.display = 'none';
-  }
-
-  // ── Expose helper for app code ───────────────────────────────
-  window.RaftarooPWA = {
-    getVersion: () => {
-      swRegistration?.active?.postMessage({ type: 'GET_VERSION' });
-    },
-    clearCache: () => {
-      swRegistration?.active?.postMessage({ type: 'CLEAR_CACHE' });
-    },
-    checkUpdate: () => {
-      swRegistration?.update();
-    }
-  };
-
-})();
-</script>
-<!-- ═══════════════════════════════════════════════════
-     RAFTAROO PWA INSTALL SNIPPET v6.0 — APP STYLE
-     Paste karo </body> se PEHLE — har HTML page mein
-     ═══════════════════════════════════════════════════ -->
-
-<div id="rft-banner" style="
-  display:none;
-  position:fixed;
-  bottom:20px;
-  left:14px;
-  right:14px;
-  z-index:99999;
-  background:#00B846;
-  border-radius:18px;
-  padding:14px 14px 14px 16px;
-  align-items:center;
-  gap:12px;
-  border:0.5px solid rgba(255,255,255,0.15);
-  font-family:'Poppins',system-ui,sans-serif;
-  animation:rft-up 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
-">
-  <div style="width:46px;height:46px;background:rgba(255,255,255,0.18);border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;border:0.5px solid rgba(255,255,255,0.2);font-size:22px;">🏍️</div>
-  <div style="flex:1;min-width:0;">
-    <p style="color:#fff;font-weight:600;font-size:14px;margin:0;line-height:1.3;">Raftaroo Install Karein</p>
-    <p style="color:rgba(255,255,255,0.75);font-size:11.5px;margin:2px 0 0;">Fast booking • Offline • Notifications</p>
-  </div>
-  <div style="display:flex;gap:6px;align-items:center;flex-shrink:0;">
-    <button id="rft-install-btn" style="background:#fff;color:#00883A;border:none;padding:9px 16px;border-radius:10px;font-weight:600;font-size:13px;cursor:pointer;font-family:inherit;white-space:nowrap;">Install</button>
-    <button id="rft-close-btn" style="background:rgba(0,0,0,0.15);border:none;width:32px;height:32px;border-radius:9px;color:#fff;font-size:16px;cursor:pointer;font-family:inherit;line-height:1;">✕</button>
-  </div>
-</div>
-
-<style>
-@keyframes rft-up {
-  from { transform:translateY(80px); opacity:0; }
-  to   { transform:translateY(0);    opacity:1; }
-}
-</style>
-
-<script>
-(function(){
-  'use strict';
-
-  const DISMISS_KEY  = 'rft_d_v6';
-  const SHOWN_KEY    = 'rft_s_v6';
-  const MAX_SHOWS    = 3;
-  const DELAY_MS     = 3000;
-  const RE_SHOW_DAYS = 3;
-
-  const banner     = document.getElementById('rft-banner');
-  const installBtn = document.getElementById('rft-install-btn');
-  const closeBtn   = document.getElementById('rft-close-btn');
-  let deferredPrompt = null;
-  let swReg = null;
-
-  const store = (k,v) => { try { localStorage.setItem(k,v); } catch {} };
-  const load  = k     => { try { return localStorage.getItem(k); } catch { return null; } };
-
-  const isInstalled = () =>
-    window.matchMedia('(display-mode:standalone)').matches ||
-    navigator.standalone === true ||
-    document.referrer.startsWith('android-app://');
-
-  const wasDismissed = () => {
-    const ts = load(DISMISS_KEY);
-    return ts ? (Date.now()-Number(ts))/86400000 < RE_SHOW_DAYS : false;
-  };
-
-  const shownCount = () => parseInt(load(SHOWN_KEY)||'0',10);
-
-  function showBanner() {
-    if (isInstalled()||wasDismissed()||shownCount()>=MAX_SHOWS||!banner) return;
-    banner.style.display = 'flex';
-    store(SHOWN_KEY, shownCount()+1);
-  }
-
-  function hideBanner() {
-    if (banner) banner.style.display = 'none';
-  }
-
-  if ('serviceWorker' in navigator) {
-    window.addEventListener('load', () => {
-      navigator.serviceWorker.register('/sw.js',{scope:'/',updateViaCache:'none'})
-        .then(reg => {
-          swReg = reg;
-          setInterval(()=>{ if(!document.hidden) reg.update(); }, 60000);
-          reg.addEventListener('updatefound', () => {
-            const nw = reg.installing;
-            nw?.addEventListener('statechange', () => {
-              if (nw.state==='installed' && navigator.serviceWorker.controller) showUpdateToast();
-            });
-          });
-        }).catch(e=>console.warn('[RFT]',e));
-    });
-  }
-
-  function showUpdateToast() {
-    if (document.getElementById('rft-ut')) return;
-    const t = document.createElement('div');
-    t.id = 'rft-ut';
-    Object.assign(t.style,{
-      position:'fixed',top:'72px',left:'14px',right:'14px',
-      background:'#0A0F1E',color:'#fff',
-      padding:'13px 16px',borderRadius:'14px',
-      zIndex:'99998',display:'flex',alignItems:'center',
-      justifyContent:'space-between',gap:'10px',
-      fontSize:'13px',fontWeight:'500',
-      fontFamily:"'Poppins',system-ui,sans-serif",
-      border:'0.5px solid rgba(0,200,83,0.3)',
-      animation:'rft-up 0.3s ease both',
-    });
-    t.innerHTML = `<span>🆕 Naya update available hai!</span>
-      <button onclick="window.location.reload()" style="background:#00C853;color:#0A0F1E;border:none;padding:7px 14px;border-radius:8px;font-weight:600;font-size:12px;cursor:pointer;font-family:inherit;">Update ↻</button>`;
-    document.body.appendChild(t);
-    setTimeout(()=>t?.remove(), 12000);
-  }
-
-  window.addEventListener('beforeinstallprompt', (e) => {
-    e.preventDefault();
-    deferredPrompt = e;
-    setTimeout(showBanner, DELAY_MS);
-  });
-
-  installBtn?.addEventListener('click', async () => {
-    if (!deferredPrompt) return;
-    installBtn.textContent = '...';
-    installBtn.disabled = true;
-    deferredPrompt.prompt();
-    const { outcome } = await deferredPrompt.userChoice;
-    deferredPrompt = null;
-    hideBanner();
-    if (outcome !== 'accepted') store(DISMISS_KEY, Date.now());
-    else if (typeof gtag!=='undefined') gtag('event','pwa_install',{event_category:'PWA'});
-  });
-
-  closeBtn?.addEventListener('click', () => {
-    hideBanner();
-    store(DISMISS_KEY, Date.now());
-  });
-
-  window.addEventListener('appinstalled', () => {
-    hideBanner();
-    deferredPrompt = null;
-    if (typeof gtag!=='undefined') gtag('event','pwa_installed',{event_category:'PWA'});
-  });
-
-  window.addEventListener('offline', () => {
-    if (document.getElementById('rft-ob')) return;
-    const b = document.createElement('div');
-    b.id = 'rft-ob';
-    b.textContent = '📵 Offline Mode';
-    Object.assign(b.style,{
-      position:'fixed',top:'68px',left:'50%',transform:'translateX(-50%)',
-      background:'#EF4444',color:'#fff',padding:'6px 18px',
-      borderRadius:'20px',fontSize:'12px',fontWeight:'600',
-      zIndex:'99997',whiteSpace:'nowrap',
-      fontFamily:"'Poppins',system-ui,sans-serif",
-    });
-    document.body.appendChild(b);
-  });
-  window.addEventListener('online', () => document.getElementById('rft-ob')?.remove());
-
-  window.RaftarooPWA = {
-    prompt:      () => { if(deferredPrompt) showBanner(); },
-    isInstalled: isInstalled,
-    checkUpdate: () => swReg?.update(),
-  };
-})();
 </script>
 </body>
 </html>
