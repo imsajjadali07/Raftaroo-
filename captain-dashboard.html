@@ -713,9 +713,16 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
     }
 
     function initializeDashboard() {
-        initializeMap(); setupTabNavigation(); setupAcModeToggle();
-        if (isApproved(captainData)) { listenForRideLockStatus(); listenForIncomingRequests(); loadWalletBalance(); }
-        else document.getElementById('incomingRequestsList').innerHTML='<div class="empty-state"><div class="empty-icon"><i class="fas fa-lock"></i></div><h4>Approved Nahi Hain</h4><p>Ride requests dekhne ke liye approval zaroori hai</p></div>';
+        initializeMap(); setupTabNavigation();
+        if (isApproved(captainData)) {
+            listenForRideLockStatus(); loadWalletBalance();
+            // FIX 3: AC mode pehle Firebase se load karo, phir requests listen karo
+            // Warna acModeEnabled galat (false) hoga aur AC rides filter ho jayengi
+            setupAcModeToggle(()=>{ listenForIncomingRequests(); });
+        } else {
+            setupAcModeToggle();
+            document.getElementById('incomingRequestsList').innerHTML='<div class="empty-state"><div class="empty-icon"><i class="fas fa-lock"></i></div><h4>Approved Nahi Hain</h4><p>Ride requests dekhne ke liye approval zaroori hai</p></div>';
+        }
     }
 
     let lowBalanceChecked=false;
@@ -792,13 +799,15 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
     }
 
     // AC mode setup — sirf car walon ke liye
-    function setupAcModeToggle() {
+    // onReady: optional callback — acMode load hone ke baad call hoga (race condition fix)
+    function setupAcModeToggle(onReady) {
         const bar = document.getElementById('acModeBar');
         const toggle = document.getElementById('acModeToggle');
-        if (!bar || !toggle) return;
+        if (!bar || !toggle) { if(onReady) onReady(); return; }
 
         if (!isCaptainCar()) {
             bar.classList.add('hidden'); // Bike/rickshaw walon ko mat dikhao
+            if(onReady) onReady(); // callback call karo
             return;
         }
 
@@ -809,6 +818,8 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
             const saved = snap.val();
             acModeEnabled = saved === true;
             updateAcModeUI(acModeEnabled);
+            // FIX 3: acMode load hone ke BAAD callback call karo
+            if(onReady) { onReady(); onReady = null; } // sirf ek baar
         }, { onlyOnce: true });
 
         // Toggle change
@@ -827,23 +838,25 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
             if(rd){
                 Object.keys(rd).forEach(key=>{
                     const req=rd[key];
-                    if(req.status==='pending'&&!req.riderId){
-                        // vehicle aur service dono combine karke match karo
-                        const reqVehicleStr = [req.vehicle||'', req.service||''].join(' ').toLowerCase();
-                        if(!isVehicleMatch(cv, reqVehicleStr)) return;
-                        // AC Filter — sirf car walon ke liye
-                        if(isCaptainCar()) {
-                            const reqAc = req.acRequired === true || req.ac === true || (req.service||'').toLowerCase().includes('ac') || (req.vehicle||'').toLowerCase().includes('ac');
-                            if(acModeEnabled && !reqAc) return; // AC mode ON hai → non-AC request skip
-                            if(!acModeEnabled && reqAc) return; // AC mode OFF hai → AC request skip
-                        }
-                        let d=null;
-                        if(cl&&req.pickup?.lat&&req.pickup?.lng) d=getDistance(cl.lat,cl.lng,req.pickup.lat,req.pickup.lng);
-                        if(captainData.status==='active'&&d!==null&&d<=RIDE_RADIUS_KM){
-                            if(d<minD&&!captainData.currentRequestId){minD=d;closest={...req,id:key,distanceToPickup:d};}
-                        }
-                        pending.push({...req,id:key,distanceToPickup:d});
+                    // FIX 1: 'pending' ke sath 'bidding' (wallet payment) ko bhi accept karo
+                    const isOpenRequest = (req.status==='pending'||req.status==='bidding') && !req.riderId;
+                    if(!isOpenRequest) return;
+                    // vehicle aur service dono combine karke match karo
+                    const reqVehicleStr = [req.vehicle||'', req.service||''].join(' ').toLowerCase();
+                    if(!isVehicleMatch(cv, reqVehicleStr)) return;
+                    // AC Filter — sirf car walon ke liye
+                    if(isCaptainCar()) {
+                        const reqAc = req.acRequired === true || req.ac === true || (req.service||'').toLowerCase().includes('ac') || (req.vehicle||'').toLowerCase().includes('ac');
+                        if(acModeEnabled && !reqAc) return; // AC mode ON hai → non-AC request skip
+                        if(!acModeEnabled && reqAc) return; // AC mode OFF hai → AC request skip
                     }
+                    let d=null;
+                    if(cl&&req.pickup?.lat&&req.pickup?.lng) d=getDistance(cl.lat,cl.lng,req.pickup.lat,req.pickup.lng);
+                    if(captainData.status==='active'&&d!==null&&d<=RIDE_RADIUS_KM){
+                        if(d<minD&&!captainData.currentRequestId){minD=d;closest={...req,id:key,distanceToPickup:d};}
+                    }
+                    // FIX 2: distanceToPickup null hone par bhi list mein add karo (location abhi nahi mili)
+                    pending.push({...req,id:key,distanceToPickup:d});
                 });
             }
             if(closest&&!captainData.currentRequestId&&captainData.status==='active'&&requestModalOverlay.style.display!=='flex') showRequestModal(closest,minD);
@@ -856,7 +869,8 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         const con=document.getElementById('incomingRequestsList'), ari=captainData.currentRequestId;
         con.innerHTML='';
         if(!isApproved(captainData)){con.innerHTML='<div class="empty-state"><div class="empty-icon"><i class="fas fa-lock"></i></div><h4>Approved Nahi Hain</h4><p>Approval ke baad hi ride requests dikh sakti hain</p></div>';document.getElementById('pendingRequestsCount').textContent='0';document.getElementById('reqCountChip').textContent='0';return;}
-        const filtered=requests.filter(r=>r.id!==ari&&r.distanceToPickup!==null&&r.distanceToPickup<=RIDE_RADIUS_KM);
+        // FIX 2: null distanceToPickup (location abhi nahi mili) wali rides bhi list mein dikhao
+        const filtered=requests.filter(r=>r.id!==ari&&(r.distanceToPickup===null||r.distanceToPickup<=RIDE_RADIUS_KM));
         if(filtered.length===0){con.innerHTML='<div class="empty-state"><div class="empty-icon"><i class="fas fa-search-location"></i></div><h4>Koi Request Nahi</h4><p>Aap ke '+RIDE_RADIUS_KM+' km radius mein abhi koi ride nahi</p></div>';document.getElementById('pendingRequestsCount').textContent='0';document.getElementById('reqCountChip').textContent='0';return;}
         document.getElementById('pendingRequestsCount').textContent=filtered.length;
         document.getElementById('reqCountChip').textContent=filtered.length;
