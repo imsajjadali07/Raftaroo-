@@ -69,8 +69,6 @@ body{background:var(--bg);color:var(--text-main);overflow-x:hidden;min-height:10
 input:checked+.slider{background:var(--primary);box-shadow:0 0 0 3px var(--primary-glow);}
 input:checked+.slider:before{transform:translateX(24px);}
 input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
-#acModeToggle:checked+.slider{background:#3B82F6;box-shadow:0 0 0 3px rgba(59,130,246,0.25);}
-#acModeToggle:checked+.slider:before{transform:translateX(24px);}
 
 .captain-tabs{display:flex;background:var(--white);border-bottom:1px solid var(--border);position:sticky;top:60px;z-index:500;}
 .tab-button{flex:1;padding:14px 8px;text-align:center;cursor:pointer;font-weight:600;font-size:13px;color:var(--text-muted);border-bottom:3px solid transparent;transition:0.25s;display:flex;align-items:center;justify-content:center;gap:6px;position:relative;}
@@ -241,23 +239,6 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         </div>
     </div>
 
-    <!-- AC MODE TOGGLE BAR — sirf car walon ko dikhega -->
-    <div id="acModeBar" class="hidden" style="background:linear-gradient(135deg,#EFF6FF,#DBEAFE);padding:10px 18px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid rgba(59,130,246,0.2);">
-        <div style="display:flex;align-items:center;gap:10px;">
-            <div style="width:34px;height:34px;background:#3B82F6;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:16px;color:#fff;flex-shrink:0;">
-                <i class="fas fa-snowflake"></i>
-            </div>
-            <div>
-                <div style="font-size:13px;font-weight:700;color:#1E3A5F;" id="acModeLabel">AC Mode: OFF</div>
-                <div style="font-size:11px;color:#64748B;font-weight:500;" id="acModeSubLabel">Non-AC rides show ho rahi hain</div>
-            </div>
-        </div>
-        <label class="switch">
-            <input type="checkbox" id="acModeToggle">
-            <span class="slider" style="background:#93C5FD;"></span>
-        </label>
-    </div>
-
     <div class="captain-tabs">
         <div class="tab-button active" data-tab="status-tab"><i class="fas fa-map-marked-alt"></i> Map</div>
         <div class="tab-button" data-tab="requests-tab">
@@ -419,7 +400,6 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
     let audioUnlocked = false;
     let audioRetryInterval = null;
     let selectedCounterOfferFare = 0;
-    let acModeEnabled = false; // AC mode state
 
     const ringtoneUrl = "https://orangefreesounds.com/wp-content/uploads/2024/04/Message-alert-sound.mp3";
     const notificationAudio = new Audio(ringtoneUrl);
@@ -457,32 +437,13 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         if (audioRetryInterval) { clearInterval(audioRetryInterval); audioRetryInterval = null; }
     }
 
-    const VEHICLE_IMAGES = {
-        'car': 'https://iili.io/qfsUogV.png',
-        'car-economy': 'https://iili.io/qfsUogV.png',
-        'car-comfort': 'https://iili.io/qfsUogV.png',
-        'bike': 'https://iili.io/ftViNi7.png',
-        'motorcycle': 'https://iili.io/ftViNi7.png',
-        'motorbike': 'https://iili.io/ftViNi7.png',
-        'truck': 'https://iili.io/ftVPMZB.png',
-        'pickup': 'https://iili.io/ftVPMZB.png',
-        'rickshaw': 'https://iili.io/ftV61st.png',
-        'auto': 'https://iili.io/ftV61st.png',
-        'qingqi': 'https://iili.io/ftV61st.png',
-    };
-
     const captainIcon = (vehicle) => {
-        const v = (vehicle || '').toLowerCase().trim();
-        let imgUrl = VEHICLE_IMAGES['motorcycle']; // default: bike
-        for (const key of Object.keys(VEHICLE_IMAGES)) {
-            if (v.includes(key)) { imgUrl = VEHICLE_IMAGES[key]; break; }
-        }
-        return L.divIcon({
-            html: `<img src="${imgUrl}" style="width:44px;height:44px;object-fit:contain;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.35));" />`,
-            className: 'custom-div-icon',
-            iconSize: [44,44],
-            iconAnchor: [22,22]
-        });
+        const v = (vehicle || '').toLowerCase().replace(/\s+/g,'');
+        let ic = 'motorcycle';
+        if (v.includes('car') || v.includes('sedan') || v.includes('suv') || v.includes('economy') || v.includes('comfort')) ic = 'car-side';
+        else if (v.includes('pickup') || v.includes('truck') || v.includes('van') || v.includes('cargo')) ic = 'truck-moving';
+        else if (v.includes('rickshaw') || v.includes('rikshaw') || v.includes('auto') || v.includes('qingqi')) ic = 'taxi'; // tuk-tuk closest icon
+        return L.divIcon({ html: `<div style="background:#00C853;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(0,200,83,0.4);border:2.5px solid #fff;"><i class="fas fa-${ic}" style="color:#fff;font-size:16px;"></i></div>`, className: 'custom-div-icon', iconSize: [36,36], iconAnchor: [18,18] });
     };
 
     function getDistance(lat1,lon1,lat2,lon2) {
@@ -714,15 +675,8 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
 
     function initializeDashboard() {
         initializeMap(); setupTabNavigation();
-        if (isApproved(captainData)) {
-            listenForRideLockStatus(); loadWalletBalance();
-            // FIX 3: AC mode pehle Firebase se load karo, phir requests listen karo
-            // Warna acModeEnabled galat (false) hoga aur AC rides filter ho jayengi
-            setupAcModeToggle(()=>{ listenForIncomingRequests(); });
-        } else {
-            setupAcModeToggle();
-            document.getElementById('incomingRequestsList').innerHTML='<div class="empty-state"><div class="empty-icon"><i class="fas fa-lock"></i></div><h4>Approved Nahi Hain</h4><p>Ride requests dekhne ke liye approval zaroori hai</p></div>';
-        }
+        if (isApproved(captainData)) { listenForRideLockStatus(); listenForIncomingRequests(); loadWalletBalance(); }
+        else document.getElementById('incomingRequestsList').innerHTML='<div class="empty-state"><div class="empty-icon"><i class="fas fa-lock"></i></div><h4>Approved Nahi Hain</h4><p>Ride requests dekhne ke liye approval zaroori hai</p></div>';
     }
 
     let lowBalanceChecked=false;
@@ -762,75 +716,16 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
 
     function isVehicleMatch(cap, req) {
         if(!cap||!req) return false;
-        const c=cap.toLowerCase().trim(), r=req.toLowerCase().trim();
-        // ── Vehicle groups ──
-        const bikes=['bike','motorcycle','motorbike','moto'];
-        // car-economy aur car-comfort dono "car" group mein hain
-        const cars=['car','sedan','suv','hatchback','economy','comfort','car-economy','car-comfort'];
-        // 'rikshaw' (single k) rider-register.html ki value hai, 'rickshaw' customer app ki value
-        const ricks=['rickshaw','rikshaw','auto','qingqi','chingchi','three-wheel'];
-        const cargos=['pickup','cargo','truck','van'];
-
-        const inBikes = (s) => bikes.some(t=>s.includes(t));
-        const inCars  = (s) => cars.some(t=>s.includes(t));
-        const inRicks = (s) => ricks.some(t=>s.includes(t));
-        const inCargo = (s) => cargos.some(t=>s.includes(t));
-
-        if(inBikes(c) && inBikes(r)) return true;
-        if(inCars(c)  && inCars(r))  return true;
-        if(inRicks(c) && inRicks(r)) return true;
-        if(inCargo(c) && inCargo(r)) return true;
+        const c=cap.toLowerCase().replace(/\s+/g,'').trim();
+        const r=req.toLowerCase().replace(/\s+/g,'').trim();
+        const bikes=['bike','motorcycle','motorbike'];
+        const cars=['car','sedan','suv','hatchback','economy','comfort'];
+        const ricks=['rickshaw','rikshaw','auto','autorickshaw','qingqi']; // Rikshaw = register spelling
+        if(bikes.some(t=>c.includes(t))&&bikes.some(t=>r.includes(t))) return true;
+        if(cars.some(t=>c.includes(t))&&cars.some(t=>r.includes(t))) return true;
+        if(ricks.some(t=>c.includes(t))&&ricks.some(t=>r.includes(t))) return true;
+        if((c.includes('pickup')||c.includes('truck')||c.includes('van'))&&(r.includes('pickup')||r.includes('truck')||r.includes('van')||r.includes('cargo'))) return true;
         return c===r;
-    }
-
-    // Captain car wala hai ya nahi (car-economy aur car-comfort bhi include)
-    function isCaptainCar() {
-        const v = (captainData.vehicleType||'').toLowerCase().trim();
-        // Pehle check karo ke rickshaw/rikshaw ya bike toh nahi
-        if(['rickshaw','rikshaw','auto','motorcycle','bike','moto','pickup','cargo','truck'].some(t=>v.includes(t))) return false;
-        return ['car','sedan','suv','hatchback','economy','comfort'].some(t => v.includes(t));
-    }
-
-    // AC mode UI update
-    function updateAcModeUI(enabled) {
-        const label = document.getElementById('acModeLabel');
-        const sub = document.getElementById('acModeSubLabel');
-        const toggle = document.getElementById('acModeToggle');
-        if (label) label.textContent = 'AC Mode: ' + (enabled ? 'ON' : 'OFF');
-        if (sub) sub.textContent = enabled ? 'Sirf AC rides show ho rahi hain ❄️' : 'Non-AC rides show ho rahi hain 🌡️';
-        if (toggle) toggle.checked = enabled;
-    }
-
-    // AC mode setup — sirf car walon ke liye
-    // onReady: optional callback — acMode load hone ke baad call hoga (race condition fix)
-    function setupAcModeToggle(onReady) {
-        const bar = document.getElementById('acModeBar');
-        const toggle = document.getElementById('acModeToggle');
-        if (!bar || !toggle) { if(onReady) onReady(); return; }
-
-        if (!isCaptainCar()) {
-            bar.classList.add('hidden'); // Bike/rickshaw walon ko mat dikhao
-            if(onReady) onReady(); // callback call karo
-            return;
-        }
-
-        bar.classList.remove('hidden');
-
-        // Firebase se saved acMode load karo
-        onValue(ref(db, 'riders/' + currentCaptain.uid + '/acMode'), (snap) => {
-            const saved = snap.val();
-            acModeEnabled = saved === true;
-            updateAcModeUI(acModeEnabled);
-            // FIX 3: acMode load hone ke BAAD callback call karo
-            if(onReady) { onReady(); onReady = null; } // sirf ek baar
-        }, { onlyOnce: true });
-
-        // Toggle change
-        toggle.onchange = async (e) => {
-            acModeEnabled = e.target.checked;
-            updateAcModeUI(acModeEnabled);
-            await update(ref(db, 'riders/' + currentCaptain.uid), { acMode: acModeEnabled });
-        };
     }
 
     function listenForIncomingRequests() {
@@ -841,25 +736,15 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
             if(rd){
                 Object.keys(rd).forEach(key=>{
                     const req=rd[key];
-                    // FIX 1: 'pending' ke sath 'bidding' (wallet payment) ko bhi accept karo
-                    const isOpenRequest = (req.status==='pending'||req.status==='bidding') && !req.riderId;
-                    if(!isOpenRequest) return;
-                    // vehicle aur service dono combine karke match karo
-                    const reqVehicleStr = [req.vehicle||'', req.service||''].join(' ').toLowerCase();
-                    if(!isVehicleMatch(cv, reqVehicleStr)) return;
-                    // AC Filter — sirf car walon ke liye
-                    if(isCaptainCar()) {
-                        const reqAc = req.acRequired === true || req.ac === true || (req.service||'').toLowerCase().includes('ac') || (req.vehicle||'').toLowerCase().includes('ac');
-                        if(acModeEnabled && !reqAc) return; // AC mode ON hai → non-AC request skip
-                        if(!acModeEnabled && reqAc) return; // AC mode OFF hai → AC request skip
+                    if(req.status==='pending'&&!req.riderId){
+                        if(!isVehicleMatch(cv,req.vehicle||req.service||'')) return;
+                        let d=null;
+                        if(cl&&req.pickup?.lat&&req.pickup?.lng) d=getDistance(cl.lat,cl.lng,req.pickup.lat,req.pickup.lng);
+                        if(captainData.status==='active'&&d!==null&&d<=RIDE_RADIUS_KM){
+                            if(d<minD&&!captainData.currentRequestId){minD=d;closest={...req,id:key,distanceToPickup:d};}
+                        }
+                        pending.push({...req,id:key,distanceToPickup:d});
                     }
-                    let d=null;
-                    if(cl&&req.pickup?.lat&&req.pickup?.lng) d=getDistance(cl.lat,cl.lng,req.pickup.lat,req.pickup.lng);
-                    if(captainData.status==='active'&&d!==null&&d<=RIDE_RADIUS_KM){
-                        if(d<minD&&!captainData.currentRequestId){minD=d;closest={...req,id:key,distanceToPickup:d};}
-                    }
-                    // FIX 2: distanceToPickup null hone par bhi list mein add karo (location abhi nahi mili)
-                    pending.push({...req,id:key,distanceToPickup:d});
                 });
             }
             if(closest&&!captainData.currentRequestId&&captainData.status==='active'&&requestModalOverlay.style.display!=='flex') showRequestModal(closest,minD);
@@ -872,8 +757,7 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         const con=document.getElementById('incomingRequestsList'), ari=captainData.currentRequestId;
         con.innerHTML='';
         if(!isApproved(captainData)){con.innerHTML='<div class="empty-state"><div class="empty-icon"><i class="fas fa-lock"></i></div><h4>Approved Nahi Hain</h4><p>Approval ke baad hi ride requests dikh sakti hain</p></div>';document.getElementById('pendingRequestsCount').textContent='0';document.getElementById('reqCountChip').textContent='0';return;}
-        // FIX 2: null distanceToPickup (location abhi nahi mili) wali rides bhi list mein dikhao
-        const filtered=requests.filter(r=>r.id!==ari&&(r.distanceToPickup===null||r.distanceToPickup<=RIDE_RADIUS_KM));
+        const filtered=requests.filter(r=>r.id!==ari&&r.distanceToPickup!==null&&r.distanceToPickup<=RIDE_RADIUS_KM);
         if(filtered.length===0){con.innerHTML='<div class="empty-state"><div class="empty-icon"><i class="fas fa-search-location"></i></div><h4>Koi Request Nahi</h4><p>Aap ke '+RIDE_RADIUS_KM+' km radius mein abhi koi ride nahi</p></div>';document.getElementById('pendingRequestsCount').textContent='0';document.getElementById('reqCountChip').textContent='0';return;}
         document.getElementById('pendingRequestsCount').textContent=filtered.length;
         document.getElementById('reqCountChip').textContent=filtered.length;
