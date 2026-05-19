@@ -767,8 +767,9 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         const bikes=['bike','motorcycle','motorbike','moto'];
         // car-economy aur car-comfort dono "car" group mein hain
         const cars=['car','sedan','suv','hatchback','economy','comfort','car-economy','car-comfort'];
-        const ricks=['rickshaw','auto','qingqi','chingchi','three-wheel'];
-        const cargos=['pickup','cargo','truck'];
+        // 'rikshaw' (single k) rider-register.html ki value hai, 'rickshaw' customer app ki value
+        const ricks=['rickshaw','rikshaw','auto','qingqi','chingchi','three-wheel'];
+        const cargos=['pickup','cargo','truck','van'];
 
         const inBikes = (s) => bikes.some(t=>s.includes(t));
         const inCars  = (s) => cars.some(t=>s.includes(t));
@@ -785,6 +786,8 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
     // Captain car wala hai ya nahi (car-economy aur car-comfort bhi include)
     function isCaptainCar() {
         const v = (captainData.vehicleType||'').toLowerCase().trim();
+        // Pehle check karo ke rickshaw/rikshaw ya bike toh nahi
+        if(['rickshaw','rikshaw','auto','motorcycle','bike','moto','pickup','cargo','truck'].some(t=>v.includes(t))) return false;
         return ['car','sedan','suv','hatchback','economy','comfort'].some(t => v.includes(t));
     }
 

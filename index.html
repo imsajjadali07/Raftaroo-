@@ -2164,13 +2164,13 @@ input:checked + .slider:before {
                 if (sv.includes('car') || sv.includes('economy') || sv.includes('comfort')) {
                     return rv.includes('car') || rv.includes('economy') || rv.includes('comfort') || rv.includes('sedan') || rv.includes('suv');
                 }
-                // Rickshaw
-                if (sv.includes('rickshaw') || sv.includes('auto')) {
-                    return rv.includes('rickshaw') || rv.includes('auto') || rv.includes('qingqi');
+                // Rickshaw — 'rikshaw' (single k) bhi match karo (rider-register.html spelling)
+                if (sv.includes('rickshaw') || sv.includes('rikshaw') || sv.includes('auto')) {
+                    return rv.includes('rickshaw') || rv.includes('rikshaw') || rv.includes('auto') || rv.includes('qingqi') || rv.includes('chingchi');
                 }
                 // Cargo/Pickup/Truck
                 if (sv.includes('pickup') || sv.includes('cargo') || sv.includes('truck')) {
-                    return rv.includes('pickup') || rv.includes('cargo') || rv.includes('truck');
+                    return rv.includes('pickup') || rv.includes('cargo') || rv.includes('truck') || rv.includes('van');
                 }
                 // Bike (default)
                 return rv.includes('bike') || rv.includes('moto') || rv === sv;
