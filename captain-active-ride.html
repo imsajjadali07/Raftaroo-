@@ -590,11 +590,15 @@ body { background:var(--bg); color:var(--text-main); overflow:hidden; height:100
         </div>
 
         <div class="rating-summary" id="ratingSummary">
+            <div id="freeRideBadge" style="display:none; background:linear-gradient(135deg,#00C853,#00E676); color:#fff; border-radius:10px; padding:10px 14px; margin-bottom:12px; text-align:center; font-weight:800; font-size:14px;">
+                🎁 FREE RIDE — Commission nahi kati!
+                <div id="freeRidesLeftText" style="font-size:12px; font-weight:600; margin-top:3px; opacity:0.9;"></div>
+            </div>
             <div class="rating-summary-row">
                 <span style="color:var(--text-muted); font-weight:600;">Total Fare</span>
                 <span id="summaryFare" style="font-weight:700;">Rs. 0</span>
             </div>
-            <div class="rating-summary-row">
+            <div class="rating-summary-row" id="commissionRow">
                 <span style="color:var(--text-muted); font-weight:600;">Commission (10%)</span>
                 <span id="summaryCommission" style="color:var(--error); font-weight:700;">- Rs. 0</span>
             </div>
@@ -1159,11 +1163,26 @@ body { background:var(--bg); color:var(--text-main); overflow:hidden; height:100
         // Show earnings summary if ride data available
         if (rideData) {
             const fare = parseInt(rideData.fare || 0);
-            const commission = Math.ceil(fare * COMMISSION_RATE);
+            const freeRidesLeft = parseInt(captainData.freeRidesRemaining) || 0;
+            const isFreeRide = freeRidesLeft > 0;
+            const commission = (fare <= 0 || isFreeRide) ? 0 : Math.ceil(fare * COMMISSION_RATE);
             const net = fare - commission;
+
             document.getElementById('summaryFare').textContent = `Rs. ${fare}`;
             document.getElementById('summaryCommission').textContent = `- Rs. ${commission}`;
             document.getElementById('summaryNet').textContent = `Rs. ${net}`;
+
+            if (isFreeRide) {
+                const badge = document.getElementById('freeRideBadge');
+                badge.style.display = 'block';
+                const remaining = freeRidesLeft - 1;
+                document.getElementById('freeRidesLeftText').textContent =
+                    remaining > 0 ? `Iske baad ${remaining} free ride baqi hai` : 'Yeh aap ki aakhri free ride thi!';
+                document.getElementById('commissionRow').style.opacity = '0.4';
+                document.getElementById('summaryCommission').textContent = '- Rs. 0 (MAAFI)';
+                document.getElementById('summaryCommission').style.color = 'var(--primary)';
+            }
+
             document.getElementById('ratingSummary').classList.add('visible');
         }
     }
@@ -1186,20 +1205,32 @@ body { background:var(--bg); color:var(--text-main); overflow:hidden; height:100
             }
 
             const fare = parseInt(ride.fare || 0);
-            const commission = fare <= 0 ? 0 : Math.ceil(fare * COMMISSION_RATE);
             const latestCaptain = (await get(ref(db, `riders/${currentCaptain.uid}`))).val();
+
+            // ── FREE RIDES CHECK ──────────────────────────────────
+            const freeRidesLeft = parseInt(latestCaptain.freeRidesRemaining) || 0;
+            const isFreeRide = freeRidesLeft > 0;
+            const commission = (fare <= 0 || isFreeRide) ? 0 : Math.ceil(fare * COMMISSION_RATE);
             const newBalance = (latestCaptain.walletBalance || 0) - commission;
+            const newFreeRides = isFreeRide ? freeRidesLeft - 1 : freeRidesLeft;
+            // ─────────────────────────────────────────────────────
 
             const updates = {};
             updates[`/requests/${currentActiveRideId}/customerRating`] = ratingValue;
             updates[`/requests/${currentActiveRideId}/status`] = 'completed';
             updates[`/requests/${currentActiveRideId}/commissionDeducted`] = commission;
+            updates[`/requests/${currentActiveRideId}/wasFreeRide`] = isFreeRide;
             updates[`/riders/${currentCaptain.uid}/currentRequestId`] = null;
             updates[`/riders/${currentCaptain.uid}/walletBalance`] = newBalance;
+            updates[`/riders/${currentCaptain.uid}/freeRidesRemaining`] = newFreeRides;
             await update(ref(db), updates);
 
             currentActiveRideId = null;
-            alert(`🎉 Ride mukammal! Commission Rs. ${commission} kati gayi. Naya balance: Rs. ${newBalance}.`);
+            if (isFreeRide) {
+                alert(`🎉 Ride mukammal! Yeh aap ki FREE ride thi — koi commission nahi kati.\n🎁 Baqi free rides: ${newFreeRides}`);
+            } else {
+                alert(`🎉 Ride mukammal! Commission Rs. ${commission} kati gayi. Naya balance: Rs. ${newBalance}.`);
+            }
             window.location.href = 'captain-dashboard.html';
 
         } catch (e) {

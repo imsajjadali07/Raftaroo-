@@ -273,6 +273,14 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
                     <h4><i class="fas fa-chart-line" style="color:var(--primary);"></i> Aaj Ki Performance</h4>
                     <span class="today-date-chip" id="todayDateChip">Loading...</span>
                 </div>
+                <!-- Free Rides Banner -->
+                <div id="freeRidesBanner" style="display:none; background:linear-gradient(135deg,#00C853,#00E676); border-radius:12px; padding:12px 14px; margin-bottom:14px; display:flex; align-items:center; gap:10px;">
+                    <div style="font-size:22px;">🎁</div>
+                    <div>
+                        <div style="color:#fff; font-weight:800; font-size:14px;" id="freeRidesBannerText">3 Free Rides Baqi!</div>
+                        <div style="color:rgba(255,255,255,0.85); font-weight:600; font-size:11px;">Pehli 3 rides mein koi commission nahi</div>
+                    </div>
+                </div>
                 <div class="today-stats-grid">
                     <div class="today-stat-card rides">
                         <div class="today-stat-icon"><i class="fas fa-motorcycle"></i></div>
@@ -283,8 +291,14 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
                     <div class="today-stat-card earnings">
                         <div class="today-stat-icon"><i class="fas fa-money-bill-wave"></i></div>
                         <div class="today-stat-val" id="todayEarnings">Rs. 0</div>
-                        <div class="today-stat-label">Total Earning</div>
-                        <div class="today-stat-sub" id="todayNetSub">Poori aap ki!</div>
+                        <div class="today-stat-label">Net Earning</div>
+                        <div class="today-stat-sub" id="todayNetSub">Gross - 10% Commission</div>
+                    </div>
+                    <div class="today-stat-card commission">
+                        <div class="today-stat-icon"><i class="fas fa-percent"></i></div>
+                        <div class="today-stat-val" id="todayCommission">Rs. 0</div>
+                        <div class="today-stat-label">Commission</div>
+                        <div class="today-stat-sub" id="todayCommissionSub">10% per ride</div>
                     </div>
                     <div class="today-stat-card rating">
                         <div class="today-stat-icon"><i class="fas fa-star"></i></div>
@@ -563,10 +577,21 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
         document.getElementById('todayDateChip').textContent = days[today.getDay()] + ', ' + today.getDate() + ' ' + months[today.getMonth()];
 
+        // Free Rides Banner
+        const freeLeft = parseInt(captainData.freeRidesRemaining) || 0;
+        const freeRidesBanner = document.getElementById('freeRidesBanner');
+        if (freeLeft > 0) {
+            freeRidesBanner.style.display = 'flex';
+            document.getElementById('freeRidesBannerText').textContent =
+                freeLeft === 1 ? '🎁 1 Free Ride Baqi!' : `🎁 ${freeLeft} Free Rides Baqi!`;
+        } else {
+            freeRidesBanner.style.display = 'none';
+        }
+
         // FIX: 'requests' node se read karo (rides node nahi)
         onValue(ref(db, 'requests'), (snapshot) => {
             const allRides = snapshot.val() || {};
-            let totalRides = 0, grossEarnings = 0, ratingSum = 0, ratingCount = 0;
+            let totalRides = 0, grossEarnings = 0, totalCommission = 0, ratingSum = 0, ratingCount = 0;
 
             Object.values(allRides).forEach(ride => {
                 // FIX: captainId ya riderId dono check karo
@@ -580,15 +605,21 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
                 totalRides++;
                 const fare = parseInt(ride.fare) || 0;
                 grossEarnings += fare;
+                const comm = parseInt(ride.commissionDeducted) || 0;
+                totalCommission += comm;
                 // FIX: customerRating field (captain-active-ride.html yahi save karta hai)
                 const rating = ride.customerRating || ride.rating;
                 if (rating && parseInt(rating) > 0) { ratingSum += parseFloat(rating); ratingCount++; }
             });
 
+            const netEarnings = grossEarnings - totalCommission;
+
             document.getElementById('todayRides').textContent = totalRides;
-            document.getElementById('todayEarnings').textContent = 'Rs. ' + Math.round(grossEarnings * 0.90);
-            document.getElementById('todayNetSub').textContent = `Net (after 10% fee) · Gross: Rs.${grossEarnings}`;
+            document.getElementById('todayEarnings').textContent = 'Rs. ' + netEarnings;
+            document.getElementById('todayNetSub').textContent = `Net · Gross: Rs.${grossEarnings}`;
             document.getElementById('todayRidesSub').textContent = totalRides > 0 ? 'Total: Rs.' + grossEarnings : 'Abhi koi ride nahi';
+            document.getElementById('todayCommission').textContent = 'Rs. ' + totalCommission;
+            document.getElementById('todayCommissionSub').textContent = totalCommission === 0 && freeLeft > 0 ? '🎁 Free rides chal rahi hain!' : '10% per paid ride';
 
             if (ratingCount > 0) {
                 document.getElementById('todayRating').textContent = (ratingSum / ratingCount).toFixed(1) + ' \u2605';

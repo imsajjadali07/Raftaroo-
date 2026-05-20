@@ -1054,6 +1054,8 @@ body { background: var(--bg); color: var(--text); min-height: 100vh; overflow-x:
                 status:          'Pending',
                 email:           currentUser.email,
                 walletBalance:   0,
+                freeRidesRemaining: 3,
+                registrationDate: new Date().toISOString(),
             });
 
             // Success
