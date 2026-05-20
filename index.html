@@ -1348,12 +1348,10 @@ input:checked + .slider:before {
                         <h3 data-lang-key="bikeTitle">Raftaroo Bike</h3>
                         <span data-lang-key="bikeDesc">Ride & Small Delivery</span>
                     </div>
-                    <!-- Rickshaw Service -->
                     <div class="service-card" data-vehicle="rickshaw">
-                        <!-- ICON REPLACED with IMG -->
                         <img src="https://iili.io/fZQPHhB.png" alt="Rickshaw Icon">
                         <h3 data-lang-key="rickshawTitle">Raftaroo Rickshaw</h3>
-                        <span data-lang-key="rickshawDescRide">Local Ride & Transport</span>
+                        <span data-lang-key="rickshawDesc">Affordable City Ride</span>
                     </div>
                     
                     <!-- START MODIFICATION: Split Car into Economy and Comfort -->
@@ -1714,7 +1712,7 @@ input:checked + .slider:before {
             bikeTitle: { en: "Raftaroo Bike", ur: "رفتارو بائیک" },
             bikeDesc: { en: "Ride & Small Delivery", ur: "سواری اور چھوٹی ڈیلیوری" },
             rickshawTitle: { en: "Raftaroo Rickshaw", ur: "رفتارو رکشہ" },
-            rickshawDescRide: { en: "Local Ride & Transport", ur: "مقامی سواری و ٹرانسپورٹ" },
+            rickshawDesc: { en: "Affordable City Ride", ur: "سستی شہری سواری" },
             // START MODIFICATION: New Car Translations
             carEconomyTitle: { en: "Raftaroo Economy", ur: "رفتارو اکانومی" },
             carEconomyDesc: { en: "Ride without A/C", ur: "بغیر اے/سی سواری" },
@@ -1807,6 +1805,7 @@ input:checked + .slider:before {
         const VEHICLE_ICONS = {
             'bike': 'https://iili.io/ftViNi7.png',
             'rickshaw': 'https://iili.io/ftV61st.png',
+            'auto-rickshaw': 'https://iili.io/ftV61st.png',
             'car-economy': 'https://iili.io/ftV4mOl.png', // Car (Non-AC)
             'car-comfort': 'https://iili.io/ftV4mOl.png', // AC Car (Same image link used)
             'pickup': 'https://iili.io/ftVPMZB.png', // Cargo Truck
@@ -1832,10 +1831,10 @@ input:checked + .slider:before {
             let imgUrl = VEHICLE_ICONS['default'];
             if (v.includes('car') || v.includes('sedan') || v.includes('suv') || v.includes('economy') || v.includes('comfort')) {
                 imgUrl = VEHICLE_ICONS['car-economy'];
-            } else if (v.includes('rickshaw') || v.includes('auto')) {
-                imgUrl = VEHICLE_ICONS['rickshaw'];
             } else if (v.includes('pickup') || v.includes('cargo') || v.includes('truck')) {
                 imgUrl = VEHICLE_ICONS['pickup'];
+            } else if (v.includes('rickshaw') || v.includes('auto')) {
+                imgUrl = VEHICLE_ICONS['rickshaw'];
             } else if (v.includes('bike') || v.includes('moto')) {
                 imgUrl = VEHICLE_ICONS['bike'];
             } else {
@@ -1926,13 +1925,13 @@ input:checked + .slider:before {
                 if (sv.includes('car') || sv.includes('economy') || sv.includes('comfort')) {
                     return rv.includes('car') || rv.includes('economy') || rv.includes('comfort') || rv.includes('sedan') || rv.includes('suv');
                 }
-                // Rickshaw — "Rikshaw" (register spelling) ya "rickshaw" dono match
-                if (sv.includes('rickshaw') || sv.includes('rikshaw') || sv.includes('auto')) {
-                    return rv.includes('rickshaw') || rv.includes('rikshaw') || rv.includes('auto') || rv.includes('qingqi');
-                }
                 // Cargo/Pickup
                 if (sv.includes('pickup') || sv.includes('cargo') || sv.includes('truck')) {
                     return rv.includes('pickup') || rv.includes('cargo') || rv.includes('truck') || rv.includes('van');
+                }
+                // Rickshaw
+                if (sv.includes('rickshaw') || sv.includes('auto')) {
+                    return rv.includes('rickshaw') || rv.includes('auto');
                 }
                 // Bike (default)
                 return rv.includes('bike') || rv.includes('moto') || rv === sv;
@@ -2217,7 +2216,8 @@ input:checked + .slider:before {
             const vt = document.getElementById('noRidersVehicleType');
             if (vt) {
                 const labels = {
-                    'bike': 'Bike', 'rickshaw': 'Rickshaw', 'auto': 'Auto',
+                    'bike': 'Bike',
+                    'rickshaw': 'Rickshaw',
                     'car-economy': 'Economy Car', 'car-comfort': 'Comfort Car',
                     'pickup': 'Pickup/Cargo', 'cargo': 'Cargo', 'truck': 'Truck'
                 };
@@ -2716,7 +2716,7 @@ input:checked + .slider:before {
             }
         }
         
-        // --- Service Selection Logic (Updated for Rickshaw Rate) ---
+        // --- Service Selection Logic ---
         document.querySelectorAll('.service-card').forEach(card => {
             card.addEventListener('click', () => {
                 document.querySelectorAll('.service-card').forEach(c => c.classList.remove('active'));
@@ -2760,7 +2760,6 @@ input:checked + .slider:before {
              const carComfortCard = document.querySelector('.service-card[data-vehicle="car-comfort"]');
              // END MODIFICATION
              
-             const rickshawCard = document.querySelector('.service-card[data-vehicle="rickshaw"]');
              const bikeCard = document.querySelector('.service-card[data-vehicle="bike"]');
              const cargoCard = document.querySelector('.service-card[data-vehicle="pickup"]'); // Cargo
 
@@ -2784,11 +2783,9 @@ input:checked + .slider:before {
 
                  // Titles (use translations)
                  bikeCard.querySelector('h3').innerText = translations.bikeTitle[lang];
-                 rickshawCard.querySelector('h3').innerText = translations.rickshawTitle[lang];
                  if (cargoCard) cargoCard.querySelector('h3').innerText = translations.cargoTitle[lang];
                  
                  // Descriptions (hardcoded or translated as appropriate)
-                 if (rickshawCard) rickshawCard.querySelector('span').innerText = currentLanguage === 'ur' ? 'مقامی سامان کی ترسیل' : 'Local Goods Transport';
                  if (bikeCard) bikeCard.querySelector('span').innerText = currentLanguage === 'ur' ? 'چھوٹی ڈیلیوری (پارسل)' : 'Small Delivery (Parcels)';
                  if (cargoCard) cargoCard.querySelector('span').innerText = translations.cargoDesc[lang]; // Heavy Delivery
                  
@@ -2800,14 +2797,12 @@ input:checked + .slider:before {
                  
                  // Titles (use translations)
                  bikeCard.querySelector('h3').innerText = translations.bikeTitle[lang];
-                 rickshawCard.querySelector('h3').innerText = translations.rickshawTitle[lang];
                  if (carEconomyCard) carEconomyCard.querySelector('h3').innerText = translations.carEconomyTitle[lang]; // MODIFICATION
                  if (carComfortCard) carComfortCard.querySelector('h3').innerText = translations.carComfortTitle[lang]; // MODIFICATION
                  if (cargoCard) cargoCard.querySelector('h3').innerText = translations.cargoTitle[lang];
                  
                  // Descriptions (hardcoded or translated as appropriate)
                  if (bikeCard) bikeCard.querySelector('span').innerText = translations.bikeDesc[lang];
-                 if (rickshawCard) rickshawCard.querySelector('span').innerText = translations.rickshawDescRide[lang];
                  if (carEconomyCard) carEconomyCard.querySelector('span').innerText = translations.carEconomyDesc[lang]; // MODIFICATION
                  if (carComfortCard) carComfortCard.querySelector('span').innerText = translations.carComfortDesc[lang]; // MODIFICATION
                  if (cargoCard) cargoCard.querySelector('span').innerText = translations.cargoDesc[lang];
@@ -2954,7 +2949,7 @@ input:checked + .slider:before {
         // --- END: Parcel Details Flow Logic ---
 
 
-        // --- Map Picker Logic (Modified to Show Captains and Rickshaw Rate) --- 
+        // --- Map Picker Logic ---
         // NOTE: The customer selection markers remain Font Awesome for clear differentiation
         const pickupIconDiv = L.divIcon({ html: '<i class="fas fa-circle" style="color: var(--success); font-size: 16px;"></i>', className: 'custom-div-icon' });
         const destinationIconDiv = L.divIcon({ html: '<i class="fas fa-map-marker-alt" style="color: var(--error); font-size: 24px;"></i>', className: 'custom-div-icon' });
@@ -3148,7 +3143,7 @@ input:checked + .slider:before {
         function getFareConfig(vehicle) {
             const defaults = {
                 bike:          { ratePerKm: 15, baseFare: 120 },
-                rickshaw:      { ratePerKm: 20, baseFare: 120 },
+                rickshaw:      { ratePerKm: 18, baseFare: 100 },
                 'car-economy': { ratePerKm: 25, baseFare: 150 },
                 'car-comfort': { ratePerKm: 35, baseFare: 200 },
                 pickup:        { ratePerKm: 35, baseFare: 120 }
@@ -3315,7 +3310,6 @@ input:checked + .slider:before {
             // NEW: Service Name based on Vehicle and Mode
             let serviceName = tripDetails.mode === 'ride' ? 'Ride' : 'Delivery';
             if(tripDetails.vehicle === 'bike') serviceName = tripDetails.mode === 'ride' ? 'Ride/Small Delivery' : 'Bike Delivery';
-            if(tripDetails.vehicle === 'rickshaw') serviceName = tripDetails.mode === 'ride' ? 'Rickshaw Ride' : 'Rickshaw Delivery';
             // START MODIFICATION: New Car Service Names
             if(tripDetails.vehicle === 'car-economy') serviceName = 'Car Economy Ride'; 
             if(tripDetails.vehicle === 'car-comfort') serviceName = 'Car Comfort Ride'; 

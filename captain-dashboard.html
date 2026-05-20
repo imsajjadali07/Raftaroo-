@@ -442,10 +442,10 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         let imgUrl = 'https://iili.io/ftViNi7.png'; // default bike
         if (v.includes('car') || v.includes('sedan') || v.includes('suv') || v.includes('economy') || v.includes('comfort')) {
             imgUrl = 'https://iili.io/qfsUogV.png';
-        } else if (v.includes('rickshaw') || v.includes('auto') || v.includes('qingqi')) {
-            imgUrl = 'https://iili.io/ftV61st.png';
         } else if (v.includes('pickup') || v.includes('cargo') || v.includes('truck')) {
             imgUrl = 'https://iili.io/ftVPMZB.png';
+        } else if (v.includes('rickshaw') || v.includes('auto')) {
+            imgUrl = 'https://iili.io/ftV61st.png';
         }
         return L.divIcon({ html: `<img src="${imgUrl}" style="width:44px;height:44px;object-fit:contain;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.3));" onerror="this.src='https://iili.io/ftViNi7.png'"/>`, className: 'custom-div-icon', iconSize: [44,44], iconAnchor: [22,22] });
     };
@@ -721,10 +721,10 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
     function isVehicleMatch(cap, req) {
         if(!cap||!req) return false;
         const c=cap.toLowerCase().trim(), r=req.toLowerCase().trim();
-        const bikes=['bike','motorcycle','motorbike'], cars=['car','sedan','suv','hatchback'], ricks=['rickshaw','auto','auto rickshaw','qingqi'];
+        const bikes=['bike','motorcycle','motorbike'], cars=['car','sedan','suv','hatchback'], rickshaws=['rickshaw','auto'];
         if(bikes.some(t=>c.includes(t))&&bikes.some(t=>r.includes(t))) return true;
         if(cars.some(t=>c.includes(t))&&cars.some(t=>r.includes(t))) return true;
-        if(ricks.some(t=>c.includes(t))&&ricks.some(t=>r.includes(t))) return true;
+        if(rickshaws.some(t=>c.includes(t))&&rickshaws.some(t=>r.includes(t))) return true;
         return c===r;
     }
 

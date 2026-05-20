@@ -768,7 +768,7 @@ body { background:var(--bg); color:var(--text-main); overflow:hidden; height:100
         'bike':        'https://iili.io/ftViNi7.png',
         'motorcycle':  'https://iili.io/ftViNi7.png',
         'rickshaw':    'https://iili.io/ftV61st.png',
-        'auto':        'https://iili.io/ftV61st.png',
+        'auto-rickshaw': 'https://iili.io/ftV61st.png',
         'car':         'https://iili.io/ftV4mOl.png',
         'car-economy': 'https://iili.io/ftV4mOl.png',
         'car-comfort': 'https://iili.io/ftV4mOl.png',
@@ -782,8 +782,8 @@ body { background:var(--bg); color:var(--text-main); overflow:hidden; height:100
     function getVehicleImgUrl(vehicleType) {
         const v = (vehicleType||'bike').toLowerCase().replace(/\s+/g,'-');
         if (v.includes('car') || v.includes('sedan') || v.includes('suv')) return VEHICLE_ICONS['car'];
-        if (v.includes('rickshaw') || v.includes('auto')) return VEHICLE_ICONS['rickshaw'];
         if (v.includes('pickup') || v.includes('cargo') || v.includes('truck')) return VEHICLE_ICONS['pickup'];
+        if (v.includes('rickshaw') || v.includes('auto')) return VEHICLE_ICONS['rickshaw'];
         return VEHICLE_ICONS[v] || VEHICLE_ICONS['default'];
     }
 
