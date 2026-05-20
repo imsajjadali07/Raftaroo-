@@ -151,7 +151,7 @@ document.getElementById('closeBtn').addEventListener('click', () => {
     
     <!-- ********** SEO: CRITICAL META TAGS ********** -->
     <title>Raftaroo | Fastest Ride, Delivery & Cargo in Pakistan</title>
-    <link rel="canonical" href="https://www.raftaroo.com/"> 
+    <link rel="canonical" href="https://www.raftaroo.online/"> 
     <meta name="description" content="Raftaroo - Get a fast ride, delivery, or cargo service instantly. Book a Captain for bike, car, or pickup in minutes.">
     <meta name="keywords" content="raftaroo, fast ride, delivery service, cargo, bike ride, car booking, fastest delivery">
     
@@ -491,6 +491,27 @@ body {
 }
 .ride-card-body p { margin-bottom: 4px; }
 
+
+/* ── INVITE & EARN ── */
+.invite-hero { background: linear-gradient(135deg,#28a745,#1e7e34); border-radius: 16px; padding: 22px; color: #fff; text-align: center; margin-bottom: 16px; }
+.invite-hero h2 { font-size: 22px; font-weight: 800; margin: 0 0 4px; }
+.invite-hero p  { font-size: 13px; opacity: 0.9; margin: 0; }
+.invite-hero .big-amt { font-size: 38px; font-weight: 900; letter-spacing: -1px; }
+.invite-steps { display: flex; flex-direction: column; gap: 10px; margin-bottom: 16px; }
+.invite-step  { display: flex; align-items: flex-start; gap: 12px; background: var(--bg-light,#f8fafc); border: 1px solid var(--border,#e5e7eb); border-radius: 12px; padding: 14px; }
+.invite-step-num { width: 30px; height: 30px; min-width: 30px; border-radius: 50%; background: #28a745; color: #fff; font-weight: 800; font-size: 14px; display: flex; align-items: center; justify-content: center; }
+.invite-step-text { font-size: 13px; color: var(--text-main); font-weight: 600; line-height: 1.5; }
+.invite-step-text span { color: #1e7e34; font-weight: 800; }
+.invite-code-box { background: var(--bg-light,#f8fafc); border: 2px dashed #28a745; border-radius: 12px; padding: 16px; text-align: center; margin-bottom: 14px; }
+.invite-code-box .icode { font-size: 22px; font-weight: 900; letter-spacing: 3px; color: #1e7e34; }
+.invite-code-box .icode-lbl { font-size: 11px; color: var(--text-muted); font-weight: 600; margin-bottom: 6px; }
+.invite-share-btn { width: 100%; padding: 14px; background: #28a745; color: #fff; font-weight: 800; font-size: 15px; border: none; border-radius: 12px; cursor: pointer; margin-bottom: 10px; }
+.invite-copy-btn  { width: 100%; padding: 11px; background: transparent; color: #1e7e34; font-weight: 700; font-size: 13px; border: 2px solid #28a745; border-radius: 12px; cursor: pointer; margin-bottom: 16px; }
+.invite-stats { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+.invite-stat-card { background: var(--bg-light,#f8fafc); border: 1px solid var(--border,#e5e7eb); border-radius: 12px; padding: 14px; text-align: center; }
+.invite-stat-card .isv { font-size: 22px; font-weight: 900; color: var(--text-main); }
+.invite-stat-card .isl { font-size: 11px; color: var(--text-muted); font-weight: 600; margin-top: 2px; }
+.invite-note { font-size: 12px; color: var(--text-muted); background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 10px 12px; line-height: 1.6; }
 
 /* Wallet Specific Styles */
 .balance-card {
@@ -1277,6 +1298,10 @@ input:checked + .slider:before {
                  <div class="menu-item" onclick="showView('wallet-view')">
                     <i class="fas fa-wallet"></i> <span data-lang-key="menuWallet">My Wallet</span>
                 </div>
+                <div class="menu-item" onclick="showView('invite-view')">
+                    <i class="fas fa-gift" style="color:#28a745;"></i> <span>Invite &amp; Earn</span>
+                    <span style="margin-left:auto;background:#28a745;color:#fff;font-size:10px;font-weight:800;padding:2px 7px;border-radius:20px;">Rs. 1500</span>
+                </div>
 
                 <!-- NEW: Dark Mode Switch -->
                 <div class="menu-item" style="justify-content: space-between;" id="darkModeMenuItem">
@@ -1414,6 +1439,23 @@ input:checked + .slider:before {
                     <h1>Rs. <span id="walletBalance">0</span></h1>
                 </div>
 
+                <!-- WITHDRAWAL SECTION -->
+                <div class="payment-proof-form" style="margin-bottom:14px; border:2px solid var(--primary); border-radius:12px; padding:16px;">
+                    <h4 style="color:var(--primary); margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+                        <i class="fas fa-money-bill-transfer"></i> Withdraw Funds
+                    </h4>
+                    <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px; line-height:1.6;">
+                        Apna JazzCash / EasyPaisa number enter karo. Amount aapke wallet se deduct ho ga aur 24–48 ghante mein transfer ho ga.
+                    </p>
+                    <input type="number" class="input-field-small" placeholder="Withdrawal Amount (Rs.) — Min 200" id="withdrawAmount" min="200">
+                    <input type="text" class="input-field-small" placeholder="JazzCash / EasyPaisa Number (e.g. 03001234567)" id="withdrawAccountNumber">
+                    <input type="text" class="input-field-small" placeholder="Account Holder Name" id="withdrawAccountName">
+                    <div class="error-text" id="withdrawError" style="display:none;"></div>
+                    <button class="btn-primary" style="margin-top:8px; background:var(--primary);" id="submitWithdrawBtn" onclick="submitWithdrawal()">
+                        <i class="fas fa-paper-plane"></i> Request Withdrawal
+                    </button>
+                </div>
+
                 <div class="payment-proof-form">
                     <h4 data-lang-key="addFundsHeader">Add Funds via Bank/EasyPaisa/JazzCash</h4>
                     <!-- UPDATED: Added JazzCash/EasyPaisa Account Details -->
@@ -1440,6 +1482,68 @@ input:checked + .slider:before {
             
 
 
+
+            <!-- INVITE & EARN VIEW -->
+            <div id="invite-view" class="view-panel hidden">
+                <div class="view-header">
+                    <i class="fas fa-arrow-left" onclick="showView('home-view')"></i>
+                    <h2>Invite &amp; Earn</h2>
+                </div>
+
+                <div class="invite-hero">
+                    <p>Dost ko invite karo aur kamao</p>
+                    <div class="big-amt">Rs. 1,500</div>
+                    <p style="margin-top:4px;">Har 30 complete rides par</p>
+                </div>
+
+                <div class="invite-steps">
+                    <div class="invite-step">
+                        <div class="invite-step-num">1</div>
+                        <div class="invite-step-text">Apna <span>Invite Link</span> copy karo ya share karo kisi dost ko</div>
+                    </div>
+                    <div class="invite-step">
+                        <div class="invite-step-num">2</div>
+                        <div class="invite-step-text">Dost aapke link se <span>Raftaroo</span> download ya open kare aur register kare</div>
+                    </div>
+                    <div class="invite-step">
+                        <div class="invite-step-num">3</div>
+                        <div class="invite-step-text">Dost <span>30 rides</span> complete kare — sirf <span>Rs. 500+</span> wali rides count hongi</div>
+                    </div>
+                    <div class="invite-step">
+                        <div class="invite-step-num">4</div>
+                        <div class="invite-step-text">Aapko <span>Rs. 1,500</span> wallet mein automatically credit ho ga!</div>
+                    </div>
+                </div>
+
+                <div class="invite-code-box">
+                    <div class="icode-lbl">AAPKA INVITE LINK</div>
+                    <div class="icode" id="inviteCodeDisplay">Loading...</div>
+                </div>
+
+                <button class="invite-share-btn" onclick="shareInviteLink()">
+                    <i class="fas fa-share-alt"></i> Share Invite Link
+                </button>
+                <button class="invite-copy-btn" onclick="copyInviteLink()">
+                    <i class="fas fa-copy"></i> Copy Link
+                </button>
+
+                <div class="invite-stats">
+                    <div class="invite-stat-card">
+                        <div class="isv" id="inviteReferredCount">—</div>
+                        <div class="isl">Friends Joined</div>
+                    </div>
+                    <div class="invite-stat-card">
+                        <div class="isv" id="inviteBonusEarned">Rs. —</div>
+                        <div class="isl">Bonus Earned</div>
+                    </div>
+                </div>
+
+                <div id="inviteRidersList"></div>
+
+                <div class="invite-note">
+                    ⚠️ <strong>Zaruri:</strong> Sirf <strong>Rs. 500 ya upar</strong> ki rides count hongi. 30 rides complete hone par Rs. 1,500 aapke wallet mein add ho ga. Ek dost = ek baar bonus.
+                </div>
+            </div>
 
             <!-- NEW: PARCEL DETAILS VIEW (Delivery Mode Step 2) -->
             <div id="parcel-details-view" class="view-panel hidden">
@@ -2266,6 +2370,8 @@ input:checked + .slider:before {
                 loadRideHistory();
             } else if (viewId === 'wallet-view') {
                 loadWalletBalance();
+            } else if (viewId === 'invite-view') {
+                loadInviteData();
             } else if (viewId === 'parcel-details-view') {
                  // Set the selected vehicle display
                  document.getElementById('selectedParcelVehicle').innerText = selectedVehicle.toUpperCase().replace('-', ' ');
@@ -2316,6 +2422,13 @@ input:checked + .slider:before {
                      wallet: 0,
                      registeredAt: new Date().toISOString()
                  };
+
+                 // Check for invite referral code in URL
+                 const urlParams = new URLSearchParams(window.location.search);
+                 const refCode = urlParams.get('ref');
+                 if (refCode && refCode.startsWith('RAF')) {
+                     userData.invitedBy = refCode;
+                 }
 
                  await set(ref(db, `users/${user.uid}`), userData);
                  
@@ -2654,6 +2767,73 @@ input:checked + .slider:before {
         };
 
         document.getElementById('submitDepositBtn').onclick = submitDepositProof;
+
+        // ── WITHDRAWAL LOGIC ─────────────────────────────────────────────────
+        window.submitWithdrawal = async function() {
+            const errEl  = document.getElementById('withdrawError');
+            const btn    = document.getElementById('submitWithdrawBtn');
+            errEl.style.display = 'none';
+
+            const amount  = parseFloat(document.getElementById('withdrawAmount').value);
+            const account = document.getElementById('withdrawAccountNumber').value.trim();
+            const name    = document.getElementById('withdrawAccountName').value.trim();
+
+            if (!amount || amount < 200) {
+                errEl.textContent = 'Minimum withdrawal amount Rs. 200 hai.';
+                errEl.style.display = 'block'; return;
+            }
+            if (amount > currentWalletBalance) {
+                errEl.textContent = `Insufficient balance. Aapke paas sirf Rs. ${currentWalletBalance} hai.`;
+                errEl.style.display = 'block'; return;
+            }
+            if (!/^03[0-9]{9}$/.test(account)) {
+                errEl.textContent = 'Valid Pakistani mobile number enter karo (e.g. 03001234567).';
+                errEl.style.display = 'block'; return;
+            }
+            if (!name) {
+                errEl.textContent = 'Account holder name zaruri hai.';
+                errEl.style.display = 'block'; return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '⏳ Processing...';
+
+            try {
+                // Deduct from wallet immediately
+                const newBal = currentWalletBalance - amount;
+                await update(ref(db, `users/${currentUser.uid}`), { wallet: newBal });
+
+                // Save withdrawal request for admin
+                const reqKey = 'WD_' + Date.now();
+                await set(ref(db, `withdrawalRequests/${reqKey}`), {
+                    uid:         currentUser.uid,
+                    userName:    currentUser.displayName || 'User',
+                    userEmail:   currentUser.email,
+                    amount:      amount,
+                    accountNumber: account,
+                    accountName: name,
+                    method:      'JazzCash/EasyPaisa',
+                    status:      'Pending',
+                    type:        'passenger',
+                    requestedAt: new Date().toISOString(),
+                });
+
+                document.getElementById('withdrawAmount').value = '';
+                document.getElementById('withdrawAccountNumber').value = '';
+                document.getElementById('withdrawAccountName').value = '';
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-paper-plane"></i> Request Withdrawal';
+                alert(`✅ Rs. ${amount} withdrawal request submit ho gayi! 24–48 ghante mein ${account} par transfer ho ga.`);
+            } catch(e) {
+                // Refund if save failed
+                await update(ref(db, `users/${currentUser.uid}`), { wallet: currentWalletBalance });
+                errEl.textContent = 'Error: ' + e.message;
+                errEl.style.display = 'block';
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-paper-plane"></i> Request Withdrawal';
+            }
+        };
+        // ── END WITHDRAWAL ────────────────────────────────────────────────────
 
         async function submitDepositProof() {
             const amount = document.getElementById('walletAmount').value;
@@ -3512,6 +3692,109 @@ input:checked + .slider:before {
         // --- END MODIFICATION: CAPTAIN OFFER MODAL LOGIC ---
 
         // --- Wallet/History Load Logic (No change, but ensuring function stubs exist) ---
+
+        // ── INVITE & EARN LOGIC ──────────────────────────────────────────────
+        const INVITE_BONUS_AMOUNT   = 1500;  // Rs. to credit per qualified referral
+        const INVITE_MIN_FARE       = 500;   // Minimum ride fare to count
+        const INVITE_MIN_RIDES      = 30;    // Rides required by referred user
+
+        async function loadInviteData() {
+            if (!currentUser) return;
+            // Show user's invite code (UID-based)
+            const inviteCode = 'RAF' + currentUser.uid.slice(0,7).toUpperCase();
+            const inviteLink = `https://raftaroo.online/?ref=${inviteCode}`;
+            document.getElementById('inviteCodeDisplay').textContent = inviteCode;
+            window._inviteLink = inviteLink;
+            window._inviteCode = inviteCode;
+
+            try {
+                // Load users who registered with this invite code
+                const usersSnap = await get(ref(db, 'users'));
+                const allUsers  = usersSnap.exists() ? usersSnap.val() : {};
+                const referred  = Object.values(allUsers).filter(u => u.invitedBy === inviteCode);
+
+                document.getElementById('inviteReferredCount').textContent = referred.length;
+
+                if (referred.length === 0) {
+                    document.getElementById('inviteRidersList').innerHTML =
+                        '<p style="font-size:13px;color:#94A3B8;text-align:center;padding:12px;">Abhi koi dost join nahi hua.</p>';
+                    document.getElementById('inviteBonusEarned').textContent = 'Rs. 0';
+                    return;
+                }
+
+                // Load all requests to count qualifying rides per referred user
+                const reqsSnap  = await get(ref(db, 'requests'));
+                const allReqs   = reqsSnap.exists() ? Object.values(reqsSnap.val()) : [];
+
+                let qualifiedCount = 0;
+                const cards = referred.map(u => {
+                    const qualRides = allReqs.filter(r =>
+                        (r.riderUid === u.uid || r.userId === u.uid) &&
+                        r.status === 'completed' &&
+                        parseFloat(r.fare || 0) >= INVITE_MIN_FARE
+                    ).length;
+                    const qualified = u.inviteBonusPaid || qualRides >= INVITE_MIN_RIDES;
+                    if (qualified) qualifiedCount++;
+                    return { u, qualRides, qualified };
+                });
+
+                // Credit bonus if not yet credited
+                for (const { u, qualified } of cards) {
+                    if (qualified && !u.inviteBonusPaid) {
+                        // Mark bonus paid on referred user node to avoid double-credit
+                        await update(ref(db, `users/${u.uid}`), { inviteBonusPaid: true });
+                        // Credit referrer wallet
+                        const mySnap   = await get(ref(db, `users/${currentUser.uid}/wallet`));
+                        const myBal    = mySnap.val() || 0;
+                        await update(ref(db, `users/${currentUser.uid}`), { wallet: myBal + INVITE_BONUS_AMOUNT });
+                    }
+                }
+
+                const totalBonus = qualifiedCount * INVITE_BONUS_AMOUNT;
+                document.getElementById('inviteBonusEarned').textContent = `Rs. ${totalBonus.toLocaleString('en-US')}`;
+
+                const con = document.getElementById('inviteRidersList');
+                con.innerHTML = cards.map(({ u, qualRides, qualified }) => {
+                    const pct = Math.min(100, Math.round((qualRides / INVITE_MIN_RIDES) * 100));
+                    return `<div style="background:var(--bg-light,#f8fafc);border-radius:10px;padding:12px 14px;margin-bottom:8px;border:1px solid var(--border,#e5e7eb);">
+                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
+                            <span style="font-size:13px;font-weight:700;">${u.fullName || u.displayName || 'Friend'}</span>
+                            <span style="font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;background:${qualified ? '#DCFCE7' : '#f0fdf4'};color:${qualified ? '#16a34a' : '#14532d'};">
+                                ${qualified ? '✅ Rs. 1,500 Earned' : qualRides + '/' + INVITE_MIN_RIDES + ' rides'}
+                            </span>
+                        </div>
+                        <div style="background:#E2E8F0;border-radius:4px;height:6px;overflow:hidden;">
+                            <div style="height:100%;width:${pct}%;background:${qualified ? '#16a34a' : '#28a745'};border-radius:4px;transition:width 0.5s;"></div>
+                        </div>
+                    </div>`;
+                }).join('');
+
+            } catch(e) {
+                console.error('Invite load error:', e);
+                document.getElementById('inviteReferredCount').textContent = '0';
+                document.getElementById('inviteBonusEarned').textContent = 'Rs. 0';
+            }
+        }
+
+        window.shareInviteLink = function() {
+            const link = window._inviteLink || '';
+            const code = window._inviteCode || '';
+            const text = `🚗 Raftaroo se ride book karo Pakistan mein!\n\nMere link se join karo aur enjoy karo Raftaroo service:\n${link}\n\nInvite Code: ${code}`;
+            if (navigator.share) {
+                navigator.share({ title: 'Raftaroo – Invite & Earn', text, url: link }).catch(() => {});
+            } else {
+                navigator.clipboard.writeText(text).then(() => alert('Invite link copied!')).catch(() => alert(link));
+            }
+        };
+
+        window.copyInviteLink = function() {
+            const link = window._inviteLink || '';
+            navigator.clipboard.writeText(link)
+                .then(() => { const b = document.querySelector('.invite-copy-btn'); b.textContent = '✅ Copied!'; setTimeout(() => { b.innerHTML = '<i class="fas fa-copy"></i> Copy Link'; }, 2000); })
+                .catch(() => alert(link));
+        };
+        // ── END INVITE & EARN ─────────────────────────────────────────────────
+
         function loadWalletBalance() {
              if (!currentUser) return;
              onValue(ref(db, `users/${currentUser.uid}/wallet`), (snapshot) => {

@@ -38,7 +38,7 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <title>Register as a Captain | Join Raftaroo</title>
-<link rel="canonical" href="https://raftaroo.com/rider-register.html">
+<link rel="canonical" href="https://raftaroo.online/rider-register.html">
 <meta name="description" content="Apply to become a Raftaroo Captain for fast ride, delivery, and cargo services in Pakistan. Earn money with your bike or car.">
 
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -635,6 +635,16 @@ body { background: var(--bg); color: var(--text); min-height: 100vh; overflow-x:
                             <div class="fu-name" id="riderImgName"></div>
                         </div>
                     </div></div>
+
+                    <div class="form-group full" style="margin-top:10px;">
+                        <label for="referral_code">Referral Code <span style="color:#94a3b8;font-weight:400;">(Optional)</span></label>
+                        <div class="input-wrap">
+                            <span class="input-ico">🎁</span>
+                            <input type="text" id="referral_code" placeholder="Enter referral code (if any)" style="text-transform:uppercase;">
+                        </div>
+                        <span style="font-size:11px;color:#64748b;margin-top:4px;">Kisi captain ne refer kiya hai? Unka code enter karo.</span>
+                    </div>
+
                 <div class="nav-buttons">
                     <button class="btn-next" onclick="goStep(2)">Next: Vehicle Details →</button>
                 </div>
@@ -951,6 +961,12 @@ body { background: var(--bg); color: var(--text); min-height: 100vh; overflow-x:
     document.addEventListener('DOMContentLoaded', function() {
         document.getElementById('videoGuideBody').classList.add('open');
         document.getElementById('videoArrow').classList.add('open');
+        // Auto-fill referral code from URL param ?ref=XXXXX
+        const urlRef = new URLSearchParams(window.location.search).get('ref');
+        if (urlRef) {
+            const refInput = document.getElementById('referral_code');
+            if (refInput) refInput.value = urlRef.toUpperCase();
+        }
     });
 
 
@@ -1056,6 +1072,7 @@ body { background: var(--bg); color: var(--text); min-height: 100vh; overflow-x:
                 walletBalance:   0,
                 freeRidesRemaining: 3,
                 registrationDate: new Date().toISOString(),
+                referredByCode:  (document.getElementById('referral_code').value.trim().toUpperCase() || null),
             });
 
             // Success

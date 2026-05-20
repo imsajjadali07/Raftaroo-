@@ -28,7 +28,7 @@
     --text-main: #0A0F1E; --text-muted: #64748B; --text-light: #94A3B8;
     --border: rgba(0,0,0,0.07); --shadow-sm: 0 2px 8px rgba(0,0,0,0.06);
     --shadow-md: 0 4px 20px rgba(0,0,0,0.10); --shadow-lg: 0 8px 40px rgba(0,0,0,0.14);
-    --error: #EF4444; --success: #00C853; --info: #3B82F6; --warning: #F59E0B;
+    --error: #EF4444; --success: #00C853; --info: #3B82F6; --warning: #28a745;
     --gold: #FFD700; --silver: #C0C0C0; --bronze: #CD7F32;
     --radius: 14px; --radius-sm: 10px; --radius-lg: 20px;
 }
@@ -307,7 +307,7 @@ animation:fadeUp 0.3s ease-out;
 .ride-date { font-size:12px; font-weight:600; color:var(--text-muted); }
 .ride-status-chip { font-size:11px; font-weight:800; padding:3px 9px; border-radius:50px; background:var(--primary-light); color:var(--primary-dark); }
 .ride-status-chip.cancelled { background:#FEE2E2; color:var(--error); }
-.ride-status-chip.pending { background:var(--yellow-light); color:#92400E; }
+.ride-status-chip.pending { background:var(--yellow-light); color:#14532d; }
 
 .ride-card-detail { display:flex; align-items:flex-start; gap:8px; margin-bottom:7px; }
 .ride-card-detail i { font-size:12px; width:14px; margin-top:2px; flex-shrink:0; }
@@ -375,6 +375,7 @@ background:#FEF2F2; color:var(--error); border:1px solid rgba(239,68,68,0.2);
 <nav class="captain-tabs">
     <button class="tab-button active" data-tab="profile"><i class="fas fa-user"></i> Profile</button>
     <button class="tab-button" data-tab="topup"><i class="fas fa-wallet"></i> Top-Up</button>
+    <button class="tab-button" data-tab="withdraw"><i class="fas fa-money-bill-transfer"></i> Withdraw</button>
     <button class="tab-button" data-tab="referral"><i class="fas fa-share-nodes"></i> Referral</button>
     <button class="tab-button" data-tab="earnings"><i class="fas fa-trophy"></i> Earnings</button>
     <button class="tab-button" data-tab="history"><i class="fas fa-clock-rotate-left"></i> History</button>
@@ -463,11 +464,11 @@ background:#FEF2F2; color:var(--error); border:1px solid rgba(239,68,68,0.2);
             <button onclick="switchTab('referral')" style="background:#EFF6FF;border:1px solid rgba(59,130,246,0.2);border-radius:var(--radius-sm);padding:14px;text-align:center;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;">
                 <div style="font-size:22px;margin-bottom:6px;">🔗</div>
                 <div style="font-size:13px;font-weight:700;color:var(--info);">Referral Program</div>
-                <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Earn Rs. 500/captain</div>
+                <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Earn Rs. 2,500/captain</div>
             </button>
             <button onclick="switchTab('earnings')" style="background:#FFFDE7;border:1px solid rgba(245,158,11,0.2);border-radius:var(--radius-sm);padding:14px;text-align:center;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;">
                 <div style="font-size:22px;margin-bottom:6px;">🏆</div>
-                <div style="font-size:13px;font-weight:700;color:#92400E;">85-Ride Challenge</div>
+                <div style="font-size:13px;font-weight:700;color:#14532d;">85-Ride Challenge</div>
                 <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Commission-Free week</div>
             </button>
             <button onclick="switchTab('history')" style="background:#F5F3FF;border:1px solid rgba(139,92,246,0.2);border-radius:var(--radius-sm);padding:14px;text-align:center;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;">
@@ -507,7 +508,7 @@ background:#FEF2F2; color:var(--error); border:1px solid rgba(239,68,68,0.2);
         </div>
         <div style="background:var(--yellow-light);border:1px solid rgba(245,158,11,0.25);border-radius:var(--radius-sm);padding:11px 13px;display:flex;gap:8px;align-items:flex-start;margin-bottom:14px;">
             <i class="fas fa-circle-info" style="color:var(--warning);margin-top:2px;flex-shrink:0;"></i>
-            <span style="font-size:12px;color:#92400E;font-weight:600;">Transfer first, then fill the form below. Minimum transfer: Rs. 100</span>
+            <span style="font-size:12px;color:#14532d;font-weight:600;">Transfer first, then fill the form below. Minimum transfer: Rs. 100</span>
         </div>
     </div>
     <div class="section-card">
@@ -522,6 +523,59 @@ background:#FEF2F2; color:var(--error); border:1px solid rgba(239,68,68,0.2);
         <button class="btn-primary" id="submitDepositBtn">
             <i class="fas fa-paper-plane"></i> Submit for Approval
         </button>
+    </div>
+</div>
+
+<!-- ══════ WITHDRAW TAB ══════ -->
+<div id="tab-withdraw" class="page-content hidden">
+    <div class="section-card">
+        <div class="section-title"><i class="fas fa-money-bill-transfer"></i> Withdraw Your Earnings</div>
+
+        <div style="background:var(--primary-light);border:1px solid rgba(40,167,69,0.25);border-radius:var(--radius-sm);padding:14px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;">
+            <div>
+                <div style="font-size:11px;font-weight:700;color:var(--primary-dark);text-transform:uppercase;letter-spacing:0.4px;">Available Balance</div>
+                <div style="font-size:26px;font-weight:900;color:var(--primary);">Rs. <span id="withdrawAvailBal">0</span></div>
+            </div>
+            <i class="fas fa-wallet" style="font-size:28px;color:var(--primary);opacity:0.35;"></i>
+        </div>
+
+        <div style="font-size:12px;color:var(--text-muted);background:#f0fdf4;border:1px solid #bbf7d0;border-radius:8px;padding:11px 13px;margin-bottom:16px;line-height:1.7;">
+            <i class="fas fa-circle-info" style="color:var(--primary);margin-right:5px;"></i>
+            Withdrawal request submit karo. Amount aapke wallet se <strong>foran deduct</strong> ho ga aur <strong>24–48 ghante</strong> mein aapke account par bhej di jaegi.
+            Minimum withdrawal: <strong>Rs. 500</strong>.
+        </div>
+
+        <input type="number" class="input-field" id="captainWithdrawAmount" placeholder="Withdrawal Amount (Rs.) — Min 500" min="500" style="margin-bottom:10px;">
+
+        <select class="input-field" id="captainWithdrawMethod" style="margin-bottom:10px;">
+            <option value="">-- Select Payment Method --</option>
+            <option value="JazzCash">📱 JazzCash</option>
+            <option value="EasyPaisa">📱 EasyPaisa</option>
+            <option value="Bank Transfer">🏦 Bank Transfer</option>
+        </select>
+
+        <input type="text" class="input-field" id="captainWithdrawAccount" placeholder="Account / Mobile Number (e.g. 03001234567)" style="margin-bottom:10px;">
+        <input type="text" class="input-field" id="captainWithdrawName" placeholder="Account Holder Name" style="margin-bottom:10px;">
+
+        <!-- Bank fields — shown only when Bank Transfer selected -->
+        <div id="bankFieldsWrap" style="display:none;">
+            <input type="text" class="input-field" id="captainBankName" placeholder="Bank Name (e.g. HBL, MCB, UBL)" style="margin-bottom:10px;">
+            <input type="text" class="input-field" id="captainIBAN" placeholder="IBAN / Account Number" style="margin-bottom:10px;">
+        </div>
+
+        <div class="error-text" id="captainWithdrawError" style="display:none; margin-bottom:8px;"></div>
+
+        <button class="btn-primary" id="captainWithdrawBtn" onclick="submitCaptainWithdrawal()" style="width:100%;">
+            <i class="fas fa-paper-plane"></i> Submit Withdrawal Request
+        </button>
+    </div>
+
+    <!-- Withdrawal History -->
+    <div class="section-card" style="margin-top:14px;">
+        <div class="section-title"><i class="fas fa-clock-rotate-left"></i> Withdrawal History</div>
+        <div id="captainWithdrawHistory">
+            <p style="font-size:13px;color:#94A3B8;text-align:center;padding:10px;">Loading...</p>
+        </div>
     </div>
 </div>
 
@@ -549,7 +603,7 @@ background:#FEF2F2; color:var(--error); border:1px solid rgba(239,68,68,0.2);
         </div>
         <div class="earn-info-box">
             <div class="earn-icon">🎁</div>
-            <div class="earn-text">Earn <span>Rs. 500</span> for every Captain who completes <span>5 rides</span> using your code! New captain ko bhi <span>Rs. 500</span> bonus milta hai!</div>
+            <div class="earn-text">Earn <span>Rs. 2,500</span> for every Captain who completes <span>30 rides</span> using your code! Sirf <span>Rs. 500+</span> wali rides count hongi.</div>
         </div>
     </div>
     <div class="section-card">
@@ -565,7 +619,7 @@ background:#FEF2F2; color:var(--error); border:1px solid rgba(239,68,68,0.2);
             </div>
             <div style="display:flex;gap:12px;align-items:flex-start;">
                 <div style="width:32px;height:32px;background:var(--primary-light);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--primary-dark);flex-shrink:0;font-size:14px;">3</div>
-                <div><div style="font-size:13px;font-weight:700;color:var(--text-main);">You Earn Rs. 500</div><div style="font-size:12px;color:var(--text-muted);margin-top:2px;">5 rides complete karne par dono ko Rs. 500 bonus!</div></div>
+                <div><div style="font-size:13px;font-weight:700;color:var(--text-main);">You Earn Rs. 2,500</div><div style="font-size:12px;color:var(--text-muted);margin-top:2px;">30 rides (Rs.500+) complete karne par Rs. 2,500 bonus!</div></div>
             </div>
         </div>
     </div>
@@ -647,7 +701,7 @@ background:#FEF2F2; color:var(--error); border:1px solid rgba(239,68,68,0.2);
                 <div style="font-size:13px;color:var(--text-main);">Normal week: <strong>10% commission</strong> har completed ride se</div>
             </div>
             <div style="display:flex;gap:10px;align-items:flex-start;">
-                <div style="width:28px;height:28px;background:#FEF3C7;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:#92400E;flex-shrink:0;font-size:12px;">2</div>
+                <div style="width:28px;height:28px;background:#FEF3C7;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:#14532d;flex-shrink:0;font-size:12px;">2</div>
                 <div style="font-size:13px;color:var(--text-main);">85+ rides week: <strong>Agla hafta 0% commission</strong> — poori fare aap ki!</div>
             </div>
             <div style="display:flex;gap:10px;align-items:flex-start;">
@@ -792,7 +846,112 @@ window.switchTab = tabName => {
     if(btn) btn.classList.add('active');
     const panel=document.getElementById(`tab-${tabName}`);
     if(panel) panel.classList.remove('hidden');
+    if(tabName==='withdraw') loadWithdrawHistory();
 };
+
+// ── CAPTAIN WITHDRAWAL LOGIC ─────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded',()=>{
+    const methodSel = document.getElementById('captainWithdrawMethod');
+    if(methodSel) methodSel.addEventListener('change', ()=>{
+        document.getElementById('bankFieldsWrap').style.display =
+            methodSel.value === 'Bank Transfer' ? 'block' : 'none';
+    });
+});
+
+window.submitCaptainWithdrawal = async function(){
+    const errEl   = document.getElementById('captainWithdrawError');
+    const btn     = document.getElementById('captainWithdrawBtn');
+    errEl.style.display = 'none';
+
+    const amount  = parseFloat(document.getElementById('captainWithdrawAmount').value);
+    const method  = document.getElementById('captainWithdrawMethod').value;
+    const account = document.getElementById('captainWithdrawAccount').value.trim();
+    const name    = document.getElementById('captainWithdrawName').value.trim();
+    const bankName= document.getElementById('captainBankName') ? document.getElementById('captainBankName').value.trim() : '';
+    const iban    = document.getElementById('captainIBAN') ? document.getElementById('captainIBAN').value.trim() : '';
+    const balance = captainData.walletBalance || 0;
+
+    if(!amount || amount < 500)        { errEl.textContent='Minimum withdrawal Rs. 500 hai.'; errEl.style.display='block'; return; }
+    if(amount > balance)               { errEl.textContent=`Insufficient balance. Wallet mein sirf Rs. ${balance} hai.`; errEl.style.display='block'; return; }
+    if(!method)                        { errEl.textContent='Payment method select karo.'; errEl.style.display='block'; return; }
+    if(!account)                       { errEl.textContent='Account / mobile number zaruri hai.'; errEl.style.display='block'; return; }
+    if(method!=='Bank Transfer' && !/^03[0-9]{9}$/.test(account)) { errEl.textContent='Valid Pakistani mobile number enter karo (e.g. 03001234567).'; errEl.style.display='block'; return; }
+    if(!name)                          { errEl.textContent='Account holder name zaruri hai.'; errEl.style.display='block'; return; }
+    if(method==='Bank Transfer' && !iban){ errEl.textContent='Bank account / IBAN number zaruri hai.'; errEl.style.display='block'; return; }
+
+    btn.disabled=true; btn.innerHTML='⏳ Processing...';
+
+    try{
+        // Deduct wallet immediately
+        const newBal = balance - amount;
+        await update(ref(db,`riders/${currentUser.uid}`),{ walletBalance: newBal });
+
+        // Save withdrawal request
+        const reqKey = 'WD_' + Date.now();
+        await set(ref(db,`withdrawalRequests/${reqKey}`),{
+            uid:           currentUser.uid,
+            captainName:   captainData.fullName || captainData.name || 'Captain',
+            captainEmail:  currentUser.email,
+            amount,
+            method,
+            accountNumber: account,
+            accountName:   name,
+            bankName:      bankName || null,
+            iban:          iban || null,
+            status:        'Pending',
+            type:          'captain',
+            requestedAt:   new Date().toISOString(),
+        });
+
+        document.getElementById('captainWithdrawAmount').value  = '';
+        document.getElementById('captainWithdrawAccount').value = '';
+        document.getElementById('captainWithdrawName').value    = '';
+        if(document.getElementById('captainBankName'))  document.getElementById('captainBankName').value = '';
+        if(document.getElementById('captainIBAN'))      document.getElementById('captainIBAN').value    = '';
+        document.getElementById('captainWithdrawMethod').value  = '';
+        document.getElementById('bankFieldsWrap').style.display = 'none';
+
+        btn.disabled=false; btn.innerHTML='<i class="fas fa-paper-plane"></i> Submit Withdrawal Request';
+        showToast(`✅ Rs. ${amount} withdrawal request submit ho gayi!`, 'success');
+        loadWithdrawHistory();
+    } catch(e){
+        // Refund on error
+        await update(ref(db,`riders/${currentUser.uid}`),{ walletBalance: balance });
+        errEl.textContent = 'Error: ' + e.message;
+        errEl.style.display='block';
+        btn.disabled=false; btn.innerHTML='<i class="fas fa-paper-plane"></i> Submit Withdrawal Request';
+    }
+};
+
+async function loadWithdrawHistory(){
+    if(!currentUser) return;
+    const con = document.getElementById('captainWithdrawHistory');
+    try{
+        const snap = await get(ref(db,'withdrawalRequests'));
+        if(!snap.exists()){ con.innerHTML='<p style="font-size:13px;color:#94A3B8;text-align:center;padding:10px;">Koi withdrawal request nahi mili.</p>'; return; }
+        const all = Object.entries(snap.val())
+            .filter(([,v])=> v.uid === currentUser.uid)
+            .sort(([,a],[,b])=> new Date(b.requestedAt)-new Date(a.requestedAt));
+        if(!all.length){ con.innerHTML='<p style="font-size:13px;color:#94A3B8;text-align:center;padding:10px;">Abhi koi withdrawal request nahi.</p>'; return; }
+        con.innerHTML = all.map(([key,r])=>{
+            const statusColor = r.status==='Completed'?'#16a34a': r.status==='Rejected'?'#dc2626':'#d97706';
+            const statusBg    = r.status==='Completed'?'#dcfce7': r.status==='Rejected'?'#fee2e2':'#fef9c3';
+            const date = new Date(r.requestedAt).toLocaleDateString('en-PK',{day:'numeric',month:'short',year:'numeric'});
+            return `<div style="background:#F8FAFC;border-radius:10px;padding:12px 14px;margin-bottom:8px;border:1px solid var(--border);">
+                <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:4px;">
+                    <span style="font-size:15px;font-weight:800;color:var(--primary);">Rs. ${(r.amount||0).toLocaleString()}</span>
+                    <span style="font-size:11px;font-weight:700;padding:3px 9px;border-radius:20px;background:${statusBg};color:${statusColor};">${r.status}</span>
+                </div>
+                <div style="font-size:12px;color:var(--text-muted);">${r.method} — ${r.accountNumber}</div>
+                <div style="font-size:11px;color:#94A3B8;margin-top:2px;">${date}</div>
+            </div>`;
+        }).join('');
+    } catch(e){
+        con.innerHTML='<p style="font-size:13px;color:#94A3B8;text-align:center;padding:10px;">History load nahi ho saki.</p>';
+    }
+}
+// ── END CAPTAIN WITHDRAWAL ────────────────────────────────────────────────
+
 
 window.shareReferralLink = ()=>{
     const code=document.getElementById('captainReferralCode').innerText;
@@ -801,7 +960,7 @@ window.shareReferralLink = ()=>{
     if(navigator.share){
         navigator.share({
             title:'Raftaroo Captain Bano!',
-            text:`🚗 Raftaroo ke saath captain ban kar paise kamao!\n\nMera referral code: ${code}\nRs. 500 bonus milega dono ko!\n\nRegister yahan:`,
+            text:`🚗 Raftaroo ke saath captain ban kar paise kamao!\n\nMera referral code: ${code}\nRs. 2,500 bonus milega 30 rides complete karne par!\n\nRegister yahan:`,
             url:link
         }).catch(()=>navigator.clipboard.writeText(`Raftaroo Captain bano! Code: ${code}\n${link}`)
                                          .then(()=>showToast('Referral link copied!','success')));
@@ -905,6 +1064,9 @@ function setupWalletListener(){
         document.getElementById('walletBalanceMain').textContent     = bal;
         document.getElementById('walletBalanceEarnings').textContent = bal;
         captainData.walletBalance=snap.val()||0;
+        // Update withdraw tab balance display
+        const wab = document.getElementById('withdrawAvailBal');
+        if(wab) wab.textContent = (snap.val()||0).toLocaleString();
     });
 }
 
@@ -997,18 +1159,19 @@ async function setupReferral(){
 
         let qualifiedCount=0;
         const cards=referredRiders.map(rider=>{
+            // Only count rides with fare >= Rs. 500
             let completedRides=0;
             Object.values(allReqs).forEach(r=>{
                 if(r.riderId===rider.uid||r.captainId===rider.uid||r.riderUid===rider.uid)
-                    if(isDone(r.status)) completedRides++;
+                    if(isDone(r.status) && parseFloat(r.fare||0)>=500) completedRides++;
             });
-            if(rider.newRiderBonusPaid||completedRides>=5) qualifiedCount++;
+            if(rider.newRiderBonusPaid||completedRides>=30) qualifiedCount++;
             return {rider,completedRides};
         });
 
-        const totalBonus=captainData.referralBonusEarned||(qualifiedCount*500);
+        const totalBonus=captainData.referralBonusEarned||(qualifiedCount*2500);
         document.getElementById('referralEarnings').textContent    =`Rs. ${totalBonus}`;
-        document.getElementById('referralEarningsLabel').textContent=`Earned (${qualifiedCount} ne 5+ rides ki)`;
+        document.getElementById('referralEarningsLabel').textContent=`Earned (${qualifiedCount} ne 30+ rides ki)`;
 
         const con=document.getElementById('referredRidersList');
         if(referredRiders.length===0){
@@ -1016,14 +1179,14 @@ async function setupReferral(){
         } else {
             con.innerHTML=cards.map(({rider,completedRides})=>{
                 const bonusPaid=rider.newRiderBonusPaid;
-                const pct=Math.min(100,Math.round((completedRides/5)*100));
+                const pct=Math.min(100,Math.round((completedRides/30)*100));
                 return `<div style="background:#F8FAFC;border-radius:10px;padding:12px 14px;margin-bottom:8px;border:1px solid var(--border);">
                     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;">
                         <span style="font-size:13px;font-weight:700;">${rider.fullName||rider.name||'Captain'}</span>
-                        <span style="font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;background:${bonusPaid?'#DCFCE7':'#FEF9C3'};color:${bonusPaid?'#16a34a':'#92400E'};">${bonusPaid?'✅ Bonus Paid':completedRides+'/5 rides'}</span>
+                        <span style="font-size:11px;font-weight:700;padding:3px 8px;border-radius:20px;background:${bonusPaid?'#DCFCE7':'#f0fdf4'};color:${bonusPaid?'#16a34a':'#14532d'};">${bonusPaid?'✅ Rs. 2,500 Earned':completedRides+'/30 rides'}</span>
                     </div>
                     <div style="background:#E2E8F0;border-radius:4px;height:6px;overflow:hidden;">
-                        <div style="height:100%;width:${pct}%;background:${bonusPaid?'#16a34a':'#F59E0B'};border-radius:4px;transition:width 0.5s;"></div>
+                        <div style="height:100%;width:${pct}%;background:${bonusPaid?'#16a34a':'#28a745'};border-radius:4px;transition:width 0.5s;"></div>
                     </div>
                 </div>`;
             }).join('');
