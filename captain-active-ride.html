@@ -1227,11 +1227,24 @@ body { background:var(--bg); color:var(--text-main); overflow:hidden; height:100
 
             currentActiveRideId = null;
             if (isFreeRide) {
-                alert(`🎉 Ride mukammal! Yeh aap ki FREE ride thi — koi commission nahi kati.\n🎁 Baqi free rides: ${newFreeRides}`);
+                if (newFreeRides > 0) {
+                    alert(`🎉 Ride mukammal! Yeh aap ki FREE ride thi — koi commission nahi kati.\n🎁 Baqi free rides: ${newFreeRides}`);
+                } else {
+                    alert(`🎉 Ride mukammal! Yeh aap ki aakhri FREE ride thi.\n\n⚠️ Ab se 10% commission wallet se kategi.\n💳 Wallet mein paise add karein: Profile → Top-Up tab`);
+                }
+                window.location.href = 'captain-dashboard.html';
             } else {
-                alert(`🎉 Ride mukammal! Commission Rs. ${commission} kati gayi. Naya balance: Rs. ${newBalance}.`);
+                if (newBalance < 0) {
+                    alert(`🎉 Ride mukammal!\n\n💸 Commission Rs. ${commission} kati gayi.\n❌ Wallet balance negative hai: Rs. ${newBalance}\n\n💳 Rides jaari rakhne k liye ABHI wallet top-up karein!`);
+                    window.location.href = 'captain-profile.html';
+                } else if (newBalance < 200) {
+                    alert(`🎉 Ride mukammal! Commission Rs. ${commission} kati gayi.\n\n⚠️ Wallet balance bahut kam hai: Rs. ${newBalance}\n💳 Jaldi top-up karein — Profile → Top-Up tab`);
+                    window.location.href = 'captain-dashboard.html';
+                } else {
+                    alert(`🎉 Ride mukammal! Commission Rs. ${commission} kati gayi.\n💰 Naya balance: Rs. ${newBalance}`);
+                    window.location.href = 'captain-dashboard.html';
+                }
             }
-            window.location.href = 'captain-dashboard.html';
 
         } catch (e) {
             console.error("Rating Error:", e);

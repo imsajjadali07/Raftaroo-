@@ -281,6 +281,15 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
                         <div style="color:rgba(255,255,255,0.85); font-weight:600; font-size:11px;">Pehli 3 rides mein koi commission nahi</div>
                     </div>
                 </div>
+                <!-- Wallet Low Banner -->
+                <a href="captain-profile.html" id="walletLowBanner" style="display:none; background:linear-gradient(135deg,#EF4444,#F87171); border-radius:12px; padding:12px 14px; margin-bottom:14px; text-decoration:none; align-items:center; gap:10px;">
+                    <div style="font-size:22px;">💳</div>
+                    <div style="flex:1;">
+                        <div style="color:#fff; font-weight:800; font-size:14px;" id="walletLowBannerText">Wallet Top-Up Karein!</div>
+                        <div style="color:rgba(255,255,255,0.85); font-weight:600; font-size:11px;">Commission k liye wallet mein paise zaroori hain</div>
+                    </div>
+                    <div style="color:#fff; font-size:13px; font-weight:700;">Top-Up →</div>
+                </a>
                 <div class="today-stats-grid">
                     <div class="today-stat-card rides">
                         <div class="today-stat-icon"><i class="fas fa-motorcycle"></i></div>
@@ -716,9 +725,45 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
 
     let lowBalanceChecked=false;
     function loadWalletBalance() {
+        const TOP_UP_THRESHOLD = 100;
         onValue(ref(db,'riders/'+currentCaptain.uid+'/walletBalance'),(snap)=>{
             const bal=snap.val()||0; captainData.walletBalance=bal; document.getElementById('walletDisplay').textContent=bal;
-            if(isApproved(captainData)&&captainData.status==='active'&&!lowBalanceChecked&&bal<TOP_UP_THRESHOLD){lowBalanceChecked=true;alert('⚠️ Wallet balance kam hai: Rs. '+bal+'. Rides lene ke liye top-up karein.');setTimeout(()=>window.location.href='captain-profile.html',300);}
+            const walletBadge = document.querySelector('.wallet-badge');
+            const walletLowBanner = document.getElementById('walletLowBanner');
+            const walletLowBannerText = document.getElementById('walletLowBannerText');
+            const freeLeft = parseInt(captainData.freeRidesRemaining) || 0;
+            if (walletBadge) {
+                if (bal < 0) {
+                    walletBadge.style.background = '#FEE2E2';
+                    walletBadge.style.color = '#DC2626';
+                } else if (bal < TOP_UP_THRESHOLD && freeLeft === 0) {
+                    walletBadge.style.background = '#FEF9C3';
+                    walletBadge.style.color = '#854D0E';
+                } else {
+                    walletBadge.style.background = '';
+                    walletBadge.style.color = '';
+                }
+            }
+            if (walletLowBanner) {
+                if (freeLeft === 0 && bal < TOP_UP_THRESHOLD) {
+                    walletLowBanner.style.display = 'flex';
+                    if (walletLowBannerText) {
+                        walletLowBannerText.textContent = bal < 0
+                            ? `❌ Wallet negative: Rs. ${bal} — Foran Top-Up Karein!`
+                            : `⚠️ Wallet kam hai: Rs. ${bal} — Top-Up Karein!`;
+                    }
+                } else {
+                    walletLowBanner.style.display = 'none';
+                }
+            }
+            if(isApproved(captainData)&&captainData.status==='active'&&!lowBalanceChecked&&freeLeft===0&&bal<TOP_UP_THRESHOLD){
+                lowBalanceChecked=true;
+                const msg = bal < 0
+                    ? `❌ Wallet balance negative hai: Rs. ${bal}\n\nAb aap rides nahi le sakte jab tak wallet top-up na karein.\n\n💳 JazzCash/EasyPaisa se paise add karein — Profile → Top-Up tab`
+                    : `⚠️ Wallet balance bahut kam hai: Rs. ${bal}\n\n💡 Raftaroo 10% commission har ride se wallet se katta hai.\n💳 Rides jaari rakhne k liye ab top-up karein!`;
+                alert(msg);
+                setTimeout(()=>window.location.href='captain-profile.html',300);
+            }
         });
     }
 
