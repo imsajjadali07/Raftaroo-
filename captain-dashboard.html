@@ -85,7 +85,7 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
 .map-overlay-badge{position:absolute;bottom:12px;left:12px;z-index:1000;background:rgba(10,15,30,0.85);backdrop-filter:blur(8px);color:#fff;padding:6px 12px;border-radius:50px;font-size:11px;font-weight:700;display:flex;align-items:center;gap:5px;border:1px solid rgba(0,200,83,0.3);}
 .map-overlay-badge i{color:var(--primary);}
 
-/* ââ TODAY STATS ââ */
+/* ══ TODAY STATS ══ */
 .today-stats-section{background:var(--white);border-radius:var(--radius-lg);padding:18px 16px;margin-bottom:16px;box-shadow:var(--shadow-md);border:1px solid var(--border);}
 .today-stats-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
 .today-stats-header h4{font-size:15px;font-weight:800;color:var(--text-main);display:flex;align-items:center;gap:8px;}
@@ -267,12 +267,29 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
                 </div>
             </div>
 
-            <!-- âââââââââââ AAJ KI PERFORMANCE âââââââââââ -->
+            <!-- ═══════════ AAJ KI PERFORMANCE ═══════════ -->
             <div class="today-stats-section" id="todayStatsSection">
                 <div class="today-stats-header">
                     <h4><i class="fas fa-chart-line" style="color:var(--primary);"></i> Aaj Ki Performance</h4>
                     <span class="today-date-chip" id="todayDateChip">Loading...</span>
                 </div>
+                <!-- Free Rides Banner -->
+                <div id="freeRidesBanner" style="display:none; background:linear-gradient(135deg,#00C853,#00E676); border-radius:12px; padding:12px 14px; margin-bottom:14px; display:flex; align-items:center; gap:10px;">
+                    <div style="font-size:22px;">🎁</div>
+                    <div>
+                        <div style="color:#fff; font-weight:800; font-size:14px;" id="freeRidesBannerText">3 Free Rides Baqi!</div>
+                        <div style="color:rgba(255,255,255,0.85); font-weight:600; font-size:11px;">Pehli 3 rides mein koi commission nahi</div>
+                    </div>
+                </div>
+                <!-- Wallet Low Banner -->
+                <a href="captain-profile.html" id="walletLowBanner" style="display:none; background:linear-gradient(135deg,#EF4444,#F87171); border-radius:12px; padding:12px 14px; margin-bottom:14px; text-decoration:none; align-items:center; gap:10px;">
+                    <div style="font-size:22px;">💳</div>
+                    <div style="flex:1;">
+                        <div style="color:#fff; font-weight:800; font-size:14px;" id="walletLowBannerText">Wallet Top-Up Karein!</div>
+                        <div style="color:rgba(255,255,255,0.85); font-weight:600; font-size:11px;">Commission k liye wallet mein paise zaroori hain</div>
+                    </div>
+                    <div style="color:#fff; font-size:13px; font-weight:700;">Top-Up →</div>
+                </a>
                 <div class="today-stats-grid">
                     <div class="today-stat-card rides">
                         <div class="today-stat-icon"><i class="fas fa-motorcycle"></i></div>
@@ -284,13 +301,13 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
                         <div class="today-stat-icon"><i class="fas fa-money-bill-wave"></i></div>
                         <div class="today-stat-val" id="todayEarnings">Rs. 0</div>
                         <div class="today-stat-label">Net Earning</div>
-                        <div class="today-stat-sub" id="todayNetSub">10% fee ke baad</div>
+                        <div class="today-stat-sub" id="todayNetSub">Gross - 10% Commission</div>
                     </div>
                     <div class="today-stat-card commission">
                         <div class="today-stat-icon"><i class="fas fa-percent"></i></div>
                         <div class="today-stat-val" id="todayCommission">Rs. 0</div>
-                        <div class="today-stat-label">Commission (10%)</div>
-                        <div class="today-stat-sub" id="todayCommissionSub">Raftaroo platform fee</div>
+                        <div class="today-stat-label">Commission</div>
+                        <div class="today-stat-sub" id="todayCommissionSub">10% per ride</div>
                     </div>
                     <div class="today-stat-card rating">
                         <div class="today-stat-icon"><i class="fas fa-star"></i></div>
@@ -300,13 +317,13 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
                     </div>
                 </div>
             </div>
-            <!-- ââââââââââââââââââââââââââââââââââââââââââââ -->
+            <!-- ════════════════════════════════════════════ -->
 
             <div class="radius-card">
                 <div class="radius-icon"><i class="fas fa-radar"></i></div>
                 <div class="radius-text">
                     <h4>10 KM Smart Radius</h4>
-                    <p>Sirf aap ke najdeek ke rides milenge â faraway requests filter ho jate hain</p>
+                    <p>Sirf aap ke najdeek ke rides milenge — faraway requests filter ho jate hain</p>
                 </div>
             </div>
 
@@ -338,7 +355,7 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         <div class="modal-alert-icon"><i class="fas fa-motorcycle"></i></div>
         <h2>Naya Ride Alert!</h2>
         <div class="modal-fare-display" id="modalFare">Rs. 0</div>
-        <div class="modal-meta" id="modalMeta">0 km â¢ 0 km door</div>
+        <div class="modal-meta" id="modalMeta">0 km • 0 km door</div>
         <div class="modal-details" id="modalDetails"></div>
         <div class="modal-timer"><div class="modal-timer-bar" id="modalTimerBar"></div></div>
         <div class="modal-actions">
@@ -444,11 +461,16 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
     }
 
     const captainIcon = (vehicle) => {
-        let ic = 'motorcycle';
-        if (vehicle === 'car-economy' || vehicle === 'car-comfort') ic = 'car-side';
-        else if (vehicle === 'pickup') ic = 'truck-moving';
-        else if (vehicle === 'rickshaw') ic = 'truck';
-        return L.divIcon({ html: `<div style="background:#00C853;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(0,200,83,0.4);border:2.5px solid #fff;"><i class="fas fa-${ic}" style="color:#fff;font-size:16px;"></i></div>`, className: 'custom-div-icon', iconSize: [36,36], iconAnchor: [18,18] });
+        const v = (vehicle||'bike').toLowerCase().replace(/\s+/g,'-');
+        let imgUrl = 'https://iili.io/ftViNi7.png'; // default bike
+        if (v.includes('car') || v.includes('sedan') || v.includes('suv') || v.includes('economy') || v.includes('comfort')) {
+            imgUrl = 'https://iili.io/qfsUogV.png';
+        } else if (v.includes('pickup') || v.includes('cargo') || v.includes('truck')) {
+            imgUrl = 'https://iili.io/ftVPMZB.png';
+        } else if (v.includes('rickshaw') || v.includes('auto')) {
+            imgUrl = 'https://iili.io/ftV61st.png';
+        }
+        return L.divIcon({ html: `<img src="${imgUrl}" style="width:44px;height:44px;object-fit:contain;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.3));" onerror="this.src='https://iili.io/ftViNi7.png'"/>`, className: 'custom-div-icon', iconSize: [44,44], iconAnchor: [22,22] });
     };
 
     function getDistance(lat1,lon1,lat2,lon2) {
@@ -467,10 +489,10 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         document.getElementById('modalFare').textContent = 'Rs. ' + request.fare;
         document.getElementById('modalMeta').textContent = request.distance + ' km ride \u2022 ' + distanceToPickup.toFixed(1) + ' km door aap se';
         document.getElementById('modalDetails').innerHTML = `
-            <div class="modal-detail-row"><span class="label">ð§ Customer</span><span class="value">${request.name}</span></div>
-            <div class="modal-detail-row"><span class="label">ð Ride Type</span><span class="value">${(request.service||request.vehicle||'N/A').toUpperCase()}</span></div>
-            <div class="modal-detail-row"><span class="label">ð Pickup</span><span class="value">${request.pickup.address.substring(0,35)}...</span></div>
-            <div class="modal-detail-row"><span class="label">ð Dropoff</span><span class="value">${request.destination.address.substring(0,35)}...</span></div>`;
+            <div class="modal-detail-row"><span class="label">🧑 Customer</span><span class="value">${request.name}</span></div>
+            <div class="modal-detail-row"><span class="label">🚘 Ride Type</span><span class="value">${(request.service||request.vehicle||'N/A').toUpperCase()}</span></div>
+            <div class="modal-detail-row"><span class="label">📍 Pickup</span><span class="value">${request.pickup.address.substring(0,35)}...</span></div>
+            <div class="modal-detail-row"><span class="label">🏁 Dropoff</span><span class="value">${request.destination.address.substring(0,35)}...</span></div>`;
         const tb = document.getElementById('modalTimerBar'); tb.style.animation='none'; tb.offsetHeight; tb.style.animation='timer-shrink 60s linear forwards';
         document.getElementById('modalAcceptBtn').onclick = () => showOfferConfirmationModal(request.id, request.fare);
         document.getElementById('modalRejectBtn').onclick = hideRequestModal;
@@ -537,7 +559,7 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
             const status = snap.val();
             if (status==='accepted') {
                 if (offerAcceptanceListener) { offerAcceptanceListener(); offerAcceptanceListener=null; }
-                alert("ð Customer ne aap ki offer accept kar li! Ride page par ja rahe hain.");
+                alert("🎉 Customer ne aap ki offer accept kar li! Ride page par ja rahe hain.");
                 stopRingtone(); window.location.href='captain-active-ride.html?rideId='+requestId;
             } else if (status==='pending'||status==='cancelled'||status==='CancelledByCustomer') {
                 if (offerAcceptanceListener) { offerAcceptanceListener(); offerAcceptanceListener=null; }
@@ -556,7 +578,7 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         } catch(e) { alert("Cancel nahi ho saka. Dobara try karein."); }
     };
 
-    // ââââââââââ AAJ KI PERFORMANCE LOGIC ââââââââââ
+    // ══════════ AAJ KI PERFORMANCE LOGIC ══════════
     function loadTodayStats() {
         const today = new Date();
         const todayStr = today.toISOString().split('T')[0];
@@ -564,10 +586,21 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
         document.getElementById('todayDateChip').textContent = days[today.getDay()] + ', ' + today.getDate() + ' ' + months[today.getMonth()];
 
+        // Free Rides Banner
+        const freeLeft = parseInt(captainData.freeRidesRemaining) || 0;
+        const freeRidesBanner = document.getElementById('freeRidesBanner');
+        if (freeLeft > 0) {
+            freeRidesBanner.style.display = 'flex';
+            document.getElementById('freeRidesBannerText').textContent =
+                freeLeft === 1 ? '🎁 1 Free Ride Baqi!' : `🎁 ${freeLeft} Free Rides Baqi!`;
+        } else {
+            freeRidesBanner.style.display = 'none';
+        }
+
         // FIX: 'requests' node se read karo (rides node nahi)
         onValue(ref(db, 'requests'), (snapshot) => {
             const allRides = snapshot.val() || {};
-            let totalRides = 0, grossEarnings = 0, ratingSum = 0, ratingCount = 0;
+            let totalRides = 0, grossEarnings = 0, totalCommission = 0, ratingSum = 0, ratingCount = 0;
 
             Object.values(allRides).forEach(ride => {
                 // FIX: captainId ya riderId dono check karo
@@ -581,20 +614,21 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
                 totalRides++;
                 const fare = parseInt(ride.fare) || 0;
                 grossEarnings += fare;
+                const comm = parseInt(ride.commissionDeducted) || 0;
+                totalCommission += comm;
                 // FIX: customerRating field (captain-active-ride.html yahi save karta hai)
                 const rating = ride.customerRating || ride.rating;
                 if (rating && parseInt(rating) > 0) { ratingSum += parseFloat(rating); ratingCount++; }
             });
 
-            const commission = Math.round(grossEarnings * 0.10);
-            const netEarnings = grossEarnings - commission;
+            const netEarnings = grossEarnings - totalCommission;
 
             document.getElementById('todayRides').textContent = totalRides;
             document.getElementById('todayEarnings').textContent = 'Rs. ' + netEarnings;
-            document.getElementById('todayNetSub').textContent = `Gross: Rs.${grossEarnings} · Fee: Rs.${commission}`;
-            document.getElementById('todayCommission').textContent = 'Rs. ' + commission;
-            document.getElementById('todayCommissionSub').textContent = totalRides > 0 ? totalRides + ' ride(s) - Gross: Rs.' + grossEarnings : 'Abhi koi ride nahi';
-            document.getElementById('todayRidesSub').textContent = totalRides > 0 ? 'Gross: Rs.' + grossEarnings : 'Abhi koi ride nahi';
+            document.getElementById('todayNetSub').textContent = `Net · Gross: Rs.${grossEarnings}`;
+            document.getElementById('todayRidesSub').textContent = totalRides > 0 ? 'Total: Rs.' + grossEarnings : 'Abhi koi ride nahi';
+            document.getElementById('todayCommission').textContent = 'Rs. ' + totalCommission;
+            document.getElementById('todayCommissionSub').textContent = totalCommission === 0 && freeLeft > 0 ? '🎁 Free rides chal rahi hain!' : '10% per paid ride';
 
             if (ratingCount > 0) {
                 document.getElementById('todayRating').textContent = (ratingSum / ratingCount).toFixed(1) + ' \u2605';
@@ -605,7 +639,7 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
             }
         });
     }
-    // ââââââââââââââââââââââââââââââââââââââââââââââ
+    // ══════════════════════════════════════════════
 
     onAuthStateChanged(auth, async (user) => {
         const authStatus = document.getElementById('authStatus');
@@ -636,7 +670,7 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
                         if(isOnline) startTracking(); else stopTracking();
                     });
                     loadWalletBalance();
-                    loadTodayStats(); // â AAJ KI STATS LOAD
+                    loadTodayStats(); // ← AAJ KI STATS LOAD
                 } else {
                     const as=captainData.status||'Pending';
                     document.getElementById('approvalAlertContainer').innerHTML='<div class="approval-alert"><i class="fas fa-triangle-exclamation"></i><p>Application Status: <strong>'+as+'</strong>. Approval ke baad hi online ho sakte hain.</p></div>';
@@ -645,19 +679,16 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
                     document.getElementById('todayStatsSection').style.display='none';
                 }
             } else {
-                authStatus.innerHTML='<div class="message-box" style="background:#FEF2F2;color:#EF4444;border:1px solid #FECACA;">â Captain account nahi mila.</div><div style="text-align:center;padding:10px 20px;"><a href="rider-register.html" style="background:var(--primary);color:#fff;padding:12px 24px;border-radius:10px;text-decoration:none;font-weight:700;display:inline-block;">Captain Apply Karein</a></div>';
+                authStatus.innerHTML='<div class="message-box" style="background:#FEF2F2;color:#EF4444;border:1px solid #FECACA;">❌ Captain account nahi mila.</div><div style="text-align:center;padding:10px 20px;"><a href="rider-register.html" style="background:var(--primary);color:#fff;padding:12px 24px;border-radius:10px;text-decoration:none;font-weight:700;display:inline-block;">Captain Apply Karein</a></div>';
             }
         } else { window.location.href='index.html'; }
     });
 
     function initializeMap() {
         if (map) map.remove();
-        const dc=[24.8607,67.0011];
-        map=L.map('map',{zoomControl:false,attributionControl:false}).setView(dc,13);
+        map=L.map('map',{zoomControl:false,attributionControl:false});
         L.control.zoom({position:'bottomright'}).addTo(map);
         L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{maxZoom:19}).addTo(map);
-        captainMarker=L.marker(dc,{icon:captainIcon(captainData.vehicleType||'Motorcycle')}).addTo(map).bindPopup('<b>Aap Yahan Hain</b>');
-        radiusCircle=L.circle(dc,{color:'#00C853',fillColor:'#00C853',fillOpacity:0.06,weight:2,opacity:0.4,dashArray:'6,6',radius:RIDE_RADIUS_KM*1000}).addTo(map);
         map.invalidateSize();
     }
 
@@ -666,7 +697,13 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         if (!navigator.geolocation) { alert('Geolocation support nahi hai.'); return; }
         geoWatchId=navigator.geolocation.watchPosition(async(pos)=>{
             const {latitude:la,longitude:lo}=pos.coords;
-            captainMarker.setLatLng([la,lo]); radiusCircle.setLatLng([la,lo]); map.setView([la,lo]);
+            if(!captainMarker){
+                captainMarker=L.marker([la,lo],{icon:captainIcon(captainData.vehicleType||'Motorcycle')}).addTo(map).bindPopup('<b>Aap Yahan Hain</b>');
+                radiusCircle=L.circle([la,lo],{color:'#00C853',fillColor:'#00C853',fillOpacity:0.06,weight:2,opacity:0.4,dashArray:'6,6',radius:RIDE_RADIUS_KM*1000}).addTo(map);
+                map.setView([la,lo],13);
+            } else {
+                captainMarker.setLatLng([la,lo]); radiusCircle.setLatLng([la,lo]); map.setView([la,lo]);
+            }
             await update(ref(db,'riders/'+currentCaptain.uid),{location:{lat:la,lng:lo},timestamp:new Date().toISOString()});
         },(err)=>{ if(err.code===err.PERMISSION_DENIED){alert("Location access deny kiya gaya.");document.getElementById('statusToggleSwitch').checked=false;toggleStatus(false);}},{enableHighAccuracy:true,timeout:5000,maximumAge:0});
     }
@@ -691,9 +728,45 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
 
     let lowBalanceChecked=false;
     function loadWalletBalance() {
+        const TOP_UP_THRESHOLD = 100;
         onValue(ref(db,'riders/'+currentCaptain.uid+'/walletBalance'),(snap)=>{
             const bal=snap.val()||0; captainData.walletBalance=bal; document.getElementById('walletDisplay').textContent=bal;
-            if(isApproved(captainData)&&captainData.status==='active'&&!lowBalanceChecked&&bal<TOP_UP_THRESHOLD){lowBalanceChecked=true;alert('â ï¸ Wallet balance kam hai: Rs. '+bal+'. Rides lene ke liye top-up karein.');setTimeout(()=>window.location.href='captain-profile.html',300);}
+            const walletBadge = document.querySelector('.wallet-badge');
+            const walletLowBanner = document.getElementById('walletLowBanner');
+            const walletLowBannerText = document.getElementById('walletLowBannerText');
+            const freeLeft = parseInt(captainData.freeRidesRemaining) || 0;
+            if (walletBadge) {
+                if (bal < 0) {
+                    walletBadge.style.background = '#FEE2E2';
+                    walletBadge.style.color = '#DC2626';
+                } else if (bal < TOP_UP_THRESHOLD && freeLeft === 0) {
+                    walletBadge.style.background = '#FEF9C3';
+                    walletBadge.style.color = '#854D0E';
+                } else {
+                    walletBadge.style.background = '';
+                    walletBadge.style.color = '';
+                }
+            }
+            if (walletLowBanner) {
+                if (freeLeft === 0 && bal < TOP_UP_THRESHOLD) {
+                    walletLowBanner.style.display = 'flex';
+                    if (walletLowBannerText) {
+                        walletLowBannerText.textContent = bal < 0
+                            ? `❌ Wallet negative: Rs. ${bal} — Foran Top-Up Karein!`
+                            : `⚠️ Wallet kam hai: Rs. ${bal} — Top-Up Karein!`;
+                    }
+                } else {
+                    walletLowBanner.style.display = 'none';
+                }
+            }
+            if(isApproved(captainData)&&captainData.status==='active'&&!lowBalanceChecked&&freeLeft===0&&bal<TOP_UP_THRESHOLD){
+                lowBalanceChecked=true;
+                const msg = bal < 0
+                    ? `❌ Wallet balance negative hai: Rs. ${bal}\n\nAb aap rides nahi le sakte jab tak wallet top-up na karein.\n\n💳 JazzCash/EasyPaisa se paise add karein — Profile → Top-Up tab`
+                    : `⚠️ Wallet balance bahut kam hai: Rs. ${bal}\n\n💡 Raftaroo 10% commission har ride se wallet se katta hai.\n💳 Rides jaari rakhne k liye ab top-up karein!`;
+                alert(msg);
+                setTimeout(()=>window.location.href='captain-profile.html',300);
+            }
         });
     }
 
@@ -716,7 +789,7 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
                     const req=s.val();
                     if(req&&req.status==='counter_offered'){
                         panel.classList.remove('hidden');
-                        panel.innerHTML='<h3 style="font-size:16px;font-weight:800;margin-bottom:8px;color:var(--text-main);"><i class="fas fa-clock" style="color:var(--primary);"></i> Offer Bheji Gayi!</h3><p style="font-size:13px;color:var(--text-muted);margin-bottom:4px;">Rs. '+req.fare+' ka offer <strong>'+req.name+'</strong> ko bheja gaya. Customer ka jawab intezaar hai...</p><p style="font-size:12px;color:var(--warning);font-weight:700;margin-top:8px;">â ï¸ Abhi mat chalein! 15 second wait karein.</p><button onclick="cancelOffer(\''+cri+'\')" style="margin-top:14px;background:var(--error);color:#fff;border:none;padding:10px 18px;border-radius:8px;font-weight:700;cursor:pointer;font-size:13px;">Offer Cancel Karein</button>';
+                        panel.innerHTML='<h3 style="font-size:16px;font-weight:800;margin-bottom:8px;color:var(--text-main);"><i class="fas fa-clock" style="color:var(--primary);"></i> Offer Bheji Gayi!</h3><p style="font-size:13px;color:var(--text-muted);margin-bottom:4px;">Rs. '+req.fare+' ka offer <strong>'+req.name+'</strong> ko bheja gaya. Customer ka jawab intezaar hai...</p><p style="font-size:12px;color:var(--warning);font-weight:700;margin-top:8px;">⚠️ Abhi mat chalein! 15 second wait karein.</p><button onclick="cancelOffer(\''+cri+'\')" style="margin-top:14px;background:var(--error);color:#fff;border:none;padding:10px 18px;border-radius:8px;font-weight:700;cursor:pointer;font-size:13px;">Offer Cancel Karein</button>';
                         listenForOfferAcceptance(cri);
                     } else panel.classList.add('hidden');
                 }).catch(()=>update(ref(db,'riders/'+currentCaptain.uid),{currentRequestId:null}));
@@ -727,10 +800,10 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
     function isVehicleMatch(cap, req) {
         if(!cap||!req) return false;
         const c=cap.toLowerCase().trim(), r=req.toLowerCase().trim();
-        const bikes=['bike','motorcycle','motorbike'], cars=['car','sedan','suv','hatchback'], ricks=['rickshaw','auto','auto rickshaw','qingqi'];
+        const bikes=['bike','motorcycle','motorbike'], cars=['car','sedan','suv','hatchback'], rickshaws=['rickshaw','auto'];
         if(bikes.some(t=>c.includes(t))&&bikes.some(t=>r.includes(t))) return true;
         if(cars.some(t=>c.includes(t))&&cars.some(t=>r.includes(t))) return true;
-        if(ricks.some(t=>c.includes(t))&&ricks.some(t=>r.includes(t))) return true;
+        if(rickshaws.some(t=>c.includes(t))&&rickshaws.some(t=>r.includes(t))) return true;
         return c===r;
     }
 
@@ -782,10 +855,10 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
 <script>
 if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").then(()=>console.log("SW Registered")).catch(e=>console.log(e));
 </script>
-<!-- âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
+<!-- ═══════════════════════════════════════════════════════════
      RAFTAROO PWA JS SNIPPET v3.0
      </body> se pehle paste karein (har HTML page mein)
-     âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ -->
+     ═══════════════════════════════════════════════════════════ -->
 
 <!-- Install Banner HTML (body ke andar, pehli line) -->
 <div id="raftaroo-install-banner" style="
@@ -805,7 +878,7 @@ if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").then
   animation:raftaroo-banner-in 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
 ">
   <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0;">
-    <div style="width:42px;height:42px;background:rgba(255,255,255,0.2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">ðï¸</div>
+    <div style="width:42px;height:42px;background:rgba(255,255,255,0.2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🏍️</div>
     <div style="min-width:0;">
       <p style="color:#fff;font-weight:800;margin:0;font-size:14px;line-height:1.2;">Raftaroo App Install Karein!</p>
       <p style="color:rgba(255,255,255,0.75);margin:2px 0 0;font-size:11px;">Fast booking, offline access & notifications</p>
@@ -813,7 +886,7 @@ if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").then
   </div>
   <div style="display:flex;gap:8px;flex-shrink:0;">
     <button id="raftaroo-install-btn" style="background:#fff;color:#00A040;border:none;padding:9px 16px;border-radius:10px;font-weight:800;font-size:13px;cursor:pointer;font-family:inherit;white-space:nowrap;">Install</button>
-    <button id="raftaroo-close-btn" style="background:rgba(255,255,255,0.2);border:none;padding:9px 12px;border-radius:10px;color:#fff;font-weight:700;cursor:pointer;font-size:14px;line-height:1;">â</button>
+    <button id="raftaroo-close-btn" style="background:rgba(255,255,255,0.2);border:none;padding:9px 12px;border-radius:10px;color:#fff;font-weight:700;cursor:pointer;font-size:14px;line-height:1;">✕</button>
   </div>
 </div>
 
@@ -835,7 +908,7 @@ if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").then
   let deferredPrompt = null;
   let swRegistration = null;
 
-  // ââ 1. Register Service Worker ââââââââââââââââââââââââââââââ
+  // ── 1. Register Service Worker ──────────────────────────────
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker
@@ -849,7 +922,7 @@ if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").then
             if (!document.hidden) reg.update();
           }, 60000);
 
-          // Handle SW updates â notify user
+          // Handle SW updates — notify user
           reg.addEventListener('updatefound', () => {
             const newWorker = reg.installing;
             newWorker?.addEventListener('statechange', () => {
@@ -866,7 +939,7 @@ if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").then
     });
   }
 
-  // ââ 2. Install Prompt (beforeinstallprompt) ââââââââââââââââââ
+  // ── 2. Install Prompt (beforeinstallprompt) ──────────────────
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
@@ -883,7 +956,7 @@ if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").then
     }
   });
 
-  // ââ 3. Install button click ââââââââââââââââââââââââââââââââââ
+  // ── 3. Install button click ──────────────────────────────────
   document.getElementById('raftaroo-install-btn')?.addEventListener('click', async () => {
     if (!deferredPrompt) return;
     deferredPrompt.prompt();
@@ -900,28 +973,28 @@ if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").then
     deferredPrompt = null;
   });
 
-  // ââ 4. Close button âââââââââââââââââââââââââââââââââââââââââ
+  // ── 4. Close button ─────────────────────────────────────────
   document.getElementById('raftaroo-close-btn')?.addEventListener('click', () => {
     hideBanner();
     sessionStorage.setItem(DISMISSED_KEY, '1');
   });
 
-  // ââ 5. App installed callback ââââââââââââââââââââââââââââââââ
+  // ── 5. App installed callback ────────────────────────────────
   window.addEventListener('appinstalled', () => {
     hideBanner();
     deferredPrompt = null;
-    console.log('[Raftaroo PWA] App installed successfully! ð');
+    console.log('[Raftaroo PWA] App installed successfully! 🎉');
     if (typeof gtag !== 'undefined') {
       gtag('event', 'pwa_install_complete', { event_category: 'PWA' });
     }
   });
 
-  // ââ 6. Update toast notification ââââââââââââââââââââââââââââ
+  // ── 6. Update toast notification ────────────────────────────
   function showUpdateToast() {
     const toast = document.createElement('div');
     toast.id = 'raftaroo-update-toast';
     toast.innerHTML = `
-      <span>ð Raftaroo ka naya version available hai!</span>
+      <span>🆕 Raftaroo ka naya version available hai!</span>
       <button onclick="window.location.reload()" style="
         background:#00C853;color:#0A0F1E;border:none;
         padding:7px 14px;border-radius:8px;font-weight:700;
@@ -954,7 +1027,7 @@ if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").then
     setTimeout(() => toast.remove(), 10000);
   }
 
-  // ââ 7. Handle messages from SW ââââââââââââââââââââââââââââââ
+  // ── 7. Handle messages from SW ──────────────────────────────
   function handleSWMessage(event) {
     const { type, version } = event.data || {};
     if (type === 'SW_UPDATED') {
@@ -962,7 +1035,7 @@ if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").then
     }
   }
 
-  // ââ 8. Network status indicator âââââââââââââââââââââââââââââ
+  // ── 8. Network status indicator ─────────────────────────────
   function updateOnlineStatus() {
     const isOnline = navigator.onLine;
     document.documentElement.setAttribute('data-network', isOnline ? 'online' : 'offline');
@@ -977,7 +1050,7 @@ if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").then
     if (document.getElementById('raftaroo-offline-badge')) return;
     const badge = document.createElement('div');
     badge.id = 'raftaroo-offline-badge';
-    badge.textContent = 'ðµ Offline Mode';
+    badge.textContent = '📵 Offline Mode';
     Object.assign(badge.style, {
       position: 'fixed',
       top: '68px',
@@ -1001,12 +1074,12 @@ if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").then
   window.addEventListener('offline', updateOnlineStatus);
   updateOnlineStatus();
 
-  // ââ Helper âââââââââââââââââââââââââââââââââââââââââââââââââââ
+  // ── Helper ───────────────────────────────────────────────────
   function hideBanner() {
     if (banner) banner.style.display = 'none';
   }
 
-  // ââ Expose helper for app code âââââââââââââââââââââââââââââââ
+  // ── Expose helper for app code ───────────────────────────────
   window.RaftarooPWA = {
     getVersion: () => {
       swRegistration?.active?.postMessage({ type: 'GET_VERSION' });
