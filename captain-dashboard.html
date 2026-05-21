@@ -197,6 +197,54 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
 ::-webkit-scrollbar{width:4px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:#CBD5E1;border-radius:4px;}
+
+/* ══ PASSENGER PROFILE ══ */
+.passenger-meta{display:flex;align-items:center;gap:6px;margin-top:4px;flex-wrap:wrap;}
+.star-row{display:flex;align-items:center;gap:1px;}
+.star-row i{font-size:10px;color:#CBD5E1;}
+.star-row i.filled{color:#F59E0B;}
+.rating-val{font-size:11px;font-weight:700;color:#F59E0B;margin-left:2px;}
+.trips-chip{background:#EFF6FF;color:#3B82F6;font-size:10px;font-weight:700;padding:2px 7px;border-radius:50px;display:inline-flex;align-items:center;gap:3px;}
+.trips-chip i{font-size:9px;}
+
+/* ══ OFFER MODAL PASSENGER CARD ══ */
+.passenger-profile-card{background:linear-gradient(135deg,#0A0F1E 0%,#0f1a2e 100%);border-radius:16px;padding:16px;margin-bottom:16px;display:flex;align-items:center;gap:14px;border:1px solid rgba(0,200,83,0.2);position:relative;overflow:hidden;}
+.passenger-profile-card::before{content:'';position:absolute;top:0;right:0;width:80px;height:80px;background:radial-gradient(circle,rgba(0,200,83,0.15) 0%,transparent 70%);}
+.passenger-avatar{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--primary),#00E676);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:#fff;flex-shrink:0;box-shadow:0 4px 15px rgba(0,200,83,0.4);border:2px solid rgba(0,200,83,0.4);}
+.passenger-info{flex:1;min-width:0;}
+.passenger-name{font-size:16px;font-weight:800;color:#fff;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.passenger-stars{display:flex;align-items:center;gap:2px;margin-bottom:5px;}
+.passenger-stars i{font-size:12px;color:#334155;}
+.passenger-stars i.lit{color:#FBBF24;}
+.passenger-rating-num{font-size:12px;font-weight:700;color:#FBBF24;margin-left:4px;}
+.passenger-rating-label{font-size:10px;color:rgba(255,255,255,0.4);font-weight:500;}
+.passenger-stats{display:flex;gap:8px;margin-top:6px;}
+.pstat{display:flex;align-items:center;gap:4px;font-size:11px;color:rgba(255,255,255,0.6);font-weight:600;}
+.pstat i{font-size:10px;color:rgba(0,200,83,0.8);}
+.pstat strong{color:#fff;}
+.passenger-loading{display:flex;align-items:center;justify-content:center;padding:8px 0;gap:8px;color:rgba(255,255,255,0.5);font-size:12px;font-weight:600;}
+.pspinner{width:16px;height:16px;border:2px solid rgba(0,200,83,0.2);border-top:2px solid var(--primary);border-radius:50%;animation:spin 0.7s linear infinite;}
+
+/* ══ PICKUP MINI MAP ══ */
+.pickup-map-section{margin-bottom:16px;}
+.pickup-map-label{font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;display:flex;align-items:center;gap:5px;}
+.pickup-map-label i{color:var(--primary);}
+#offer-pickup-map-container{height:160px;border-radius:14px;overflow:hidden;border:2px solid var(--border);box-shadow:var(--shadow-sm);position:relative;}
+#offer-pickup-map{height:100%;width:100%;}
+.pickup-addr-pill{position:absolute;bottom:8px;left:8px;right:8px;z-index:1000;background:rgba(10,15,30,0.88);backdrop-filter:blur(6px);color:#fff;padding:7px 10px;border-radius:10px;font-size:11px;font-weight:600;display:flex;align-items:center;gap:6px;border:1px solid rgba(0,200,83,0.25);}
+.pickup-addr-pill i{color:var(--primary);flex-shrink:0;}
+.pickup-addr-text{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+
+/* ══ ROUTE SUMMARY ══ */
+.route-summary{background:#F8FAFC;border-radius:12px;padding:14px;margin-bottom:14px;}
+.route-row{display:flex;align-items:flex-start;gap:10px;padding:6px 0;}
+.route-row:not(:last-child){border-bottom:1px solid #EEF2F7;}
+.route-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:3px;}
+.route-dot.pickup-dot{background:var(--primary);}
+.route-dot.drop-dot{background:var(--error);}
+.route-info{flex:1;min-width:0;}
+.route-lbl{font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.4px;}
+.route-addr{font-size:13px;font-weight:600;color:var(--text-main);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 </style>
 </head>
 <body>
@@ -273,23 +321,6 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
                     <h4><i class="fas fa-chart-line" style="color:var(--primary);"></i> Aaj Ki Performance</h4>
                     <span class="today-date-chip" id="todayDateChip">Loading...</span>
                 </div>
-                <!-- Free Rides Banner -->
-                <div id="freeRidesBanner" style="display:none; background:linear-gradient(135deg,#00C853,#00E676); border-radius:12px; padding:12px 14px; margin-bottom:14px; display:flex; align-items:center; gap:10px;">
-                    <div style="font-size:22px;">🎁</div>
-                    <div>
-                        <div style="color:#fff; font-weight:800; font-size:14px;" id="freeRidesBannerText">3 Free Rides Baqi!</div>
-                        <div style="color:rgba(255,255,255,0.85); font-weight:600; font-size:11px;">Pehli 3 rides mein koi commission nahi</div>
-                    </div>
-                </div>
-                <!-- Wallet Low Banner -->
-                <a href="captain-profile.html" id="walletLowBanner" style="display:none; background:linear-gradient(135deg,#EF4444,#F87171); border-radius:12px; padding:12px 14px; margin-bottom:14px; text-decoration:none; align-items:center; gap:10px;">
-                    <div style="font-size:22px;">💳</div>
-                    <div style="flex:1;">
-                        <div style="color:#fff; font-weight:800; font-size:14px;" id="walletLowBannerText">Wallet Top-Up Karein!</div>
-                        <div style="color:rgba(255,255,255,0.85); font-weight:600; font-size:11px;">Commission k liye wallet mein paise zaroori hain</div>
-                    </div>
-                    <div style="color:#fff; font-size:13px; font-weight:700;">Top-Up →</div>
-                </a>
                 <div class="today-stats-grid">
                     <div class="today-stat-card rides">
                         <div class="today-stat-icon"><i class="fas fa-motorcycle"></i></div>
@@ -301,13 +332,13 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
                         <div class="today-stat-icon"><i class="fas fa-money-bill-wave"></i></div>
                         <div class="today-stat-val" id="todayEarnings">Rs. 0</div>
                         <div class="today-stat-label">Net Earning</div>
-                        <div class="today-stat-sub" id="todayNetSub">Gross - 10% Commission</div>
+                        <div class="today-stat-sub" id="todayNetSub">10% fee ke baad</div>
                     </div>
                     <div class="today-stat-card commission">
                         <div class="today-stat-icon"><i class="fas fa-percent"></i></div>
                         <div class="today-stat-val" id="todayCommission">Rs. 0</div>
-                        <div class="today-stat-label">Commission</div>
-                        <div class="today-stat-sub" id="todayCommissionSub">10% per ride</div>
+                        <div class="today-stat-label">Commission (10%)</div>
+                        <div class="today-stat-sub" id="todayCommissionSub">Raftaroo platform fee</div>
                     </div>
                     <div class="today-stat-card rating">
                         <div class="today-stat-icon"><i class="fas fa-star"></i></div>
@@ -369,9 +400,59 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
 <div id="offer-confirm-modal" style="display:none;">
     <div class="offer-confirm-content">
         <div class="offer-confirm-header">
-            <h3>Apni Offer Confirm Karein</h3>
-            <p>Customer ko offer bhejne se pehle check karein</p>
+            <h3>🧑 Passenger Ka Jaiza Lein</h3>
+            <p>Offer bhejne se pehle passenger ki details check karein</p>
         </div>
+
+        <!-- PASSENGER PROFILE CARD -->
+        <div class="passenger-profile-card" id="passengerProfileCard">
+            <div class="passenger-loading" id="passengerLoadingState">
+                <div class="pspinner"></div>
+                <span>Passenger ki info load ho rahi hai...</span>
+            </div>
+            <div id="passengerProfileData" style="display:none;width:100%;display:none;flex-direction:row;align-items:center;gap:14px;">
+                <div class="passenger-avatar" id="passengerAvatarLetter">?</div>
+                <div class="passenger-info">
+                    <div class="passenger-name" id="passengerNameDisplay">—</div>
+                    <div class="passenger-stars" id="passengerStarsDisplay"></div>
+                    <div class="passenger-stats">
+                        <div class="pstat"><i class="fas fa-route"></i> <strong id="passengerTripCount">0</strong>&nbsp;trips</div>
+                        <div class="pstat" id="passengerMemberSince" style="display:none;"><i class="fas fa-calendar-check"></i> <strong id="passengerJoinDate">—</strong></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- PICKUP LOCATION MAP -->
+        <div class="pickup-map-section">
+            <div class="pickup-map-label"><i class="fas fa-circle-dot"></i> Pickup Location</div>
+            <div id="offer-pickup-map-container">
+                <div id="offer-pickup-map"></div>
+                <div class="pickup-addr-pill">
+                    <i class="fas fa-map-pin"></i>
+                    <span class="pickup-addr-text" id="offerPickupAddrText">Loading...</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- ROUTE SUMMARY -->
+        <div class="route-summary">
+            <div class="route-row">
+                <div class="route-dot pickup-dot"></div>
+                <div class="route-info">
+                    <div class="route-lbl">Pickup</div>
+                    <div class="route-addr" id="offerRoutePickup">—</div>
+                </div>
+            </div>
+            <div class="route-row">
+                <div class="route-dot drop-dot"></div>
+                <div class="route-info">
+                    <div class="route-lbl">Drop-off</div>
+                    <div class="route-addr" id="offerRouteDrop">—</div>
+                </div>
+            </div>
+        </div>
+
         <div class="offer-summary">
             <div class="offer-summary-row">
                 <span style="color:var(--text-muted);font-weight:600;">Customer Ki Fare</span>
@@ -461,16 +542,11 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
     }
 
     const captainIcon = (vehicle) => {
-        const v = (vehicle||'bike').toLowerCase().replace(/\s+/g,'-');
-        let imgUrl = 'https://iili.io/ftViNi7.png'; // default bike
-        if (v.includes('car') || v.includes('sedan') || v.includes('suv') || v.includes('economy') || v.includes('comfort')) {
-            imgUrl = 'https://iili.io/qfsUogV.png';
-        } else if (v.includes('pickup') || v.includes('cargo') || v.includes('truck')) {
-            imgUrl = 'https://iili.io/ftVPMZB.png';
-        } else if (v.includes('rickshaw') || v.includes('auto')) {
-            imgUrl = 'https://iili.io/ftV61st.png';
-        }
-        return L.divIcon({ html: `<img src="${imgUrl}" style="width:44px;height:44px;object-fit:contain;filter:drop-shadow(0 3px 6px rgba(0,0,0,0.3));" onerror="this.src='https://iili.io/ftViNi7.png'"/>`, className: 'custom-div-icon', iconSize: [44,44], iconAnchor: [22,22] });
+        let ic = 'motorcycle';
+        if (vehicle === 'car-economy' || vehicle === 'car-comfort') ic = 'car-side';
+        else if (vehicle === 'pickup') ic = 'truck-moving';
+        else if (vehicle === 'rickshaw') ic = 'truck';
+        return L.divIcon({ html: `<div style="background:#00C853;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(0,200,83,0.4);border:2.5px solid #fff;"><i class="fas fa-${ic}" style="color:#fff;font-size:16px;"></i></div>`, className: 'custom-div-icon', iconSize: [36,36], iconAnchor: [18,18] });
     };
 
     function getDistance(lat1,lon1,lat2,lon2) {
@@ -506,8 +582,98 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         if (modalTimeout) { clearTimeout(modalTimeout); modalTimeout = null; }
     }
 
-    const offerConfirmModal = document.getElementById('offer-confirm-modal');
-    let offerConfirmRequestId = null;
+    let offerPickupMap = null;
+    let offerPickupMarker = null;
+
+    function renderPassengerStars(rating, container) {
+        const r = parseFloat(rating) || 0;
+        let html = '';
+        for (let i = 1; i <= 5; i++) {
+            if (r >= i) html += '<i class="fas fa-star lit"></i>';
+            else if (r >= i - 0.5) html += '<i class="fas fa-star-half-stroke lit"></i>';
+            else html += '<i class="fas fa-star"></i>';
+        }
+        if (r > 0) html += '<span class="passenger-rating-num" style="margin-left:5px;">' + r.toFixed(1) + '</span><span class="passenger-rating-label" style="margin-left:4px;">rating</span>';
+        container.innerHTML = html;
+    }
+
+    async function loadPassengerProfile(requestData) {
+        const loadingEl = document.getElementById('passengerLoadingState');
+        const profileEl = document.getElementById('passengerProfileData');
+        const avatarEl  = document.getElementById('passengerAvatarLetter');
+        const nameEl    = document.getElementById('passengerNameDisplay');
+        const starsEl   = document.getElementById('passengerStarsDisplay');
+        const tripsEl   = document.getElementById('passengerTripCount');
+        const joinEl    = document.getElementById('passengerMemberSince');
+        const joinDateEl= document.getElementById('passengerJoinDate');
+
+        loadingEl.style.display = 'flex';
+        profileEl.style.display = 'none';
+
+        const passengerName = requestData.name || 'Passenger';
+        const passengerId   = requestData.userId || requestData.passengerId || null;
+
+        let rating = 0, trips = 0, joinDate = null;
+
+        if (passengerId) {
+            try {
+                const pSnap = await get(ref(db, 'users/' + passengerId));
+                if (pSnap.exists()) {
+                    const pd = pSnap.val();
+                    rating = pd.rating || pd.avgRating || 0;
+                    trips  = pd.totalTrips || pd.tripCount || pd.completedRides || 0;
+                    joinDate = pd.createdAt || pd.joinedAt || null;
+                }
+            } catch(e) {
+                // Fallback to request-embedded data
+                rating = requestData.passengerRating || 0;
+                trips  = requestData.passengerTrips  || 0;
+            }
+        } else {
+            rating = requestData.passengerRating || 0;
+            trips  = requestData.passengerTrips  || 0;
+        }
+
+        // Populate UI
+        const initial = passengerName.charAt(0).toUpperCase();
+        avatarEl.textContent = initial;
+        nameEl.textContent   = passengerName;
+        tripsEl.textContent  = trips;
+        renderPassengerStars(rating, starsEl);
+
+        if (joinDate) {
+            const d = new Date(joinDate);
+            joinDateEl.textContent = d.toLocaleDateString('en-PK', { month: 'short', year: 'numeric' });
+            joinEl.style.display = 'flex';
+        }
+
+        loadingEl.style.display = 'none';
+        profileEl.style.display = 'flex';
+    }
+
+    function initOfferPickupMap(lat, lng, address) {
+        // Destroy previous instance
+        if (offerPickupMap) { offerPickupMap.remove(); offerPickupMap = null; offerPickupMarker = null; }
+
+        offerPickupMap = L.map('offer-pickup-map', { zoomControl: false, attributionControl: false, dragging: false, scrollWheelZoom: false, doubleClickZoom: false, touchZoom: false }).setView([lat, lng], 15);
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { maxZoom: 19 }).addTo(offerPickupMap);
+
+        const pickupIcon = L.divIcon({
+            html: `<div style="background:#00C853;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,200,83,0.5);border:3px solid #fff;"><i class="fas fa-circle-dot" style="color:#fff;font-size:13px;"></i></div>`,
+            className: 'custom-div-icon', iconSize: [32, 32], iconAnchor: [16, 16]
+        });
+        offerPickupMarker = L.marker([lat, lng], { icon: pickupIcon }).addTo(offerPickupMap);
+
+        // Passenger location pin
+        const dropIcon = L.divIcon({
+            html: `<div style="background:#EF4444;width:26px;height:26px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(239,68,68,0.4);border:2px solid #fff;"><i class="fas fa-location-dot" style="color:#fff;font-size:11px;transform:rotate(45deg);"></i></div>`,
+            className: 'custom-div-icon', iconSize: [26, 32], iconAnchor: [13, 32]
+        });
+        L.marker([lat, lng], { icon: dropIcon }).addTo(offerPickupMap);
+
+        document.getElementById('offerPickupAddrText').textContent = address || 'Pickup location';
+        setTimeout(() => offerPickupMap.invalidateSize(), 150);
+    }
 
     function showOfferConfirmationModal(requestId, customerFareStr) {
         offerConfirmRequestId = requestId;
@@ -522,6 +688,24 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         document.getElementById('cancelConfirmOfferBtn').onclick = hideOfferConfirmationModal;
         cb.disabled = false;
         offerConfirmModal.style.display = 'flex';
+
+        // ── Find the request data and load passenger + map ──
+        get(ref(db, 'requests/' + requestId)).then(snap => {
+            if (!snap.exists()) return;
+            const req = snap.val();
+
+            // Route summary
+            document.getElementById('offerRoutePickup').textContent = req.pickup?.address || '—';
+            document.getElementById('offerRouteDrop').textContent   = req.destination?.address || '—';
+
+            // Load passenger profile
+            loadPassengerProfile(req);
+
+            // Init mini map
+            if (req.pickup?.lat && req.pickup?.lng) {
+                initOfferPickupMap(req.pickup.lat, req.pickup.lng, req.pickup.address || '');
+            }
+        }).catch(() => {});
     }
 
     window.selectCounterOffer = function(event) {
@@ -534,7 +718,11 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         selectedCounterOfferFare = fare;
     };
 
-    function hideOfferConfirmationModal() { offerConfirmModal.style.display='none'; offerConfirmRequestId=null; }
+    function hideOfferConfirmationModal() {
+        offerConfirmModal.style.display='none';
+        offerConfirmRequestId=null;
+        if (offerPickupMap) { offerPickupMap.remove(); offerPickupMap=null; offerPickupMarker=null; }
+    }
 
     async function sendOffer(requestId) {
         const sf = selectedCounterOfferFare;
@@ -586,21 +774,10 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
         document.getElementById('todayDateChip').textContent = days[today.getDay()] + ', ' + today.getDate() + ' ' + months[today.getMonth()];
 
-        // Free Rides Banner
-        const freeLeft = parseInt(captainData.freeRidesRemaining) || 0;
-        const freeRidesBanner = document.getElementById('freeRidesBanner');
-        if (freeLeft > 0) {
-            freeRidesBanner.style.display = 'flex';
-            document.getElementById('freeRidesBannerText').textContent =
-                freeLeft === 1 ? '🎁 1 Free Ride Baqi!' : `🎁 ${freeLeft} Free Rides Baqi!`;
-        } else {
-            freeRidesBanner.style.display = 'none';
-        }
-
         // FIX: 'requests' node se read karo (rides node nahi)
         onValue(ref(db, 'requests'), (snapshot) => {
             const allRides = snapshot.val() || {};
-            let totalRides = 0, grossEarnings = 0, totalCommission = 0, ratingSum = 0, ratingCount = 0;
+            let totalRides = 0, grossEarnings = 0, ratingSum = 0, ratingCount = 0;
 
             Object.values(allRides).forEach(ride => {
                 // FIX: captainId ya riderId dono check karo
@@ -614,21 +791,24 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
                 totalRides++;
                 const fare = parseInt(ride.fare) || 0;
                 grossEarnings += fare;
-                const comm = parseInt(ride.commissionDeducted) || 0;
-                totalCommission += comm;
                 // FIX: customerRating field (captain-active-ride.html yahi save karta hai)
                 const rating = ride.customerRating || ride.rating;
                 if (rating && parseInt(rating) > 0) { ratingSum += parseFloat(rating); ratingCount++; }
             });
 
-            const netEarnings = grossEarnings - totalCommission;
+            const commission = Math.round(grossEarnings * 0.10);
+            const netEarnings = grossEarnings - commission;
 
             document.getElementById('todayRides').textContent = totalRides;
             document.getElementById('todayEarnings').textContent = 'Rs. ' + netEarnings;
-            document.getElementById('todayNetSub').textContent = `Net · Gross: Rs.${grossEarnings}`;
-            document.getElementById('todayRidesSub').textContent = totalRides > 0 ? 'Total: Rs.' + grossEarnings : 'Abhi koi ride nahi';
-            document.getElementById('todayCommission').textContent = 'Rs. ' + totalCommission;
-            document.getElementById('todayCommissionSub').textContent = totalCommission === 0 && freeLeft > 0 ? '🎁 Free rides chal rahi hain!' : '10% per paid ride';
+            document.getElementById('todayNetSub').textContent = `Gross: Rs.${grossEarnings} � Fee: Rs.${commission}`;
+            document.getElementById('todayCommission').textContent = 'Rs. ' + commission;
+            document.getElementById('todayCommissionSub').textContent = totalRides > 0 ? totalRides + ' ride(s) · Gross: Rs.' + grossEarnings : 'Abhi koi ride nahi';
+            document.getElementById('todayRidesSub').textContent = totalRides > 0 ? 'Gross: Rs.' + grossEarnings : 'Abhi koi ride nahi';
+
+
+
+
 
             if (ratingCount > 0) {
                 document.getElementById('todayRating').textContent = (ratingSum / ratingCount).toFixed(1) + ' \u2605';
@@ -686,9 +866,12 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
 
     function initializeMap() {
         if (map) map.remove();
-        map=L.map('map',{zoomControl:false,attributionControl:false});
+        const dc=[24.8607,67.0011];
+        map=L.map('map',{zoomControl:false,attributionControl:false}).setView(dc,13);
         L.control.zoom({position:'bottomright'}).addTo(map);
         L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{maxZoom:19}).addTo(map);
+        captainMarker=L.marker(dc,{icon:captainIcon(captainData.vehicleType||'Motorcycle')}).addTo(map).bindPopup('<b>Aap Yahan Hain</b>');
+        radiusCircle=L.circle(dc,{color:'#00C853',fillColor:'#00C853',fillOpacity:0.06,weight:2,opacity:0.4,dashArray:'6,6',radius:RIDE_RADIUS_KM*1000}).addTo(map);
         map.invalidateSize();
     }
 
@@ -697,13 +880,7 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         if (!navigator.geolocation) { alert('Geolocation support nahi hai.'); return; }
         geoWatchId=navigator.geolocation.watchPosition(async(pos)=>{
             const {latitude:la,longitude:lo}=pos.coords;
-            if(!captainMarker){
-                captainMarker=L.marker([la,lo],{icon:captainIcon(captainData.vehicleType||'Motorcycle')}).addTo(map).bindPopup('<b>Aap Yahan Hain</b>');
-                radiusCircle=L.circle([la,lo],{color:'#00C853',fillColor:'#00C853',fillOpacity:0.06,weight:2,opacity:0.4,dashArray:'6,6',radius:RIDE_RADIUS_KM*1000}).addTo(map);
-                map.setView([la,lo],13);
-            } else {
-                captainMarker.setLatLng([la,lo]); radiusCircle.setLatLng([la,lo]); map.setView([la,lo]);
-            }
+            captainMarker.setLatLng([la,lo]); radiusCircle.setLatLng([la,lo]); map.setView([la,lo]);
             await update(ref(db,'riders/'+currentCaptain.uid),{location:{lat:la,lng:lo},timestamp:new Date().toISOString()});
         },(err)=>{ if(err.code===err.PERMISSION_DENIED){alert("Location access deny kiya gaya.");document.getElementById('statusToggleSwitch').checked=false;toggleStatus(false);}},{enableHighAccuracy:true,timeout:5000,maximumAge:0});
     }
@@ -728,45 +905,9 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
 
     let lowBalanceChecked=false;
     function loadWalletBalance() {
-        const TOP_UP_THRESHOLD = 100;
         onValue(ref(db,'riders/'+currentCaptain.uid+'/walletBalance'),(snap)=>{
             const bal=snap.val()||0; captainData.walletBalance=bal; document.getElementById('walletDisplay').textContent=bal;
-            const walletBadge = document.querySelector('.wallet-badge');
-            const walletLowBanner = document.getElementById('walletLowBanner');
-            const walletLowBannerText = document.getElementById('walletLowBannerText');
-            const freeLeft = parseInt(captainData.freeRidesRemaining) || 0;
-            if (walletBadge) {
-                if (bal < 0) {
-                    walletBadge.style.background = '#FEE2E2';
-                    walletBadge.style.color = '#DC2626';
-                } else if (bal < TOP_UP_THRESHOLD && freeLeft === 0) {
-                    walletBadge.style.background = '#FEF9C3';
-                    walletBadge.style.color = '#854D0E';
-                } else {
-                    walletBadge.style.background = '';
-                    walletBadge.style.color = '';
-                }
-            }
-            if (walletLowBanner) {
-                if (freeLeft === 0 && bal < TOP_UP_THRESHOLD) {
-                    walletLowBanner.style.display = 'flex';
-                    if (walletLowBannerText) {
-                        walletLowBannerText.textContent = bal < 0
-                            ? `❌ Wallet negative: Rs. ${bal} — Foran Top-Up Karein!`
-                            : `⚠️ Wallet kam hai: Rs. ${bal} — Top-Up Karein!`;
-                    }
-                } else {
-                    walletLowBanner.style.display = 'none';
-                }
-            }
-            if(isApproved(captainData)&&captainData.status==='active'&&!lowBalanceChecked&&freeLeft===0&&bal<TOP_UP_THRESHOLD){
-                lowBalanceChecked=true;
-                const msg = bal < 0
-                    ? `❌ Wallet balance negative hai: Rs. ${bal}\n\nAb aap rides nahi le sakte jab tak wallet top-up na karein.\n\n💳 JazzCash/EasyPaisa se paise add karein — Profile → Top-Up tab`
-                    : `⚠️ Wallet balance bahut kam hai: Rs. ${bal}\n\n💡 Raftaroo 10% commission har ride se wallet se katta hai.\n💳 Rides jaari rakhne k liye ab top-up karein!`;
-                alert(msg);
-                setTimeout(()=>window.location.href='captain-profile.html',300);
-            }
+            if(isApproved(captainData)&&captainData.status==='active'&&!lowBalanceChecked&&bal<TOP_UP_THRESHOLD){lowBalanceChecked=true;alert('⚠️ Wallet balance kam hai: Rs. '+bal+'. Rides lene ke liye top-up karein.');setTimeout(()=>window.location.href='captain-profile.html',300);}
         });
     }
 
@@ -800,10 +941,10 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
     function isVehicleMatch(cap, req) {
         if(!cap||!req) return false;
         const c=cap.toLowerCase().trim(), r=req.toLowerCase().trim();
-        const bikes=['bike','motorcycle','motorbike'], cars=['car','sedan','suv','hatchback'], rickshaws=['rickshaw','auto'];
+        const bikes=['bike','motorcycle','motorbike'], cars=['car','sedan','suv','hatchback'], ricks=['rickshaw','auto','auto rickshaw','qingqi'];
         if(bikes.some(t=>c.includes(t))&&bikes.some(t=>r.includes(t))) return true;
         if(cars.some(t=>c.includes(t))&&cars.some(t=>r.includes(t))) return true;
-        if(rickshaws.some(t=>c.includes(t))&&rickshaws.some(t=>r.includes(t))) return true;
+        if(ricks.some(t=>c.includes(t))&&ricks.some(t=>r.includes(t))) return true;
         return c===r;
     }
 
@@ -843,7 +984,50 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         filtered.forEach(req=>{
             const el=document.createElement('div'); el.className='request-card';
             const dc=req.distanceToPickup!==null?'<span class="distance-chip"><i class="fas fa-location-dot"></i>'+req.distanceToPickup.toFixed(1)+' km door</span>':'';
-            el.innerHTML='<div class="request-card-top"><div><div class="request-card-type">'+(req.vehicle||req.service||'N/A').toUpperCase()+'</div></div><div class="request-card-fare">Rs. '+req.fare+' <span>offered</span></div></div><div class="request-detail customer"><i class="fas fa-user"></i><div><div class="detail-label">Customer</div><div class="detail-text">'+req.name+'</div></div></div><div class="request-detail pickup"><i class="fas fa-circle-dot"></i><div><div class="detail-label">Pickup</div><div class="detail-text">'+req.pickup.address.substring(0,50)+'...</div></div></div><div class="request-detail dropoff"><i class="fas fa-location-dot"></i><div><div class="detail-label">Dropoff</div><div class="detail-text">'+req.destination.address.substring(0,50)+'...</div></div></div><div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;"><div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;"><span style="background:#F1F5F9;color:var(--text-muted);font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;"><i class="fas fa-road"></i> '+req.distance+' km ride</span>'+dc+'</div></div><div class="request-actions"><button class="btn-accept" data-id="'+req.id+'" data-fare="'+req.fare+'" onclick="showOfferConfirmationModal(this.dataset.id,this.dataset.fare)"><i class="fas fa-bolt"></i> Review &amp; Offer</button><button class="btn-reject" onclick="this.closest(\'.request-card\').remove()">&#x2715;</button></div>';
+
+            // Build star HTML for passenger
+            const pRating = parseFloat(req.passengerRating) || 0;
+            let starsHtml = '';
+            if (pRating > 0) {
+                let stars = '';
+                for (let i=1;i<=5;i++) {
+                    if (pRating>=i) stars+='<i class="fas fa-star filled"></i>';
+                    else if (pRating>=i-0.5) stars+='<i class="fas fa-star-half-stroke filled"></i>';
+                    else stars+='<i class="fas fa-star"></i>';
+                }
+                starsHtml = '<div class="passenger-meta"><div class="star-row">'+stars+'<span class="rating-val">'+pRating.toFixed(1)+'</span></div></div>';
+            }
+            const pTrips = req.passengerTrips || 0;
+            const tripsHtml = '<span class="trips-chip" style="margin-left:4px;"><i class="fas fa-route"></i>'+pTrips+' trips</span>';
+            const passengerMetaHtml = '<div class="passenger-meta" style="margin-top:5px;">'+
+                (pRating>0?'<div class="star-row">'+starsHtml.replace(/<div class="passenger-meta">|<\/div>$/g,'')+'</div>':'<div class="star-row" style="color:#94A3B8;font-size:10px;font-weight:600;">No rating yet</div>')+
+                tripsHtml+'</div>';
+
+            el.innerHTML='<div class="request-card-top"><div><div class="request-card-type">'+(req.vehicle||req.service||'N/A').toUpperCase()+'</div></div><div class="request-card-fare">Rs. '+req.fare+' <span>offered</span></div></div>'+
+            '<div class="request-detail customer"><i class="fas fa-user"></i><div><div class="detail-label">Passenger</div><div class="detail-text" style="font-weight:700;">'+req.name+'</div>'+
+            '<div class="passenger-meta" style="margin-top:4px;">';
+
+            // Build inline stars
+            let inlineStars = '';
+            if (pRating > 0) {
+                for (let i=1;i<=5;i++) {
+                    if (pRating>=i) inlineStars+='<i class="fas fa-star filled"></i>';
+                    else if (pRating>=i-0.5) inlineStars+='<i class="fas fa-star-half-stroke filled"></i>';
+                    else inlineStars+='<i class="fas fa-star"></i>';
+                }
+                inlineStars += '<span class="rating-val">'+pRating.toFixed(1)+'</span>';
+            } else {
+                inlineStars = '<span style="font-size:10px;color:var(--text-light);font-weight:600;">Rating nahi hai</span>';
+            }
+
+            el.innerHTML='<div class="request-card-top"><div><div class="request-card-type">'+(req.vehicle||req.service||'N/A').toUpperCase()+'</div></div><div class="request-card-fare">Rs. '+req.fare+' <span>offered</span></div></div>'+
+            '<div class="request-detail customer"><i class="fas fa-user"></i><div><div class="detail-label">Passenger</div><div class="detail-text" style="font-weight:700;">'+req.name+'</div>'+
+            '<div class="passenger-meta"><div class="star-row">'+inlineStars+'</div><span class="trips-chip" style="margin-left:2px;"><i class="fas fa-route"></i>'+pTrips+' trips</span></div>'+
+            '</div></div>'+
+            '<div class="request-detail pickup"><i class="fas fa-circle-dot"></i><div><div class="detail-label">Pickup</div><div class="detail-text">'+req.pickup.address.substring(0,50)+'...</div></div></div>'+
+            '<div class="request-detail dropoff"><i class="fas fa-location-dot"></i><div><div class="detail-label">Dropoff</div><div class="detail-text">'+req.destination.address.substring(0,50)+'...</div></div></div>'+
+            '<div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;"><div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;"><span style="background:#F1F5F9;color:var(--text-muted);font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;"><i class="fas fa-road"></i> '+req.distance+' km ride</span>'+dc+'</div></div>'+
+            '<div class="request-actions"><button class="btn-accept" data-id="'+req.id+'" data-fare="'+req.fare+'" onclick="showOfferConfirmationModal(this.dataset.id,this.dataset.fare)"><i class="fas fa-eye"></i> Dekhein &amp; Offer Karein</button><button class="btn-reject" onclick="this.closest(\'.request-card\').remove()">&#x2715;</button></div>';
             con.appendChild(el);
         });
     }
