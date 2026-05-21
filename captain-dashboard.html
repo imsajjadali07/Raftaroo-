@@ -85,7 +85,7 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
 .map-overlay-badge{position:absolute;bottom:12px;left:12px;z-index:1000;background:rgba(10,15,30,0.85);backdrop-filter:blur(8px);color:#fff;padding:6px 12px;border-radius:50px;font-size:11px;font-weight:700;display:flex;align-items:center;gap:5px;border:1px solid rgba(0,200,83,0.3);}
 .map-overlay-badge i{color:var(--primary);}
 
-/* ══ TODAY STATS ══ */
+/* ââ TODAY STATS ââ */
 .today-stats-section{background:var(--white);border-radius:var(--radius-lg);padding:18px 16px;margin-bottom:16px;box-shadow:var(--shadow-md);border:1px solid var(--border);}
 .today-stats-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;}
 .today-stats-header h4{font-size:15px;font-weight:800;color:var(--text-main);display:flex;align-items:center;gap:8px;}
@@ -197,54 +197,6 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
 ::-webkit-scrollbar{width:4px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:#CBD5E1;border-radius:4px;}
-
-/* ══ PASSENGER PROFILE ══ */
-.passenger-meta{display:flex;align-items:center;gap:6px;margin-top:4px;flex-wrap:wrap;}
-.star-row{display:flex;align-items:center;gap:1px;}
-.star-row i{font-size:10px;color:#CBD5E1;}
-.star-row i.filled{color:#F59E0B;}
-.rating-val{font-size:11px;font-weight:700;color:#F59E0B;margin-left:2px;}
-.trips-chip{background:#EFF6FF;color:#3B82F6;font-size:10px;font-weight:700;padding:2px 7px;border-radius:50px;display:inline-flex;align-items:center;gap:3px;}
-.trips-chip i{font-size:9px;}
-
-/* ══ OFFER MODAL PASSENGER CARD ══ */
-.passenger-profile-card{background:linear-gradient(135deg,#0A0F1E 0%,#0f1a2e 100%);border-radius:16px;padding:16px;margin-bottom:16px;display:flex;align-items:center;gap:14px;border:1px solid rgba(0,200,83,0.2);position:relative;overflow:hidden;}
-.passenger-profile-card::before{content:'';position:absolute;top:0;right:0;width:80px;height:80px;background:radial-gradient(circle,rgba(0,200,83,0.15) 0%,transparent 70%);}
-.passenger-avatar{width:52px;height:52px;border-radius:50%;background:linear-gradient(135deg,var(--primary),#00E676);display:flex;align-items:center;justify-content:center;font-size:20px;font-weight:800;color:#fff;flex-shrink:0;box-shadow:0 4px 15px rgba(0,200,83,0.4);border:2px solid rgba(0,200,83,0.4);}
-.passenger-info{flex:1;min-width:0;}
-.passenger-name{font-size:16px;font-weight:800;color:#fff;margin-bottom:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-.passenger-stars{display:flex;align-items:center;gap:2px;margin-bottom:5px;}
-.passenger-stars i{font-size:12px;color:#334155;}
-.passenger-stars i.lit{color:#FBBF24;}
-.passenger-rating-num{font-size:12px;font-weight:700;color:#FBBF24;margin-left:4px;}
-.passenger-rating-label{font-size:10px;color:rgba(255,255,255,0.4);font-weight:500;}
-.passenger-stats{display:flex;gap:8px;margin-top:6px;}
-.pstat{display:flex;align-items:center;gap:4px;font-size:11px;color:rgba(255,255,255,0.6);font-weight:600;}
-.pstat i{font-size:10px;color:rgba(0,200,83,0.8);}
-.pstat strong{color:#fff;}
-.passenger-loading{display:flex;align-items:center;justify-content:center;padding:8px 0;gap:8px;color:rgba(255,255,255,0.5);font-size:12px;font-weight:600;}
-.pspinner{width:16px;height:16px;border:2px solid rgba(0,200,83,0.2);border-top:2px solid var(--primary);border-radius:50%;animation:spin 0.7s linear infinite;}
-
-/* ══ PICKUP MINI MAP ══ */
-.pickup-map-section{margin-bottom:16px;}
-.pickup-map-label{font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:8px;display:flex;align-items:center;gap:5px;}
-.pickup-map-label i{color:var(--primary);}
-#offer-pickup-map-container{height:160px;border-radius:14px;overflow:hidden;border:2px solid var(--border);box-shadow:var(--shadow-sm);position:relative;}
-#offer-pickup-map{height:100%;width:100%;}
-.pickup-addr-pill{position:absolute;bottom:8px;left:8px;right:8px;z-index:1000;background:rgba(10,15,30,0.88);backdrop-filter:blur(6px);color:#fff;padding:7px 10px;border-radius:10px;font-size:11px;font-weight:600;display:flex;align-items:center;gap:6px;border:1px solid rgba(0,200,83,0.25);}
-.pickup-addr-pill i{color:var(--primary);flex-shrink:0;}
-.pickup-addr-text{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
-
-/* ══ ROUTE SUMMARY ══ */
-.route-summary{background:#F8FAFC;border-radius:12px;padding:14px;margin-bottom:14px;}
-.route-row{display:flex;align-items:flex-start;gap:10px;padding:6px 0;}
-.route-row:not(:last-child){border-bottom:1px solid #EEF2F7;}
-.route-dot{width:10px;height:10px;border-radius:50%;flex-shrink:0;margin-top:3px;}
-.route-dot.pickup-dot{background:var(--primary);}
-.route-dot.drop-dot{background:var(--error);}
-.route-info{flex:1;min-width:0;}
-.route-lbl{font-size:10px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.4px;}
-.route-addr{font-size:13px;font-weight:600;color:var(--text-main);margin-top:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
 </style>
 </head>
 <body>
@@ -315,7 +267,7 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
                 </div>
             </div>
 
-            <!-- ═══════════ AAJ KI PERFORMANCE ═══════════ -->
+            <!-- âââââââââââ AAJ KI PERFORMANCE âââââââââââ -->
             <div class="today-stats-section" id="todayStatsSection">
                 <div class="today-stats-header">
                     <h4><i class="fas fa-chart-line" style="color:var(--primary);"></i> Aaj Ki Performance</h4>
@@ -348,13 +300,13 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
                     </div>
                 </div>
             </div>
-            <!-- ════════════════════════════════════════════ -->
+            <!-- ââââââââââââââââââââââââââââââââââââââââââââ -->
 
             <div class="radius-card">
                 <div class="radius-icon"><i class="fas fa-radar"></i></div>
                 <div class="radius-text">
                     <h4>10 KM Smart Radius</h4>
-                    <p>Sirf aap ke najdeek ke rides milenge — faraway requests filter ho jate hain</p>
+                    <p>Sirf aap ke najdeek ke rides milenge â faraway requests filter ho jate hain</p>
                 </div>
             </div>
 
@@ -386,7 +338,7 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         <div class="modal-alert-icon"><i class="fas fa-motorcycle"></i></div>
         <h2>Naya Ride Alert!</h2>
         <div class="modal-fare-display" id="modalFare">Rs. 0</div>
-        <div class="modal-meta" id="modalMeta">0 km • 0 km door</div>
+        <div class="modal-meta" id="modalMeta">0 km â¢ 0 km door</div>
         <div class="modal-details" id="modalDetails"></div>
         <div class="modal-timer"><div class="modal-timer-bar" id="modalTimerBar"></div></div>
         <div class="modal-actions">
@@ -400,59 +352,9 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
 <div id="offer-confirm-modal" style="display:none;">
     <div class="offer-confirm-content">
         <div class="offer-confirm-header">
-            <h3>🧑 Passenger Ka Jaiza Lein</h3>
-            <p>Offer bhejne se pehle passenger ki details check karein</p>
+            <h3>Apni Offer Confirm Karein</h3>
+            <p>Customer ko offer bhejne se pehle check karein</p>
         </div>
-
-        <!-- PASSENGER PROFILE CARD -->
-        <div class="passenger-profile-card" id="passengerProfileCard">
-            <div class="passenger-loading" id="passengerLoadingState">
-                <div class="pspinner"></div>
-                <span>Passenger ki info load ho rahi hai...</span>
-            </div>
-            <div id="passengerProfileData" style="display:none;width:100%;display:none;flex-direction:row;align-items:center;gap:14px;">
-                <div class="passenger-avatar" id="passengerAvatarLetter">?</div>
-                <div class="passenger-info">
-                    <div class="passenger-name" id="passengerNameDisplay">—</div>
-                    <div class="passenger-stars" id="passengerStarsDisplay"></div>
-                    <div class="passenger-stats">
-                        <div class="pstat"><i class="fas fa-route"></i> <strong id="passengerTripCount">0</strong>&nbsp;trips</div>
-                        <div class="pstat" id="passengerMemberSince" style="display:none;"><i class="fas fa-calendar-check"></i> <strong id="passengerJoinDate">—</strong></div>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- PICKUP LOCATION MAP -->
-        <div class="pickup-map-section">
-            <div class="pickup-map-label"><i class="fas fa-circle-dot"></i> Pickup Location</div>
-            <div id="offer-pickup-map-container">
-                <div id="offer-pickup-map"></div>
-                <div class="pickup-addr-pill">
-                    <i class="fas fa-map-pin"></i>
-                    <span class="pickup-addr-text" id="offerPickupAddrText">Loading...</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- ROUTE SUMMARY -->
-        <div class="route-summary">
-            <div class="route-row">
-                <div class="route-dot pickup-dot"></div>
-                <div class="route-info">
-                    <div class="route-lbl">Pickup</div>
-                    <div class="route-addr" id="offerRoutePickup">—</div>
-                </div>
-            </div>
-            <div class="route-row">
-                <div class="route-dot drop-dot"></div>
-                <div class="route-info">
-                    <div class="route-lbl">Drop-off</div>
-                    <div class="route-addr" id="offerRouteDrop">—</div>
-                </div>
-            </div>
-        </div>
-
         <div class="offer-summary">
             <div class="offer-summary-row">
                 <span style="color:var(--text-muted);font-weight:600;">Customer Ki Fare</span>
@@ -565,10 +467,10 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         document.getElementById('modalFare').textContent = 'Rs. ' + request.fare;
         document.getElementById('modalMeta').textContent = request.distance + ' km ride \u2022 ' + distanceToPickup.toFixed(1) + ' km door aap se';
         document.getElementById('modalDetails').innerHTML = `
-            <div class="modal-detail-row"><span class="label">🧑 Customer</span><span class="value">${request.name}</span></div>
-            <div class="modal-detail-row"><span class="label">🚘 Ride Type</span><span class="value">${(request.service||request.vehicle||'N/A').toUpperCase()}</span></div>
-            <div class="modal-detail-row"><span class="label">📍 Pickup</span><span class="value">${request.pickup.address.substring(0,35)}...</span></div>
-            <div class="modal-detail-row"><span class="label">🏁 Dropoff</span><span class="value">${request.destination.address.substring(0,35)}...</span></div>`;
+            <div class="modal-detail-row"><span class="label">ð§ Customer</span><span class="value">${request.name}</span></div>
+            <div class="modal-detail-row"><span class="label">ð Ride Type</span><span class="value">${(request.service||request.vehicle||'N/A').toUpperCase()}</span></div>
+            <div class="modal-detail-row"><span class="label">ð Pickup</span><span class="value">${request.pickup.address.substring(0,35)}...</span></div>
+            <div class="modal-detail-row"><span class="label">ð Dropoff</span><span class="value">${request.destination.address.substring(0,35)}...</span></div>`;
         const tb = document.getElementById('modalTimerBar'); tb.style.animation='none'; tb.offsetHeight; tb.style.animation='timer-shrink 60s linear forwards';
         document.getElementById('modalAcceptBtn').onclick = () => showOfferConfirmationModal(request.id, request.fare);
         document.getElementById('modalRejectBtn').onclick = hideRequestModal;
@@ -582,98 +484,8 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         if (modalTimeout) { clearTimeout(modalTimeout); modalTimeout = null; }
     }
 
-    let offerPickupMap = null;
-    let offerPickupMarker = null;
-
-    function renderPassengerStars(rating, container) {
-        const r = parseFloat(rating) || 0;
-        let html = '';
-        for (let i = 1; i <= 5; i++) {
-            if (r >= i) html += '<i class="fas fa-star lit"></i>';
-            else if (r >= i - 0.5) html += '<i class="fas fa-star-half-stroke lit"></i>';
-            else html += '<i class="fas fa-star"></i>';
-        }
-        if (r > 0) html += '<span class="passenger-rating-num" style="margin-left:5px;">' + r.toFixed(1) + '</span><span class="passenger-rating-label" style="margin-left:4px;">rating</span>';
-        container.innerHTML = html;
-    }
-
-    async function loadPassengerProfile(requestData) {
-        const loadingEl = document.getElementById('passengerLoadingState');
-        const profileEl = document.getElementById('passengerProfileData');
-        const avatarEl  = document.getElementById('passengerAvatarLetter');
-        const nameEl    = document.getElementById('passengerNameDisplay');
-        const starsEl   = document.getElementById('passengerStarsDisplay');
-        const tripsEl   = document.getElementById('passengerTripCount');
-        const joinEl    = document.getElementById('passengerMemberSince');
-        const joinDateEl= document.getElementById('passengerJoinDate');
-
-        loadingEl.style.display = 'flex';
-        profileEl.style.display = 'none';
-
-        const passengerName = requestData.name || 'Passenger';
-        const passengerId   = requestData.userId || requestData.passengerId || null;
-
-        let rating = 0, trips = 0, joinDate = null;
-
-        if (passengerId) {
-            try {
-                const pSnap = await get(ref(db, 'users/' + passengerId));
-                if (pSnap.exists()) {
-                    const pd = pSnap.val();
-                    rating = pd.rating || pd.avgRating || 0;
-                    trips  = pd.totalTrips || pd.tripCount || pd.completedRides || 0;
-                    joinDate = pd.createdAt || pd.joinedAt || null;
-                }
-            } catch(e) {
-                // Fallback to request-embedded data
-                rating = requestData.passengerRating || 0;
-                trips  = requestData.passengerTrips  || 0;
-            }
-        } else {
-            rating = requestData.passengerRating || 0;
-            trips  = requestData.passengerTrips  || 0;
-        }
-
-        // Populate UI
-        const initial = passengerName.charAt(0).toUpperCase();
-        avatarEl.textContent = initial;
-        nameEl.textContent   = passengerName;
-        tripsEl.textContent  = trips;
-        renderPassengerStars(rating, starsEl);
-
-        if (joinDate) {
-            const d = new Date(joinDate);
-            joinDateEl.textContent = d.toLocaleDateString('en-PK', { month: 'short', year: 'numeric' });
-            joinEl.style.display = 'flex';
-        }
-
-        loadingEl.style.display = 'none';
-        profileEl.style.display = 'flex';
-    }
-
-    function initOfferPickupMap(lat, lng, address) {
-        // Destroy previous instance
-        if (offerPickupMap) { offerPickupMap.remove(); offerPickupMap = null; offerPickupMarker = null; }
-
-        offerPickupMap = L.map('offer-pickup-map', { zoomControl: false, attributionControl: false, dragging: false, scrollWheelZoom: false, doubleClickZoom: false, touchZoom: false }).setView([lat, lng], 15);
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { maxZoom: 19 }).addTo(offerPickupMap);
-
-        const pickupIcon = L.divIcon({
-            html: `<div style="background:#00C853;width:32px;height:32px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(0,200,83,0.5);border:3px solid #fff;"><i class="fas fa-circle-dot" style="color:#fff;font-size:13px;"></i></div>`,
-            className: 'custom-div-icon', iconSize: [32, 32], iconAnchor: [16, 16]
-        });
-        offerPickupMarker = L.marker([lat, lng], { icon: pickupIcon }).addTo(offerPickupMap);
-
-        // Passenger location pin
-        const dropIcon = L.divIcon({
-            html: `<div style="background:#EF4444;width:26px;height:26px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;box-shadow:0 3px 10px rgba(239,68,68,0.4);border:2px solid #fff;"><i class="fas fa-location-dot" style="color:#fff;font-size:11px;transform:rotate(45deg);"></i></div>`,
-            className: 'custom-div-icon', iconSize: [26, 32], iconAnchor: [13, 32]
-        });
-        L.marker([lat, lng], { icon: dropIcon }).addTo(offerPickupMap);
-
-        document.getElementById('offerPickupAddrText').textContent = address || 'Pickup location';
-        setTimeout(() => offerPickupMap.invalidateSize(), 150);
-    }
+    const offerConfirmModal = document.getElementById('offer-confirm-modal');
+    let offerConfirmRequestId = null;
 
     function showOfferConfirmationModal(requestId, customerFareStr) {
         offerConfirmRequestId = requestId;
@@ -688,24 +500,6 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         document.getElementById('cancelConfirmOfferBtn').onclick = hideOfferConfirmationModal;
         cb.disabled = false;
         offerConfirmModal.style.display = 'flex';
-
-        // ── Find the request data and load passenger + map ──
-        get(ref(db, 'requests/' + requestId)).then(snap => {
-            if (!snap.exists()) return;
-            const req = snap.val();
-
-            // Route summary
-            document.getElementById('offerRoutePickup').textContent = req.pickup?.address || '—';
-            document.getElementById('offerRouteDrop').textContent   = req.destination?.address || '—';
-
-            // Load passenger profile
-            loadPassengerProfile(req);
-
-            // Init mini map
-            if (req.pickup?.lat && req.pickup?.lng) {
-                initOfferPickupMap(req.pickup.lat, req.pickup.lng, req.pickup.address || '');
-            }
-        }).catch(() => {});
     }
 
     window.selectCounterOffer = function(event) {
@@ -718,11 +512,7 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         selectedCounterOfferFare = fare;
     };
 
-    function hideOfferConfirmationModal() {
-        offerConfirmModal.style.display='none';
-        offerConfirmRequestId=null;
-        if (offerPickupMap) { offerPickupMap.remove(); offerPickupMap=null; offerPickupMarker=null; }
-    }
+    function hideOfferConfirmationModal() { offerConfirmModal.style.display='none'; offerConfirmRequestId=null; }
 
     async function sendOffer(requestId) {
         const sf = selectedCounterOfferFare;
@@ -747,7 +537,7 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
             const status = snap.val();
             if (status==='accepted') {
                 if (offerAcceptanceListener) { offerAcceptanceListener(); offerAcceptanceListener=null; }
-                alert("🎉 Customer ne aap ki offer accept kar li! Ride page par ja rahe hain.");
+                alert("ð Customer ne aap ki offer accept kar li! Ride page par ja rahe hain.");
                 stopRingtone(); window.location.href='captain-active-ride.html?rideId='+requestId;
             } else if (status==='pending'||status==='cancelled'||status==='CancelledByCustomer') {
                 if (offerAcceptanceListener) { offerAcceptanceListener(); offerAcceptanceListener=null; }
@@ -766,7 +556,7 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         } catch(e) { alert("Cancel nahi ho saka. Dobara try karein."); }
     };
 
-    // ══════════ AAJ KI PERFORMANCE LOGIC ══════════
+    // ââââââââââ AAJ KI PERFORMANCE LOGIC ââââââââââ
     function loadTodayStats() {
         const today = new Date();
         const todayStr = today.toISOString().split('T')[0];
@@ -801,14 +591,10 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
 
             document.getElementById('todayRides').textContent = totalRides;
             document.getElementById('todayEarnings').textContent = 'Rs. ' + netEarnings;
-            document.getElementById('todayNetSub').textContent = `Gross: Rs.${grossEarnings} � Fee: Rs.${commission}`;
+            document.getElementById('todayNetSub').textContent = `Gross: Rs.${grossEarnings} · Fee: Rs.${commission}`;
             document.getElementById('todayCommission').textContent = 'Rs. ' + commission;
-            document.getElementById('todayCommissionSub').textContent = totalRides > 0 ? totalRides + ' ride(s) · Gross: Rs.' + grossEarnings : 'Abhi koi ride nahi';
+            document.getElementById('todayCommissionSub').textContent = totalRides > 0 ? totalRides + ' ride(s) - Gross: Rs.' + grossEarnings : 'Abhi koi ride nahi';
             document.getElementById('todayRidesSub').textContent = totalRides > 0 ? 'Gross: Rs.' + grossEarnings : 'Abhi koi ride nahi';
-
-
-
-
 
             if (ratingCount > 0) {
                 document.getElementById('todayRating').textContent = (ratingSum / ratingCount).toFixed(1) + ' \u2605';
@@ -819,7 +605,7 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
             }
         });
     }
-    // ══════════════════════════════════════════════
+    // ââââââââââââââââââââââââââââââââââââââââââââââ
 
     onAuthStateChanged(auth, async (user) => {
         const authStatus = document.getElementById('authStatus');
@@ -850,7 +636,7 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
                         if(isOnline) startTracking(); else stopTracking();
                     });
                     loadWalletBalance();
-                    loadTodayStats(); // ← AAJ KI STATS LOAD
+                    loadTodayStats(); // â AAJ KI STATS LOAD
                 } else {
                     const as=captainData.status||'Pending';
                     document.getElementById('approvalAlertContainer').innerHTML='<div class="approval-alert"><i class="fas fa-triangle-exclamation"></i><p>Application Status: <strong>'+as+'</strong>. Approval ke baad hi online ho sakte hain.</p></div>';
@@ -859,7 +645,7 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
                     document.getElementById('todayStatsSection').style.display='none';
                 }
             } else {
-                authStatus.innerHTML='<div class="message-box" style="background:#FEF2F2;color:#EF4444;border:1px solid #FECACA;">❌ Captain account nahi mila.</div><div style="text-align:center;padding:10px 20px;"><a href="rider-register.html" style="background:var(--primary);color:#fff;padding:12px 24px;border-radius:10px;text-decoration:none;font-weight:700;display:inline-block;">Captain Apply Karein</a></div>';
+                authStatus.innerHTML='<div class="message-box" style="background:#FEF2F2;color:#EF4444;border:1px solid #FECACA;">â Captain account nahi mila.</div><div style="text-align:center;padding:10px 20px;"><a href="rider-register.html" style="background:var(--primary);color:#fff;padding:12px 24px;border-radius:10px;text-decoration:none;font-weight:700;display:inline-block;">Captain Apply Karein</a></div>';
             }
         } else { window.location.href='index.html'; }
     });
@@ -907,7 +693,7 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
     function loadWalletBalance() {
         onValue(ref(db,'riders/'+currentCaptain.uid+'/walletBalance'),(snap)=>{
             const bal=snap.val()||0; captainData.walletBalance=bal; document.getElementById('walletDisplay').textContent=bal;
-            if(isApproved(captainData)&&captainData.status==='active'&&!lowBalanceChecked&&bal<TOP_UP_THRESHOLD){lowBalanceChecked=true;alert('⚠️ Wallet balance kam hai: Rs. '+bal+'. Rides lene ke liye top-up karein.');setTimeout(()=>window.location.href='captain-profile.html',300);}
+            if(isApproved(captainData)&&captainData.status==='active'&&!lowBalanceChecked&&bal<TOP_UP_THRESHOLD){lowBalanceChecked=true;alert('â ï¸ Wallet balance kam hai: Rs. '+bal+'. Rides lene ke liye top-up karein.');setTimeout(()=>window.location.href='captain-profile.html',300);}
         });
     }
 
@@ -930,7 +716,7 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
                     const req=s.val();
                     if(req&&req.status==='counter_offered'){
                         panel.classList.remove('hidden');
-                        panel.innerHTML='<h3 style="font-size:16px;font-weight:800;margin-bottom:8px;color:var(--text-main);"><i class="fas fa-clock" style="color:var(--primary);"></i> Offer Bheji Gayi!</h3><p style="font-size:13px;color:var(--text-muted);margin-bottom:4px;">Rs. '+req.fare+' ka offer <strong>'+req.name+'</strong> ko bheja gaya. Customer ka jawab intezaar hai...</p><p style="font-size:12px;color:var(--warning);font-weight:700;margin-top:8px;">⚠️ Abhi mat chalein! 15 second wait karein.</p><button onclick="cancelOffer(\''+cri+'\')" style="margin-top:14px;background:var(--error);color:#fff;border:none;padding:10px 18px;border-radius:8px;font-weight:700;cursor:pointer;font-size:13px;">Offer Cancel Karein</button>';
+                        panel.innerHTML='<h3 style="font-size:16px;font-weight:800;margin-bottom:8px;color:var(--text-main);"><i class="fas fa-clock" style="color:var(--primary);"></i> Offer Bheji Gayi!</h3><p style="font-size:13px;color:var(--text-muted);margin-bottom:4px;">Rs. '+req.fare+' ka offer <strong>'+req.name+'</strong> ko bheja gaya. Customer ka jawab intezaar hai...</p><p style="font-size:12px;color:var(--warning);font-weight:700;margin-top:8px;">â ï¸ Abhi mat chalein! 15 second wait karein.</p><button onclick="cancelOffer(\''+cri+'\')" style="margin-top:14px;background:var(--error);color:#fff;border:none;padding:10px 18px;border-radius:8px;font-weight:700;cursor:pointer;font-size:13px;">Offer Cancel Karein</button>';
                         listenForOfferAcceptance(cri);
                     } else panel.classList.add('hidden');
                 }).catch(()=>update(ref(db,'riders/'+currentCaptain.uid),{currentRequestId:null}));
@@ -984,50 +770,7 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         filtered.forEach(req=>{
             const el=document.createElement('div'); el.className='request-card';
             const dc=req.distanceToPickup!==null?'<span class="distance-chip"><i class="fas fa-location-dot"></i>'+req.distanceToPickup.toFixed(1)+' km door</span>':'';
-
-            // Build star HTML for passenger
-            const pRating = parseFloat(req.passengerRating) || 0;
-            let starsHtml = '';
-            if (pRating > 0) {
-                let stars = '';
-                for (let i=1;i<=5;i++) {
-                    if (pRating>=i) stars+='<i class="fas fa-star filled"></i>';
-                    else if (pRating>=i-0.5) stars+='<i class="fas fa-star-half-stroke filled"></i>';
-                    else stars+='<i class="fas fa-star"></i>';
-                }
-                starsHtml = '<div class="passenger-meta"><div class="star-row">'+stars+'<span class="rating-val">'+pRating.toFixed(1)+'</span></div></div>';
-            }
-            const pTrips = req.passengerTrips || 0;
-            const tripsHtml = '<span class="trips-chip" style="margin-left:4px;"><i class="fas fa-route"></i>'+pTrips+' trips</span>';
-            const passengerMetaHtml = '<div class="passenger-meta" style="margin-top:5px;">'+
-                (pRating>0?'<div class="star-row">'+starsHtml.replace(/<div class="passenger-meta">|<\/div>$/g,'')+'</div>':'<div class="star-row" style="color:#94A3B8;font-size:10px;font-weight:600;">No rating yet</div>')+
-                tripsHtml+'</div>';
-
-            el.innerHTML='<div class="request-card-top"><div><div class="request-card-type">'+(req.vehicle||req.service||'N/A').toUpperCase()+'</div></div><div class="request-card-fare">Rs. '+req.fare+' <span>offered</span></div></div>'+
-            '<div class="request-detail customer"><i class="fas fa-user"></i><div><div class="detail-label">Passenger</div><div class="detail-text" style="font-weight:700;">'+req.name+'</div>'+
-            '<div class="passenger-meta" style="margin-top:4px;">';
-
-            // Build inline stars
-            let inlineStars = '';
-            if (pRating > 0) {
-                for (let i=1;i<=5;i++) {
-                    if (pRating>=i) inlineStars+='<i class="fas fa-star filled"></i>';
-                    else if (pRating>=i-0.5) inlineStars+='<i class="fas fa-star-half-stroke filled"></i>';
-                    else inlineStars+='<i class="fas fa-star"></i>';
-                }
-                inlineStars += '<span class="rating-val">'+pRating.toFixed(1)+'</span>';
-            } else {
-                inlineStars = '<span style="font-size:10px;color:var(--text-light);font-weight:600;">Rating nahi hai</span>';
-            }
-
-            el.innerHTML='<div class="request-card-top"><div><div class="request-card-type">'+(req.vehicle||req.service||'N/A').toUpperCase()+'</div></div><div class="request-card-fare">Rs. '+req.fare+' <span>offered</span></div></div>'+
-            '<div class="request-detail customer"><i class="fas fa-user"></i><div><div class="detail-label">Passenger</div><div class="detail-text" style="font-weight:700;">'+req.name+'</div>'+
-            '<div class="passenger-meta"><div class="star-row">'+inlineStars+'</div><span class="trips-chip" style="margin-left:2px;"><i class="fas fa-route"></i>'+pTrips+' trips</span></div>'+
-            '</div></div>'+
-            '<div class="request-detail pickup"><i class="fas fa-circle-dot"></i><div><div class="detail-label">Pickup</div><div class="detail-text">'+req.pickup.address.substring(0,50)+'...</div></div></div>'+
-            '<div class="request-detail dropoff"><i class="fas fa-location-dot"></i><div><div class="detail-label">Dropoff</div><div class="detail-text">'+req.destination.address.substring(0,50)+'...</div></div></div>'+
-            '<div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;"><div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;"><span style="background:#F1F5F9;color:var(--text-muted);font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;"><i class="fas fa-road"></i> '+req.distance+' km ride</span>'+dc+'</div></div>'+
-            '<div class="request-actions"><button class="btn-accept" data-id="'+req.id+'" data-fare="'+req.fare+'" onclick="showOfferConfirmationModal(this.dataset.id,this.dataset.fare)"><i class="fas fa-eye"></i> Dekhein &amp; Offer Karein</button><button class="btn-reject" onclick="this.closest(\'.request-card\').remove()">&#x2715;</button></div>';
+            el.innerHTML='<div class="request-card-top"><div><div class="request-card-type">'+(req.vehicle||req.service||'N/A').toUpperCase()+'</div></div><div class="request-card-fare">Rs. '+req.fare+' <span>offered</span></div></div><div class="request-detail customer"><i class="fas fa-user"></i><div><div class="detail-label">Customer</div><div class="detail-text">'+req.name+'</div></div></div><div class="request-detail pickup"><i class="fas fa-circle-dot"></i><div><div class="detail-label">Pickup</div><div class="detail-text">'+req.pickup.address.substring(0,50)+'...</div></div></div><div class="request-detail dropoff"><i class="fas fa-location-dot"></i><div><div class="detail-label">Dropoff</div><div class="detail-text">'+req.destination.address.substring(0,50)+'...</div></div></div><div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;"><div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;"><span style="background:#F1F5F9;color:var(--text-muted);font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;"><i class="fas fa-road"></i> '+req.distance+' km ride</span>'+dc+'</div></div><div class="request-actions"><button class="btn-accept" data-id="'+req.id+'" data-fare="'+req.fare+'" onclick="showOfferConfirmationModal(this.dataset.id,this.dataset.fare)"><i class="fas fa-bolt"></i> Review &amp; Offer</button><button class="btn-reject" onclick="this.closest(\'.request-card\').remove()">&#x2715;</button></div>';
             con.appendChild(el);
         });
     }
@@ -1039,10 +782,10 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
 <script>
 if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").then(()=>console.log("SW Registered")).catch(e=>console.log(e));
 </script>
-<!-- ═══════════════════════════════════════════════════════════
+<!-- âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ
      RAFTAROO PWA JS SNIPPET v3.0
      </body> se pehle paste karein (har HTML page mein)
-     ═══════════════════════════════════════════════════════════ -->
+     âââââââââââââââââââââââââââââââââââââââââââââââââââââââââââ -->
 
 <!-- Install Banner HTML (body ke andar, pehli line) -->
 <div id="raftaroo-install-banner" style="
@@ -1062,7 +805,7 @@ if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").then
   animation:raftaroo-banner-in 0.4s cubic-bezier(0.34,1.56,0.64,1) both;
 ">
   <div style="display:flex;align-items:center;gap:12px;flex:1;min-width:0;">
-    <div style="width:42px;height:42px;background:rgba(255,255,255,0.2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">🏍️</div>
+    <div style="width:42px;height:42px;background:rgba(255,255,255,0.2);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;">ðï¸</div>
     <div style="min-width:0;">
       <p style="color:#fff;font-weight:800;margin:0;font-size:14px;line-height:1.2;">Raftaroo App Install Karein!</p>
       <p style="color:rgba(255,255,255,0.75);margin:2px 0 0;font-size:11px;">Fast booking, offline access & notifications</p>
@@ -1070,7 +813,7 @@ if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").then
   </div>
   <div style="display:flex;gap:8px;flex-shrink:0;">
     <button id="raftaroo-install-btn" style="background:#fff;color:#00A040;border:none;padding:9px 16px;border-radius:10px;font-weight:800;font-size:13px;cursor:pointer;font-family:inherit;white-space:nowrap;">Install</button>
-    <button id="raftaroo-close-btn" style="background:rgba(255,255,255,0.2);border:none;padding:9px 12px;border-radius:10px;color:#fff;font-weight:700;cursor:pointer;font-size:14px;line-height:1;">✕</button>
+    <button id="raftaroo-close-btn" style="background:rgba(255,255,255,0.2);border:none;padding:9px 12px;border-radius:10px;color:#fff;font-weight:700;cursor:pointer;font-size:14px;line-height:1;">â</button>
   </div>
 </div>
 
@@ -1092,7 +835,7 @@ if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").then
   let deferredPrompt = null;
   let swRegistration = null;
 
-  // ── 1. Register Service Worker ──────────────────────────────
+  // ââ 1. Register Service Worker ââââââââââââââââââââââââââââââ
   if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
       navigator.serviceWorker
@@ -1106,7 +849,7 @@ if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").then
             if (!document.hidden) reg.update();
           }, 60000);
 
-          // Handle SW updates — notify user
+          // Handle SW updates â notify user
           reg.addEventListener('updatefound', () => {
             const newWorker = reg.installing;
             newWorker?.addEventListener('statechange', () => {
@@ -1123,7 +866,7 @@ if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").then
     });
   }
 
-  // ── 2. Install Prompt (beforeinstallprompt) ──────────────────
+  // ââ 2. Install Prompt (beforeinstallprompt) ââââââââââââââââââ
   window.addEventListener('beforeinstallprompt', (e) => {
     e.preventDefault();
     deferredPrompt = e;
@@ -1140,7 +883,7 @@ if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").then
     }
   });
 
-  // ── 3. Install button click ──────────────────────────────────
+  // ââ 3. Install button click ââââââââââââââââââââââââââââââââââ
   document.getElementById('raftaroo-install-btn')?.addEventListener('click', async () => {
     if (!deferredPrompt) return;
     deferredPrompt.prompt();
@@ -1157,28 +900,28 @@ if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").then
     deferredPrompt = null;
   });
 
-  // ── 4. Close button ─────────────────────────────────────────
+  // ââ 4. Close button âââââââââââââââââââââââââââââââââââââââââ
   document.getElementById('raftaroo-close-btn')?.addEventListener('click', () => {
     hideBanner();
     sessionStorage.setItem(DISMISSED_KEY, '1');
   });
 
-  // ── 5. App installed callback ────────────────────────────────
+  // ââ 5. App installed callback ââââââââââââââââââââââââââââââââ
   window.addEventListener('appinstalled', () => {
     hideBanner();
     deferredPrompt = null;
-    console.log('[Raftaroo PWA] App installed successfully! 🎉');
+    console.log('[Raftaroo PWA] App installed successfully! ð');
     if (typeof gtag !== 'undefined') {
       gtag('event', 'pwa_install_complete', { event_category: 'PWA' });
     }
   });
 
-  // ── 6. Update toast notification ────────────────────────────
+  // ââ 6. Update toast notification ââââââââââââââââââââââââââââ
   function showUpdateToast() {
     const toast = document.createElement('div');
     toast.id = 'raftaroo-update-toast';
     toast.innerHTML = `
-      <span>🆕 Raftaroo ka naya version available hai!</span>
+      <span>ð Raftaroo ka naya version available hai!</span>
       <button onclick="window.location.reload()" style="
         background:#00C853;color:#0A0F1E;border:none;
         padding:7px 14px;border-radius:8px;font-weight:700;
@@ -1211,7 +954,7 @@ if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").then
     setTimeout(() => toast.remove(), 10000);
   }
 
-  // ── 7. Handle messages from SW ──────────────────────────────
+  // ââ 7. Handle messages from SW ââââââââââââââââââââââââââââââ
   function handleSWMessage(event) {
     const { type, version } = event.data || {};
     if (type === 'SW_UPDATED') {
@@ -1219,7 +962,7 @@ if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").then
     }
   }
 
-  // ── 8. Network status indicator ─────────────────────────────
+  // ââ 8. Network status indicator âââââââââââââââââââââââââââââ
   function updateOnlineStatus() {
     const isOnline = navigator.onLine;
     document.documentElement.setAttribute('data-network', isOnline ? 'online' : 'offline');
@@ -1234,7 +977,7 @@ if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").then
     if (document.getElementById('raftaroo-offline-badge')) return;
     const badge = document.createElement('div');
     badge.id = 'raftaroo-offline-badge';
-    badge.textContent = '📵 Offline Mode';
+    badge.textContent = 'ðµ Offline Mode';
     Object.assign(badge.style, {
       position: 'fixed',
       top: '68px',
@@ -1258,12 +1001,12 @@ if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").then
   window.addEventListener('offline', updateOnlineStatus);
   updateOnlineStatus();
 
-  // ── Helper ───────────────────────────────────────────────────
+  // ââ Helper âââââââââââââââââââââââââââââââââââââââââââââââââââ
   function hideBanner() {
     if (banner) banner.style.display = 'none';
   }
 
-  // ── Expose helper for app code ───────────────────────────────
+  // ââ Expose helper for app code âââââââââââââââââââââââââââââââ
   window.RaftarooPWA = {
     getVersion: () => {
       swRegistration?.active?.postMessage({ type: 'GET_VERSION' });
