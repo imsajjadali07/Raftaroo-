@@ -1206,6 +1206,7 @@ body { background:var(--bg); color:var(--text-main); overflow:hidden; height:100
             updates[`/requests/${currentActiveRideId}/status`] = 'completed';
             updates[`/requests/${currentActiveRideId}/ratingSubmitted`] = true;
             updates[`/requests/${currentActiveRideId}/commission`] = commission;
+            updates[`/requests/${currentActiveRideId}/commissionDeducted`] = commission;
             updates[`/requests/${currentActiveRideId}/captainEarning`] = captainEarning;
             updates[`/requests/${currentActiveRideId}/completedAt`] = new Date().toISOString();
             // Captain record
