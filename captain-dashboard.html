@@ -686,12 +686,9 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
 
     function initializeMap() {
         if (map) map.remove();
-        const dc=[24.8607,67.0011];
-        map=L.map('map',{zoomControl:false,attributionControl:false}).setView(dc,13);
+        map=L.map('map',{zoomControl:false,attributionControl:false});
         L.control.zoom({position:'bottomright'}).addTo(map);
         L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{maxZoom:19}).addTo(map);
-        captainMarker=L.marker(dc,{icon:captainIcon(captainData.vehicleType||'Motorcycle')}).addTo(map).bindPopup('<b>Aap Yahan Hain</b>');
-        radiusCircle=L.circle(dc,{color:'#00C853',fillColor:'#00C853',fillOpacity:0.06,weight:2,opacity:0.4,dashArray:'6,6',radius:RIDE_RADIUS_KM*1000}).addTo(map);
         map.invalidateSize();
     }
 
@@ -700,7 +697,13 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         if (!navigator.geolocation) { alert('Geolocation support nahi hai.'); return; }
         geoWatchId=navigator.geolocation.watchPosition(async(pos)=>{
             const {latitude:la,longitude:lo}=pos.coords;
-            captainMarker.setLatLng([la,lo]); radiusCircle.setLatLng([la,lo]); map.setView([la,lo]);
+            if(!captainMarker){
+                captainMarker=L.marker([la,lo],{icon:captainIcon(captainData.vehicleType||'Motorcycle')}).addTo(map).bindPopup('<b>Aap Yahan Hain</b>');
+                radiusCircle=L.circle([la,lo],{color:'#00C853',fillColor:'#00C853',fillOpacity:0.06,weight:2,opacity:0.4,dashArray:'6,6',radius:RIDE_RADIUS_KM*1000}).addTo(map);
+                map.setView([la,lo],13);
+            } else {
+                captainMarker.setLatLng([la,lo]); radiusCircle.setLatLng([la,lo]); map.setView([la,lo]);
+            }
             await update(ref(db,'riders/'+currentCaptain.uid),{location:{lat:la,lng:lo},timestamp:new Date().toISOString()});
         },(err)=>{ if(err.code===err.PERMISSION_DENIED){alert("Location access deny kiya gaya.");document.getElementById('statusToggleSwitch').checked=false;toggleStatus(false);}},{enableHighAccuracy:true,timeout:5000,maximumAge:0});
     }
