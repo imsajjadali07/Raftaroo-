@@ -95,7 +95,7 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
 .today-stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
 .today-stat-card.rides::before{background:var(--primary);}
 .today-stat-card.earnings::before{background:#3B82F6;}
-.today-stat-card.commission{display:none!important;}
+.today-stat-card.commission::before{background:#EF4444;}
 .today-stat-card.rating::before{background:#F59E0B;}
 .today-stat-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;}
 .rides .today-stat-icon{background:var(--primary-light);color:var(--primary);}
@@ -587,13 +587,15 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         const months = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
         document.getElementById('todayDateChip').textContent = days[today.getDay()] + ', ' + today.getDate() + ' ' + months[today.getMonth()];
 
-        // Free Rides Banner — pehli 3 rides free
-        const freeLeft = Math.max(0, 3 - (parseInt(captainData.totalRides)||0));
+        // Free Rides Banner — Pehli 3 rides free for new captains
+        const FREE_RIDES_LIMIT = 3;
+        const totalRidesDone = parseInt(captainData.totalRides || 0);
+        const freeLeft = Math.max(0, FREE_RIDES_LIMIT - totalRidesDone);
         const freeRidesBanner = document.getElementById('freeRidesBanner');
         if (freeLeft > 0) {
             freeRidesBanner.style.display = 'flex';
             document.getElementById('freeRidesBannerText').textContent =
-                freeLeft === 1 ? '🎁 1 Free Ride Baqi! (No Commission)' : `🎁 ${freeLeft} Free Rides Baqi! (No Commission)`;
+                freeLeft === 1 ? '🎁 Aapki 1 Free Ride Baqi Hai! (Koi Commission Nahi)' : `🎁 ${freeLeft} Free Rides Baqi! (Koi Commission Nahi)`;
         } else {
             freeRidesBanner.style.display = 'none';
         }
@@ -622,16 +624,14 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
                 if (rating && parseInt(rating) > 0) { ratingSum += parseFloat(rating); ratingCount++; }
             });
 
-            const netEarnings = grossEarnings - totalCommission; // Commission kat ke net
+            const netEarnings = grossEarnings - totalCommission;
 
             document.getElementById('todayRides').textContent = totalRides;
-            document.getElementById('todayEarnings').textContent = 'Rs. ' + grossEarnings;
-            document.getElementById('todayNetSub').textContent = totalCommission > 0
-                ? `Rs. ${totalCommission} commission kata — Net: Rs. ${netEarnings}`
-                : `Poori fare — Koi commission nahi (Free Rides)`;
-            document.getElementById('todayRidesSub').textContent = totalRides > 0 ? 'Total: Rs.' + grossEarnings : 'Abhi koi ride nahi';
+            document.getElementById('todayEarnings').textContent = 'Rs. ' + netEarnings;
+            document.getElementById('todayNetSub').textContent = totalCommission > 0 ? `Commission: Rs.${totalCommission} kata` : `Koi commission nahi (free rides)`;
+            document.getElementById('todayRidesSub').textContent = totalRides > 0 ? 'Total Fare: Rs.' + grossEarnings : 'Abhi koi ride nahi';
             document.getElementById('todayCommission').textContent = 'Rs. ' + totalCommission;
-            document.getElementById('todayCommissionSub').textContent = totalCommission > 0 ? '10% har ride se' : 'Free rides active';
+            document.getElementById('todayCommissionSub').textContent = totalCommission > 0 ? '10% platform fee' : 'Koi commission nahi';
 
             if (ratingCount > 0) {
                 document.getElementById('todayRating').textContent = (ratingSum / ratingCount).toFixed(1) + ' \u2605';
@@ -730,22 +730,23 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
     }
 
     let lowBalanceChecked=false;
-    const FREE_RIDES_TOTAL = 3;
-    const COMMISSION_RATE_PCT = 10; // 10%
-
     function loadWalletBalance() {
         const TOP_UP_THRESHOLD = 100;
+        const FREE_RIDES_LIMIT = 3;
         onValue(ref(db,'riders/'+currentCaptain.uid+'/walletBalance'),(snap)=>{
             const bal=snap.val()||0; captainData.walletBalance=bal; document.getElementById('walletDisplay').textContent=bal;
             const walletBadge = document.querySelector('.wallet-badge');
             const walletLowBanner = document.getElementById('walletLowBanner');
             const walletLowBannerText = document.getElementById('walletLowBannerText');
-            const freeLeft = Math.max(0, FREE_RIDES_TOTAL - (parseInt(captainData.totalRides)||0));
+            const totalRidesDone = parseInt(captainData.totalRides || 0);
+            const freeLeft = Math.max(0, FREE_RIDES_LIMIT - totalRidesDone);
+            const hasFreeRides = freeLeft > 0;
+
             if (walletBadge) {
                 if (bal < 0) {
                     walletBadge.style.background = '#FEE2E2';
                     walletBadge.style.color = '#DC2626';
-                } else if (bal < TOP_UP_THRESHOLD && freeLeft === 0) {
+                } else if (bal < TOP_UP_THRESHOLD && !hasFreeRides) {
                     walletBadge.style.background = '#FEF9C3';
                     walletBadge.style.color = '#854D0E';
                 } else {
@@ -754,39 +755,23 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
                 }
             }
             if (walletLowBanner) {
-                if (freeLeft === 0 && bal < TOP_UP_THRESHOLD) {
+                if (!hasFreeRides && bal < TOP_UP_THRESHOLD) {
                     walletLowBanner.style.display = 'flex';
                     if (walletLowBannerText) {
                         walletLowBannerText.textContent = bal < 0
-                            ? `❌ Wallet negative: Rs. ${bal} — Foran Top-Up Karein!`
-                            : `⚠️ Wallet kam hai: Rs. ${bal} — Top-Up Karein!`;
+                            ? `❌ Wallet negative: Rs. ${bal} — Rides band hain! Foran Top-Up Karein!`
+                            : `⚠️ Wallet kam hai: Rs. ${bal} — Rides lene k liye Top-Up Karein!`;
                     }
                 } else {
                     walletLowBanner.style.display = 'none';
                 }
             }
-
-            // Block rides if wallet insufficient and no free rides left
-            const ridesSection = document.getElementById('incomingRequestsList');
-            const requestsTabBtn = document.querySelector('.tab-button[data-tab="requests-tab"]');
-            if (freeLeft === 0 && bal < TOP_UP_THRESHOLD) {
-                // Rides dikhana band karo
-                if (ridesSection) {
-                    ridesSection.innerHTML = `
-                        <div class="empty-state" style="padding:30px 20px;">
-                            <div class="empty-icon" style="background:#FEF2F2;color:#EF4444;"><i class="fas fa-wallet"></i></div>
-                            <h4 style="color:#EF4444;">Wallet Top-Up Karein</h4>
-                            <p style="margin-bottom:16px;">Rides lene ke liye wallet mein kam az kam Rs. 100 hona chahiye (10% commission ke liye).</p>
-                            <a href="captain-profile.html" style="background:var(--primary);color:#fff;padding:12px 24px;border-radius:10px;text-decoration:none;font-weight:700;font-size:14px;display:inline-block;">💳 Top-Up Karein</a>
-                        </div>`;
-                }
-            }
-
-            if(isApproved(captainData)&&captainData.status==='active'&&!lowBalanceChecked&&freeLeft===0&&bal<TOP_UP_THRESHOLD){
+            // Agar wallet kam ho aur free rides bhi khatam — rides block karo aur profile bhejo
+            if(isApproved(captainData)&&captainData.status==='active'&&!lowBalanceChecked&&!hasFreeRides&&bal<TOP_UP_THRESHOLD){
                 lowBalanceChecked=true;
                 const msg = bal < 0
-                    ? `❌ Wallet balance negative hai: Rs. ${bal}\n\nAb aap rides nahi le sakte jab tak wallet top-up na karein.\n\n💳 JazzCash/EasyPaisa se paise add karein — Profile → Top-Up tab`
-                    : `⚠️ Wallet balance bahut kam hai: Rs. ${bal}\n\n💡 Raftaroo 10% commission har ride se wallet se katta hai.\n💳 Rides jaari rakhne k liye ab top-up karein!`;
+                    ? `❌ Wallet balance negative hai: Rs. ${bal}\n\n🚫 Ab aap rides nahi le sakte jab tak wallet top-up na karein.\n\n💳 JazzCash/EasyPaisa se paise add karein — Profile → Top-Up`
+                    : `⚠️ Wallet balance bahut kam hai: Rs. ${bal}\n\n💡 Raftaroo 10% commission har ride se wallet se katta hai.\n🚫 Rides band ho jayengi agar wallet zero ya negative ho jaaye.\n💳 Abhi top-up karein!`;
                 alert(msg);
                 setTimeout(()=>window.location.href='captain-profile.html',300);
             }
@@ -835,6 +820,27 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
             const rd=snapshot.val(); let pending=[], closest=null, minD=Infinity;
             const rs=await get(ref(db,'riders/'+currentCaptain.uid)); if(rs.exists()) captainData=rs.val();
             const cl=captainMarker?captainMarker.getLatLng():captainData.location, cv=captainData.vehicleType||'';
+
+            // ─── Wallet & Free Rides check ───────────────────────────
+            const FREE_RIDES_LIMIT = 3;
+            const totalRidesDone = parseInt(captainData.totalRides || 0);
+            const freeLeft = Math.max(0, FREE_RIDES_LIMIT - totalRidesDone);
+            const walBal = parseInt(captainData.walletBalance || 0);
+            const walletOk = freeLeft > 0 || walBal > 0;
+
+            if (!walletOk) {
+                // Wallet zero aur free rides khatam — rides show nahi karein
+                const con = document.getElementById('incomingRequestsList');
+                con.innerHTML = `<div class="empty-state">
+                    <div class="empty-icon" style="background:#FEF2F2;color:#EF4444;"><i class="fas fa-wallet"></i></div>
+                    <h4 style="color:#EF4444;">Wallet Empty!</h4>
+                    <p>Rides lene k liye wallet top-up karein. Commission har ride se wallet se kata jata hai.</p>
+                    <a href="captain-profile.html" style="display:inline-block;margin-top:14px;background:var(--primary);color:#fff;padding:10px 22px;border-radius:10px;font-weight:700;text-decoration:none;font-size:13px;"><i class="fas fa-plus"></i> Abhi Top-Up Karein</a>
+                </div>`;
+                document.getElementById('pendingRequestsCount').textContent='0';
+                document.getElementById('reqCountChip').textContent='0';
+                return;
+            }
             if(rd){
                 Object.keys(rd).forEach(key=>{
                     const req=rd[key];
@@ -859,15 +865,6 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         const con=document.getElementById('incomingRequestsList'), ari=captainData.currentRequestId;
         con.innerHTML='';
         if(!isApproved(captainData)){con.innerHTML='<div class="empty-state"><div class="empty-icon"><i class="fas fa-lock"></i></div><h4>Approved Nahi Hain</h4><p>Approval ke baad hi ride requests dikh sakti hain</p></div>';document.getElementById('pendingRequestsCount').textContent='0';document.getElementById('reqCountChip').textContent='0';return;}
-
-        // Wallet check — free rides khatam hone ke baad Rs.100 minimum chahiye
-        const freeLeft = Math.max(0, 3 - (parseInt(captainData.totalRides)||0));
-        const bal = parseInt(captainData.walletBalance)||0;
-        if (freeLeft === 0 && bal < 100) {
-            con.innerHTML=`<div class="empty-state" style="padding:30px 20px;"><div class="empty-icon" style="background:#FEF2F2;color:#EF4444;"><i class="fas fa-wallet"></i></div><h4 style="color:#EF4444;">Wallet Top-Up Karein</h4><p style="margin-bottom:16px;">Rides lene ke liye wallet mein Rs. 100+ hona chahiye. 10% commission har ride ke baad katega.</p><a href="captain-profile.html" style="background:var(--primary);color:#fff;padding:12px 24px;border-radius:10px;text-decoration:none;font-weight:700;font-size:14px;display:inline-block;">💳 Top-Up Karein</a></div>`;
-            document.getElementById('pendingRequestsCount').textContent='0';document.getElementById('reqCountChip').textContent='0';return;
-        }
-
         const filtered=requests.filter(r=>r.id!==ari&&r.distanceToPickup!==null&&r.distanceToPickup<=RIDE_RADIUS_KM);
         if(filtered.length===0){con.innerHTML='<div class="empty-state"><div class="empty-icon"><i class="fas fa-search-location"></i></div><h4>Koi Request Nahi</h4><p>Aap ke '+RIDE_RADIUS_KM+' km radius mein abhi koi ride nahi</p></div>';document.getElementById('pendingRequestsCount').textContent='0';document.getElementById('reqCountChip').textContent='0';return;}
         document.getElementById('pendingRequestsCount').textContent=filtered.length;
