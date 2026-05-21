@@ -469,7 +469,7 @@ background:#FEF2F2; color:var(--error); border:1px solid rgba(239,68,68,0.2);
             <button onclick="switchTab('earnings')" style="background:#FFFDE7;border:1px solid rgba(245,158,11,0.2);border-radius:var(--radius-sm);padding:14px;text-align:center;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;">
                 <div style="font-size:22px;margin-bottom:6px;">🏆</div>
                 <div style="font-size:13px;font-weight:700;color:#14532d;">85-Ride Challenge</div>
-                <div style="font-size:11px;color:var(--text-muted);margin-top:2px;">Commission-Free week</div>
+                
             </button>
             <button onclick="switchTab('history')" style="background:#F5F3FF;border:1px solid rgba(139,92,246,0.2);border-radius:var(--radius-sm);padding:14px;text-align:center;cursor:pointer;font-family:'Plus Jakarta Sans',sans-serif;">
                 <div style="font-size:22px;margin-bottom:6px;">📋</div>
@@ -637,76 +637,22 @@ background:#FEF2F2; color:var(--error); border:1px solid rgba(239,68,68,0.2);
             <div class="ec-label">Gross Earnings</div>
             <div class="ec-value">Rs. <span id="totalGrossEarnings">—</span></div>
         </div>
-        <div class="earn-card deduct">
-            <div class="ec-label">Commission (10%)</div>
-            <div class="ec-value">- Rs. <span id="totalCommissionCut">—</span></div>
-        </div>
         <div class="earn-card" style="grid-column:1/-1;background:var(--primary-light);border-color:rgba(0,200,83,0.2);">
-            <div class="ec-label" style="color:var(--primary-dark);">Net Earnings (Aap Ka Hissa)</div>
+            <div class="ec-label" style="color:var(--primary-dark);">Aap Ki Total Earning (Koi Commission Nahi)</div>
             <div class="ec-value" style="color:var(--primary-dark);">Rs. <span id="totalNetEarnings">—</span></div>
         </div>
     </div>
 
     <div class="section-card">
-        <div class="week-header">
-            <div class="week-title"><i class="fas fa-fire" style="color:#f97316;"></i> Commission-Free Challenge</div>
-            <div class="week-range" id="weekRange">—</div>
-        </div>
-
-        <div id="commFreeActiveBanner" class="hidden" style="background:linear-gradient(135deg,#00C853,#00E676);border-radius:12px;padding:14px 16px;margin-bottom:14px;text-align:center;">
-            <div style="font-size:22px;margin-bottom:4px;">🎉</div>
-            <div style="font-size:15px;font-weight:800;color:#fff;">Commission FREE Hafta!</div>
-            <div style="font-size:12px;color:rgba(255,255,255,0.8);margin-top:4px;">85+ rides ki hain — zero commission!</div>
-        </div>
-        <div id="commFreePendingBanner" class="hidden" style="background:linear-gradient(135deg,#f97316,#fb923c);border-radius:12px;padding:14px 16px;margin-bottom:14px;text-align:center;">
-            <div style="font-size:22px;margin-bottom:4px;">🔥</div>
-            <div style="font-size:15px;font-weight:800;color:#fff;">85 Rides Challenge Active!</div>
-            <div style="font-size:12px;color:rgba(255,255,255,0.8);margin-top:4px;">Is hafte 85 rides complete karo — agla hafta commission bilkul free!</div>
-        </div>
-
-        <div style="margin-bottom:14px;">
-            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
-                <span style="font-size:13px;font-weight:700;color:var(--text-main);">This Week's Rides</span>
-                <span style="font-size:14px;font-weight:800;color:var(--primary);"><span id="weekRidesCount">0</span> / 85</span>
-            </div>
-            <div style="background:#E2E8F0;border-radius:50px;height:12px;overflow:hidden;">
-                <div id="weekRidesBar" style="height:100%;width:0%;background:linear-gradient(90deg,var(--primary),#00E676);border-radius:50px;transition:width 0.6s ease;"></div>
-            </div>
-            <div style="display:flex;justify-content:space-between;margin-top:6px;">
-                <span style="font-size:11px;color:var(--text-muted);">0</span>
-                <span id="ridesRemaining" style="font-size:11px;font-weight:700;color:var(--text-muted);">85 rides needed</span>
-                <span style="font-size:11px;color:var(--text-muted);">85</span>
-            </div>
-        </div>
-
-        <div style="background:#F8FAFC;border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:14px;">
-            <div style="font-size:11px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:4px;">Next Week Status</div>
-            <div id="nextWeekLabel" style="font-size:15px;font-weight:800;color:var(--text-main);">Loading...</div>
-        </div>
-
-        <div class="rules-pill">
-            <strong>🏆 Challenge Rules:</strong><br>
-            • Is hafte <strong>85 completed rides</strong> karo<br>
-            • Agla poora hafta (Monday–Sunday) commission <strong>ZERO%</strong> hogi<br>
-            • Har completed ride count hoti hai<br>
-            • Challenge har Peer (Monday) reset hota hai
-        </div>
-    </div>
-
-    <div class="section-card">
-        <div class="section-title"><i class="fas fa-circle-info"></i> Earnings Kaise Count Hoti Hain</div>
+        <div class="section-title"><i class="fas fa-circle-info"></i> Aap Ki Earnings</div>
         <div style="display:grid;gap:10px;">
             <div style="display:flex;gap:10px;align-items:flex-start;">
-                <div style="width:28px;height:28px;background:var(--primary-light);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--primary-dark);flex-shrink:0;font-size:12px;">1</div>
-                <div style="font-size:13px;color:var(--text-main);">Normal week: <strong>10% commission</strong> har completed ride se</div>
+                <div style="width:28px;height:28px;background:var(--primary-light);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--primary-dark);flex-shrink:0;font-size:12px;">✓</div>
+                <div style="font-size:13px;color:var(--text-main);">Har completed ride ki <strong>poori fare aap ki</strong> — koi commission nahi kata jaata!</div>
             </div>
             <div style="display:flex;gap:10px;align-items:flex-start;">
-                <div style="width:28px;height:28px;background:#FEF3C7;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:#14532d;flex-shrink:0;font-size:12px;">2</div>
-                <div style="font-size:13px;color:var(--text-main);">85+ rides week: <strong>Agla hafta 0% commission</strong> — poori fare aap ki!</div>
-            </div>
-            <div style="display:flex;gap:10px;align-items:flex-start;">
-                <div style="width:28px;height:28px;background:#EFF6FF;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:#1D4ED8;flex-shrink:0;font-size:12px;">3</div>
-                <div style="font-size:13px;color:var(--text-main);">Commission-free week admin verify karta hai aur walletBalance se deduction band hoti hai</div>
+                <div style="width:28px;height:28px;background:var(--primary-light);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--primary-dark);flex-shrink:0;font-size:12px;">✓</div>
+                <div style="font-size:13px;color:var(--text-main);">Har 10 rides pe <strong>Rs. 50 Milestone Bonus</strong> milta hai!</div>
             </div>
         </div>
     </div>
@@ -754,7 +700,7 @@ const app  = initializeApp(firebaseConfig);
 const db   = getDatabase(app);
 const auth = getAuth(app);
 
-const COMMISSION_RATE = 0.10;
+const COMMISSION_RATE = 0.00; // Commission hataya gaya
 const RIDES_TARGET    = 85;
 
 // Statuses saved by captain-active-ride.html when ride finishes
@@ -800,7 +746,7 @@ function isCommFree(cap) {
 }
 
 function effComm(fare, cap) {
-    return isCommFree(cap) ? 0 : Math.ceil(fare * COMMISSION_RATE);
+    return 0; // Commission nahi hai
 }
 
 function getStartOfWeekMs() {
@@ -1214,7 +1160,7 @@ async function setupEarnings(){
         const fare=parseFloat(r.fare||0);
         gross+=fare;
         // Use saved commissionDeducted if available (set by captain-active-ride.html)
-        const comm=(r.commissionDeducted!=null) ? parseFloat(r.commissionDeducted) : effComm(fare,captainData);
+        const comm=0; // Commission nahi hai
         totalComm+=comm;
         // Week rides: statusUpdateTime is set on complete action
         const rideTime=new Date(r.statusUpdateTime||r.completedAt||r.requestedAt||r.createdAt||0).getTime();
@@ -1223,7 +1169,8 @@ async function setupEarnings(){
 
     const net=gross-totalComm;
     document.getElementById('totalGrossEarnings').textContent=Math.round(gross).toLocaleString();
-    document.getElementById('totalCommissionCut').textContent=Math.round(totalComm).toLocaleString();
+    // totalCommissionCut element removed
+    // document.getElementById('totalCommissionCut').textContent=0;
     document.getElementById('totalNetEarnings').textContent  =Math.round(net).toLocaleString();
 
     // Progress bar
@@ -1265,7 +1212,7 @@ async function setupEarnings(){
             await update(ref(db,`riders/${currentUser.uid}`),{commissionFreeWeek:nextMondayISO});
         } else {
             pendBan.classList.remove('hidden');
-            nextEl.textContent=`Normal (10% commission) — ${remaining} aur rides karo free week ke liye`;
+            nextEl.textContent=`Koi commission nahi — aap ki poori fare aap ki!`;
             nextEl.style.color='var(--text-muted)';
         }
     } catch(e){ console.error('CommFree error:',e); }
@@ -1324,8 +1271,8 @@ function renderHistory(filter){
 
         const fare=parseFloat(ride.fare||0);
         // Use saved commissionDeducted (set by captain-active-ride.html submitRideRating)
-        const commission=(ride.commissionDeducted!=null)?parseFloat(ride.commissionDeducted):Math.ceil(fare*COMMISSION_RATE);
-        const net=fare-commission;
+        const commission=0;
+        const net=fare;
 
         // Rating saved as customerRating in captain-active-ride.html
         const ratingVal=ride.customerRating||ride.rating||ride.ratingGiven;
@@ -1334,7 +1281,7 @@ function renderHistory(filter){
         const fareSection=isComp
             ?`<div>
                 <div class="ride-fare">Rs. ${fare}</div>
-                <div class="ride-commission">Commission: -Rs. ${commission} | Net: Rs. ${net}${ratingStr}</div>
+                <div class="ride-commission" style="color:var(--primary);">Earning: Rs. ${net}${ratingStr}</div>
               </div>`
             :`<div class="ride-tag">${statusLabel}</div>`;
 

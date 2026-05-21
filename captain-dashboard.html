@@ -95,7 +95,7 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
 .today-stat-card::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;}
 .today-stat-card.rides::before{background:var(--primary);}
 .today-stat-card.earnings::before{background:#3B82F6;}
-.today-stat-card.commission::before{background:#EF4444;}
+.today-stat-card.commission{display:none!important;}
 .today-stat-card.rating::before{background:#F59E0B;}
 .today-stat-icon{width:32px;height:32px;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:14px;}
 .rides .today-stat-icon{background:var(--primary-light);color:var(--primary);}
@@ -286,7 +286,7 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
                     <div style="font-size:22px;">💳</div>
                     <div style="flex:1;">
                         <div style="color:#fff; font-weight:800; font-size:14px;" id="walletLowBannerText">Wallet Top-Up Karein!</div>
-                        <div style="color:rgba(255,255,255,0.85); font-weight:600; font-size:11px;">Commission k liye wallet mein paise zaroori hain</div>
+                        <div style="color:rgba(255,255,255,0.85); font-weight:600; font-size:11px;">Wallet balance low hai — top-up karein</div>
                     </div>
                     <div style="color:#fff; font-size:13px; font-weight:700;">Top-Up →</div>
                 </a>
@@ -301,7 +301,7 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
                         <div class="today-stat-icon"><i class="fas fa-money-bill-wave"></i></div>
                         <div class="today-stat-val" id="todayEarnings">Rs. 0</div>
                         <div class="today-stat-label">Net Earning</div>
-                        <div class="today-stat-sub" id="todayNetSub">Gross - 10% Commission</div>
+                        <div class="today-stat-sub" id="todayNetSub">Poori fare — koi commission nahi</div>
                     </div>
                     <div class="today-stat-card commission">
                         <div class="today-stat-icon"><i class="fas fa-percent"></i></div>
@@ -378,11 +378,7 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
                 <span id="offerSummaryCustomerFare" style="font-weight:700;">Rs. 0</span>
             </div>
             <div class="offer-summary-row">
-                <span style="color:var(--text-muted);font-weight:600;">Raftaroo Commission (10%)</span>
-                <span id="offerSummaryCommission" style="color:#EF4444;font-weight:700;">- Rs. 0</span>
-            </div>
-            <div class="offer-summary-row">
-                <span>Aap Ki Net Earning</span>
+                <span>Aap Ki Poori Earning</span>
                 <span id="offerSummaryNetEarnings" style="color:var(--primary);font-weight:700;">Rs. 0</span>
             </div>
         </div>
@@ -519,11 +515,8 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         const o1=cf, o2=cf+10, o3=cf+20;
         selectedCounterOfferFare = cf;
         document.getElementById('counterOfferOptions').innerHTML = `<button class="offer-btn selected" data-fare="${o1}" onclick="selectCounterOffer(event)">Rs. ${o1}</button><button class="offer-btn" data-fare="${o2}" onclick="selectCounterOffer(event)">Rs. ${o2}</button><button class="offer-btn" data-fare="${o3}" onclick="selectCounterOffer(event)">Rs. ${o3}</button>`;
-        const commission = Math.round(cf * 0.10);
-        const netEarning = cf - commission;
         document.getElementById('offerSummaryCustomerFare').textContent = 'Rs. '+cf;
-        document.getElementById('offerSummaryCommission').textContent = '- Rs. '+commission;
-        document.getElementById('offerSummaryNetEarnings').textContent = 'Rs. '+netEarning;
+        document.getElementById('offerSummaryNetEarnings').textContent = 'Rs. '+cf;
         const cb = document.getElementById('confirmSendOfferBtn');
         cb.onclick = () => sendOffer(requestId);
         document.getElementById('cancelConfirmOfferBtn').onclick = hideOfferConfirmationModal;
@@ -536,11 +529,8 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         const btn = event.target.closest('.offer-btn'); if (!btn) return;
         btn.classList.add('selected');
         const fare = parseInt(btn.dataset.fare);
-        const commission = Math.round(fare * 0.10);
-        const netEarning = fare - commission;
         document.getElementById('offerSummaryCustomerFare').textContent = 'Rs. '+fare;
-        document.getElementById('offerSummaryCommission').textContent = '- Rs. '+commission;
-        document.getElementById('offerSummaryNetEarnings').textContent = 'Rs. '+netEarning;
+        document.getElementById('offerSummaryNetEarnings').textContent = 'Rs. '+fare;
         document.getElementById('confirmSendOfferBtn').disabled = false;
         selectedCounterOfferFare = fare;
     };
@@ -600,7 +590,7 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         // Free Rides Banner
         const freeLeft = parseInt(captainData.freeRidesRemaining) || 0;
         const freeRidesBanner = document.getElementById('freeRidesBanner');
-        if (freeLeft > 0) {
+        if (false) { // Free rides system hataya gaya
             freeRidesBanner.style.display = 'flex';
             document.getElementById('freeRidesBannerText').textContent =
                 freeLeft === 1 ? '🎁 1 Free Ride Baqi!' : `🎁 ${freeLeft} Free Rides Baqi!`;
@@ -632,14 +622,14 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
                 if (rating && parseInt(rating) > 0) { ratingSum += parseFloat(rating); ratingCount++; }
             });
 
-            const netEarnings = grossEarnings - totalCommission;
+            const netEarnings = grossEarnings; // Commission nahi hai
 
             document.getElementById('todayRides').textContent = totalRides;
-            document.getElementById('todayEarnings').textContent = 'Rs. ' + netEarnings;
-            document.getElementById('todayNetSub').textContent = `Net · Gross: Rs.${grossEarnings}`;
+            document.getElementById('todayEarnings').textContent = 'Rs. ' + grossEarnings;
+            document.getElementById('todayNetSub').textContent = `Poori fare — koi commission nahi`;
             document.getElementById('todayRidesSub').textContent = totalRides > 0 ? 'Total: Rs.' + grossEarnings : 'Abhi koi ride nahi';
-            document.getElementById('todayCommission').textContent = 'Rs. ' + totalCommission;
-            document.getElementById('todayCommissionSub').textContent = totalCommission === 0 && freeLeft > 0 ? '🎁 Free rides chal rahi hain!' : '10% per paid ride';
+            document.getElementById('todayCommission').textContent = 'Rs. 0';
+            document.getElementById('todayCommissionSub').textContent = 'Commission nahi hai';
 
             if (ratingCount > 0) {
                 document.getElementById('todayRating').textContent = (ratingSum / ratingCount).toFixed(1) + ' \u2605';

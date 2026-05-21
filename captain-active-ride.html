@@ -1164,15 +1164,15 @@ body { background:var(--bg); color:var(--text-main); overflow:hidden; height:100
         if (rideData) {
             const fare = parseInt(rideData.fare || 0);
             document.getElementById('summaryFare').textContent = `Rs. ${fare}`;
-            const comm = Math.round(fare * 0.10);
-            document.getElementById('summaryCommission').textContent = `-Rs. ${comm}`;
-            document.getElementById('summaryNet').textContent = `Rs. ${fare - comm}`;
+            const comm = 0;
+            document.getElementById('summaryCommission').textContent = `Rs. 0 (No Commission)`;
+            document.getElementById('summaryNet').textContent = `Rs. ${fare}`;
             document.getElementById('ratingSummary').classList.add('visible');
         }
     }
 
     // ─── COMMISSION CONFIG ───────────────────────────────────────
-    const COMMISSION_RATE = 0.10;   // 10% Raftaroo commission
+    const COMMISSION_RATE = 0.00;   // 0% commission — captain poori fare rakhta hai
     const BONUS_RIDES = 10;         // har 10 rides pe bonus
     const BONUS_AMOUNT = 50;        // Rs 50 milestone bonus
     const INVITER_BONUS = 50;       // referral first-ride bonus
@@ -1195,8 +1195,8 @@ body { background:var(--bg); color:var(--text-main); overflow:hidden; height:100
             }
 
             const totalFare = parseInt(ride.fare || 0);
-            const commission = Math.round(totalFare * COMMISSION_RATE);
-            const captainEarning = totalFare - commission;
+            const commission = 0; // Commission nahi hai
+            const captainEarning = totalFare; // Poori fare captain ki
             const today = new Date().toISOString().split('T')[0];
             const uid = currentCaptain.uid;
 
@@ -1215,11 +1215,8 @@ body { background:var(--bg); color:var(--text-main); overflow:hidden; height:100
             updates[`/riders/${uid}/totalRides`] = increment(1);
             // Daily log
             updates[`/riders/${uid}/earnings/${today}/earned`] = increment(captainEarning);
-            updates[`/riders/${uid}/earnings/${today}/commission`] = increment(commission);
+            updates[`/riders/${uid}/earnings/${today}/commission`] = increment(0);
             updates[`/riders/${uid}/earnings/${today}/rides`] = increment(1);
-            // Platform revenue
-            updates[`/platform/revenue/${today}`] = increment(commission);
-            updates[`/platform/totalRevenue`] = increment(commission);
 
             await update(ref(db), updates);
 
@@ -1268,7 +1265,7 @@ body { background:var(--bg); color:var(--text-main); overflow:hidden; height:100
             }
 
             currentActiveRideId = null;
-            alert(`🎉 Ride mukammal!\n\nFare: Rs. ${totalFare}\nCommission (10%): -Rs. ${commission}\nAapki Earning: Rs. ${captainEarning}${bonusMsg}`);
+            alert(`🎉 Ride mukammal!\n\nFare: Rs. ${totalFare}\nAapki Poori Earning: Rs. ${captainEarning}${bonusMsg}`);
             window.location.href = 'captain-dashboard.html';
 
         } catch (e) {
