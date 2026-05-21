@@ -614,7 +614,7 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
                 totalRides++;
                 const fare = parseInt(ride.fare) || 0;
                 grossEarnings += fare;
-                const comm = parseInt(ride.commissionDeducted) || 0;
+                const comm = parseInt(ride.commissionDeducted || ride.commission) || 0;
                 totalCommission += comm;
                 // FIX: customerRating field (captain-active-ride.html yahi save karta hai)
                 const rating = ride.customerRating || ride.rating;
