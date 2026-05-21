@@ -378,7 +378,11 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
                 <span id="offerSummaryCustomerFare" style="font-weight:700;">Rs. 0</span>
             </div>
             <div class="offer-summary-row">
-                <span>Aap Ki Poori Earning</span>
+                <span style="color:var(--error);font-weight:600;">Platform Commission (10%)</span>
+                <span id="offerSummaryCommission" style="color:var(--error);font-weight:700;">-Rs. 0</span>
+            </div>
+            <div class="offer-summary-row">
+                <span>Aap Ki Net Earning</span>
                 <span id="offerSummaryNetEarnings" style="color:var(--primary);font-weight:700;">Rs. 0</span>
             </div>
         </div>
@@ -515,8 +519,7 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         const o1=cf, o2=cf+10, o3=cf+20;
         selectedCounterOfferFare = cf;
         document.getElementById('counterOfferOptions').innerHTML = `<button class="offer-btn selected" data-fare="${o1}" onclick="selectCounterOffer(event)">Rs. ${o1}</button><button class="offer-btn" data-fare="${o2}" onclick="selectCounterOffer(event)">Rs. ${o2}</button><button class="offer-btn" data-fare="${o3}" onclick="selectCounterOffer(event)">Rs. ${o3}</button>`;
-        document.getElementById('offerSummaryCustomerFare').textContent = 'Rs. '+cf;
-        document.getElementById('offerSummaryNetEarnings').textContent = 'Rs. '+cf;
+        updateOfferSummary(cf);
         const cb = document.getElementById('confirmSendOfferBtn');
         cb.onclick = () => sendOffer(requestId);
         document.getElementById('cancelConfirmOfferBtn').onclick = hideOfferConfirmationModal;
@@ -524,13 +527,32 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         offerConfirmModal.style.display = 'flex';
     }
 
+    function updateOfferSummary(fare) {
+        const FREE_RIDES_LIMIT = 3;
+        const totalRidesDone = parseInt(captainData.totalRides || 0);
+        const isFreeRide = totalRidesDone < FREE_RIDES_LIMIT;
+        const commission = isFreeRide ? 0 : Math.round(fare * 0.10);
+        const net = fare - commission;
+        document.getElementById('offerSummaryCustomerFare').textContent = 'Rs. ' + fare;
+        const commEl = document.getElementById('offerSummaryCommission');
+        if (isFreeRide) {
+            commEl.textContent = 'Rs. 0 (FREE RIDE 🎁)';
+            commEl.style.color = 'var(--primary)';
+            commEl.previousElementSibling.textContent = 'Platform Commission';
+        } else {
+            commEl.textContent = '-Rs. ' + commission;
+            commEl.style.color = 'var(--error)';
+            commEl.previousElementSibling.textContent = 'Platform Commission (10%)';
+        }
+        document.getElementById('offerSummaryNetEarnings').textContent = 'Rs. ' + net;
+    }
+
     window.selectCounterOffer = function(event) {
         document.querySelectorAll('#counterOfferOptions .offer-btn').forEach(b=>b.classList.remove('selected'));
         const btn = event.target.closest('.offer-btn'); if (!btn) return;
         btn.classList.add('selected');
         const fare = parseInt(btn.dataset.fare);
-        document.getElementById('offerSummaryCustomerFare').textContent = 'Rs. '+fare;
-        document.getElementById('offerSummaryNetEarnings').textContent = 'Rs. '+fare;
+        updateOfferSummary(fare);
         document.getElementById('confirmSendOfferBtn').disabled = false;
         selectedCounterOfferFare = fare;
     };
