@@ -634,25 +634,32 @@ background:#FEF2F2; color:var(--error); border:1px solid rgba(239,68,68,0.2);
     </div>
     <div class="earnings-grid">
         <div class="earn-card">
-            <div class="ec-label">Gross Earnings</div>
+            <div class="ec-label">Gross Earnings (Fares)</div>
             <div class="ec-value">Rs. <span id="totalGrossEarnings">—</span></div>
         </div>
         <div class="earn-card" style="grid-column:1/-1;background:var(--primary-light);border-color:rgba(0,200,83,0.2);">
-            <div class="ec-label" style="color:var(--primary-dark);">Aap Ki Total Earning (Koi Commission Nahi)</div>
+            <div class="ec-label" style="color:var(--primary-dark);">Aap Ki Net Earning (Commission ke baad)</div>
             <div class="ec-value" style="color:var(--primary-dark);">Rs. <span id="totalNetEarnings">—</span></div>
         </div>
     </div>
 
     <div class="section-card">
-        <div class="section-title"><i class="fas fa-circle-info"></i> Aap Ki Earnings</div>
+        <div class="section-title"><i class="fas fa-circle-info"></i> Commission System</div>
         <div style="display:grid;gap:10px;">
             <div style="display:flex;gap:10px;align-items:flex-start;">
-                <div style="width:28px;height:28px;background:var(--primary-light);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--primary-dark);flex-shrink:0;font-size:12px;">✓</div>
-                <div style="font-size:13px;color:var(--text-main);">Har completed ride ki <strong>poori fare aap ki</strong> — koi commission nahi kata jaata!</div>
+                <div style="width:28px;height:28px;background:#FEF2F2;border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:#EF4444;flex-shrink:0;font-size:12px;">%</div>
+                <div style="font-size:13px;color:var(--text-main);">Har completed ride par <strong>10% platform commission</strong> wallet se kata jata hai.</div>
+            </div>
+            <div style="display:flex;gap:10px;align-items:flex-start;">
+                <div style="width:28px;height:28px;background:var(--primary-light);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--primary-dark);flex-shrink:0;font-size:12px;">🎁</div>
+                <div style="font-size:13px;color:var(--text-main);"><strong>Nayi Captain? Pehli 3 rides FREE!</strong> — Pehli 3 rides mein koi commission nahi katega.</div>
             </div>
             <div style="display:flex;gap:10px;align-items:flex-start;">
                 <div style="width:28px;height:28px;background:var(--primary-light);border-radius:50%;display:flex;align-items:center;justify-content:center;font-weight:800;color:var(--primary-dark);flex-shrink:0;font-size:12px;">✓</div>
                 <div style="font-size:13px;color:var(--text-main);">Har 10 rides pe <strong>Rs. 50 Milestone Bonus</strong> milta hai!</div>
+            </div>
+            <div style="background:#FEF9C3;border:1px solid #FDE68A;border-radius:10px;padding:12px;font-size:13px;color:#92400E;font-weight:600;">
+                ⚠️ Wallet zero ya negative hone par rides band ho jayengi. Wallet mein paise rakhein!
             </div>
         </div>
     </div>
@@ -700,7 +707,7 @@ const app  = initializeApp(firebaseConfig);
 const db   = getDatabase(app);
 const auth = getAuth(app);
 
-const COMMISSION_RATE = 0.00; // Commission hataya gaya
+const COMMISSION_RATE = 0.10; // 10% platform commission
 const RIDES_TARGET    = 85;
 
 // Statuses saved by captain-active-ride.html when ride finishes
@@ -745,8 +752,11 @@ function isCommFree(cap) {
     return today>=cf && today<end;
 }
 
-function effComm(fare, cap) {
-    return 0; // Commission nahi hai
+function effComm(fare, cap, rideIndex) {
+    const FREE_RIDES_LIMIT = 3;
+    // rideIndex = 0-based index among completed rides sorted by time (oldest first)
+    if (typeof rideIndex === 'number' && rideIndex < FREE_RIDES_LIMIT) return 0; // free ride
+    return Math.round(fare * COMMISSION_RATE);
 }
 
 function getStartOfWeekMs() {
@@ -1154,15 +1164,20 @@ async function setupEarnings(){
         new Date(startMs+6*24*60*60*1000).toLocaleDateString('en-PK',fmt);
 
     let gross=0, totalComm=0, weekRides=0;
+    const FREE_RIDES_LIMIT = 3;
+    // Completed rides sorted by time for free rides tracking
+    const completedRidesSorted = allMyRides
+        .filter(r => isDone(r.status))
+        .sort((a,b)=> new Date(a.completedAt||a.statusUpdateTime||a.createdAt||0) - new Date(b.completedAt||b.statusUpdateTime||b.createdAt||0));
 
-    allMyRides.forEach(r=>{
-        if(!isDone(r.status)) return;
+    completedRidesSorted.forEach((r, idx)=>{
         const fare=parseFloat(r.fare||0);
         gross+=fare;
-        // Use saved commissionDeducted if available (set by captain-active-ride.html)
-        const comm=0; // Commission nahi hai
+        // Use saved commissionDeducted if available, else calculate
+        const savedComm = parseInt(r.commissionDeducted || r.commission || -1);
+        const comm = savedComm >= 0 ? savedComm : effComm(fare, captainData, idx);
         totalComm+=comm;
-        // Week rides: statusUpdateTime is set on complete action
+        // Week rides
         const rideTime=new Date(r.statusUpdateTime||r.completedAt||r.requestedAt||r.createdAt||0).getTime();
         if(rideTime>=startMs) weekRides++;
     });
@@ -1271,8 +1286,11 @@ function renderHistory(filter){
 
         const fare=parseFloat(ride.fare||0);
         // Use saved commissionDeducted (set by captain-active-ride.html submitRideRating)
-        const commission=0;
-        const net=fare;
+        const savedComm = parseInt(ride.commissionDeducted ?? ride.commission ?? -1);
+        const isFreeRide = ride.isFreeRide === true;
+        const commission = savedComm >= 0 ? savedComm : (isFreeRide ? 0 : Math.round(fare * COMMISSION_RATE));
+        const net = fare - commission;
+        const commLabel = isFreeRide ? `🎁 Free Ride — Koi commission nahi!` : (commission > 0 ? `Commission: -Rs. ${commission} (10%)` : '');
 
         // Rating saved as customerRating in captain-active-ride.html
         const ratingVal=ride.customerRating||ride.rating||ride.ratingGiven;
@@ -1281,7 +1299,8 @@ function renderHistory(filter){
         const fareSection=isComp
             ?`<div>
                 <div class="ride-fare">Rs. ${fare}</div>
-                <div class="ride-commission" style="color:var(--primary);">Earning: Rs. ${net}${ratingStr}</div>
+                <div class="ride-commission" style="color:${commission>0?'var(--error)':'var(--primary)'};">Net: Rs. ${net}${ratingStr}</div>
+                ${commLabel ? `<div style="font-size:10px;color:var(--text-muted);font-weight:600;margin-top:2px;">${commLabel}</div>` : ''}
               </div>`
             :`<div class="ride-tag">${statusLabel}</div>`;
 
