@@ -731,7 +731,6 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
 
     let lowBalanceChecked=false;
     function loadWalletBalance() {
-        const TOP_UP_THRESHOLD = 100;
         const FREE_RIDES_LIMIT = 3;
         onValue(ref(db,'riders/'+currentCaptain.uid+'/walletBalance'),(snap)=>{
             const bal=snap.val()||0; captainData.walletBalance=bal; document.getElementById('walletDisplay').textContent=bal;
@@ -741,37 +740,38 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
             const totalRidesDone = parseInt(captainData.totalRides || 0);
             const freeLeft = Math.max(0, FREE_RIDES_LIMIT - totalRidesDone);
             const hasFreeRides = freeLeft > 0;
+            const walletEmpty = bal <= 0; // sirf 0 ya negative par
 
             if (walletBadge) {
                 if (bal < 0) {
                     walletBadge.style.background = '#FEE2E2';
                     walletBadge.style.color = '#DC2626';
-                } else if (bal < TOP_UP_THRESHOLD && !hasFreeRides) {
-                    walletBadge.style.background = '#FEF9C3';
-                    walletBadge.style.color = '#854D0E';
+                } else if (bal === 0 && !hasFreeRides) {
+                    walletBadge.style.background = '#FEE2E2';
+                    walletBadge.style.color = '#DC2626';
                 } else {
                     walletBadge.style.background = '';
                     walletBadge.style.color = '';
                 }
             }
             if (walletLowBanner) {
-                if (!hasFreeRides && bal < TOP_UP_THRESHOLD) {
+                if (!hasFreeRides && walletEmpty) {
                     walletLowBanner.style.display = 'flex';
                     if (walletLowBannerText) {
                         walletLowBannerText.textContent = bal < 0
                             ? `❌ Wallet negative: Rs. ${bal} — Rides band hain! Foran Top-Up Karein!`
-                            : `⚠️ Wallet kam hai: Rs. ${bal} — Rides lene k liye Top-Up Karein!`;
+                            : `❌ Wallet Rs. 0 hai — Rides lene k liye Top-Up Karein!`;
                     }
                 } else {
                     walletLowBanner.style.display = 'none';
                 }
             }
-            // Agar wallet kam ho aur free rides bhi khatam — rides block karo aur profile bhejo
-            if(isApproved(captainData)&&captainData.status==='active'&&!lowBalanceChecked&&!hasFreeRides&&bal<TOP_UP_THRESHOLD){
+            // Wallet 0 ya negative ho aur free rides bhi khatam — alert aur profile bhejo
+            if(isApproved(captainData)&&!hasFreeRides&&walletEmpty&&!lowBalanceChecked){
                 lowBalanceChecked=true;
                 const msg = bal < 0
-                    ? `❌ Wallet balance negative hai: Rs. ${bal}\n\n🚫 Ab aap rides nahi le sakte jab tak wallet top-up na karein.\n\n💳 JazzCash/EasyPaisa se paise add karein — Profile → Top-Up`
-                    : `⚠️ Wallet balance bahut kam hai: Rs. ${bal}\n\n💡 Raftaroo 10% commission har ride se wallet se katta hai.\n🚫 Rides band ho jayengi agar wallet zero ya negative ho jaaye.\n💳 Abhi top-up karein!`;
+                    ? `❌ Wallet negative hai: Rs. ${bal}\n\n🚫 Rides lene k liye wallet top-up karein.\n\n💳 Profile → Top-Up tab par jayen.`
+                    : `❌ Wallet mein Rs. 0 hain!\n\n🚫 Rides nahi millengi jab tak wallet mein paise na hon.\n💡 10% commission har ride se wallet se kata jaata hai.\n\n💳 Abhi Top-Up Karein!`;
                 alert(msg);
                 setTimeout(()=>window.location.href='captain-profile.html',300);
             }
