@@ -1164,15 +1164,20 @@ body { background:var(--bg); color:var(--text-main); overflow:hidden; height:100
         if (rideData) {
             const fare = parseInt(rideData.fare || 0);
             document.getElementById('summaryFare').textContent = `Rs. ${fare}`;
-            const comm = 0;
-            document.getElementById('summaryCommission').textContent = `Rs. 0 (No Commission)`;
-            document.getElementById('summaryNet').textContent = `Rs. ${fare}`;
+            // Commission display — show 10% but free rides note
+            const isFree = rideData.isFreeRide;
+            const comm = isFree ? 0 : Math.round(fare * 0.10);
+            document.getElementById('summaryCommission').textContent = isFree
+                ? `Rs. 0 (Free Ride 🎁)`
+                : `Rs. ${comm} (10% wallet se)`;
+            document.getElementById('summaryNet').textContent = `Rs. ${fare} (Cash)`;
             document.getElementById('ratingSummary').classList.add('visible');
         }
     }
 
     // ─── COMMISSION CONFIG ───────────────────────────────────────
-    const COMMISSION_RATE = 0.00;   // 0% commission — captain poori fare rakhta hai
+    const COMMISSION_RATE = 0.10;   // 10% commission wallet se katega
+    const FREE_RIDES_COUNT = 3;     // Pehli 3 rides commission free
     const BONUS_RIDES = 10;         // har 10 rides pe bonus
     const BONUS_AMOUNT = 50;        // Rs 50 milestone bonus
     const INVITER_BONUS = 50;       // referral first-ride bonus
@@ -1194,11 +1199,17 @@ body { background:var(--bg); color:var(--text-main); overflow:hidden; height:100
                 return;
             }
 
-            const totalFare = parseInt(ride.fare || 0);
-            const commission = 0; // Commission nahi hai
-            const captainEarning = totalFare; // Poori fare captain ki
-            const today = new Date().toISOString().split('T')[0];
             const uid = currentCaptain.uid;
+            const totalFare = parseInt(ride.fare || 0);
+
+            // Free rides check — pehli FREE_RIDES_COUNT rides mein commission nahi
+            const totalRidesSnap = await get(ref(db, `riders/${uid}/totalRides`));
+            const ridesDoneSoFar = parseInt(totalRidesSnap.val() || 0); // ab tak ki rides (is ride se pehle)
+            const isFreeRide = ridesDoneSoFar < FREE_RIDES_COUNT;
+
+            const commission = isFreeRide ? 0 : Math.round(totalFare * COMMISSION_RATE);
+            const captainEarning = totalFare; // Cash payment — captain customer se poori fare leta hai
+            const today = new Date().toISOString().split('T')[0];
 
             const updates = {};
             // Ride record
@@ -1208,14 +1219,17 @@ body { background:var(--bg); color:var(--text-main); overflow:hidden; height:100
             updates[`/requests/${currentActiveRideId}/commission`] = commission;
             updates[`/requests/${currentActiveRideId}/commissionDeducted`] = commission;
             updates[`/requests/${currentActiveRideId}/captainEarning`] = captainEarning;
+            updates[`/requests/${currentActiveRideId}/isFreeRide`] = isFreeRide;
             updates[`/requests/${currentActiveRideId}/completedAt`] = new Date().toISOString();
-            // Captain record
+            // Captain record — wallet se commission KATO (negative increment)
             updates[`/riders/${uid}/currentRequestId`] = null;
-            updates[`/riders/${uid}/walletBalance`] = increment(captainEarning);
+            if (commission > 0) {
+                updates[`/riders/${uid}/walletBalance`] = increment(-commission); // Wallet se commission katega
+            }
             updates[`/riders/${uid}/totalRides`] = increment(1);
             // Daily log
             updates[`/riders/${uid}/earnings/${today}/earned`] = increment(captainEarning);
-            updates[`/riders/${uid}/earnings/${today}/commission`] = increment(0);
+            updates[`/riders/${uid}/earnings/${today}/commission`] = increment(commission);
             updates[`/riders/${uid}/earnings/${today}/rides`] = increment(1);
 
             await update(ref(db), updates);
@@ -1265,7 +1279,8 @@ body { background:var(--bg); color:var(--text-main); overflow:hidden; height:100
             }
 
             currentActiveRideId = null;
-            alert(`🎉 Ride mukammal!\n\nFare: Rs. ${totalFare}\nAapki Poori Earning: Rs. ${captainEarning}${bonusMsg}`);
+            const freeMsg = isFreeRide ? `\n🎁 Free Ride! Commission nahi kati (${FREE_RIDES_COUNT - ridesDoneSoFar - 1 > 0 ? (FREE_RIDES_COUNT - ridesDoneSoFar - 1) + ' free rides aur baqi' : 'Yeh aakhri free ride thi'})` : `\n💳 10% Commission: Rs. ${commission} wallet se kat gaya`;
+            alert(`🎉 Ride mukammal!\n\nCustomer ne Cash diya: Rs. ${totalFare}${freeMsg}${bonusMsg}`);
             window.location.href = 'captain-dashboard.html';
 
         } catch (e) {
