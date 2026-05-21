@@ -1211,7 +1211,7 @@ body { background:var(--bg); color:var(--text-main); overflow:hidden; height:100
             updates[`/requests/${currentActiveRideId}/completedAt`] = new Date().toISOString();
             // Captain record
             updates[`/riders/${uid}/currentRequestId`] = null;
-            updates[`/riders/${uid}/wallet`] = increment(captainEarning);
+            updates[`/riders/${uid}/walletBalance`] = increment(captainEarning);
             updates[`/riders/${uid}/totalRides`] = increment(1);
             // Daily log
             updates[`/riders/${uid}/earnings/${today}/earned`] = increment(captainEarning);
@@ -1230,7 +1230,7 @@ body { background:var(--bg); color:var(--text-main); overflow:hidden; height:100
 
             if (totalRides > 0 && totalRides % BONUS_RIDES === 0) {
                 const bonusUpdates = {};
-                bonusUpdates[`/riders/${uid}/wallet`] = increment(BONUS_AMOUNT);
+                bonusUpdates[`/riders/${uid}/walletBalance`] = increment(BONUS_AMOUNT);
                 bonusUpdates[`/riders/${uid}/bonusHistory/${Date.now()}`] = {
                     type: 'milestone_bonus', rides: totalRides,
                     amount: BONUS_AMOUNT, at: new Date().toISOString()
@@ -1254,7 +1254,7 @@ body { background:var(--bg); color:var(--text-main); overflow:hidden; height:100
                             const inviterUid = refData.ownerUid;
                             const inviterPath = inviterType === 'captain' ? 'riders' : 'users';
                             const refBonusUpdates = {};
-                            refBonusUpdates[`/${inviterPath}/${inviterUid}/wallet`] = increment(INVITER_BONUS);
+                            refBonusUpdates[`/${inviterPath}/${inviterUid}/walletBalance`] = increment(INVITER_BONUS);
                             refBonusUpdates[`/${inviterPath}/${inviterUid}/referralEarnings`] = increment(INVITER_BONUS);
                             refBonusUpdates[`/${inviterPath}/${inviterUid}/bonusHistory/${Date.now()}`] = {
                                 type: 'referral_first_ride', referredUid: uid,

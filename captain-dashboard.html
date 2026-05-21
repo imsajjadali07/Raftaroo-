@@ -378,7 +378,11 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
                 <span id="offerSummaryCustomerFare" style="font-weight:700;">Rs. 0</span>
             </div>
             <div class="offer-summary-row">
-                <span>Aap Ki Poori Earning</span>
+                <span style="color:var(--text-muted);font-weight:600;">Raftaroo Commission (10%)</span>
+                <span id="offerSummaryCommission" style="color:#EF4444;font-weight:700;">- Rs. 0</span>
+            </div>
+            <div class="offer-summary-row">
+                <span>Aap Ki Net Earning</span>
                 <span id="offerSummaryNetEarnings" style="color:var(--primary);font-weight:700;">Rs. 0</span>
             </div>
         </div>
@@ -515,8 +519,11 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         const o1=cf, o2=cf+10, o3=cf+20;
         selectedCounterOfferFare = cf;
         document.getElementById('counterOfferOptions').innerHTML = `<button class="offer-btn selected" data-fare="${o1}" onclick="selectCounterOffer(event)">Rs. ${o1}</button><button class="offer-btn" data-fare="${o2}" onclick="selectCounterOffer(event)">Rs. ${o2}</button><button class="offer-btn" data-fare="${o3}" onclick="selectCounterOffer(event)">Rs. ${o3}</button>`;
+        const commission = Math.round(cf * 0.10);
+        const netEarning = cf - commission;
         document.getElementById('offerSummaryCustomerFare').textContent = 'Rs. '+cf;
-        document.getElementById('offerSummaryNetEarnings').textContent = 'Rs. '+cf;
+        document.getElementById('offerSummaryCommission').textContent = '- Rs. '+commission;
+        document.getElementById('offerSummaryNetEarnings').textContent = 'Rs. '+netEarning;
         const cb = document.getElementById('confirmSendOfferBtn');
         cb.onclick = () => sendOffer(requestId);
         document.getElementById('cancelConfirmOfferBtn').onclick = hideOfferConfirmationModal;
@@ -529,7 +536,11 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         const btn = event.target.closest('.offer-btn'); if (!btn) return;
         btn.classList.add('selected');
         const fare = parseInt(btn.dataset.fare);
-        document.getElementById('offerSummaryNetEarnings').textContent = 'Rs. '+fare;
+        const commission = Math.round(fare * 0.10);
+        const netEarning = fare - commission;
+        document.getElementById('offerSummaryCustomerFare').textContent = 'Rs. '+fare;
+        document.getElementById('offerSummaryCommission').textContent = '- Rs. '+commission;
+        document.getElementById('offerSummaryNetEarnings').textContent = 'Rs. '+netEarning;
         document.getElementById('confirmSendOfferBtn').disabled = false;
         selectedCounterOfferFare = fare;
     };
@@ -614,7 +625,7 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
                 totalRides++;
                 const fare = parseInt(ride.fare) || 0;
                 grossEarnings += fare;
-                const comm = parseInt(ride.commissionDeducted || ride.commission) || 0;
+                const comm = parseInt(ride.commissionDeducted) || 0;
                 totalCommission += comm;
                 // FIX: customerRating field (captain-active-ride.html yahi save karta hai)
                 const rating = ride.customerRating || ride.rating;
