@@ -2589,7 +2589,7 @@ input:checked + .slider:before {
                  let activeRequestData = null;
                  snapshot.forEach(childSnapshot => {
                      const request = childSnapshot.val();
-                     if (request.status === 'pending' || request.status === 'accepted' || request.status === 'in_progress' || request.status === 'counter_offered') { 
+                     if (request.status === 'pending' || request.status === 'bidding' || request.status === 'accepted' || request.status === 'in_progress' || request.status === 'counter_offered') { 
                          activeBookingId = childSnapshot.key;
                          activeRequestData = request;
                      }
@@ -3521,7 +3521,8 @@ input:checked + .slider:before {
             if (tripDetails.paymentMethod === 'wallet' && currentWalletBalance >= tripDetails.fare) {
                  const newBalance = currentWalletBalance - tripDetails.fare;
                  await update(ref(db, `users/${currentUser.uid}`), { wallet: newBalance });
-                 requestData.status = 'bidding'; // Set to bidding to indicate upfront payment made
+                 // NOTE: status remains 'pending' so captain dashboard can see this ride
+                 // walletDeducted field shows payment was already made upfront
                  requestData.walletDeducted = tripDetails.fare; // Store deducted amount
                  alert(currentLanguage === 'ur' ? `والٹ سے Rs. ${tripDetails.fare} کی کٹوتی کی گئی۔ کیپٹن کی تلاش ہے...` : `Rs. ${tripDetails.fare} deducted from Wallet. Searching for Captain...`);
             } else if (tripDetails.paymentMethod === 'wallet') {
