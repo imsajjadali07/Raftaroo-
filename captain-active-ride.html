@@ -1160,21 +1160,20 @@ body { background:var(--bg); color:var(--text-main); overflow:hidden; height:100
         document.getElementById('floating-actions').classList.add('hidden');
         document.getElementById('rating-panel').classList.remove('hidden');
 
-        // Show earnings summary if ride data available
         if (rideData) {
             const fare = parseInt(rideData.fare || 0);
             const isFree = rideData.isFreeRide;
             const comm = isFree ? 0 : Math.round(fare * COMMISSION_RATE);
             const net = fare - comm;
-            document.getElementById('summaryFare').textContent = `Rs. ${fare}`;
+            document.getElementById('summaryFare').textContent = `Rs. ${fare} (Cash)`;
             if (isFree) {
                 document.getElementById('summaryCommission').textContent = `Rs. 0 (FREE RIDE 🎁)`;
                 document.getElementById('summaryCommission').style.color = 'var(--primary)';
             } else {
-                document.getElementById('summaryCommission').textContent = `-Rs. ${comm} (10%)`;
+                document.getElementById('summaryCommission').textContent = `-Rs. ${comm} wallet se kata`;
                 document.getElementById('summaryCommission').style.color = 'var(--error)';
             }
-            document.getElementById('summaryNet').textContent = `Rs. ${net}`;
+            document.getElementById('summaryNet').textContent = `Rs. ${net} (Aap ke paas)`;
             document.getElementById('ratingSummary').classList.add('visible');
         }
     }
@@ -1212,10 +1211,14 @@ body { background:var(--bg); color:var(--text-main); overflow:hidden; height:100
             const FREE_RIDES_LIMIT = 3;
             const isFreeRide = totalRidesDone < FREE_RIDES_LIMIT;
 
-            // 10% commission — free rides mein nahi katega
+            // Cash ride — customer ne captain ko cash diya
+            // Wallet se sirf 10% commission katna hai, fare add nahi karna
             const commission = isFreeRide ? 0 : Math.round(totalFare * COMMISSION_RATE);
-            const captainEarning = totalFare; // Captain poori fare receive karta hai (commission wallet se alag katega)
             const today = new Date().toISOString().split('T')[0];
+
+            // Current wallet se commission ghataao
+            const currentWallet = parseInt(captainInfo.walletBalance || 0);
+            const newWallet = currentWallet - commission;
 
             const updates = {};
             // Ride record
@@ -1224,23 +1227,22 @@ body { background:var(--bg); color:var(--text-main); overflow:hidden; height:100
             updates[`/requests/${currentActiveRideId}/ratingSubmitted`] = true;
             updates[`/requests/${currentActiveRideId}/commission`] = commission;
             updates[`/requests/${currentActiveRideId}/commissionDeducted`] = commission;
-            updates[`/requests/${currentActiveRideId}/captainEarning`] = captainEarning;
+            updates[`/requests/${currentActiveRideId}/captainEarning`] = totalFare - commission;
             updates[`/requests/${currentActiveRideId}/isFreeRide`] = isFreeRide;
             updates[`/requests/${currentActiveRideId}/completedAt`] = new Date().toISOString();
-            // Captain record — poori fare wallet mein, commission alag se katao
+            // Wallet se sirf commission katao — fare nahi jodna
             updates[`/riders/${uid}/currentRequestId`] = null;
-            updates[`/riders/${uid}/walletBalance`] = increment(captainEarning - commission);
-            updates[`/riders/${uid}/totalRides`] = increment(1);
+            updates[`/riders/${uid}/walletBalance`] = newWallet;
+            updates[`/riders/${uid}/totalRides`] = (totalRidesDone + 1);
             // Daily log
-            updates[`/riders/${uid}/earnings/${today}/earned`] = increment(captainEarning - commission);
+            updates[`/riders/${uid}/earnings/${today}/cashCollected`] = increment(totalFare);
             updates[`/riders/${uid}/earnings/${today}/commission`] = increment(commission);
             updates[`/riders/${uid}/earnings/${today}/rides`] = increment(1);
 
             await update(ref(db), updates);
 
             // ─── Milestone Bonus Check ───────────────────────────────
-            const ridesSnap = await get(ref(db, `riders/${uid}/totalRides`));
-            const totalRides = ridesSnap.val() || 0;
+            const totalRides = totalRidesDone + 1; // Yeh ride include
             let bonusMsg = '';
 
             if (totalRides > 0 && totalRides % BONUS_RIDES === 0) {
@@ -1283,8 +1285,10 @@ body { background:var(--bg); color:var(--text-main); overflow:hidden; height:100
             }
 
             currentActiveRideId = null;
-            const freeMsg = isFreeRide ? `\n🎁 FREE RIDE — Koi commission nahi! (${FREE_RIDES_LIMIT - totalRidesDone} free rides baqi)` : `\n💼 Platform Commission (10%): -Rs. ${commission}`;
-            alert(`🎉 Ride mukammal!\n\nTotal Fare: Rs. ${totalFare}${freeMsg}\n✅ Aapki Net Earning: Rs. ${captainEarning - commission}${bonusMsg}`);
+            const freeMsg = isFreeRide
+                ? `\n🎁 FREE RIDE — Koi commission nahi! (${Math.max(0, FREE_RIDES_LIMIT - totalRidesDone - 1)} free rides baqi)`
+                : `\n💼 Wallet se commission kata: -Rs. ${commission}`;
+            alert(`🎉 Ride mukammal!\n\n💵 Cash Mile: Rs. ${totalFare} (Customer se seedha)\n✅ Aap Ki Net Earning: Rs. ${totalFare - commission}${freeMsg}\n\n📲 Wallet Balance: Rs. ${newWallet}${bonusMsg}`);
             window.location.href = 'captain-dashboard.html';
 
         } catch (e) {
