@@ -866,7 +866,7 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
             if(rd){
                 Object.keys(rd).forEach(key=>{
                     const req=rd[key];
-                    if(req.status==='pending'&&!req.riderId){
+                    if((req.status==='pending'||req.status==='bidding')&&!req.riderId){
                         if(!isVehicleMatch(cv,req.vehicle||req.service||'')) return;
                         let d=null;
                         if(cl&&req.pickup?.lat&&req.pickup?.lng) d=getDistance(cl.lat,cl.lng,req.pickup.lat,req.pickup.lng);
