@@ -531,6 +531,24 @@ body { background:var(--bg); color:var(--text-main); overflow:hidden; height:100
         </button>
     </div>
 
+    <!-- Review Button -->
+    <div style="margin-top:10px;">
+        <button id="reviewPassengerBtn" onclick="openPassengerReview()" style="
+            width:100%; padding:12px 16px;
+            background:linear-gradient(135deg,#1D4ED8,#3B82F6);
+            color:#fff; border:none; border-radius:12px;
+            font-weight:800; font-size:14px; cursor:pointer;
+            display:flex; align-items:center; justify-content:center; gap:8px;
+            box-shadow:0 4px 16px rgba(59,130,246,0.35);
+            font-family:'Plus Jakarta Sans',sans-serif;
+            transition:0.2s; letter-spacing:0.2px;
+        ">
+            <i class="fas fa-id-card"></i>
+            Passenger Review — Route & Info Dekhen
+        </button>
+    </div>
+</div>
+
 </div>
 
 <!-- Chat Panel -->
@@ -869,6 +887,7 @@ body { background:var(--bg); color:var(--text-main); overflow:hidden; height:100
             navigator.geolocation.getCurrentPosition(
                 (pos) => {
                     const { latitude, longitude } = pos.coords;
+                    window._captainLatLng = [latitude, longitude];
                     map.setView([latitude, longitude], 14);
                     captainMarker = L.marker([latitude, longitude], { icon: captainIcon(captainData.vehicleType || 'Motorcycle') })
                         .addTo(map).bindPopup('<b>Aap Yahan Hain</b>');
@@ -892,6 +911,7 @@ body { background:var(--bg); color:var(--text-main); overflow:hidden; height:100
 
         geoWatchId = navigator.geolocation.watchPosition(async (position) => {
             const { latitude, longitude } = position.coords;
+            window._captainLatLng = [latitude, longitude];
             if (captainMarker) {
                 captainMarker.setLatLng([latitude, longitude]);
             } else {
@@ -956,6 +976,8 @@ body { background:var(--bg); color:var(--text-main); overflow:hidden; height:100
         }
 
         currentRideData = requestData;
+        window._currentActiveRideData = requestData;
+        window._captainDataGlobal = captainData;
         const activeRide = requestData;
 
         // Show card
@@ -1308,6 +1330,331 @@ if ("serviceWorker" in navigator) {
     navigator.serviceWorker.register("/sw.js").then(() => console.log("SW Registered")).catch(e => console.log(e));
 }
 </script>
+<!-- ═══════════════════════════════════════ PASSENGER REVIEW MODAL ═══ -->
+<div id="passenger-review-modal" style="
+    display:none; position:fixed; inset:0; z-index:3000;
+    background:#0A0F1E; flex-direction:column; overflow:hidden;
+">
+    <!-- Header -->
+    <div id="prm-header" style="
+        background:linear-gradient(135deg,#0A0F1E 0%,#0d1a2e 100%);
+        padding:0 16px; height:62px;
+        display:flex; align-items:center; justify-content:space-between;
+        border-bottom:1px solid rgba(59,130,246,0.2);
+        flex-shrink:0;
+    ">
+        <div style="display:flex; align-items:center; gap:12px;">
+            <button onclick="closePassengerReview()" style="
+                width:38px; height:38px; border-radius:50%;
+                background:rgba(255,255,255,0.08); border:1.5px solid rgba(255,255,255,0.12);
+                color:#fff; font-size:15px; cursor:pointer; display:flex;
+                align-items:center; justify-content:center; flex-shrink:0;
+            "><i class="fas fa-arrow-left"></i></button>
+            <div>
+                <div style="font-size:15px; font-weight:800; color:#fff; letter-spacing:-0.2px;">Passenger Route Map</div>
+                <div style="font-size:11px; color:rgba(255,255,255,0.45); font-weight:600;">Poori trip ka overview</div>
+            </div>
+        </div>
+        <div id="prm-status-pill" style="
+            background:rgba(0,200,83,0.15); border:1.5px solid rgba(0,200,83,0.35);
+            color:#00C853; font-size:10px; font-weight:800;
+            padding:4px 10px; border-radius:50px; text-transform:uppercase; letter-spacing:0.8px;
+        ">Active</div>
+    </div>
+
+    <!-- Full Map -->
+    <div id="prm-map" style="flex:1; position:relative; min-height:0;"></div>
+
+    <!-- Bottom Info Panel -->
+    <div id="prm-info-panel" style="
+        background:#fff; border-radius:24px 24px 0 0;
+        box-shadow:0 -6px 40px rgba(0,0,0,0.25);
+        padding:0 0 env(safe-area-inset-bottom,16px) 0;
+        max-height:52vh; overflow-y:auto;
+        flex-shrink:0;
+    ">
+        <!-- Drag handle -->
+        <div style="height:24px; display:flex; justify-content:center; align-items:center;">
+            <div style="width:36px; height:4px; background:#CBD5E1; border-radius:2px;"></div>
+        </div>
+
+        <!-- Passenger Card -->
+        <div style="padding:0 16px 16px;">
+
+            <!-- Name + Avatar Row -->
+            <div style="display:flex; align-items:center; gap:14px; margin-bottom:16px;">
+                <div id="prm-avatar" style="
+                    width:58px; height:58px; border-radius:50%;
+                    background:linear-gradient(135deg,#1D4ED8,#3B82F6);
+                    display:flex; align-items:center; justify-content:center;
+                    font-size:22px; font-weight:900; color:#fff;
+                    flex-shrink:0; box-shadow:0 4px 16px rgba(59,130,246,0.4);
+                    border:3px solid #fff; position:relative;
+                ">A
+                    <div style="
+                        position:absolute; bottom:-2px; right:-2px;
+                        width:18px; height:18px; border-radius:50%;
+                        background:#00C853; border:2.5px solid #fff;
+                        display:flex; align-items:center; justify-content:center;
+                    "><i class="fas fa-check" style="font-size:8px; color:#fff;"></i></div>
+                </div>
+                <div style="flex:1; min-width:0;">
+                    <div id="prm-name" style="font-size:19px; font-weight:900; color:#0A0F1E; letter-spacing:-0.3px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Passenger</div>
+                    <div style="display:flex; align-items:center; gap:6px; margin-top:3px;">
+                        <div id="prm-stars" style="color:#FBBF24; font-size:13px; letter-spacing:1px;">★★★★★</div>
+                        <span id="prm-rating-num" style="font-size:12px; font-weight:700; color:#64748B;">4.8</span>
+                        <span style="color:#CBD5E1; font-size:10px;">|</span>
+                        <span id="prm-trips-text" style="font-size:12px; font-weight:700; color:#64748B;">0 trips</span>
+                    </div>
+                </div>
+                <div style="text-align:right; flex-shrink:0;">
+                    <div id="prm-fare" style="font-size:20px; font-weight:900; color:#00A040;">Rs.0</div>
+                    <div style="font-size:10px; font-weight:600; color:#94A3B8; text-transform:uppercase; letter-spacing:0.5px;">Cash Fare</div>
+                </div>
+            </div>
+
+            <!-- Stats Row -->
+            <div style="display:grid; grid-template-columns:1fr 1fr 1fr; gap:8px; margin-bottom:16px;">
+                <div style="background:#F0FDF4; border:1px solid rgba(0,200,83,0.2); border-radius:12px; padding:10px 8px; text-align:center;">
+                    <div id="prm-distance" style="font-size:15px; font-weight:900; color:#00A040;">0 km</div>
+                    <div style="font-size:10px; font-weight:600; color:#64748B; margin-top:2px;">Distance</div>
+                </div>
+                <div style="background:#EFF6FF; border:1px solid rgba(59,130,246,0.2); border-radius:12px; padding:10px 8px; text-align:center;">
+                    <div id="prm-duration" style="font-size:15px; font-weight:900; color:#1D4ED8;">— min</div>
+                    <div style="font-size:10px; font-weight:600; color:#64748B; margin-top:2px;">Estimated</div>
+                </div>
+                <div style="background:#FFF7ED; border:1px solid rgba(245,158,11,0.2); border-radius:12px; padding:10px 8px; text-align:center;">
+                    <div id="prm-vehicle" style="font-size:13px; font-weight:900; color:#B45309; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">Bike</div>
+                    <div style="font-size:10px; font-weight:600; color:#64748B; margin-top:2px;">Vehicle</div>
+                </div>
+            </div>
+
+            <!-- Route Display -->
+            <div style="background:#F8FAFC; border-radius:14px; padding:14px; margin-bottom:14px; border:1px solid #E2E8F0;">
+                <!-- Pickup -->
+                <div style="display:flex; gap:10px; align-items:flex-start; margin-bottom:8px;">
+                    <div style="display:flex; flex-direction:column; align-items:center; flex-shrink:0; padding-top:3px;">
+                        <div style="width:12px; height:12px; border-radius:50%; background:#00C853; box-shadow:0 0 0 3px rgba(0,200,83,0.2);"></div>
+                        <div style="width:2px; height:22px; background:#E2E8F0; margin:3px 0;"></div>
+                    </div>
+                    <div style="flex:1; min-width:0;">
+                        <div style="font-size:9px; font-weight:800; color:#00A040; text-transform:uppercase; letter-spacing:0.8px; margin-bottom:2px;">Pickup</div>
+                        <div id="prm-pickup-addr" style="font-size:12px; font-weight:600; color:#0A0F1E; line-height:1.4;">—</div>
+                    </div>
+                </div>
+                <!-- Dropoff -->
+                <div style="display:flex; gap:10px; align-items:flex-start;">
+                    <div style="flex-shrink:0; padding-top:3px;">
+                        <div style="width:12px; height:16px; background:#EF4444; border-radius:50% 50% 50% 0; transform:rotate(-45deg); box-shadow:0 0 0 3px rgba(239,68,68,0.2);"></div>
+                    </div>
+                    <div style="flex:1; min-width:0;">
+                        <div style="font-size:9px; font-weight:800; color:#EF4444; text-transform:uppercase; letter-spacing:0.8px; margin-bottom:2px;">Destination</div>
+                        <div id="prm-dest-addr" style="font-size:12px; font-weight:600; color:#0A0F1E; line-height:1.4;">—</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div style="display:flex; gap:8px;">
+                <a id="prm-call-btn" href="tel:" style="
+                    flex:1; padding:12px; background:#00C853; color:#fff;
+                    border-radius:12px; font-weight:800; font-size:13px;
+                    text-decoration:none; display:flex; align-items:center;
+                    justify-content:center; gap:6px;
+                    box-shadow:0 4px 12px rgba(0,200,83,0.3);
+                "><i class="fas fa-phone-alt"></i> Call</a>
+                <button id="prm-navigate-btn" onclick="openReviewNavigation()" style="
+                    flex:1; padding:12px; background:#3B82F6; color:#fff;
+                    border:none; border-radius:12px; font-weight:800; font-size:13px;
+                    cursor:pointer; display:flex; align-items:center;
+                    justify-content:center; gap:6px;
+                    box-shadow:0 4px 12px rgba(59,130,246,0.3);
+                    font-family:'Plus Jakarta Sans',sans-serif;
+                "><i class="fas fa-map-marked-alt"></i> Navigate</a>
+                <button onclick="closePassengerReview()" style="
+                    flex:1; padding:12px; background:#F1F5F9; color:#475569;
+                    border:none; border-radius:12px; font-weight:800; font-size:13px;
+                    cursor:pointer; display:flex; align-items:center;
+                    justify-content:center; gap:6px;
+                    font-family:'Plus Jakarta Sans',sans-serif;
+                "><i class="fas fa-times"></i> Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+#passenger-review-modal { display:none; }
+#passenger-review-modal.active { display:flex !important; }
+</style>
+
+<script>
+// ─── PASSENGER REVIEW MODAL ───────────────────────────────────────────────────
+let prmMap = null;
+let prmRouteControl = null;
+let _prmNavUrl = '';
+
+function openPassengerReview() {
+    const modal = document.getElementById('passenger-review-modal');
+    modal.style.display = 'flex';
+
+    const rideData = window._currentActiveRideData;
+    const captData = window._captainDataGlobal || {};
+
+    if (!rideData) {
+        alert('Ride data load ho raha hai, thoda wait karein.');
+        modal.style.display = 'none';
+        return;
+    }
+
+    // ── Populate passenger info ──────────────────────────────────
+    const name = rideData.name || 'Passenger';
+    const rating = parseFloat(rideData.passengerRating || rideData.customerRating || 4.8).toFixed(1);
+    const trips = parseInt(rideData.passengerTrips || rideData.totalRides || 0);
+    const fare = parseInt(rideData.fare || 0);
+    const dist = rideData.distance || '—';
+    const vType = captData.vehicleType || 'Motorcycle';
+    const phone = rideData.phone || '';
+
+    document.getElementById('prm-avatar').firstChild.textContent = name.charAt(0).toUpperCase();
+    document.getElementById('prm-name').textContent = name;
+    document.getElementById('prm-fare').textContent = 'Rs.' + fare;
+    document.getElementById('prm-distance').textContent = dist + ' km';
+    document.getElementById('prm-vehicle').textContent = vType;
+    document.getElementById('prm-trips-text').textContent = trips + ' trips';
+    document.getElementById('prm-call-btn').href = 'tel:+92' + phone;
+
+    // Stars rendering
+    const rNum = Math.round(parseFloat(rating));
+    const starsEl = document.getElementById('prm-stars');
+    starsEl.innerHTML = Array.from({length:5}, (_,i) =>
+        `<i class="${i < rNum ? 'fas' : 'far'} fa-star" style="color:${i < rNum ? '#FBBF24' : '#CBD5E1'};"></i>`
+    ).join('');
+    document.getElementById('prm-rating-num').textContent = rating;
+
+    // Status pill
+    const status = rideData.status || 'accepted';
+    const statusLabels = { accepted:'Accepted', arrived:'Arrived', in_progress:'In Progress' };
+    const statusColors = { accepted:'rgba(245,158,11,0.15)|rgba(245,158,11,0.4)|#B45309', arrived:'rgba(0,200,83,0.15)|rgba(0,200,83,0.4)|#00A040', in_progress:'rgba(59,130,246,0.15)|rgba(59,130,246,0.4)|#1D4ED8' };
+    const [bg, border, color] = (statusColors[status] || statusColors.accepted).split('|');
+    const pill = document.getElementById('prm-status-pill');
+    pill.style.background = bg; pill.style.borderColor = border; pill.style.color = color;
+    pill.textContent = statusLabels[status] || status;
+
+    // Addresses
+    const pickupAddr = rideData.pickup?.address || 'Pickup location';
+    const destAddr = rideData.destination?.address || 'Destination';
+    document.getElementById('prm-pickup-addr').textContent = pickupAddr;
+    document.getElementById('prm-dest-addr').textContent = destAddr;
+
+    // ── Initialize Map ───────────────────────────────────────────
+    setTimeout(() => {
+        if (prmMap) { prmMap.remove(); prmMap = null; }
+        prmMap = L.map('prm-map', { zoomControl: true, attributionControl: false });
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { maxZoom:19 }).addTo(prmMap);
+        prmMap.invalidateSize();
+
+        const pickupLat = rideData.pickup?.lat;
+        const pickupLng = rideData.pickup?.lng;
+        const destLat = rideData.destination?.lat;
+        const destLng = rideData.destination?.lng;
+
+        if (!pickupLat || !destLat) {
+            prmMap.setView([24.86, 67.01], 13);
+            return;
+        }
+
+        // Passenger pickup marker (green)
+        const passengerIcon = L.divIcon({
+            html: `<div style="position:relative;width:52px;height:64px;">
+                <div style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);background:#1D4ED8;width:46px;height:46px;border-radius:50%;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 20px rgba(59,130,246,0.7);border:3px solid #fff;animation:customerPulse 2s ease-in-out infinite;">
+                    <i class="fas fa-user" style="color:#fff;font-size:19px;"></i>
+                </div>
+                <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);background:#1D4ED8;color:#fff;font-size:9px;font-weight:800;padding:2px 7px;border-radius:10px;white-space:nowrap;letter-spacing:0.3px;">${name.charAt(0).toUpperCase()}</div>
+            </div>`,
+            className:'', iconSize:[52,64], iconAnchor:[26,46]
+        });
+
+        // Destination marker (red pin)
+        const destIcon = L.divIcon({
+            html: `<div style="background:#EF4444;width:34px;height:46px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;border:3px solid #fff;box-shadow:0 3px 14px rgba(239,68,68,0.5);">
+                <i class="fas fa-flag-checkered" style="color:#fff;font-size:13px;transform:rotate(45deg);"></i>
+            </div>`,
+            className:'', iconSize:[34,46], iconAnchor:[17,46]
+        });
+
+        L.marker([pickupLat, pickupLng], { icon: passengerIcon })
+            .addTo(prmMap)
+            .bindPopup(`<b>👤 ${name}</b><br><small style="color:#64748B">${pickupAddr.substring(0,50)}</small>`);
+
+        L.marker([destLat, destLng], { icon: destIcon })
+            .addTo(prmMap)
+            .bindPopup(`<b>🏁 Destination</b><br><small style="color:#64748B">${destAddr.substring(0,50)}</small>`);
+
+        // Current captain location
+        if (window._captainLatLng) {
+            const capIcon = L.divIcon({
+                html: `<div style="width:44px;height:44px;display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 4px 10px rgba(0,200,83,0.7));">
+                    <div style="background:#00C853;width:40px;height:40px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:3px solid #fff;">
+                        <i class="fas fa-motorcycle" style="color:#fff;font-size:16px;"></i>
+                    </div>
+                </div>`,
+                className:'', iconSize:[44,44], iconAnchor:[22,22]
+            });
+            L.marker(window._captainLatLng, { icon: capIcon })
+                .addTo(prmMap)
+                .bindPopup('<b>🏍️ Aap Yahan Hain</b>');
+        }
+
+        // Draw route pickup → destination with distance label
+        try {
+            prmRouteControl = L.Routing.control({
+                waypoints: [L.latLng(pickupLat, pickupLng), L.latLng(destLat, destLng)],
+                router: L.Routing.osrmv1({ serviceUrl:'https://router.project-osrm.org/route/v1' }),
+                routeWhileDragging: false,
+                showAlternatives: false,
+                fitSelectedRoutes: true,
+                collapsible: true, collapsed: true,
+                lineOptions: { styles:[{ color:'#3B82F6', opacity:0.85, weight:5 }] },
+                createMarker: () => false
+            }).addTo(prmMap);
+
+            prmRouteControl.on('routesfound', (e) => {
+                const route = e.routes[0];
+                if (route) {
+                    const mins = Math.round(route.summary.totalTime / 60);
+                    const km = (route.summary.totalDistance / 1000).toFixed(1);
+                    document.getElementById('prm-duration').textContent = mins + ' min';
+                    document.getElementById('prm-distance').textContent = km + ' km';
+                }
+            });
+        } catch(err) { console.warn('PRM Routing err:', err); }
+
+        // Fit map to show both points
+        const bounds = L.latLngBounds([[pickupLat, pickupLng],[destLat, destLng]]);
+        if (window._captainLatLng) bounds.extend(window._captainLatLng);
+        prmMap.fitBounds(bounds, { padding:[50,50] });
+
+        // Save nav URL
+        const travelMode = vType.toLowerCase().includes('bike') ? 'bicycling' : 'driving';
+        const targetLat = (status === 'accepted') ? pickupLat : destLat;
+        const targetLng = (status === 'accepted') ? pickupLng : destLng;
+        _prmNavUrl = `https://www.google.com/maps/dir/?api=1&destination=${targetLat},${targetLng}&travelmode=${travelMode}`;
+
+    }, 100);
+}
+
+function closePassengerReview() {
+    document.getElementById('passenger-review-modal').style.display = 'none';
+    if (prmMap) { prmMap.remove(); prmMap = null; }
+    if (prmRouteControl) { prmRouteControl = null; }
+}
+
+function openReviewNavigation() {
+    if (_prmNavUrl) window.open(_prmNavUrl, '_blank');
+}
+</script>
+
 <!-- ═══════════════════════════════════════════════════════════
      RAFTAROO PWA JS SNIPPET v3.0
      </body> se pehle paste karein (har HTML page mein)
