@@ -1239,12 +1239,7 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
             const capVehicleImg = captainIcon(captainData.vehicleType || 'bike').options.html;
             const capIcon = L.divIcon({
                 html: `<div style="
-                    width:56px;height:56px;border-radius:50%;
-                    background:#fff;
-                    display:flex;align-items:center;justify-content:center;
-                    border:3px solid #00C853;
-                    box-shadow:0 4px 18px rgba(0,200,83,0.55);
-                    padding:4px;
+                    filter:drop-shadow(0 6px 16px rgba(0,0,0,0.55)) drop-shadow(0 2px 4px rgba(0,0,0,0.4));
                 ">${capVehicleImg}</div>`,
                 className:'', iconSize:[56,56], iconAnchor:[28,28]
             });
