@@ -547,26 +547,31 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
             </div>
         </div>
 
-        <!-- Delivery Details Section (hidden by default, shown for delivery requests) -->
-        <div id="rpm-delivery-section" style="display:none;margin:0 16px 12px;background:#FFF7ED;border:1px solid #FED7AA;border-radius:10px;padding:12px 14px;">
-            <div style="font-size:12px;font-weight:800;color:#C2410C;margin-bottom:10px;display:flex;align-items:center;gap:6px;"><i class="fas fa-box"></i> DELIVERY DETAILS</div>
-            <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
-                <div style="background:#fff;border-radius:8px;padding:8px 10px;border:1px solid #FDE8C8;">
-                    <div style="font-size:10px;color:#9CA3AF;font-weight:600;margin-bottom:2px;"><i class="fas fa-cube" style="color:#F97316;"></i> Parcel / Item</div>
-                    <div id="rpm-parcel-desc" style="font-size:13px;font-weight:700;color:#1E293B;">—</div>
+        <!-- Delivery Parcel Info Section (hidden by default) -->
+        <div id="rpm-delivery-section" style="display:none;background:#FFFBEB;border:1.5px solid #FDE68A;border-radius:12px;padding:14px 16px;margin:0 0 12px 0;">
+            <div style="font-size:13px;font-weight:800;color:#B45309;margin-bottom:10px;display:flex;align-items:center;gap:7px;">
+                <i class="fas fa-box" style="font-size:15px;"></i> Delivery — Parcel Details
+            </div>
+            <div style="display:flex;flex-direction:column;gap:7px;font-size:13px;color:#374151;">
+                <div style="display:flex;justify-content:space-between;border-bottom:1px solid #FDE68A;padding-bottom:6px;">
+                    <span style="color:#6B7280;font-weight:600;">Parcel Contents</span>
+                    <span id="rpm-parcel-desc" style="font-weight:700;text-align:right;max-width:60%;">—</span>
                 </div>
-                <div style="background:#fff;border-radius:8px;padding:8px 10px;border:1px solid #FDE8C8;">
-                    <div style="font-size:10px;color:#9CA3AF;font-weight:600;margin-bottom:2px;"><i class="fas fa-tag" style="color:#F97316;"></i> Estimated Value</div>
-                    <div id="rpm-parcel-value" style="font-size:13px;font-weight:700;color:#1E293B;">—</div>
+                <div style="display:flex;justify-content:space-between;border-bottom:1px solid #FDE68A;padding-bottom:6px;">
+                    <span style="color:#6B7280;font-weight:600;">Estimated Value</span>
+                    <span id="rpm-parcel-value" style="font-weight:700;color:#B45309;">—</span>
                 </div>
-                <div style="background:#fff;border-radius:8px;padding:8px 10px;border:1px solid #FDE8C8;">
-                    <div style="font-size:10px;color:#9CA3AF;font-weight:600;margin-bottom:2px;"><i class="fas fa-user-check" style="color:#F97316;"></i> Receiver ka Naam</div>
-                    <div id="rpm-recipient-name" style="font-size:13px;font-weight:700;color:#1E293B;">—</div>
+                <div style="display:flex;justify-content:space-between;border-bottom:1px solid #FDE68A;padding-bottom:6px;">
+                    <span style="color:#6B7280;font-weight:600;">Receiver Name</span>
+                    <span id="rpm-recipient-name" style="font-weight:700;">—</span>
                 </div>
-                <div style="background:#fff;border-radius:8px;padding:8px 10px;border:1px solid #FDE8C8;">
-                    <div style="font-size:10px;color:#9CA3AF;font-weight:600;margin-bottom:2px;"><i class="fas fa-phone" style="color:#F97316;"></i> Receiver ka Phone</div>
-                    <div id="rpm-recipient-phone" style="font-size:13px;font-weight:700;color:#1D4ED8;">—</div>
+                <div style="display:flex;justify-content:space-between;">
+                    <span style="color:#6B7280;font-weight:600;">Receiver Phone</span>
+                    <span id="rpm-recipient-phone" style="font-weight:700;color:#1D4ED8;">—</span>
                 </div>
+            </div>
+            <div style="margin-top:10px;background:#FEF9C3;border-radius:8px;padding:7px 10px;font-size:11px;color:#92400E;font-weight:600;display:flex;align-items:center;gap:6px;">
+                <i class="fas fa-info-circle"></i> Parcel deliver karke receiver se confirm karwain
             </div>
         </div>
 
@@ -1133,24 +1138,19 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         filtered.forEach(req=>{
             const el=document.createElement('div'); el.className='request-card';
             const dc=req.distanceToPickup!==null?'<span class="distance-chip"><i class="fas fa-location-dot"></i>'+req.distanceToPickup.toFixed(1)+' km door</span>':'';
-            const dc=req.distanceToPickup!==null?'<span class="distance-chip"><i class="fas fa-location-dot"></i>'+req.distanceToPickup.toFixed(1)+' km door</span>':'';
-            const isDelivery = req.tripMode === 'delivery' || (req.service && req.service.toLowerCase().includes('delivery')) || (req.service && req.service.toLowerCase().includes('cargo'));
+            const isDelivery = req.tripMode === 'delivery' || (req.service && req.service.toLowerCase().includes('delivery'));
             const pd = req.parcelDetails;
-            const deliveryBadge = isDelivery ? '<div style="background:#FFF7ED;border:1px solid #FED7AA;border-radius:8px;padding:10px 12px;margin:8px 0;">'
-                + '<div style="font-size:11px;font-weight:800;color:#C2410C;margin-bottom:6px;"><i class="fas fa-box"></i> DELIVERY DETAILS</div>'
-                + (pd ? '<div style="display:flex;gap:8px;margin-bottom:5px;"><i class="fas fa-cube" style="color:#F97316;font-size:12px;margin-top:3px;"></i><div><div style="font-size:10px;color:#9CA3AF;font-weight:600;">Parcel / Item</div><div style="font-size:13px;font-weight:700;color:#1E293B;">'+pd.description+'</div></div></div>' : '')
-                + (pd ? '<div style="display:flex;gap:8px;margin-bottom:5px;"><i class="fas fa-tag" style="color:#F97316;font-size:12px;margin-top:3px;"></i><div><div style="font-size:10px;color:#9CA3AF;font-weight:600;">Estimated Value</div><div style="font-size:13px;font-weight:700;color:#1E293B;">Rs. '+pd.value+'</div></div></div>' : '')
-                + (pd ? '<div style="display:flex;gap:8px;margin-bottom:5px;"><i class="fas fa-user-check" style="color:#F97316;font-size:12px;margin-top:3px;"></i><div><div style="font-size:10px;color:#9CA3AF;font-weight:600;">Receiver ka Naam</div><div style="font-size:13px;font-weight:700;color:#1E293B;">'+pd.recipientName+'</div></div></div>' : '')
-                + (pd ? '<div style="display:flex;gap:8px;"><i class="fas fa-phone" style="color:#F97316;font-size:12px;margin-top:3px;"></i><div><div style="font-size:10px;color:#9CA3AF;font-weight:600;">Receiver ka Phone</div><div style="font-size:13px;font-weight:700;"><a href="tel:'+pd.recipientPhone+'" style="color:#1D4ED8;text-decoration:none;">'+pd.recipientPhone+'</a></div></div></div>' : '')
-                + '</div>' : '';
-            const distLabel = isDelivery ? 'km delivery' : 'km ride';
-            el.innerHTML='<div class="request-card-top"><div><div class="request-card-type" style="'+(isDelivery ? 'background:#FFF7ED;color:#C2410C;border:1px solid #FED7AA;' : '')+'">'+(isDelivery ? '📦 ' : '')+(req.vehicle||req.service||'N/A').toUpperCase()+'</div></div><div class="request-card-fare">Rs. '+req.fare+' <span>offered</span></div></div>'
-                +'<div class="request-detail customer"><i class="fas fa-user"></i><div><div class="detail-label">'+(isDelivery ? 'Sender (Customer)' : 'Customer')+'</div><div class="detail-text">'+req.name+'</div></div></div>'
-                +deliveryBadge
-                +'<div class="request-detail pickup"><i class="fas fa-circle-dot"></i><div><div class="detail-label">Pickup</div><div class="detail-text">'+req.pickup.address.substring(0,50)+'...</div></div></div>'
-                +'<div class="request-detail dropoff"><i class="fas fa-location-dot"></i><div><div class="detail-label">Dropoff / Deliver To</div><div class="detail-text">'+req.destination.address.substring(0,50)+'...</div></div></div>'
-                +'<div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;"><div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;"><span style="background:#F1F5F9;color:var(--text-muted);font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;"><i class="fas fa-road"></i> '+req.distance+' '+distLabel+'</span>'+dc+'</div></div>'
-                +'<div class="request-actions"><button class="btn-accept" data-id="'+req.id+'" data-fare="'+req.fare+'" onclick="openRidePreview(this.dataset.id,this.dataset.fare)"><i class="fas fa-map-marked-alt"></i> Map Pe Dekhen &amp; Offer</button><button class="btn-reject" onclick="this.closest(\'.request-card\').remove()">&#x2715;</button></div>';
+            const deliveryBadge = isDelivery ? '<span style="background:#FFF3CD;color:#B45309;font-size:11px;font-weight:800;padding:3px 9px;border-radius:6px;display:inline-flex;align-items:center;gap:4px;"><i class="fas fa-box"></i> DELIVERY</span>' : '';
+            const parcelBlock = (isDelivery && pd) ? `<div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:8px;padding:10px 12px;margin:8px 0;font-size:12px;">
+                <div style="font-weight:800;color:#B45309;margin-bottom:6px;"><i class="fas fa-box"></i> Parcel Details</div>
+                <div style="display:flex;flex-direction:column;gap:4px;color:#374151;">
+                    <div><b>Parcel:</b> ${pd.description}</div>
+                    <div><b>Value:</b> Rs. ${pd.value}</div>
+                    <div><b>Receiver:</b> ${pd.recipientName}</div>
+                    <div><b>Receiver Ph:</b> ${pd.recipientPhone}</div>
+                </div>
+            </div>` : (isDelivery ? '<div style="background:#FEF9C3;border-radius:8px;padding:8px 12px;font-size:12px;color:#B45309;margin:8px 0;"><i class="fas fa-exclamation-circle"></i> Parcel details milti hain confirm ke baad</div>' : '');
+            el.innerHTML='<div class="request-card-top"><div><div class="request-card-type">'+(req.vehicle||req.service||'N/A').toUpperCase()+'</div></div><div class="request-card-fare">Rs. '+req.fare+' <span>offered</span></div></div><div class="request-detail customer"><i class="fas fa-user"></i><div><div class="detail-label">Customer</div><div class="detail-text">'+req.name+'</div></div></div><div class="request-detail pickup"><i class="fas fa-circle-dot"></i><div><div class="detail-label">Pickup (Sender)</div><div class="detail-text">'+req.pickup.address.substring(0,50)+'...</div></div></div><div class="request-detail dropoff"><i class="fas fa-location-dot"></i><div><div class="detail-label">'+(isDelivery?'Delivery Address':'Dropoff')+'</div><div class="detail-text">'+req.destination.address.substring(0,50)+'...</div></div></div>'+parcelBlock+'<div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;"><div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;"><span style="background:#F1F5F9;color:var(--text-muted);font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;"><i class="fas fa-road"></i> '+req.distance+' km '+(isDelivery?'delivery':'ride')+'</span>'+deliveryBadge+dc+'</div></div><div class="request-actions"><button class="btn-accept" data-id="'+req.id+'" data-fare="'+req.fare+'" onclick="openRidePreview(this.dataset.id,this.dataset.fare)"><i class="fas fa-map-marked-alt"></i> Map Pe Dekhen &amp; Offer</button><button class="btn-reject" onclick="this.closest(\'.request-card\').remove()">&#x2715;</button></div>';
             con.appendChild(el);
         });
     }
@@ -1225,19 +1225,24 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         document.getElementById('rpm-pickup-addr').textContent = req.pickup?.address || '—';
         document.getElementById('rpm-dest-addr').textContent = req.destination?.address || '—';
 
-        // Delivery section: show/hide based on tripMode
-        const isDeliveryReq = req.tripMode === 'delivery' || (req.service && req.service.toLowerCase().includes('delivery')) || (req.service && req.service.toLowerCase().includes('cargo'));
-        const delivSection = document.getElementById('rpm-delivery-section');
-        if (isDeliveryReq && req.parcelDetails) {
+        // Delivery section
+        const isDelivery = req.tripMode === 'delivery' || (req.service && req.service.toLowerCase().includes('delivery'));
+        const delivSec = document.getElementById('rpm-delivery-section');
+        if (isDelivery && req.parcelDetails) {
             const pd = req.parcelDetails;
             document.getElementById('rpm-parcel-desc').textContent = pd.description || '—';
             document.getElementById('rpm-parcel-value').textContent = pd.value ? 'Rs. ' + pd.value : '—';
             document.getElementById('rpm-recipient-name').textContent = pd.recipientName || '—';
-            const phoneEl = document.getElementById('rpm-recipient-phone');
-            phoneEl.innerHTML = pd.recipientPhone ? `<a href="tel:${pd.recipientPhone}" style="color:#1D4ED8;text-decoration:none;">${pd.recipientPhone}</a>` : '—';
-            delivSection.style.display = 'block';
+            document.getElementById('rpm-recipient-phone').textContent = pd.recipientPhone || '—';
+            delivSec.style.display = 'block';
+            // Also update labels
+            document.querySelector('[id="rpm-dest-addr"]').closest('.rpm-route-row') && null; // no-op
+            document.querySelector('.rpm-route-label[style*="EF4444"]').textContent = '🏁 Delivery Address';
+        } else if (isDelivery) {
+            delivSec.innerHTML = '<div style="font-size:12px;color:#B45309;font-weight:700;padding:4px 0;"><i class="fas fa-exclamation-circle"></i> Parcel details available nahi — passenger se confirm karein</div>';
+            delivSec.style.display = 'block';
         } else {
-            delivSection.style.display = 'none';
+            delivSec.style.display = 'none';
         }
 
         // Proceed button → offer modal
