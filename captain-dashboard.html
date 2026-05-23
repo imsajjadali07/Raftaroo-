@@ -35,6 +35,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css"/>
 
 <style>
 :root{--primary:#00C853;--primary-dark:#00A040;--primary-light:#E8F5E9;--primary-glow:rgba(0,200,83,0.25);--secondary:#0A0F1E;--bg:#F0F4F8;--white:#ffffff;--text-main:#0A0F1E;--text-muted:#64748B;--text-light:#94A3B8;--border:rgba(0,0,0,0.07);--shadow-sm:0 2px 8px rgba(0,0,0,0.06);--shadow-md:0 4px 20px rgba(0,0,0,0.10);--shadow-lg:0 8px 40px rgba(0,0,0,0.14);--error:#EF4444;--info:#3B82F6;--warning:#F59E0B;--radius:14px;--radius-sm:10px;--radius-lg:20px;}
@@ -197,6 +198,124 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
 ::-webkit-scrollbar{width:4px;}
 ::-webkit-scrollbar-track{background:transparent;}
 ::-webkit-scrollbar-thumb{background:#CBD5E1;border-radius:4px;}
+
+/* ══ RIDE PREVIEW MODAL ══ */
+#ride-preview-modal{
+    position:fixed;inset:0;z-index:20000;
+    background:#0A0F1E;
+    display:none;flex-direction:column;overflow:hidden;
+}
+#ride-preview-modal.rpm-open{ display:flex!important; }
+
+.rpm-header{
+    background:linear-gradient(135deg,#0A0F1E,#0d1a2e);
+    padding:0 16px; height:60px;
+    display:flex; align-items:center; justify-content:space-between;
+    border-bottom:1px solid rgba(0,200,83,0.2);
+    flex-shrink:0;
+}
+.rpm-back-btn{
+    width:38px;height:38px;border-radius:50%;
+    background:rgba(255,255,255,0.08);border:1.5px solid rgba(255,255,255,0.12);
+    color:#fff;font-size:15px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.rpm-title{ font-size:15px;font-weight:800;color:#fff;letter-spacing:-0.2px; }
+.rpm-subtitle{ font-size:11px;color:rgba(255,255,255,0.4);font-weight:600; }
+.rpm-fare-badge{
+    background:rgba(0,200,83,0.15);border:1.5px solid rgba(0,200,83,0.35);
+    color:#00C853;font-size:16px;font-weight:900;
+    padding:5px 14px;border-radius:50px;
+}
+
+#rpm-map{ flex:1;position:relative;min-height:0; }
+
+.rpm-panel{
+    background:#fff;
+    border-radius:24px 24px 0 0;
+    box-shadow:0 -8px 40px rgba(0,0,0,0.3);
+    max-height:55vh;overflow-y:auto;
+    flex-shrink:0;
+    padding-bottom:env(safe-area-inset-bottom,16px);
+}
+.rpm-drag-handle{
+    height:26px;display:flex;justify-content:center;align-items:center;
+}
+.rpm-drag-handle::before{content:'';width:36px;height:4px;background:#CBD5E1;border-radius:2px;}
+
+.rpm-passenger-row{
+    display:flex;align-items:center;gap:14px;
+    padding:0 16px 14px;
+    border-bottom:1px solid #F1F5F9;
+}
+.rpm-avatar{
+    width:54px;height:54px;border-radius:50%;
+    background:linear-gradient(135deg,#1D4ED8,#60A5FA);
+    display:flex;align-items:center;justify-content:center;
+    font-size:22px;font-weight:900;color:#fff;
+    flex-shrink:0;border:3px solid #fff;
+    box-shadow:0 4px 14px rgba(59,130,246,0.35);
+    position:relative;
+}
+.rpm-avatar-verified{
+    position:absolute;bottom:-2px;right:-2px;
+    width:18px;height:18px;border-radius:50%;
+    background:#00C853;border:2.5px solid #fff;
+    display:flex;align-items:center;justify-content:center;
+    font-size:9px;color:#fff;
+}
+.rpm-name{ font-size:18px;font-weight:900;color:#0A0F1E;letter-spacing:-0.3px; }
+.rpm-stars{ color:#FBBF24;font-size:13px;letter-spacing:1px; }
+.rpm-rating-num{ font-size:12px;font-weight:700;color:#64748B; }
+.rpm-trips-num{ font-size:12px;font-weight:700;color:#64748B; }
+
+.rpm-stats-grid{
+    display:grid;grid-template-columns:repeat(3,1fr);gap:8px;
+    padding:14px 16px;border-bottom:1px solid #F1F5F9;
+}
+.rpm-stat{
+    background:#F8FAFC;border-radius:12px;padding:10px 8px;text-align:center;
+    border:1px solid #E2E8F0;
+}
+.rpm-stat-val{ font-size:15px;font-weight:900;color:#0A0F1E;line-height:1; }
+.rpm-stat-label{ font-size:10px;font-weight:600;color:#64748B;margin-top:3px;text-transform:uppercase;letter-spacing:0.4px; }
+.rpm-stat.green .rpm-stat-val{ color:#00A040; }
+.rpm-stat.green{ background:#F0FDF4;border-color:rgba(0,200,83,0.2); }
+.rpm-stat.blue .rpm-stat-val{ color:#1D4ED8; }
+.rpm-stat.blue{ background:#EFF6FF;border-color:rgba(59,130,246,0.2); }
+.rpm-stat.orange .rpm-stat-val{ color:#B45309; }
+.rpm-stat.orange{ background:#FFF7ED;border-color:rgba(245,158,11,0.2); }
+
+.rpm-route-box{
+    margin:14px 16px;background:#F8FAFC;border-radius:14px;
+    padding:14px;border:1px solid #E2E8F0;
+}
+.rpm-route-row{ display:flex;gap:10px;align-items:flex-start; }
+.rpm-route-dot-col{ display:flex;flex-direction:column;align-items:center;flex-shrink:0;padding-top:3px; }
+.rpm-route-dot-green{ width:12px;height:12px;border-radius:50%;background:#00C853;box-shadow:0 0 0 3px rgba(0,200,83,0.18); }
+.rpm-route-dot-connector{ width:2px;height:20px;background:#E2E8F0;margin:3px 0; }
+.rpm-route-dot-red{ width:12px;height:16px;background:#EF4444;border-radius:50% 50% 50% 0;transform:rotate(-45deg);box-shadow:0 0 0 3px rgba(239,68,68,0.18); }
+.rpm-route-label{ font-size:9px;font-weight:800;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:2px; }
+.rpm-route-addr{ font-size:12px;font-weight:600;color:#0A0F1E;line-height:1.4; }
+
+.rpm-actions{ display:flex;gap:8px;padding:12px 16px; }
+.rpm-btn-proceed{
+    flex:1;padding:14px;background:var(--primary);color:#fff;
+    border:none;border-radius:12px;font-weight:800;font-size:14px;cursor:pointer;
+    display:flex;align-items:center;justify-content:center;gap:7px;
+    box-shadow:0 4px 16px rgba(0,200,83,0.35);
+    font-family:'Plus Jakarta Sans',sans-serif;
+    transition:0.2s;
+}
+.rpm-btn-proceed:hover{ background:var(--primary-dark); }
+.rpm-btn-back{
+    padding:14px 18px;background:#F1F5F9;color:#64748B;
+    border:none;border-radius:12px;font-weight:700;font-size:13px;cursor:pointer;
+    font-family:'Plus Jakarta Sans',sans-serif;
+    transition:0.2s;
+}
+
+@keyframes rpm-in{ from{opacity:0;transform:scale(0.95);}to{opacity:1;transform:scale(1);} }
 </style>
 </head>
 <body>
@@ -348,6 +467,98 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
     </div>
 </div>
 
+<!-- ══════════════════════════ RIDE PREVIEW MAP MODAL ══════════════════════════ -->
+<div id="ride-preview-modal">
+    <!-- Header -->
+    <div class="rpm-header">
+        <div style="display:flex;align-items:center;gap:12px;">
+            <button class="rpm-back-btn" onclick="closeRidePreview()"><i class="fas fa-arrow-left"></i></button>
+            <div>
+                <div class="rpm-title">Ride Preview</div>
+                <div class="rpm-subtitle">Accept karne se pehle poori detail dekhen</div>
+            </div>
+        </div>
+        <div class="rpm-fare-badge" id="rpm-fare-badge">Rs. 0</div>
+    </div>
+
+    <!-- Map -->
+    <div id="rpm-map"></div>
+
+    <!-- Bottom Info Panel -->
+    <div class="rpm-panel">
+        <div class="rpm-drag-handle"></div>
+
+        <!-- Passenger Row -->
+        <div class="rpm-passenger-row">
+            <div class="rpm-avatar" id="rpm-avatar">
+                <span id="rpm-avatar-letter">A</span>
+                <div class="rpm-avatar-verified"><i class="fas fa-check"></i></div>
+            </div>
+            <div style="flex:1;min-width:0;">
+                <div class="rpm-name" id="rpm-name">Passenger</div>
+                <div style="display:flex;align-items:center;gap:6px;margin-top:3px;flex-wrap:wrap;">
+                    <div class="rpm-stars" id="rpm-stars">★★★★★</div>
+                    <span class="rpm-rating-num" id="rpm-rating-num">4.8</span>
+                    <span style="color:#CBD5E1;font-size:10px;">|</span>
+                    <span class="rpm-trips-num" id="rpm-trips-num">0 trips</span>
+                </div>
+                <div id="rpm-vehicle-badge" style="margin-top:6px;display:inline-flex;align-items:center;gap:5px;background:#F0FDF4;border:1px solid rgba(0,200,83,0.2);color:#00A040;padding:3px 9px;border-radius:6px;font-size:11px;font-weight:800;">
+                    <i class="fas fa-motorcycle"></i> <span id="rpm-vehicle-type">Motorcycle</span>
+                </div>
+            </div>
+        </div>
+
+        <!-- Stats Grid -->
+        <div class="rpm-stats-grid">
+            <div class="rpm-stat green">
+                <div class="rpm-stat-val" id="rpm-ride-dist">0 km</div>
+                <div class="rpm-stat-label">Ride</div>
+            </div>
+            <div class="rpm-stat blue">
+                <div class="rpm-stat-val" id="rpm-pickup-dist">0 km</div>
+                <div class="rpm-stat-label">Pickup Se</div>
+            </div>
+            <div class="rpm-stat orange">
+                <div class="rpm-stat-val" id="rpm-eta">— min</div>
+                <div class="rpm-stat-label">ETA</div>
+            </div>
+        </div>
+
+        <!-- Route -->
+        <div class="rpm-route-box">
+            <div class="rpm-route-row" style="margin-bottom:6px;">
+                <div class="rpm-route-dot-col">
+                    <div class="rpm-route-dot-green"></div>
+                    <div class="rpm-route-dot-connector"></div>
+                </div>
+                <div style="flex:1;min-width:0;padding-bottom:8px;">
+                    <div class="rpm-route-label" style="color:#00A040;">📍 Pickup</div>
+                    <div class="rpm-route-addr" id="rpm-pickup-addr">—</div>
+                </div>
+            </div>
+            <div class="rpm-route-row">
+                <div class="rpm-route-dot-col">
+                    <div class="rpm-route-dot-red"></div>
+                </div>
+                <div style="flex:1;min-width:0;">
+                    <div class="rpm-route-label" style="color:#EF4444;">🏁 Dropoff</div>
+                    <div class="rpm-route-addr" id="rpm-dest-addr">—</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Actions -->
+        <div class="rpm-actions">
+            <button class="rpm-btn-proceed" id="rpm-proceed-btn">
+                <i class="fas fa-bolt"></i> Proceed — Review &amp; Offer
+            </button>
+            <button class="rpm-btn-back" onclick="closeRidePreview()">
+                <i class="fas fa-times"></i>
+            </button>
+        </div>
+    </div>
+</div>
+
 <!-- REQUEST MODAL -->
 <div id="request-modal-overlay" style="display:none;">
     <div class="request-modal-content">
@@ -394,6 +605,7 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
 </div>
 
 <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
@@ -498,7 +710,10 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
             <div class="modal-detail-row"><span class="label">📍 Pickup</span><span class="value">${request.pickup.address.substring(0,35)}...</span></div>
             <div class="modal-detail-row"><span class="label">🏁 Dropoff</span><span class="value">${request.destination.address.substring(0,35)}...</span></div>`;
         const tb = document.getElementById('modalTimerBar'); tb.style.animation='none'; tb.offsetHeight; tb.style.animation='timer-shrink 60s linear forwards';
-        document.getElementById('modalAcceptBtn').onclick = () => showOfferConfirmationModal(request.id, request.fare);
+        document.getElementById('modalAcceptBtn').onclick = () => {
+            hideRequestModal();
+            setTimeout(() => openRidePreview(request.id, request.fare), 100);
+        };
         document.getElementById('modalRejectBtn').onclick = hideRequestModal;
         requestModalOverlay.style.display = 'flex'; playRingtone();
         if (modalTimeout) clearTimeout(modalTimeout);
@@ -864,9 +1079,10 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
                 return;
             }
             if(rd){
+                window._allRequestsCache = rd;   // ← cache for preview modal
                 Object.keys(rd).forEach(key=>{
                     const req=rd[key];
-                    if((req.status==='pending'||req.status==='bidding')&&!req.riderId){
+                    if(req.status==='pending'&&!req.riderId){
                         if(!isVehicleMatch(cv,req.vehicle||req.service||'')) return;
                         let d=null;
                         if(cl&&req.pickup?.lat&&req.pickup?.lng) d=getDistance(cl.lat,cl.lng,req.pickup.lat,req.pickup.lng);
@@ -894,13 +1110,184 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         filtered.forEach(req=>{
             const el=document.createElement('div'); el.className='request-card';
             const dc=req.distanceToPickup!==null?'<span class="distance-chip"><i class="fas fa-location-dot"></i>'+req.distanceToPickup.toFixed(1)+' km door</span>':'';
-            el.innerHTML='<div class="request-card-top"><div><div class="request-card-type">'+(req.vehicle||req.service||'N/A').toUpperCase()+'</div></div><div class="request-card-fare">Rs. '+req.fare+' <span>offered</span></div></div><div class="request-detail customer"><i class="fas fa-user"></i><div><div class="detail-label">Customer</div><div class="detail-text">'+req.name+'</div></div></div><div class="request-detail pickup"><i class="fas fa-circle-dot"></i><div><div class="detail-label">Pickup</div><div class="detail-text">'+req.pickup.address.substring(0,50)+'...</div></div></div><div class="request-detail dropoff"><i class="fas fa-location-dot"></i><div><div class="detail-label">Dropoff</div><div class="detail-text">'+req.destination.address.substring(0,50)+'...</div></div></div><div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;"><div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;"><span style="background:#F1F5F9;color:var(--text-muted);font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;"><i class="fas fa-road"></i> '+req.distance+' km ride</span>'+dc+'</div></div><div class="request-actions"><button class="btn-accept" data-id="'+req.id+'" data-fare="'+req.fare+'" onclick="showOfferConfirmationModal(this.dataset.id,this.dataset.fare)"><i class="fas fa-bolt"></i> Review &amp; Offer</button><button class="btn-reject" onclick="this.closest(\'.request-card\').remove()">&#x2715;</button></div>';
+            el.innerHTML='<div class="request-card-top"><div><div class="request-card-type">'+(req.vehicle||req.service||'N/A').toUpperCase()+'</div></div><div class="request-card-fare">Rs. '+req.fare+' <span>offered</span></div></div><div class="request-detail customer"><i class="fas fa-user"></i><div><div class="detail-label">Customer</div><div class="detail-text">'+req.name+'</div></div></div><div class="request-detail pickup"><i class="fas fa-circle-dot"></i><div><div class="detail-label">Pickup</div><div class="detail-text">'+req.pickup.address.substring(0,50)+'...</div></div></div><div class="request-detail dropoff"><i class="fas fa-location-dot"></i><div><div class="detail-label">Dropoff</div><div class="detail-text">'+req.destination.address.substring(0,50)+'...</div></div></div><div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;"><div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;"><span style="background:#F1F5F9;color:var(--text-muted);font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;"><i class="fas fa-road"></i> '+req.distance+' km ride</span>'+dc+'</div></div><div class="request-actions"><button class="btn-accept" data-id="'+req.id+'" data-fare="'+req.fare+'" onclick="openRidePreview(this.dataset.id,this.dataset.fare)"><i class="fas fa-map-marked-alt"></i> Map Pe Dekhen &amp; Offer</button><button class="btn-reject" onclick="this.closest(\'.request-card\').remove()">&#x2715;</button></div>';
             con.appendChild(el);
         });
     }
 
     window.showOfferConfirmationModal = showOfferConfirmationModal;
     window.sendOffer = sendOffer;
+    window.openRidePreview = window.openRidePreview; // already set below
+    // ══════════════════════════════════════════════════════════════
+    let rpmMap = null;
+    let rpmRouteCtrl = null;
+    let _rpmCurrentRequest = null;
+
+    // Override: clicking "Review & Offer" opens preview first
+    window.openRidePreview = function(requestId, fare) {
+        // Find request data from Firebase snapshot cache
+        const raw = window._allRequestsCache ? window._allRequestsCache[requestId] : null;
+        if (!raw) {
+            showOfferConfirmationModal(requestId, fare);
+            return;
+        }
+        // Calculate distanceToPickup
+        const cl = captainMarker ? captainMarker.getLatLng() : (captainData.location ? captainData.location : null);
+        let d2p = null;
+        if (cl && raw.pickup?.lat) {
+            d2p = getDistance(cl.lat||cl.lat, cl.lng||cl.lng, raw.pickup.lat, raw.pickup.lng);
+        }
+        _rpmCurrentRequest = { ...raw, id: requestId, distanceToPickup: d2p };
+        _showRidePreviewModal(_rpmCurrentRequest);
+    };
+
+    function _showRidePreviewModal(req) {
+        const modal = document.getElementById('ride-preview-modal');
+        modal.classList.add('rpm-open');
+        document.body.style.overflow = 'hidden';
+
+        // Fare
+        document.getElementById('rpm-fare-badge').textContent = 'Rs. ' + req.fare;
+
+        // Passenger info
+        const name = req.name || 'Passenger';
+        const rating = parseFloat(req.passengerRating || req.customerRating || 4.8).toFixed(1);
+        const trips = parseInt(req.passengerTrips || req.totalRides || 0);
+        const vehicle = (req.vehicle || req.service || 'Motorcycle').toUpperCase();
+
+        document.getElementById('rpm-avatar-letter').textContent = name.charAt(0).toUpperCase();
+        document.getElementById('rpm-name').textContent = name;
+        document.getElementById('rpm-vehicle-type').textContent = vehicle;
+        document.getElementById('rpm-trips-num').textContent = trips + ' trips';
+
+        // Stars
+        const rNum = Math.round(parseFloat(rating));
+        document.getElementById('rpm-stars').innerHTML = Array.from({length:5},(_,i)=>
+            `<i class="${i<rNum?'fas':'far'} fa-star" style="color:${i<rNum?'#FBBF24':'#CBD5E1'};"></i>`
+        ).join('');
+        document.getElementById('rpm-rating-num').textContent = rating;
+
+        // Distances
+        document.getElementById('rpm-ride-dist').textContent = (req.distance || '?') + ' km';
+        const d2p = req.distanceToPickup;
+        document.getElementById('rpm-pickup-dist').textContent = d2p !== null ? d2p.toFixed(1) + ' km' : '— km';
+
+        // Addresses
+        document.getElementById('rpm-pickup-addr').textContent = req.pickup?.address || '—';
+        document.getElementById('rpm-dest-addr').textContent = req.destination?.address || '—';
+
+        // Proceed button → offer modal
+        document.getElementById('rpm-proceed-btn').onclick = () => {
+            closeRidePreview();
+            setTimeout(() => showOfferConfirmationModal(req.id, req.fare), 200);
+        };
+
+        // Init map after short delay
+        setTimeout(() => _initRpmMap(req), 120);
+    }
+
+    function _initRpmMap(req) {
+        if (rpmMap) { rpmMap.remove(); rpmMap = null; }
+        rpmMap = L.map('rpm-map', { zoomControl: false, attributionControl: false });
+        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { maxZoom:19 }).addTo(rpmMap);
+        rpmMap.invalidateSize();
+
+        const pLat = req.pickup?.lat, pLng = req.pickup?.lng;
+        const dLat = req.destination?.lat, dLng = req.destination?.lng;
+        if (!pLat || !dLat) { rpmMap.setView([24.86, 67.01], 13); return; }
+
+        // Passenger / pickup icon
+        const passengerIcon = L.divIcon({
+            html: `<div style="position:relative;width:54px;height:66px;">
+                <div style="position:absolute;bottom:0;left:50%;transform:translateX(-50%);
+                    background:#1D4ED8;width:48px;height:48px;border-radius:50%;
+                    display:flex;align-items:center;justify-content:center;
+                    box-shadow:0 4px 20px rgba(59,130,246,0.7);border:3px solid #fff;">
+                    <i class="fas fa-user" style="color:#fff;font-size:20px;"></i>
+                </div>
+                <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);
+                    background:#1D4ED8;color:#fff;font-size:9px;font-weight:800;
+                    padding:2px 7px;border-radius:10px;white-space:nowrap;">
+                    ${(req.name||'P').charAt(0).toUpperCase()}
+                </div>
+            </div>`,
+            className:'', iconSize:[54,66], iconAnchor:[27,48]
+        });
+
+        // Destination icon
+        const destIcon = L.divIcon({
+            html: `<div style="background:#EF4444;width:36px;height:48px;border-radius:50% 50% 50% 0;
+                transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;
+                border:3px solid #fff;box-shadow:0 3px 16px rgba(239,68,68,0.55);">
+                <i class="fas fa-flag-checkered" style="color:#fff;font-size:14px;transform:rotate(45deg);"></i>
+            </div>`,
+            className:'', iconSize:[36,48], iconAnchor:[18,48]
+        });
+
+        // Captain position icon
+        const captainPos = captainMarker ? captainMarker.getLatLng() : (captainData.location ? [captainData.location.lat, captainData.location.lng] : null);
+        if (captainPos) {
+            const capIcon = L.divIcon({
+                html: `<div style="background:#00C853;width:42px;height:42px;border-radius:50%;
+                    display:flex;align-items:center;justify-content:center;
+                    border:3px solid #fff;box-shadow:0 4px 14px rgba(0,200,83,0.6);">
+                    <i class="fas fa-motorcycle" style="color:#fff;font-size:16px;"></i>
+                </div>`,
+                className:'', iconSize:[42,42], iconAnchor:[21,21]
+            });
+            L.marker(captainPos, { icon: capIcon }).addTo(rpmMap)
+                .bindPopup('<b>🏍️ Aap Yahan Hain</b>');
+        }
+
+        // Passenger marker at pickup
+        L.marker([pLat, pLng], { icon: passengerIcon }).addTo(rpmMap)
+            .bindPopup(`<b>👤 ${req.name||'Passenger'}</b><br><small>${(req.pickup?.address||'').substring(0,50)}</small>`);
+
+        // Destination marker
+        L.marker([dLat, dLng], { icon: destIcon }).addTo(rpmMap)
+            .bindPopup(`<b>🏁 Destination</b><br><small>${(req.destination?.address||'').substring(0,50)}</small>`);
+
+        // Draw route pickup → destination
+        try {
+            rpmRouteCtrl = L.Routing.control({
+                waypoints: [L.latLng(pLat, pLng), L.latLng(dLat, dLng)],
+                router: L.Routing.osrmv1({ serviceUrl:'https://router.project-osrm.org/route/v1' }),
+                routeWhileDragging:false, showAlternatives:false,
+                fitSelectedRoutes:true, collapsible:true, collapsed:true,
+                lineOptions:{ styles:[{ color:'#3B82F6', opacity:0.85, weight:5 }] },
+                createMarker:()=>false
+            }).addTo(rpmMap);
+
+            rpmRouteCtrl.on('routesfound', (e) => {
+                const route = e.routes[0];
+                if (route) {
+                    const mins = Math.round(route.summary.totalTime / 60);
+                    document.getElementById('rpm-eta').textContent = mins + ' min';
+                }
+            });
+        } catch(err) { console.warn('RPM routing err:', err); }
+
+        // Draw captain → pickup line (dashed green)
+        if (captainPos) {
+            L.polyline([captainPos, [pLat, pLng]], {
+                color:'#00C853', weight:3, opacity:0.6, dashArray:'8,6'
+            }).addTo(rpmMap);
+        }
+
+        // Fit bounds
+        const bounds = L.latLngBounds([[pLat,pLng],[dLat,dLng]]);
+        if (captainPos) bounds.extend(captainPos);
+        rpmMap.fitBounds(bounds, { padding:[50,60] });
+    }
+
+    window.closeRidePreview = function() {
+        const modal = document.getElementById('ride-preview-modal');
+        modal.classList.remove('rpm-open');
+        document.body.style.overflow = '';
+        if (rpmMap) { rpmMap.remove(); rpmMap = null; }
+        rpmRouteCtrl = null;
+        _rpmCurrentRequest = null;
+    };
 </script>
 
 <script>
