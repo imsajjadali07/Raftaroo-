@@ -1157,7 +1157,16 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
 
         document.getElementById('rpm-avatar-letter').textContent = name.charAt(0).toUpperCase();
         document.getElementById('rpm-name').textContent = name;
-        document.getElementById('rpm-vehicle-type').textContent = vehicle;
+        // Vehicle badge image
+        const vLower = (req.vehicle || req.service || 'bike').toLowerCase();
+        let vImgUrl = 'https://iili.io/ftViNi7.png';
+        if (vLower.includes('car') || vLower.includes('sedan') || vLower.includes('suv') || vLower.includes('economy') || vLower.includes('comfort')) vImgUrl = 'https://iili.io/qfsUogV.png';
+        else if (vLower.includes('pickup') || vLower.includes('cargo') || vLower.includes('truck')) vImgUrl = 'https://iili.io/ftVPMZB.png';
+        else if (vLower.includes('rickshaw') || vLower.includes('auto')) vImgUrl = 'https://iili.io/ftV61st.png';
+
+        document.getElementById('rpm-vehicle-badge').innerHTML =
+            `<img src="${vImgUrl}" style="width:26px;height:26px;object-fit:contain;" onerror="this.src='https://iili.io/ftViNi7.png'"/>
+             <span id="rpm-vehicle-type">${vehicle}</span>`;
         document.getElementById('rpm-trips-num').textContent = trips + ' trips';
 
         // Stars
@@ -1224,16 +1233,20 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
             className:'', iconSize:[36,48], iconAnchor:[18,48]
         });
 
-        // Captain position icon
+        // Captain position icon — actual vehicle image
         const captainPos = captainMarker ? captainMarker.getLatLng() : (captainData.location ? [captainData.location.lat, captainData.location.lng] : null);
         if (captainPos) {
+            const capVehicleImg = captainIcon(captainData.vehicleType || 'bike').options.html;
             const capIcon = L.divIcon({
-                html: `<div style="background:#00C853;width:42px;height:42px;border-radius:50%;
+                html: `<div style="
+                    width:56px;height:56px;border-radius:50%;
+                    background:#fff;
                     display:flex;align-items:center;justify-content:center;
-                    border:3px solid #fff;box-shadow:0 4px 14px rgba(0,200,83,0.6);">
-                    <i class="fas fa-motorcycle" style="color:#fff;font-size:16px;"></i>
-                </div>`,
-                className:'', iconSize:[42,42], iconAnchor:[21,21]
+                    border:3px solid #00C853;
+                    box-shadow:0 4px 18px rgba(0,200,83,0.55);
+                    padding:4px;
+                ">${capVehicleImg}</div>`,
+                className:'', iconSize:[56,56], iconAnchor:[28,28]
             });
             L.marker(captainPos, { icon: capIcon }).addTo(rpmMap)
                 .bindPopup('<b>🏍️ Aap Yahan Hain</b>');
