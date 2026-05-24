@@ -1192,14 +1192,7 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         // Passenger info
         const name = req.name || 'Passenger';
         const rating = parseFloat(req.passengerRating || req.customerRating || 4.8).toFixed(1);
-        // Passenger totalRides users/ node se fetch karo
-        let trips = 0;
-        if (req.customerId) {
-            try {
-                const pSnap = await get(ref(db, `users/${req.customerId}/totalRides`));
-                trips = parseInt(pSnap.val() || 0);
-            } catch(e) { trips = 0; }
-        }
+        const trips = parseInt(req.passengerTrips || req.totalRides || 0);
         const vehicle = (req.vehicle || req.service || 'Motorcycle').toUpperCase();
 
         document.getElementById('rpm-avatar-letter').textContent = name.charAt(0).toUpperCase();

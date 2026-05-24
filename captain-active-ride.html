@@ -1234,13 +1234,6 @@ body { background:var(--bg); color:var(--text-main); overflow:hidden; height:100
             updates[`/riders/${uid}/currentRequestId`] = null;
             updates[`/riders/${uid}/walletBalance`] = newWallet;
             updates[`/riders/${uid}/totalRides`] = (totalRidesDone + 1);
-            // Passenger ka trip count bhi increment karo
-            const passengerId = ride.customerId;
-            if (passengerId) {
-                const passengerSnap = await get(ref(db, `users/${passengerId}/totalRides`));
-                const passengerTotalRides = parseInt(passengerSnap.val() || 0);
-                updates[`/users/${passengerId}/totalRides`] = (passengerTotalRides + 1);
-            }
             // Daily log
             updates[`/riders/${uid}/earnings/${today}/cashCollected`] = increment(totalFare);
             updates[`/riders/${uid}/earnings/${today}/commission`] = increment(commission);
