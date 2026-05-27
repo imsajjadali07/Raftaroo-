@@ -3867,41 +3867,52 @@ input:checked + .slider:before {
         
     </script>
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.9.0/firebase-app.js";
-import { getMessaging, getToken, onMessage } 
-from "https://www.gstatic.com/firebasejs/12.9.0/firebase-messaging.js";
+import { getApps, initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+import { getMessaging, getToken, onMessage } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-messaging.js";
+import { getDatabase, ref, set, get } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-database.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
 
-const firebaseConfig = {
-  apiKey: "YOUR_KEY",
-  authDomain: "YOUR_DOMAIN",
-  projectId: "YOUR_PROJECT_ID",
-  messagingSenderId: "YOUR_SENDER_ID",
-  appId: "YOUR_APP_ID"
+const VAPID_KEY = "BAhTsS4OrHcgOe3REg1F-k-tXrR_6UZWD2euZaY-bemEczD7CefwWjuwopXMgaN39i1ew8Oldo-KJjz2x01wGmI";
+
+const _cfg = {
+  apiKey: "AIzaSyBBS7jGzuVlTIIeN9VFBxpwHkNf-mIRzDo",
+  authDomain: "raftaroo-9ce8d.firebaseapp.com",
+  databaseURL: "https://raftaroo-9ce8d-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "raftaroo-9ce8d",
+  storageBucket: "raftaroo-9ce8d.firebasestorage.app",
+  messagingSenderId: "773738074182",
+  appId: "1:773738074182:web:b7a873959c7ab8edc0ba47"
 };
 
-const app = initializeApp(firebaseConfig);
-const messaging = getMessaging(app);
+const _app = getApps().length ? getApps()[0] : initializeApp(_cfg);
+const _db   = getDatabase(_app);
+const _auth = getAuth(_app);
+const _msg  = getMessaging(_app);
 
-// Request Permission
-async function initPush() {
-  const permission = await Notification.requestPermission();
-  if (permission === "granted") {
-    const token = await getToken(messaging, {
-      vapidKey: "YOUR_VAPID_KEY"
-    });
-    console.log("FCM Token:", token);
-    // Save token to database
+async function saveFcmToken(uid, isRider) {
+  try {
+    if (!('Notification' in window) || !('serviceWorker' in navigator)) return;
+    const swReg = await navigator.serviceWorker.ready;
+    const token = await getToken(_msg, { vapidKey: VAPID_KEY, serviceWorkerRegistration: swReg });
+    if (!token) { console.warn('[FCM] Token nahi mila'); return; }
+    const path = isRider ? `riders/${uid}/fcmToken` : `users/${uid}/fcmToken`;
+    await set(ref(_db, path), token);
+    console.log('[Raftaroo FCM] Token saved -', isRider ? 'rider' : 'customer', uid);
+  } catch(e) {
+    console.warn('[Raftaroo FCM] Error:', e.message);
   }
 }
 
-initPush();
+onAuthStateChanged(_auth, async (user) => {
+  if (!user) return;
+  const rSnap = await get(ref(_db, `riders/${user.uid}/status`));
+  const isRider = rSnap.exists();
+  await saveFcmToken(user.uid, isRider);
+});
 
-// Foreground message
-onMessage(messaging, payload => {
-  new Notification(payload.notification.title, {
-    body: payload.notification.body,
-    icon: "/icons/icon-192.png"
-  });
+onMessage(_msg, payload => {
+  console.log('[FCM Foreground]', payload);
+  if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
 });
 </script>
 <!-- ═══════════════════════════════════════════════════════════
