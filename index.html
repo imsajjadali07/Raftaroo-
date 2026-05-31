@@ -221,6 +221,7 @@ body {
 .input-field { background: var(--input-bg); border-color: #333; color: var(--text-main); }
 .input-field:focus { border-color: var(--primary); background: var(--card-bg); }
 .ride-card { background: var(--card-bg); }
+.payment-proof-form { background: #1a1a1a; border-color: var(--info); }
 
 
 .hidden { display: none !important; }
@@ -351,6 +352,23 @@ body {
     display: flex; align-items: center; gap: 15px; padding: 8px 0;
     font-size: 13px; color: var(--text-muted);
 }
+/* Updated style for Wallet payment method */
+.pay-row.wallet { 
+    color: var(--secondary); 
+    font-weight: 600; 
+    cursor: pointer;
+    background: var(--bg-light);
+    border-radius: 8px;
+    padding: 10px 15px;
+    margin-top: 5px;
+    border: 1px solid var(--primary);
+}
+.pay-row.wallet.active {
+    background: var(--primary);
+    color: var(--secondary);
+    border-color: var(--secondary);
+}
+
 
 /* --- Dashboard --- */
 #dashboard {
@@ -494,19 +512,23 @@ body {
 .invite-stat-card .isl { font-size: 11px; color: var(--text-muted); font-weight: 600; margin-top: 2px; }
 .invite-note { font-size: 12px; color: var(--text-muted); background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 10px 12px; line-height: 1.6; }
 
-.input-field-small {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 10px;
-    border: 1px solid var(--text-muted);
-    border-radius: 8px;
-    box-sizing: border-box;
-    font-size: 14px;
-    background: var(--input-bg);
-    color: var(--text-main);
+/* Wallet Specific Styles */
+.balance-card {
+    background: var(--secondary);
+    color: var(--bg-light); /* Use bg-light for text in dark card in dark mode */
+    padding: 25px;
+    border-radius: 15px;
+    text-align: center;
+    margin-bottom: 20px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
 }
+.dark-mode .balance-card {
+    background: #000; /* Pure black for balance card in dark mode */
+}
+.balance-card span { font-size: 14px; opacity: 0.8; }
+.balance-card h1 { font-size: 36px; margin-top: 5px; font-weight: 700; }
 
-/* Info Card for Parcel/Support/Rider */
+/* Info Card for Wallet/Support/Rider */
 .info-card {
     background-color: var(--card-bg);
     border: 1px solid var(--bg-light);
@@ -536,6 +558,62 @@ body {
     margin-top: 10px;
 }
 
+/* Payment Proof Form */
+.payment-proof-form {
+    padding: 15px;
+    border: 1px dashed var(--info);
+    border-radius: 8px;
+    margin-top: 20px;
+    text-align: left;
+    background: var(--bg-light); /* Light blue background for emphasis */
+}
+.dark-mode .payment-proof-form {
+    background: #1a1a1a;
+}
+.payment-proof-form h4 {
+    margin-top: 0;
+    color: var(--info);
+    font-weight: 600;
+    text-align: center;
+    margin-bottom: 15px;
+}
+
+.input-field-small {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 10px;
+    border: 1px solid var(--text-muted);
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 14px;
+    background: var(--input-bg);
+    color: var(--text-main);
+}
+
+.file-upload-btn {
+    display: block;
+    width: 100%;
+    padding: 12px;
+    margin: 10px 0;
+    background-color: var(--info);
+    color: var(--white);
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 600;
+}
+.file-upload-btn:hover {
+    background-color: #2980b9;
+}
+#uploadStatus {
+    font-size: 12px;
+    color: var(--error);
+    margin-top: 5px;
+    display: block;
+    text-align: center;
+    min-height: 15px; 
+}
 
 /* --- Map Screen --- */
 #map-overlay {
@@ -827,22 +905,6 @@ body {
 }
 
 /* --- Payment Choice Modal Styles (NEW) --- */
-.wallet-preset-btn {
-    padding: 10px 8px;
-    background: var(--bg-light);
-    border: 1.5px solid #28a745;
-    border-radius: 10px;
-    font-size: 13px;
-    font-weight: 700;
-    color: #28a745;
-    cursor: pointer;
-    transition: 0.2s;
-}
-.wallet-preset-btn:active {
-    background: #28a745;
-    color: #fff;
-}
-
 #payment-choice-modal {
     position: fixed; bottom: 0; left: 0; width: 100%; z-index: 9900;
     background: var(--card-bg);
@@ -886,6 +948,10 @@ body {
     font-weight: 600; 
     cursor: pointer;
     margin-top: 10px;
+}
+#btnPayCash {
+    background: var(--success);
+    color: var(--card-bg);
 }
 
 /* NEW: Captain Offer Modal Styles */
@@ -1219,12 +1285,9 @@ input:checked + .slider:before {
                 <div class="menu-item" onclick="showView('history-view')">
                     <i class="fas fa-history"></i> <span data-lang-key="menuHistory">Ride History</span>
                 </div>
-
-                <div class="menu-item" onclick="showView('wallet-view')">
-                    <i class="fas fa-wallet" style="color:#28a745;"></i> <span>My Wallet</span>
-                    <span style="margin-left:auto;background:#f0fdf4;color:#28a745;font-size:11px;font-weight:800;padding:2px 8px;border-radius:20px;" id="sidebarWalletBadge">Rs. 0</span>
+                 <div class="menu-item" onclick="showView('wallet-view')">
+                    <i class="fas fa-wallet"></i> <span data-lang-key="menuWallet">My Wallet</span>
                 </div>
-
                 <div class="menu-item" onclick="showView('invite-view')">
                     <i class="fas fa-gift" style="color:#28a745;"></i> <span>Invite &amp; Earn</span>
                     <span style="margin-left:auto;background:#28a745;color:#fff;font-size:10px;font-weight:800;padding:2px 7px;border-radius:20px;">Rs. 1500</span>
@@ -1261,7 +1324,10 @@ input:checked + .slider:before {
                     <i class="fas fa-sign-out-alt"></i> <span data-lang-key="menuSignOut">Sign Out</span>
                 </div>
                 
-
+                <div class="payment-section">
+                    <h4 data-lang-key="paymentMethods">Payment Methods</h4>
+                    <div class="pay-row" data-pay-method="cash"><i class="fas fa-money-bill-wave"></i> <span data-lang-key="payCash">Cash</span></div>
+                </div>
             </div>
         </aside>
 
@@ -1347,72 +1413,61 @@ input:checked + .slider:before {
                 </div>
             </div>
 
-
-
-
-
-            <!-- PASSENGER WALLET VIEW -->
+            <!-- MY WALLET VIEW (New Panel) -->
             <div id="wallet-view" class="view-panel hidden">
                 <div class="view-header">
                     <i class="fas fa-arrow-left" onclick="showView('home-view')"></i>
-                    <h2>My Wallet</h2>
+                    <h2 data-lang-key="walletViewHeader">My Wallet</h2>
+                </div>
+                
+                <div class="balance-card">
+                    <span data-lang-key="currentBalance">Current Balance</span>
+                    <h1>Rs. <span id="walletBalance">0</span></h1>
                 </div>
 
-                <!-- Wallet Balance Card -->
-                <div style="background:linear-gradient(135deg,#28a745,#1a7a32);border-radius:18px;padding:24px 20px;margin:16px;color:#fff;box-shadow:0 6px 20px rgba(40,167,69,0.35);">
-                    <div style="font-size:12px;font-weight:700;opacity:0.75;text-transform:uppercase;letter-spacing:0.5px;margin-bottom:6px;">Wallet Balance</div>
-                    <div style="font-size:38px;font-weight:800;line-height:1.1;">Rs. <span id="passengerWalletBalance">0</span></div>
-                    <div style="font-size:12px;opacity:0.65;margin-top:6px;">Ride payment ke liye use karein</div>
-                </div>
-
-                <!-- Add Money Section -->
-                <div style="background:var(--card-bg);border-radius:16px;padding:20px;margin:0 16px 16px;box-shadow:var(--shadow);">
-                    <h3 style="font-size:15px;font-weight:700;color:var(--text-main);margin-bottom:16px;"><i class="fas fa-plus-circle" style="color:#28a745;margin-right:8px;"></i>Wallet Mein Paise Daalo</h3>
-
-                    <!-- Amount Presets -->
-                    <div style="display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px;">
-                        <button onclick="setWalletTopupAmount(200)" class="wallet-preset-btn">Rs. 200</button>
-                        <button onclick="setWalletTopupAmount(500)" class="wallet-preset-btn">Rs. 500</button>
-                        <button onclick="setWalletTopupAmount(1000)" class="wallet-preset-btn">Rs. 1000</button>
-                        <button onclick="setWalletTopupAmount(2000)" class="wallet-preset-btn">Rs. 2000</button>
-                        <button onclick="setWalletTopupAmount(5000)" class="wallet-preset-btn">Rs. 5000</button>
-                        <button onclick="setWalletTopupAmount(10000)" class="wallet-preset-btn">Rs. 10000</button>
-                    </div>
-
-                    <input type="number" id="walletTopupAmount" class="input-field" placeholder="Ya apni amount likhein (Rs.)" min="100" style="margin-bottom:12px;">
-
-                    <!-- Payment Method -->
-                    <select id="walletTopupMethod" class="input-field" style="margin-bottom:12px;" onchange="toggleTopupAccountField()">
-                        <option value="">-- Payment Method Chunein --</option>
-                        <option value="EasyPaisa">EasyPaisa</option>
-                        <option value="JazzCash">JazzCash</option>
-                        <option value="Bank Transfer">Bank Transfer</option>
-                    </select>
-
-                    <div id="topupAccountWrap" style="display:none;">
-                        <input type="text" id="walletTopupAccount" class="input-field" placeholder="Apna mobile/account number" style="margin-bottom:12px;">
-                    </div>
-
-                    <div id="walletTopupError" style="color:var(--error);font-size:13px;margin-bottom:10px;display:none;"></div>
-
-                    <div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:10px;padding:12px;margin-bottom:14px;font-size:12px;color:#92400e;line-height:1.6;">
-                        ⚠️ <strong>Top-Up Process:</strong> Request submit karne ke baad admin verify karega. Paise <strong>1-2 ghante</strong> mein wallet mein add ho jayenge.
-                    </div>
-
-                    <button onclick="submitPassengerTopup()" style="width:100%;padding:15px;background:#28a745;color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;">
-                        <i class="fas fa-paper-plane"></i> Top-Up Request Bhejein
+                <!-- WITHDRAWAL SECTION -->
+                <div class="payment-proof-form" style="margin-bottom:14px; border:2px solid var(--primary); border-radius:12px; padding:16px;">
+                    <h4 style="color:var(--primary); margin-bottom:12px; display:flex; align-items:center; gap:8px;">
+                        <i class="fas fa-money-bill-transfer"></i> Withdraw Funds
+                    </h4>
+                    <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px; line-height:1.6;">
+                        Apna JazzCash / EasyPaisa number enter karo. Amount aapke wallet se deduct ho ga aur 24–48 ghante mein transfer ho ga.
+                    </p>
+                    <input type="number" class="input-field-small" placeholder="Withdrawal Amount (Rs.) — Min 200" id="withdrawAmount" min="200">
+                    <input type="text" class="input-field-small" placeholder="JazzCash / EasyPaisa Number (e.g. 03001234567)" id="withdrawAccountNumber">
+                    <input type="text" class="input-field-small" placeholder="Account Holder Name" id="withdrawAccountName">
+                    <div class="error-text" id="withdrawError" style="display:none;"></div>
+                    <button class="btn-primary" style="margin-top:8px; background:var(--primary);" id="submitWithdrawBtn" onclick="submitWithdrawal()">
+                        <i class="fas fa-paper-plane"></i> Request Withdrawal
                     </button>
                 </div>
 
-                <!-- Transaction History -->
-                <div style="background:var(--card-bg);border-radius:16px;padding:20px;margin:0 16px 16px;box-shadow:var(--shadow);">
-                    <h3 style="font-size:15px;font-weight:700;color:var(--text-main);margin-bottom:14px;"><i class="fas fa-history" style="color:#28a745;margin-right:8px;"></i>Wallet Transactions</h3>
-                    <div id="passengerWalletTxns">
-                        <p style="text-align:center;color:var(--text-muted);font-size:13px;padding:20px 0;">Koi transaction nahi mili</p>
-                    </div>
+                <div class="payment-proof-form">
+                    <h4 data-lang-key="addFundsHeader">Add Funds via Bank/EasyPaisa/JazzCash</h4>
+                    <!-- UPDATED: Added JazzCash/EasyPaisa Account Details -->
+                    <p style="font-size: 13px; margin-bottom: 10px; color: var(--text-main); font-weight: 600;">
+                        <span data-lang-key="transferTo">Transfer to:</span><br>
+                        JazzCash/EasyPaisa Account: <strong style="color: var(--secondary);">03232477490</strong><br>
+                        Account Name: <strong style="color: var(--secondary);">Raftaroo Customer Deposit</strong>
+                    </p>
+                    <p style="font-size: 12px; margin-bottom: 15px; color: var(--text-muted);" data-lang-key="transferInstructions">Please transfer funds, then fill the details and upload the transaction proof below.</p>
+                    
+                    <input type="number" class="input-field-small" placeholder="Transfer Amount (Rs.)" data-lang-key="placeholderAmount" id="walletAmount">
+                    <input type="text" class="input-field-small" placeholder="Transaction ID (Optional)" data-lang-key="placeholderTxnId" id="walletTxnId">
+                    
+                    <button class="file-upload-btn" id="uploadFileButton" data-lang-key="btnUploadScreenshot">
+                        <i class="fas fa-upload"></i> Upload Transaction Screenshot
+                    </button>
+                    <!-- HIDDEN FILE INPUT FOR UPLOAD -->
+                    <input type="file" id="depositScreenshot" accept="image/*" class="hidden"> 
+
+                    <span id="uploadStatus" data-lang-key="noFileSelected">No file selected.</span>
+                    <button class="btn-primary" style="margin-top: 10px;" id="submitDepositBtn" data-lang-key="btnSubmitDeposit">Submit for Approval</button>
                 </div>
             </div>
-            <!-- END PASSENGER WALLET VIEW -->
+            
+
+
 
             <!-- INVITE & EARN VIEW -->
             <div id="invite-view" class="view-panel hidden">
@@ -1596,19 +1651,35 @@ input:checked + .slider:before {
             <p><span data-lang-key="modalVehicle">Vehicle:</span> <span id="modalVehicleType">Bike</span></p>
             <p><span data-lang-key="modalDistance">Distance:</span> <span id="modalDistanceKm">0 km</span></p>
             <p style="color: var(--secondary);"><span data-lang-key="modalTotalFare">Total Fare:</span> <span>Rs. <span id="modalFinalFare">0</span></span></p>
-            <p style="margin-top:8px;padding-top:8px;border-top:1px solid var(--bg-light);"><span><i class="fas fa-wallet" style="color:#28a745;"></i> Wallet Balance:</span> <span style="color:#28a745;font-weight:800;">Rs. <span id="modalWalletBalance">0</span></span></p>
         </div>
         
-        <!-- Wallet Pay Button -->
-        <button id="btnPayWallet" class="btn-option" onclick="confirmWalletPayment()" style="background:#f0fdf4;border:2px solid #28a745;color:#1a7a32;margin-bottom:10px;">
-            <i class="fas fa-wallet"></i> Wallet Se Pay Karein
-            <span id="walletSufficientTag" style="margin-left:auto;font-size:11px;font-weight:800;padding:2px 8px;border-radius:20px;background:#28a745;color:#fff;">✓ Balance Kaafi Hai</span>
-            <span id="walletInsufficientTag" style="display:none;margin-left:auto;font-size:11px;font-weight:800;padding:2px 8px;border-radius:20px;background:#ef4444;color:#fff;">Balance Kam Hai</span>
-        </button>
-
         <button id="btnPayCash" class="btn-option" onclick="confirmCashPayment()">
             <i class="fas fa-money-bill-wave"></i> <span data-lang-key="btnPayCash">Pay with Cash (Collect at Drop-off)</span>
         </button>
+
+        <button id="btnPayWallet" class="btn-option" onclick="confirmWalletPayment()" style="
+            background: linear-gradient(135deg, #1D4ED8, #3B82F6);
+            color: #fff;
+            margin-top: 10px;
+            border: none;
+            border-radius: 12px;
+            padding: 14px 16px;
+            font-size: 15px;
+            font-weight: 700;
+            width: 100%;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            cursor: pointer;
+            font-family: inherit;
+        ">
+            <i class="fas fa-wallet"></i>
+            <span>Pay with Wallet</span>
+            <span id="walletBalanceInModal" style="margin-left:auto; font-size:13px; opacity:0.85; background:rgba(255,255,255,0.2); padding:3px 10px; border-radius:20px;">Rs. 0</span>
+        </button>
+        <p id="walletPayError" style="color:#EF4444; font-size:12px; margin-top:6px; display:none; text-align:center;">
+            ⚠️ Wallet balance kafi nahi. Pehle wallet top-up karein.
+        </p>
     </div>
     <!-- END PAYMENT CHOICE MODAL -->
     
@@ -1682,6 +1753,9 @@ input:checked + .slider:before {
         // Preload fare rates from admin settings on startup
         setTimeout(() => loadDynamicFareRates(null), 2000);
 
+        // --- Cloudinary Configuration ---
+        const CLOUD_NAME = "dw4btouzp"; 
+        const UPLOAD_PRESET = "sell-it-fast"; // Assuming a shared preset 
         // --------------------------------
 
         // --- Core Variables ---
@@ -1704,6 +1778,7 @@ input:checked + .slider:before {
             // NEW: Parcel Details object for delivery mode
             parcelDetails: null 
         };
+        let currentWalletBalance = 0; // To store latest balance
         const LOCATION_KEY = 'raftaroo_user_location'; // For map center
         const PICKUP_ADDRESS_KEY = 'raftaroo_saved_pickup_address';
         let captainListener = null; // To hold the listener reference for nearby captains
@@ -1729,6 +1804,7 @@ input:checked + .slider:before {
             // FIX: Removed keys sidebarGreetingName and sidebarVerifyPhone to avoid overwriting dynamic content
             activeRide: { en: "Active Ride:", ur: "فعال سواری:" },
             menuHistory: { en: "Ride History", ur: "سفر کی تاریخ" },
+            menuWallet: { en: "My Wallet", ur: "میرا والٹ" },
 
             menuDarkMode: { en: "Dark Mode", ur: "ڈارک موڈ" },
             menuLanguage: { en: "Language", ur: "زبان" },
@@ -1737,6 +1813,7 @@ input:checked + .slider:before {
             menuSignOut: { en: "Sign Out", ur: "سائن آؤٹ" },
             paymentMethods: { en: "Payment Methods", ur: "ادائیگی کے طریقے" },
             payCash: { en: "Cash", ur: "نقد" },
+            payWallet: { en: "Wallet", ur: "والٹ" },
             // Home View
             selectServiceHeader: { en: "Select Your Service", ur: "اپنی سروس منتخب کریں" },
             btnRideMode: { en: "Ride Mode", ur: "سواری موڈ" },
@@ -1760,6 +1837,16 @@ input:checked + .slider:before {
             historyViewHeader: { en: "Ride History", ur: "سفر کی تاریخ" },
             historyLoading: { en: "Loading ride history...", ur: "سفر کی تاریخ لوڈ ہو رہی ہے..." },
             // Wallet View
+            walletViewHeader: { en: "My Wallet", ur: "میرا والٹ" },
+            currentBalance: { en: "Current Balance", ur: "موجودہ بیلنس" },
+            addFundsHeader: { en: "Add Funds via Bank/EasyPaisa/JazzCash", ur: "بینک/ایزی پیسہ/جاز کیش سے فنڈز شامل کریں" },
+            transferTo: { en: "Transfer to:", ur: "منتقل کریں:" },
+            transferInstructions: { en: "Please transfer funds, then fill the details and upload the transaction proof below.", ur: "براہ کرم فنڈز منتقل کریں، پھر تفصیلات پُر کریں اور ٹرانزیکشن کا ثبوت اپ لوڈ کریں۔" },
+            placeholderAmount: { en: "Transfer Amount (Rs.)", ur: "منتقلی کی رقم (روپے)" },
+            placeholderTxnId: { en: "Transaction ID (Optional)", ur: "ٹرانزیکشن ID (اختیاری)" },
+            btnUploadScreenshot: { en: "Upload Transaction Screenshot", ur: "ٹرانزیکشن کا سکرین شاٹ اپ لوڈ کریں" },
+            noFileSelected: { en: "No file selected.", ur: "کوئی فائل منتخب نہیں کی گئی" },
+            btnSubmitDeposit: { en: "Submit for Approval", ur: "منظوری کے لیے جمع کروائیں" },
             // NEW: Parcel Details View
             parcelDetailsHeader: { en: "Parcel Details", ur: "پارسل کی تفصیلات" },
             selectedVehicleDisplay: { en: "Selected Vehicle:", ur: "منتخب گاڑی:" },
@@ -1793,6 +1880,7 @@ input:checked + .slider:before {
             modalVehicle: { en: "Vehicle:", ur: "گاڑی:" },
             modalDistance: { en: "Distance:", ur: "فاصلہ:" },
             modalTotalFare: { en: "Total Fare:", ur: "کل کرایہ:" },
+            btnPayWallet: { en: "Pay with Wallet", ur: "والٹ سے ادائیگی کریں" },
             btnPayCash: { en: "Pay with Cash (Collect at Drop-off)", ur: "نقد ادائیگی کریں (ڈراپ آف پر جمع کریں)" },
             // Offer Modal
             offerModalHeader: { en: "New Captain Offer!", ur: "کیپٹن کی نئی پیشکش!" },
@@ -2252,6 +2340,26 @@ input:checked + .slider:before {
             }
         }
 
+        async function uploadImageToCloudinary(file, folder) {
+            const formData = new FormData();
+            formData.append('file', file);
+            formData.append('upload_preset', UPLOAD_PRESET);
+            formData.append('folder', `customer_deposits/${folder}`);
+
+            const uploadURL = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`;
+
+            const response = await fetch(uploadURL, {
+                method: 'POST',
+                body: formData,
+            });
+
+            if (!response.ok) {
+                throw new Error('Cloudinary upload failed: HTTP ' + response.status + ' ' + response.statusText);
+            }
+
+            const data = await response.json();
+            return data.secure_url; 
+        }
 
         // --- View Switching Logic ---
         window.showView = (viewId) => {
@@ -2265,10 +2373,10 @@ input:checked + .slider:before {
             // Specific View Logic Hooks
             if (viewId === 'history-view') {
                 loadRideHistory();
+            } else if (viewId === 'wallet-view') {
+                loadWalletBalance();
             } else if (viewId === 'invite-view') {
                 loadInviteData();
-            } else if (viewId === 'wallet-view') {
-                loadPassengerWallet();
             } else if (viewId === 'parcel-details-view') {
                  // Set the selected vehicle display
                  document.getElementById('selectedParcelVehicle').innerText = selectedVehicle.toUpperCase().replace('-', ' ');
@@ -2375,15 +2483,10 @@ input:checked + .slider:before {
 
                  // Final checks and listener setup
                  listenForActiveRide();
+                 loadWalletBalance(); // Load wallet for sidebar initialization
                  loadSavedPickupLocation();
                  setAppLanguage(currentLanguage); // *** LANGUAGE: Set language after UI is built ***
                  showView('home-view');
-                 // Load passenger wallet badge
-                 onValue(ref(db, `users/${user.uid}/wallet`), (snap) => {
-                     const bal = parseInt(snap.val() || 0);
-                     const badge = document.getElementById('sidebarWalletBadge');
-                     if (badge) badge.textContent = 'Rs. ' + bal;
-                 });
                  
                  // ADDITION: Setup Chat Button Listener
                  document.getElementById('openChatBtnSidebar').onclick = (e) => {
@@ -2657,6 +2760,146 @@ input:checked + .slider:before {
         // --- END ADDITION: CHAT SYSTEM LOGIC ---
 
 
+        // --- Customer Deposit Logic (Unchanged) ---
+        document.getElementById('uploadFileButton').onclick = () => {
+             document.getElementById('depositScreenshot').click();
+        };
+
+        document.getElementById('depositScreenshot').onchange = (e) => {
+            const fileName = e.target.files.length ? e.target.files[0].name : translations.noFileSelected[currentLanguage];
+            document.getElementById('uploadStatus').innerText = fileName;
+            document.getElementById('uploadStatus').style.color = e.target.files.length ? 'var(--success)' : 'var(--error)';
+        };
+
+        document.getElementById('submitDepositBtn').onclick = submitDepositProof;
+
+        // ── WITHDRAWAL LOGIC ─────────────────────────────────────────────────
+        window.submitWithdrawal = async function() {
+            const errEl  = document.getElementById('withdrawError');
+            const btn    = document.getElementById('submitWithdrawBtn');
+            errEl.style.display = 'none';
+
+            const amount  = parseFloat(document.getElementById('withdrawAmount').value);
+            const account = document.getElementById('withdrawAccountNumber').value.trim();
+            const name    = document.getElementById('withdrawAccountName').value.trim();
+
+            if (!amount || amount < 200) {
+                errEl.textContent = 'Minimum withdrawal amount Rs. 200 hai.';
+                errEl.style.display = 'block'; return;
+            }
+            if (amount > currentWalletBalance) {
+                errEl.textContent = `Insufficient balance. Aapke paas sirf Rs. ${currentWalletBalance} hai.`;
+                errEl.style.display = 'block'; return;
+            }
+            if (!/^03[0-9]{9}$/.test(account)) {
+                errEl.textContent = 'Valid Pakistani mobile number enter karo (e.g. 03001234567).';
+                errEl.style.display = 'block'; return;
+            }
+            if (!name) {
+                errEl.textContent = 'Account holder name zaruri hai.';
+                errEl.style.display = 'block'; return;
+            }
+
+            btn.disabled = true;
+            btn.innerHTML = '⏳ Processing...';
+
+            try {
+                // Deduct from wallet immediately
+                const newBal = currentWalletBalance - amount;
+                await update(ref(db, `users/${currentUser.uid}`), { wallet: newBal });
+
+                // Save withdrawal request for admin
+                const reqKey = 'WD_' + Date.now();
+                await set(ref(db, `withdrawalRequests/${reqKey}`), {
+                    uid:         currentUser.uid,
+                    userName:    currentUser.displayName || 'User',
+                    userEmail:   currentUser.email,
+                    amount:      amount,
+                    accountNumber: account,
+                    accountName: name,
+                    method:      'JazzCash/EasyPaisa',
+                    status:      'Pending',
+                    type:        'passenger',
+                    requestedAt: new Date().toISOString(),
+                });
+
+                document.getElementById('withdrawAmount').value = '';
+                document.getElementById('withdrawAccountNumber').value = '';
+                document.getElementById('withdrawAccountName').value = '';
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-paper-plane"></i> Request Withdrawal';
+                alert(`✅ Rs. ${amount} withdrawal request submit ho gayi! 24–48 ghante mein ${account} par transfer ho ga.`);
+            } catch(e) {
+                // Refund if save failed
+                await update(ref(db, `users/${currentUser.uid}`), { wallet: currentWalletBalance });
+                errEl.textContent = 'Error: ' + e.message;
+                errEl.style.display = 'block';
+                btn.disabled = false;
+                btn.innerHTML = '<i class="fas fa-paper-plane"></i> Request Withdrawal';
+            }
+        };
+        // ── END WITHDRAWAL ────────────────────────────────────────────────────
+
+        async function submitDepositProof() {
+            const amount = document.getElementById('walletAmount').value;
+            const txnId = document.getElementById('walletTxnId').value;
+            const screenshotFile = document.getElementById('depositScreenshot').files[0];
+            const submitBtn = document.getElementById('submitDepositBtn');
+            const customerName = currentUser.displayName || (await get(ref(db, `users/${currentUser.uid}`))).val().name || 'N/A';
+
+
+            // 1. Validation
+            if (!currentUser) { alert('Please log in.'); return; }
+            if (!amount || parseFloat(amount) <= 0) { 
+                alert('Please enter a valid transfer amount.'); 
+                return; 
+            }
+            if (!screenshotFile) { 
+                alert('Please upload a transaction screenshot.'); 
+                return; 
+            }
+
+            // 2. State update
+            submitBtn.disabled = true;
+            submitBtn.innerText = currentLanguage === 'ur' ? 'جمع کیا جا رہا ہے...' : 'Submitting...';
+            document.getElementById('uploadStatus').innerText = currentLanguage === 'ur' ? 'ثبوت سرور پر اپ لوڈ کیا جا رہا ہے...' : 'Uploading proof to server...';
+
+            try {
+                // 3. Upload proof to Cloudinary
+                const proofUrl = await uploadImageToCloudinary(screenshotFile, `${currentUser.uid}_${Date.now()}`);
+
+                // 4. Log deposit request to the common 'depositRequests' node
+                const depositRequestRef = push(ref(db, 'depositRequests'));
+                await set(depositRequestRef, {
+                    customerId: currentUser.uid,
+                    customerName: customerName,
+                    amount: parseFloat(amount),
+                    txnId: txnId,
+                    proofUrl: proofUrl,
+                    requestedAt: new Date().toISOString(),
+                    status: 'Pending',
+                    userType: 'customer' // Differentiate from Captain deposits
+                });
+
+                // 5. Success/Reset
+                document.getElementById('walletAmount').value = '';
+                document.getElementById('walletTxnId').value = '';
+                document.getElementById('depositScreenshot').value = null; 
+                document.getElementById('uploadStatus').innerText = currentLanguage === 'ur' ? 'درخواست جمع ہو گئی! ایڈمن کی منظوری کا انتظار ہے۔' : 'Request Submitted! Awaiting Admin Approval.';
+                document.getElementById('uploadStatus').style.color = 'var(--success)';
+                
+                alert(currentLanguage === 'ur' ? 'ڈیپازٹ کی درخواست کامیابی سے جمع ہو گئی! ایڈمن کی تصدیق کے بعد فنڈز کریڈٹ ہو جائیں گے۔' : 'Deposit request submitted successfully! Funds will be credited after admin verification.');
+                
+            } catch (e) {
+                console.error("Deposit Submission Error:", e);
+                document.getElementById('uploadStatus').innerText = currentLanguage === 'ur' ? 'جمع کروانے میں ناکامی۔ تفصیلات کے لیے کنسول چیک کریں۔' : 'Submission Failed. Check console for details.';
+                document.getElementById('uploadStatus').style.color = 'var(--error)';
+                alert(currentLanguage === 'ur' ? "ڈیپازٹ کی درخواست جمع کروانے میں ناکام رہا۔ براہ کرم دوبارہ کوشش کریں." : "Failed to submit deposit request. Please try again.");
+            } finally {
+                submitBtn.disabled = false;
+                submitBtn.innerText = translations.btnSubmitDeposit[currentLanguage];
+            }
+        }
         
         // --- Service Selection Logic ---
         document.querySelectorAll('.service-card').forEach(card => {
@@ -3184,7 +3427,7 @@ input:checked + .slider:before {
         // --- END MODIFICATION: Fare option logic ---
 
 
-        // --- Payment Choice Modal Logic ---
+        // --- Payment Choice Modal Logic (FIXED: hidePaymentChoiceModal is now global) ---
         function showPaymentChoiceModal() {
              if (tripDetails.fare === 0) {
                  document.getElementById('fareErrorMsg').innerText = translations.fareErrorSelect[currentLanguage];
@@ -3192,29 +3435,28 @@ input:checked + .slider:before {
                  return;
              }
              
+             // No custom input validation needed, as fare is selected from valid options
+             
              // Update modal content
              document.getElementById('modalVehicleType').innerText = tripDetails.vehicle.toUpperCase().replace('-', ' ');
              document.getElementById('modalDistanceKm').innerText = tripDetails.distance.toFixed(2) + ' km';
              document.getElementById('modalFinalFare').innerText = tripDetails.fare;
-
-             // Load passenger wallet balance in modal
-             const walletSnap = await get(ref(db, `users/${currentUser.uid}/wallet`));
-             const walletBal = parseInt(walletSnap.val() || 0);
-             document.getElementById('modalWalletBalance').innerText = walletBal;
-             // Show sufficient/insufficient tag
-             if (walletBal >= tripDetails.fare) {
-                 document.getElementById('walletSufficientTag').style.display = 'inline-block';
-                 document.getElementById('walletInsufficientTag').style.display = 'none';
-                 document.getElementById('btnPayWallet').disabled = false;
-                 document.getElementById('btnPayWallet').style.opacity = '1';
-             } else {
-                 document.getElementById('walletSufficientTag').style.display = 'none';
-                 document.getElementById('walletInsufficientTag').style.display = 'inline-block';
-                 document.getElementById('btnPayWallet').disabled = true;
-                 document.getElementById('btnPayWallet').style.opacity = '0.6';
-             }
-             
              document.getElementById('payment-choice-modal').classList.add('active');
+
+             // Wallet balance modal mein show karo
+             get(ref(db, `users/${currentUser.uid}/wallet`)).then(snap => {
+                 const bal = parseInt(snap.val() || 0);
+                 const fare = parseInt(tripDetails.fare || 0);
+                 document.getElementById('walletBalanceInModal').textContent = `Rs. ${bal}`;
+                 document.getElementById('walletPayError').style.display = 'none';
+                 // Agar balance kafi na ho toh button dimmed karo
+                 const walletBtn = document.getElementById('btnPayWallet');
+                 if (bal < fare) {
+                     walletBtn.style.opacity = '0.55';
+                 } else {
+                     walletBtn.style.opacity = '1';
+                 }
+             });
         }
 
         // FIX: Export to window for inline onclick to work
@@ -3228,96 +3470,21 @@ input:checked + .slider:before {
              requestRide();
         };
 
-        window.confirmWalletPayment = () => {
-             hidePaymentChoiceModal();
-             tripDetails.paymentMethod = 'wallet';
-             requestRide();
-        };
-
-        // ── PASSENGER WALLET FUNCTIONS ─────────────────────────────────────────
-
-        window.setWalletTopupAmount = (amt) => {
-            document.getElementById('walletTopupAmount').value = amt;
-        };
-
-        window.toggleTopupAccountField = () => {
-            const method = document.getElementById('walletTopupMethod').value;
-            document.getElementById('topupAccountWrap').style.display = method ? 'block' : 'none';
-        };
-
-        async function loadPassengerWallet() {
-            if (!currentUser) return;
-            // Live wallet balance
-            onValue(ref(db, `users/${currentUser.uid}/wallet`), (snap) => {
-                const bal = parseInt(snap.val() || 0);
-                const balEl = document.getElementById('passengerWalletBalance');
-                const sidebarBadge = document.getElementById('sidebarWalletBadge');
-                if (balEl) balEl.textContent = bal;
-                if (sidebarBadge) sidebarBadge.textContent = 'Rs. ' + bal;
-            });
-
-            // Load transactions
-            try {
-                const txnSnap = await get(ref(db, `passengerWalletTxns/${currentUser.uid}`));
-                const txnContainer = document.getElementById('passengerWalletTxns');
-                if (!txnSnap.exists() || !txnContainer) return;
-                const txns = [];
-                txnSnap.forEach(c => txns.push({ id: c.key, ...c.val() }));
-                txns.sort((a, b) => new Date(b.at) - new Date(a.at));
-                txnContainer.innerHTML = txns.slice(0, 20).map(t => {
-                    const isCredit = t.type === 'topup' || t.type === 'refund';
-                    const icon = isCredit ? '↑' : '↓';
-                    const color = isCredit ? '#28a745' : '#ef4444';
-                    const label = t.type === 'topup' ? 'Top-Up' : t.type === 'ride_payment' ? 'Ride Payment' : t.type === 'refund' ? 'Refund' : t.type;
-                    const date = new Date(t.at).toLocaleDateString('en-PK', { day: '2-digit', month: 'short', hour: '2-digit', minute: '2-digit' });
-                    return `<div style="display:flex;justify-content:space-between;align-items:center;padding:12px 0;border-bottom:1px solid var(--bg-light);">
-                        <div>
-                            <div style="font-size:13px;font-weight:700;color:var(--text-main);">${label}</div>
-                            <div style="font-size:11px;color:var(--text-muted);">${date}${t.note ? ' · ' + t.note : ''}</div>
-                        </div>
-                        <div style="font-size:15px;font-weight:800;color:${color};">${icon} Rs. ${t.amount}</div>
-                    </div>`;
-                }).join('');
-            } catch(e) { console.warn('Wallet txns error:', e); }
-        }
-
-        window.submitPassengerTopup = async () => {
-            const errEl = document.getElementById('walletTopupError');
-            errEl.style.display = 'none';
-            const amount = parseFloat(document.getElementById('walletTopupAmount').value);
-            const method = document.getElementById('walletTopupMethod').value;
-            const account = (document.getElementById('walletTopupAccount').value || '').trim();
-
-            if (!amount || amount < 100) { errEl.textContent = 'Minimum top-up Rs. 100 hai.'; errEl.style.display = 'block'; return; }
-            if (!method) { errEl.textContent = 'Payment method select karein.'; errEl.style.display = 'block'; return; }
-            if (!account) { errEl.textContent = 'Account/mobile number likhen.'; errEl.style.display = 'block'; return; }
-
-            const btn = document.querySelector('#wallet-view button[onclick="submitPassengerTopup()"]');
-            btn.disabled = true; btn.innerHTML = '⏳ Bhej rahe hain...';
-            try {
-                const reqKey = 'PTOPUP_' + Date.now();
-                await set(ref(db, `passengerTopupRequests/${reqKey}`), {
-                    uid: currentUser.uid,
-                    name: currentUser.displayName || '',
-                    email: currentUser.email || '',
-                    amount, method,
-                    accountNumber: account,
-                    status: 'Pending',
-                    requestedAt: new Date().toISOString()
-                });
-                document.getElementById('walletTopupAmount').value = '';
-                document.getElementById('walletTopupAccount').value = '';
-                document.getElementById('walletTopupMethod').value = '';
-                document.getElementById('topupAccountWrap').style.display = 'none';
-                alert(`✅ Top-Up request bhej di gayi!\n\nRs. ${amount} — ${method}\nAdmin verify karne ke baad wallet mein add ho jayega.\n\n⏱ 1-2 ghante mein credit ho ga.`);
-            } catch(e) {
-                errEl.textContent = 'Request bhejne mein masla hua. Dobara try karein.';
+        window.confirmWalletPayment = async () => {
+            const fare = parseInt(tripDetails.fare || 0);
+            const walletSnap = await get(ref(db, `users/${currentUser.uid}/wallet`));
+            const balance = parseInt(walletSnap.val() || 0);
+            const errEl = document.getElementById('walletPayError');
+            if (balance < fare) {
                 errEl.style.display = 'block';
-            } finally {
-                btn.disabled = false; btn.innerHTML = '<i class="fas fa-paper-plane"></i> Top-Up Request Bhejein';
+                document.getElementById('walletBalanceInModal').textContent = `Rs. ${balance}`;
+                return;
             }
+            errEl.style.display = 'none';
+            hidePaymentChoiceModal();
+            tripDetails.paymentMethod = 'wallet';
+            requestRide();
         };
-        // ── END PASSENGER WALLET FUNCTIONS ─────────────────────────────────────
 
         // Reroute requestRideBtn to the new modal logic
         document.getElementById('requestRideBtn').onclick = showPaymentChoiceModal;
@@ -3362,7 +3529,6 @@ input:checked + .slider:before {
                 // NEW: Include parcel details if available
                 parcelDetails: tripDetails.parcelDetails || null 
             };
-            
             
             try {
                 await set(newRequestRef, requestData);
@@ -3463,6 +3629,9 @@ input:checked + .slider:before {
                 if (assignedRiderId) {
                      await update(ref(db, `riders/${assignedRiderId}`), { currentRequestId: null });
                 }
+                
+                // Refund wallet if payment was made upfront - REMOVED (wallet system disabled)
+
 
                 alert(currentLanguage === 'ur' ? "سواری کی درخواست کامیابی سے منسوخ کر دی گئی ہے۔" : "Ride request cancelled successfully.");
                 // The listener will detect the status change and hide the map/waiting UI
@@ -3556,6 +3725,10 @@ input:checked + .slider:before {
                     if (qualified && !u.inviteBonusPaid) {
                         // Mark bonus paid on referred user node to avoid double-credit
                         await update(ref(db, `users/${u.uid}`), { inviteBonusPaid: true });
+                        // Credit referrer wallet
+                        const mySnap   = await get(ref(db, `users/${currentUser.uid}/wallet`));
+                        const myBal    = mySnap.val() || 0;
+                        await update(ref(db, `users/${currentUser.uid}`), { wallet: myBal + INVITE_BONUS_AMOUNT });
                     }
                 }
 
@@ -3604,6 +3777,13 @@ input:checked + .slider:before {
         };
         // ── END INVITE & EARN ─────────────────────────────────────────────────
 
+        function loadWalletBalance() {
+             if (!currentUser) return;
+             onValue(ref(db, `users/${currentUser.uid}/wallet`), (snapshot) => {
+                 currentWalletBalance = snapshot.val() || 0;
+                 document.getElementById('walletBalance').innerText = currentWalletBalance.toLocaleString('en-US');
+             });
+        }
         
         async function loadRideHistory() {
              const historyList = document.getElementById('history-list');
