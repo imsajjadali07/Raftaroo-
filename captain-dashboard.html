@@ -627,6 +627,31 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         </div>
         <div class="offer-section-label">Apni Price Select Karein</div>
         <div class="offer-button-group" id="counterOfferOptions"></div>
+        
+        <!-- Manual Fare Input for Captain -->
+        <div id="captainManualFareSection" style="margin-bottom:16px;">
+            <button id="captainManualToggle" onclick="toggleCaptainManualFare()" style="
+                width:100%;padding:10px;background:#F8FAFC;color:var(--text-muted);
+                border:2px dashed #CBD5E1;border-radius:10px;font-weight:600;font-size:13px;
+                cursor:pointer;transition:0.2s;font-family:inherit;margin-bottom:8px;
+            ">✏️ Ya apna custom amount likhein</button>
+            <div id="captainManualFareRow" style="display:none;align-items:center;gap:8px;
+                background:#F0FDF4;border:2px solid var(--primary);border-radius:10px;padding:10px 14px;">
+                <span style="font-size:16px;font-weight:700;color:var(--text-main);flex-shrink:0;">Rs.</span>
+                <input type="number" id="captainManualFareInput" placeholder="Amount likhein" min="1" inputmode="numeric"
+                    style="flex:1;border:none;outline:none;background:transparent;font-size:20px;
+                    font-weight:700;color:var(--primary);font-family:inherit;min-width:0;">
+                <button onclick="applyCaptainManualFare()" style="
+                    padding:8px 14px;background:var(--primary);color:#fff;border:none;
+                    border-radius:8px;font-weight:700;font-size:13px;cursor:pointer;
+                    flex-shrink:0;font-family:inherit;">Apply</button>
+            </div>
+            <div id="captainManualFareNote" style="display:none;font-size:11px;color:var(--text-muted);
+                text-align:center;margin-top:4px;font-weight:600;">
+                Customer ka fare: <span id="captainManualCompareText" style="font-weight:800;"></span>
+            </div>
+        </div>
+
         <button class="btn-confirm-offer" id="confirmSendOfferBtn"><i class="fas fa-paper-plane"></i> Offer Bhejein Customer Ko</button>
         <button class="btn-cancel-offer" id="cancelConfirmOfferBtn">Cancel</button>
     </div>
@@ -763,6 +788,15 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         selectedCounterOfferFare = cf;
         document.getElementById('counterOfferOptions').innerHTML = `<button class="offer-btn selected" data-fare="${o1}" onclick="selectCounterOffer(event)">Rs. ${o1}</button><button class="offer-btn" data-fare="${o2}" onclick="selectCounterOffer(event)">Rs. ${o2}</button><button class="offer-btn" data-fare="${o3}" onclick="selectCounterOffer(event)">Rs. ${o3}</button>`;
         updateOfferSummary(cf);
+        // Reset manual fare on each new modal open
+        const _mr = document.getElementById('captainManualFareRow');
+        const _mt = document.getElementById('captainManualToggle');
+        if (_mr) _mr.style.display = 'none';
+        if (_mt) { _mt.style.borderColor='#CBD5E1'; _mt.style.color='var(--text-muted)'; _mt.innerHTML='✏️ Ya apna custom amount likhein'; }
+        const _mn = document.getElementById('captainManualFareNote');
+        if (_mn) _mn.style.display = 'none';
+        const _mi = document.getElementById('captainManualFareInput');
+        if (_mi) _mi.value = '';
         const cb = document.getElementById('confirmSendOfferBtn');
         cb.onclick = () => sendOffer(requestId);
         document.getElementById('cancelConfirmOfferBtn').onclick = hideOfferConfirmationModal;
@@ -790,6 +824,65 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         document.getElementById('offerSummaryNetEarnings').textContent = 'Rs. ' + net;
     }
 
+    // ── CAPTAIN MANUAL FARE LOGIC ──────────────────────────────────────────
+    window.toggleCaptainManualFare = function() {
+        const row = document.getElementById('captainManualFareRow');
+        const toggle = document.getElementById('captainManualToggle');
+        const isVisible = row.style.display === 'flex';
+        if (isVisible) {
+            row.style.display = 'none';
+            toggle.style.borderColor = '#CBD5E1';
+            toggle.style.color = 'var(--text-muted)';
+            toggle.innerHTML = '✏️ Ya apna custom amount likhein';
+            document.getElementById('captainManualFareNote').style.display = 'none';
+            document.getElementById('captainManualFareInput').value = '';
+        } else {
+            row.style.display = 'flex';
+            toggle.style.borderColor = 'var(--primary)';
+            toggle.style.color = 'var(--primary)';
+            toggle.innerHTML = '✖️ Custom amount band karein';
+            document.getElementById('captainManualFareInput').focus();
+        }
+    };
+
+    window.applyCaptainManualFare = function() {
+        const input = document.getElementById('captainManualFareInput');
+        const val = parseInt(input.value);
+        if (!val || val < 1) {
+            alert('Valid amount likhein (minimum Rs. 1).');
+            return;
+        }
+        // Deselect all preset buttons
+        document.querySelectorAll('#counterOfferOptions .offer-btn').forEach(b => b.classList.remove('selected'));
+        selectedCounterOfferFare = val;
+        updateOfferSummary(val);
+        document.getElementById('confirmSendOfferBtn').disabled = false;
+
+        // Show note
+        const noteEl = document.getElementById('captainManualFareNote');
+        const compareEl = document.getElementById('captainManualCompareText');
+        const cf = parseInt(document.getElementById('offerSummaryCustomerFare').textContent.replace('Rs. ', '')) || 0;
+        noteEl.style.display = 'block';
+        if (val < cf) {
+            compareEl.textContent = `Rs. ${cf} — aap Rs. ${cf - val} kam le rahe hain`;
+            compareEl.style.color = 'var(--error)';
+        } else if (val === cf) {
+            compareEl.textContent = `Rs. ${cf} — same fare`;
+            compareEl.style.color = 'var(--primary)';
+        } else {
+            compareEl.textContent = `Rs. ${cf} — aap Rs. ${val - cf} zyada maang rahe hain`;
+            compareEl.style.color = 'var(--info)';
+        }
+
+        // Visual feedback
+        const applyBtn = input.nextElementSibling;
+        const orig = applyBtn.textContent;
+        applyBtn.textContent = '✓';
+        applyBtn.style.background = '#16a34a';
+        setTimeout(() => { applyBtn.textContent = orig; applyBtn.style.background = ''; }, 1500);
+    };
+    // ── END CAPTAIN MANUAL FARE LOGIC ──────────────────────────────────────
+
     window.selectCounterOffer = function(event) {
         document.querySelectorAll('#counterOfferOptions .offer-btn').forEach(b=>b.classList.remove('selected'));
         const btn = event.target.closest('.offer-btn'); if (!btn) return;
@@ -798,6 +891,20 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         updateOfferSummary(fare);
         document.getElementById('confirmSendOfferBtn').disabled = false;
         selectedCounterOfferFare = fare;
+
+        // Reset manual fare UI when preset selected
+        const manualRow = document.getElementById('captainManualFareRow');
+        const manualToggle = document.getElementById('captainManualToggle');
+        if (manualRow) { manualRow.style.display = 'none'; }
+        if (manualToggle) {
+            manualToggle.style.borderColor = '#CBD5E1';
+            manualToggle.style.color = 'var(--text-muted)';
+            manualToggle.innerHTML = '✏️ Ya apna custom amount likhein';
+        }
+        const noteEl = document.getElementById('captainManualFareNote');
+        if (noteEl) noteEl.style.display = 'none';
+        const inp = document.getElementById('captainManualFareInput');
+        if (inp) inp.value = '';
     };
 
     function hideOfferConfirmationModal() { offerConfirmModal.style.display='none'; offerConfirmRequestId=null; }
