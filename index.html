@@ -221,7 +221,6 @@ body {
 .input-field { background: var(--input-bg); border-color: #333; color: var(--text-main); }
 .input-field:focus { border-color: var(--primary); background: var(--card-bg); }
 .ride-card { background: var(--card-bg); }
-.payment-proof-form { background: #1a1a1a; border-color: var(--info); }
 
 
 .hidden { display: none !important; }
@@ -352,23 +351,6 @@ body {
     display: flex; align-items: center; gap: 15px; padding: 8px 0;
     font-size: 13px; color: var(--text-muted);
 }
-/* Updated style for Wallet payment method */
-.pay-row.wallet { 
-    color: var(--secondary); 
-    font-weight: 600; 
-    cursor: pointer;
-    background: var(--bg-light);
-    border-radius: 8px;
-    padding: 10px 15px;
-    margin-top: 5px;
-    border: 1px solid var(--primary);
-}
-.pay-row.wallet.active {
-    background: var(--primary);
-    color: var(--secondary);
-    border-color: var(--secondary);
-}
-
 
 /* --- Dashboard --- */
 #dashboard {
@@ -512,23 +494,19 @@ body {
 .invite-stat-card .isl { font-size: 11px; color: var(--text-muted); font-weight: 600; margin-top: 2px; }
 .invite-note { font-size: 12px; color: var(--text-muted); background: #f0fdf4; border: 1px solid #bbf7d0; border-radius: 8px; padding: 10px 12px; line-height: 1.6; }
 
-/* Wallet Specific Styles */
-.balance-card {
-    background: var(--secondary);
-    color: var(--bg-light); /* Use bg-light for text in dark card in dark mode */
-    padding: 25px;
-    border-radius: 15px;
-    text-align: center;
-    margin-bottom: 20px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.2);
+.input-field-small {
+    width: 100%;
+    padding: 12px;
+    margin-bottom: 10px;
+    border: 1px solid var(--text-muted);
+    border-radius: 8px;
+    box-sizing: border-box;
+    font-size: 14px;
+    background: var(--input-bg);
+    color: var(--text-main);
 }
-.dark-mode .balance-card {
-    background: #000; /* Pure black for balance card in dark mode */
-}
-.balance-card span { font-size: 14px; opacity: 0.8; }
-.balance-card h1 { font-size: 36px; margin-top: 5px; font-weight: 700; }
 
-/* Info Card for Wallet/Support/Rider */
+/* Info Card for Parcel/Support/Rider */
 .info-card {
     background-color: var(--card-bg);
     border: 1px solid var(--bg-light);
@@ -558,62 +536,6 @@ body {
     margin-top: 10px;
 }
 
-/* Payment Proof Form */
-.payment-proof-form {
-    padding: 15px;
-    border: 1px dashed var(--info);
-    border-radius: 8px;
-    margin-top: 20px;
-    text-align: left;
-    background: var(--bg-light); /* Light blue background for emphasis */
-}
-.dark-mode .payment-proof-form {
-    background: #1a1a1a;
-}
-.payment-proof-form h4 {
-    margin-top: 0;
-    color: var(--info);
-    font-weight: 600;
-    text-align: center;
-    margin-bottom: 15px;
-}
-
-.input-field-small {
-    width: 100%;
-    padding: 12px;
-    margin-bottom: 10px;
-    border: 1px solid var(--text-muted);
-    border-radius: 8px;
-    box-sizing: border-box;
-    font-size: 14px;
-    background: var(--input-bg);
-    color: var(--text-main);
-}
-
-.file-upload-btn {
-    display: block;
-    width: 100%;
-    padding: 12px;
-    margin: 10px 0;
-    background-color: var(--info);
-    color: var(--white);
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-size: 15px;
-    font-weight: 600;
-}
-.file-upload-btn:hover {
-    background-color: #2980b9;
-}
-#uploadStatus {
-    font-size: 12px;
-    color: var(--error);
-    margin-top: 5px;
-    display: block;
-    text-align: center;
-    min-height: 15px; 
-}
 
 /* --- Map Screen --- */
 #map-overlay {
@@ -949,19 +871,6 @@ body {
     cursor: pointer;
     margin-top: 10px;
 }
-#btnPayWallet {
-    background: var(--primary);
-    color: var(--secondary);
-}
-#btnPayCash {
-    background: var(--success);
-    color: var(--card-bg);
-}
-#btnPayWallet:disabled {
-    background: #ccc;
-    color: #888;
-    cursor: not-allowed;
-}
 
 /* NEW: Captain Offer Modal Styles */
 #captain-offer-modal {
@@ -1294,9 +1203,7 @@ input:checked + .slider:before {
                 <div class="menu-item" onclick="showView('history-view')">
                     <i class="fas fa-history"></i> <span data-lang-key="menuHistory">Ride History</span>
                 </div>
-                 <div class="menu-item" onclick="showView('wallet-view')">
-                    <i class="fas fa-wallet"></i> <span data-lang-key="menuWallet">My Wallet</span>
-                </div>
+
                 <div class="menu-item" onclick="showView('invite-view')">
                     <i class="fas fa-gift" style="color:#28a745;"></i> <span>Invite &amp; Earn</span>
                     <span style="margin-left:auto;background:#28a745;color:#fff;font-size:10px;font-weight:800;padding:2px 7px;border-radius:20px;">Rs. 1500</span>
@@ -1333,14 +1240,7 @@ input:checked + .slider:before {
                     <i class="fas fa-sign-out-alt"></i> <span data-lang-key="menuSignOut">Sign Out</span>
                 </div>
                 
-                <div class="payment-section">
-                    <h4 data-lang-key="paymentMethods">Payment Methods</h4>
-                    <div class="pay-row" data-pay-method="cash"><i class="fas fa-money-bill-wave"></i> <span data-lang-key="payCash">Cash</span></div>
-                    <!-- UPDATED: Added data-pay-method for Wallet -->
-                    <div class="pay-row wallet" data-pay-method="wallet" id="walletPayMethod">
-                        <i class="fas fa-credit-card"></i> <span data-lang-key="payWallet">Wallet</span> (Rs. <span id="sidebarWalletBalance">0</span>)
-                    </div>
-                </div>
+
             </div>
         </aside>
 
@@ -1426,59 +1326,7 @@ input:checked + .slider:before {
                 </div>
             </div>
 
-            <!-- MY WALLET VIEW (New Panel) -->
-            <div id="wallet-view" class="view-panel hidden">
-                <div class="view-header">
-                    <i class="fas fa-arrow-left" onclick="showView('home-view')"></i>
-                    <h2 data-lang-key="walletViewHeader">My Wallet</h2>
-                </div>
-                
-                <div class="balance-card">
-                    <span data-lang-key="currentBalance">Current Balance</span>
-                    <h1>Rs. <span id="walletBalance">0</span></h1>
-                </div>
 
-                <!-- WITHDRAWAL SECTION -->
-                <div class="payment-proof-form" style="margin-bottom:14px; border:2px solid var(--primary); border-radius:12px; padding:16px;">
-                    <h4 style="color:var(--primary); margin-bottom:12px; display:flex; align-items:center; gap:8px;">
-                        <i class="fas fa-money-bill-transfer"></i> Withdraw Funds
-                    </h4>
-                    <p style="font-size:12px; color:var(--text-muted); margin-bottom:12px; line-height:1.6;">
-                        Apna JazzCash / EasyPaisa number enter karo. Amount aapke wallet se deduct ho ga aur 24–48 ghante mein transfer ho ga.
-                    </p>
-                    <input type="number" class="input-field-small" placeholder="Withdrawal Amount (Rs.) — Min 200" id="withdrawAmount" min="200">
-                    <input type="text" class="input-field-small" placeholder="JazzCash / EasyPaisa Number (e.g. 03001234567)" id="withdrawAccountNumber">
-                    <input type="text" class="input-field-small" placeholder="Account Holder Name" id="withdrawAccountName">
-                    <div class="error-text" id="withdrawError" style="display:none;"></div>
-                    <button class="btn-primary" style="margin-top:8px; background:var(--primary);" id="submitWithdrawBtn" onclick="submitWithdrawal()">
-                        <i class="fas fa-paper-plane"></i> Request Withdrawal
-                    </button>
-                </div>
-
-                <div class="payment-proof-form">
-                    <h4 data-lang-key="addFundsHeader">Add Funds via Bank/EasyPaisa/JazzCash</h4>
-                    <!-- UPDATED: Added JazzCash/EasyPaisa Account Details -->
-                    <p style="font-size: 13px; margin-bottom: 10px; color: var(--text-main); font-weight: 600;">
-                        <span data-lang-key="transferTo">Transfer to:</span><br>
-                        JazzCash/EasyPaisa Account: <strong style="color: var(--secondary);">03232477490</strong><br>
-                        Account Name: <strong style="color: var(--secondary);">Raftaroo Customer Deposit</strong>
-                    </p>
-                    <p style="font-size: 12px; margin-bottom: 15px; color: var(--text-muted);" data-lang-key="transferInstructions">Please transfer funds, then fill the details and upload the transaction proof below.</p>
-                    
-                    <input type="number" class="input-field-small" placeholder="Transfer Amount (Rs.)" data-lang-key="placeholderAmount" id="walletAmount">
-                    <input type="text" class="input-field-small" placeholder="Transaction ID (Optional)" data-lang-key="placeholderTxnId" id="walletTxnId">
-                    
-                    <button class="file-upload-btn" id="uploadFileButton" data-lang-key="btnUploadScreenshot">
-                        <i class="fas fa-upload"></i> Upload Transaction Screenshot
-                    </button>
-                    <!-- HIDDEN FILE INPUT FOR UPLOAD -->
-                    <input type="file" id="depositScreenshot" accept="image/*" class="hidden"> 
-
-                    <span id="uploadStatus" data-lang-key="noFileSelected">No file selected.</span>
-                    <button class="btn-primary" style="margin-top: 10px;" id="submitDepositBtn" data-lang-key="btnSubmitDeposit">Submit for Approval</button>
-                </div>
-            </div>
-            
 
 
 
@@ -1666,11 +1514,6 @@ input:checked + .slider:before {
             <p style="color: var(--secondary);"><span data-lang-key="modalTotalFare">Total Fare:</span> <span>Rs. <span id="modalFinalFare">0</span></span></p>
         </div>
         
-        <button id="btnPayWallet" class="btn-option" onclick="confirmWalletPayment()">
-            <i class="fas fa-wallet"></i> <span data-lang-key="btnPayWallet">Pay with Wallet</span> (Rs. <span id="modalWalletBalance">0</span>)
-        </button>
-        <small id="walletErrorMsg" style="color: var(--error); display: block; text-align: center; margin-top: 5px;"></small>
-        
         <button id="btnPayCash" class="btn-option" onclick="confirmCashPayment()">
             <i class="fas fa-money-bill-wave"></i> <span data-lang-key="btnPayCash">Pay with Cash (Collect at Drop-off)</span>
         </button>
@@ -1747,9 +1590,6 @@ input:checked + .slider:before {
         // Preload fare rates from admin settings on startup
         setTimeout(() => loadDynamicFareRates(null), 2000);
 
-        // --- Cloudinary Configuration ---
-        const CLOUD_NAME = "dw4btouzp"; 
-        const UPLOAD_PRESET = "sell-it-fast"; // Assuming a shared preset 
         // --------------------------------
 
         // --- Core Variables ---
@@ -1772,7 +1612,6 @@ input:checked + .slider:before {
             // NEW: Parcel Details object for delivery mode
             parcelDetails: null 
         };
-        let currentWalletBalance = 0; // To store latest balance
         const LOCATION_KEY = 'raftaroo_user_location'; // For map center
         const PICKUP_ADDRESS_KEY = 'raftaroo_saved_pickup_address';
         let captainListener = null; // To hold the listener reference for nearby captains
@@ -1798,7 +1637,6 @@ input:checked + .slider:before {
             // FIX: Removed keys sidebarGreetingName and sidebarVerifyPhone to avoid overwriting dynamic content
             activeRide: { en: "Active Ride:", ur: "فعال سواری:" },
             menuHistory: { en: "Ride History", ur: "سفر کی تاریخ" },
-            menuWallet: { en: "My Wallet", ur: "میرا والٹ" },
 
             menuDarkMode: { en: "Dark Mode", ur: "ڈارک موڈ" },
             menuLanguage: { en: "Language", ur: "زبان" },
@@ -1807,7 +1645,6 @@ input:checked + .slider:before {
             menuSignOut: { en: "Sign Out", ur: "سائن آؤٹ" },
             paymentMethods: { en: "Payment Methods", ur: "ادائیگی کے طریقے" },
             payCash: { en: "Cash", ur: "نقد" },
-            payWallet: { en: "Wallet", ur: "والٹ" },
             // Home View
             selectServiceHeader: { en: "Select Your Service", ur: "اپنی سروس منتخب کریں" },
             btnRideMode: { en: "Ride Mode", ur: "سواری موڈ" },
@@ -1831,16 +1668,6 @@ input:checked + .slider:before {
             historyViewHeader: { en: "Ride History", ur: "سفر کی تاریخ" },
             historyLoading: { en: "Loading ride history...", ur: "سفر کی تاریخ لوڈ ہو رہی ہے..." },
             // Wallet View
-            walletViewHeader: { en: "My Wallet", ur: "میرا والٹ" },
-            currentBalance: { en: "Current Balance", ur: "موجودہ بیلنس" },
-            addFundsHeader: { en: "Add Funds via Bank/EasyPaisa/JazzCash", ur: "بینک/ایزی پیسہ/جاز کیش سے فنڈز شامل کریں" },
-            transferTo: { en: "Transfer to:", ur: "منتقل کریں:" },
-            transferInstructions: { en: "Please transfer funds, then fill the details and upload the transaction proof below.", ur: "براہ کرم فنڈز منتقل کریں، پھر تفصیلات پُر کریں اور ٹرانزیکشن کا ثبوت اپ لوڈ کریں۔" },
-            placeholderAmount: { en: "Transfer Amount (Rs.)", ur: "منتقلی کی رقم (روپے)" },
-            placeholderTxnId: { en: "Transaction ID (Optional)", ur: "ٹرانزیکشن ID (اختیاری)" },
-            btnUploadScreenshot: { en: "Upload Transaction Screenshot", ur: "ٹرانزیکشن کا سکرین شاٹ اپ لوڈ کریں" },
-            noFileSelected: { en: "No file selected.", ur: "کوئی فائل منتخب نہیں کی گئی" },
-            btnSubmitDeposit: { en: "Submit for Approval", ur: "منظوری کے لیے جمع کروائیں" },
             // NEW: Parcel Details View
             parcelDetailsHeader: { en: "Parcel Details", ur: "پارسل کی تفصیلات" },
             selectedVehicleDisplay: { en: "Selected Vehicle:", ur: "منتخب گاڑی:" },
@@ -1874,7 +1701,6 @@ input:checked + .slider:before {
             modalVehicle: { en: "Vehicle:", ur: "گاڑی:" },
             modalDistance: { en: "Distance:", ur: "فاصلہ:" },
             modalTotalFare: { en: "Total Fare:", ur: "کل کرایہ:" },
-            btnPayWallet: { en: "Pay with Wallet", ur: "والٹ سے ادائیگی کریں" },
             btnPayCash: { en: "Pay with Cash (Collect at Drop-off)", ur: "نقد ادائیگی کریں (ڈراپ آف پر جمع کریں)" },
             // Offer Modal
             offerModalHeader: { en: "New Captain Offer!", ur: "کیپٹن کی نئی پیشکش!" },
@@ -2334,26 +2160,6 @@ input:checked + .slider:before {
             }
         }
 
-        async function uploadImageToCloudinary(file, folder) {
-            const formData = new FormData();
-            formData.append('file', file);
-            formData.append('upload_preset', UPLOAD_PRESET);
-            formData.append('folder', `customer_deposits/${folder}`);
-
-            const uploadURL = `https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`;
-
-            const response = await fetch(uploadURL, {
-                method: 'POST',
-                body: formData,
-            });
-
-            if (!response.ok) {
-                throw new Error('Cloudinary upload failed: HTTP ' + response.status + ' ' + response.statusText);
-            }
-
-            const data = await response.json();
-            return data.secure_url; 
-        }
 
         // --- View Switching Logic ---
         window.showView = (viewId) => {
@@ -2367,8 +2173,6 @@ input:checked + .slider:before {
             // Specific View Logic Hooks
             if (viewId === 'history-view') {
                 loadRideHistory();
-            } else if (viewId === 'wallet-view') {
-                loadWalletBalance();
             } else if (viewId === 'invite-view') {
                 loadInviteData();
             } else if (viewId === 'parcel-details-view') {
@@ -2477,7 +2281,6 @@ input:checked + .slider:before {
 
                  // Final checks and listener setup
                  listenForActiveRide();
-                 loadWalletBalance(); // Load wallet for sidebar initialization
                  loadSavedPickupLocation();
                  setAppLanguage(currentLanguage); // *** LANGUAGE: Set language after UI is built ***
                  showView('home-view');
@@ -2754,146 +2557,6 @@ input:checked + .slider:before {
         // --- END ADDITION: CHAT SYSTEM LOGIC ---
 
 
-        // --- Customer Deposit Logic (Unchanged) ---
-        document.getElementById('uploadFileButton').onclick = () => {
-             document.getElementById('depositScreenshot').click();
-        };
-
-        document.getElementById('depositScreenshot').onchange = (e) => {
-            const fileName = e.target.files.length ? e.target.files[0].name : translations.noFileSelected[currentLanguage];
-            document.getElementById('uploadStatus').innerText = fileName;
-            document.getElementById('uploadStatus').style.color = e.target.files.length ? 'var(--success)' : 'var(--error)';
-        };
-
-        document.getElementById('submitDepositBtn').onclick = submitDepositProof;
-
-        // ── WITHDRAWAL LOGIC ─────────────────────────────────────────────────
-        window.submitWithdrawal = async function() {
-            const errEl  = document.getElementById('withdrawError');
-            const btn    = document.getElementById('submitWithdrawBtn');
-            errEl.style.display = 'none';
-
-            const amount  = parseFloat(document.getElementById('withdrawAmount').value);
-            const account = document.getElementById('withdrawAccountNumber').value.trim();
-            const name    = document.getElementById('withdrawAccountName').value.trim();
-
-            if (!amount || amount < 200) {
-                errEl.textContent = 'Minimum withdrawal amount Rs. 200 hai.';
-                errEl.style.display = 'block'; return;
-            }
-            if (amount > currentWalletBalance) {
-                errEl.textContent = `Insufficient balance. Aapke paas sirf Rs. ${currentWalletBalance} hai.`;
-                errEl.style.display = 'block'; return;
-            }
-            if (!/^03[0-9]{9}$/.test(account)) {
-                errEl.textContent = 'Valid Pakistani mobile number enter karo (e.g. 03001234567).';
-                errEl.style.display = 'block'; return;
-            }
-            if (!name) {
-                errEl.textContent = 'Account holder name zaruri hai.';
-                errEl.style.display = 'block'; return;
-            }
-
-            btn.disabled = true;
-            btn.innerHTML = '⏳ Processing...';
-
-            try {
-                // Deduct from wallet immediately
-                const newBal = currentWalletBalance - amount;
-                await update(ref(db, `users/${currentUser.uid}`), { wallet: newBal });
-
-                // Save withdrawal request for admin
-                const reqKey = 'WD_' + Date.now();
-                await set(ref(db, `withdrawalRequests/${reqKey}`), {
-                    uid:         currentUser.uid,
-                    userName:    currentUser.displayName || 'User',
-                    userEmail:   currentUser.email,
-                    amount:      amount,
-                    accountNumber: account,
-                    accountName: name,
-                    method:      'JazzCash/EasyPaisa',
-                    status:      'Pending',
-                    type:        'passenger',
-                    requestedAt: new Date().toISOString(),
-                });
-
-                document.getElementById('withdrawAmount').value = '';
-                document.getElementById('withdrawAccountNumber').value = '';
-                document.getElementById('withdrawAccountName').value = '';
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-paper-plane"></i> Request Withdrawal';
-                alert(`✅ Rs. ${amount} withdrawal request submit ho gayi! 24–48 ghante mein ${account} par transfer ho ga.`);
-            } catch(e) {
-                // Refund if save failed
-                await update(ref(db, `users/${currentUser.uid}`), { wallet: currentWalletBalance });
-                errEl.textContent = 'Error: ' + e.message;
-                errEl.style.display = 'block';
-                btn.disabled = false;
-                btn.innerHTML = '<i class="fas fa-paper-plane"></i> Request Withdrawal';
-            }
-        };
-        // ── END WITHDRAWAL ────────────────────────────────────────────────────
-
-        async function submitDepositProof() {
-            const amount = document.getElementById('walletAmount').value;
-            const txnId = document.getElementById('walletTxnId').value;
-            const screenshotFile = document.getElementById('depositScreenshot').files[0];
-            const submitBtn = document.getElementById('submitDepositBtn');
-            const customerName = currentUser.displayName || (await get(ref(db, `users/${currentUser.uid}`))).val().name || 'N/A';
-
-
-            // 1. Validation
-            if (!currentUser) { alert('Please log in.'); return; }
-            if (!amount || parseFloat(amount) <= 0) { 
-                alert('Please enter a valid transfer amount.'); 
-                return; 
-            }
-            if (!screenshotFile) { 
-                alert('Please upload a transaction screenshot.'); 
-                return; 
-            }
-
-            // 2. State update
-            submitBtn.disabled = true;
-            submitBtn.innerText = currentLanguage === 'ur' ? 'جمع کیا جا رہا ہے...' : 'Submitting...';
-            document.getElementById('uploadStatus').innerText = currentLanguage === 'ur' ? 'ثبوت سرور پر اپ لوڈ کیا جا رہا ہے...' : 'Uploading proof to server...';
-
-            try {
-                // 3. Upload proof to Cloudinary
-                const proofUrl = await uploadImageToCloudinary(screenshotFile, `${currentUser.uid}_${Date.now()}`);
-
-                // 4. Log deposit request to the common 'depositRequests' node
-                const depositRequestRef = push(ref(db, 'depositRequests'));
-                await set(depositRequestRef, {
-                    customerId: currentUser.uid,
-                    customerName: customerName,
-                    amount: parseFloat(amount),
-                    txnId: txnId,
-                    proofUrl: proofUrl,
-                    requestedAt: new Date().toISOString(),
-                    status: 'Pending',
-                    userType: 'customer' // Differentiate from Captain deposits
-                });
-
-                // 5. Success/Reset
-                document.getElementById('walletAmount').value = '';
-                document.getElementById('walletTxnId').value = '';
-                document.getElementById('depositScreenshot').value = null; 
-                document.getElementById('uploadStatus').innerText = currentLanguage === 'ur' ? 'درخواست جمع ہو گئی! ایڈمن کی منظوری کا انتظار ہے۔' : 'Request Submitted! Awaiting Admin Approval.';
-                document.getElementById('uploadStatus').style.color = 'var(--success)';
-                
-                alert(currentLanguage === 'ur' ? 'ڈیپازٹ کی درخواست کامیابی سے جمع ہو گئی! ایڈمن کی تصدیق کے بعد فنڈز کریڈٹ ہو جائیں گے۔' : 'Deposit request submitted successfully! Funds will be credited after admin verification.');
-                
-            } catch (e) {
-                console.error("Deposit Submission Error:", e);
-                document.getElementById('uploadStatus').innerText = currentLanguage === 'ur' ? 'جمع کروانے میں ناکامی۔ تفصیلات کے لیے کنسول چیک کریں۔' : 'Submission Failed. Check console for details.';
-                document.getElementById('uploadStatus').style.color = 'var(--error)';
-                alert(currentLanguage === 'ur' ? "ڈیپازٹ کی درخواست جمع کروانے میں ناکام رہا۔ براہ کرم دوبارہ کوشش کریں." : "Failed to submit deposit request. Please try again.");
-            } finally {
-                submitBtn.disabled = false;
-                submitBtn.innerText = translations.btnSubmitDeposit[currentLanguage];
-            }
-        }
         
         // --- Service Selection Logic ---
         document.querySelectorAll('.service-card').forEach(card => {
@@ -3421,7 +3084,7 @@ input:checked + .slider:before {
         // --- END MODIFICATION: Fare option logic ---
 
 
-        // --- Payment Choice Modal Logic (FIXED: hidePaymentChoiceModal is now global) ---
+        // --- Payment Choice Modal Logic ---
         function showPaymentChoiceModal() {
              if (tripDetails.fare === 0) {
                  document.getElementById('fareErrorMsg').innerText = translations.fareErrorSelect[currentLanguage];
@@ -3429,28 +3092,10 @@ input:checked + .slider:before {
                  return;
              }
              
-             // No custom input validation needed, as fare is selected from valid options
-             
              // Update modal content
              document.getElementById('modalVehicleType').innerText = tripDetails.vehicle.toUpperCase().replace('-', ' ');
              document.getElementById('modalDistanceKm').innerText = tripDetails.distance.toFixed(2) + ' km';
              document.getElementById('modalFinalFare').innerText = tripDetails.fare;
-             document.getElementById('modalWalletBalance').innerText = currentWalletBalance.toLocaleString('en-US');
-             
-             const btnWallet = document.getElementById('btnPayWallet');
-             const walletErrorMsg = document.getElementById('walletErrorMsg');
-             
-             // Check Wallet Balance
-             if (currentWalletBalance >= tripDetails.fare) {
-                 btnWallet.disabled = false;
-                 walletErrorMsg.style.display = 'none';
-             } else {
-                 btnWallet.disabled = true;
-                 // *** LANGUAGE: Update wallet error message ***
-                 const errorMsg = currentLanguage === 'ur' ? `نا کافی بیلنس۔ Rs. ${tripDetails.fare} درکار ہیں۔` : `Insufficient balance. Rs. ${tripDetails.fare} required.`;
-                 walletErrorMsg.innerText = errorMsg;
-                 walletErrorMsg.style.display = 'block';
-             }
              
              document.getElementById('payment-choice-modal').classList.add('active');
         }
@@ -3459,12 +3104,6 @@ input:checked + .slider:before {
         window.hidePaymentChoiceModal = () => {
             document.getElementById('payment-choice-modal').classList.remove('active');
         }
-
-        window.confirmWalletPayment = () => {
-             hidePaymentChoiceModal();
-             tripDetails.paymentMethod = 'wallet';
-             requestRide();
-        };
 
         window.confirmCashPayment = () => {
              hidePaymentChoiceModal();
@@ -3516,20 +3155,7 @@ input:checked + .slider:before {
                 parcelDetails: tripDetails.parcelDetails || null 
             };
             
-            // Wallet payment: sirf flag karo, paise tab kato jab captain offer accept ho
-            if (tripDetails.paymentMethod === 'wallet') {
-                 if (currentWalletBalance < tripDetails.fare) {
-                     alert(currentLanguage === 'ur' ? `نا کافی بیلنس۔ دوبارہ کوشش کریں یا نقد ادائیگی کا انتخاب کریں۔` : `Insufficient balance. Try again or choose cash payment.`);
-                     document.getElementById('requestRideBtn').disabled = false;
-                     document.getElementById('requestRideBtn').innerText = currentLanguage === 'ur' ? `ریکویسٹ کریں (Rs. ${tripDetails.fare})` : `Request ${selectedVehicle.toUpperCase().replace('-', ' ')} (Rs. ${tripDetails.fare})`; 
-                     return;
-                 }
-                 // Status 'bidding' — paise abhi nahi katenge, offer accept par katenge
-                 requestData.status = 'bidding';
-                 requestData.walletDeducted = 0; // Abhi kuch nahi kata
-            }
-
-
+            
             try {
                 await set(newRequestRef, requestData);
                 localStorage.setItem('activeBookingId', requestId);
@@ -3546,13 +3172,6 @@ input:checked + .slider:before {
                 document.getElementById('requestRideBtn').disabled = false;
                 document.getElementById('requestRideBtn').innerText = currentLanguage === 'ur' ? `ریکویسٹ کریں (Rs. ${tripDetails.fare})` : `Request ${selectedVehicle.toUpperCase().replace('-', ' ')} (Rs. ${tripDetails.fare})`; 
                 console.error(e);
-                
-                // If wallet was deducted but request failed, attempt to refund
-                if (tripDetails.paymentMethod === 'wallet' && requestData.walletDeducted) {
-                     const refundBalance = (currentWalletBalance + requestData.walletDeducted);
-                     await update(ref(db, `users/${currentUser.uid}`), { wallet: refundBalance });
-                     alert(currentLanguage === 'ur' ? `Rs. ${requestData.walletDeducted} والٹ میں واپس کر دیے گئے ہیں۔` : `Rs. ${requestData.walletDeducted} refunded to Wallet.`);
-                }
             }
         };
         
@@ -3607,33 +3226,13 @@ input:checked + .slider:before {
              
              document.getElementById('acceptOfferBtn').disabled = true;
              
-             // Wallet payment: ab final fare kato (jo captain ne accept ki)
-             const reqSnap = await get(ref(db, `requests/${requestId}`));
-             const reqData = reqSnap.val();
-             
-             if (reqData && reqData.paymentMethod === 'wallet') {
-                 // Fresh balance lo Firebase se
-                 const walSnap = await get(ref(db, `users/${currentUser.uid}/wallet`));
-                 const freshBal = walSnap.val() || 0;
-                 
-                 if (freshBal < finalFare) {
-                     alert(currentLanguage === 'ur' ? `والٹ میں ناکافی بیلنس۔ براہ کرم پہلے رقم ڈالیں۔` : `Insufficient wallet balance. Please add funds first.`);
-                     document.getElementById('acceptOfferBtn').disabled = false;
-                     return;
-                 }
-                 
-                 // Exact final fare kato
-                 await update(ref(db, `users/${currentUser.uid}`), { wallet: freshBal - finalFare });
-                 await update(ref(db, `requests/${requestId}`), { walletDeducted: finalFare });
-             }
-             
              // Finalize the request with status 'accepted'
              await update(ref(db, `requests/${requestId}`), {
                  status: 'accepted',
                  fare: finalFare, 
              });
              
-             alert(currentLanguage === 'ur' ? `پیشکش قبول کر لی گئی! والٹ سے Rs. ${finalFare} کی کٹوتی کی گئی۔ آپ کا کیپٹن راستے میں ہے۔` : `Offer Accepted! Rs. ${finalFare} deducted from Wallet. Your Captain is on the way.`);
+             alert(currentLanguage === 'ur' ? "پیشکش قبول کر لی گئی! آپ کا کیپٹن راستے میں ہے۔" : "Offer Accepted! Your Captain is on the way.");
              // The listener redirects to track-live-rider.html
         }
         
@@ -3656,18 +3255,6 @@ input:checked + .slider:before {
                 if (assignedRiderId) {
                      await update(ref(db, `riders/${assignedRiderId}`), { currentRequestId: null });
                 }
-                
-                // Refund wallet only if payment was actually deducted (i.e., offer was accepted then something went wrong)
-                if (requestData.paymentMethod === 'wallet' && requestData.walletDeducted > 0) {
-                     const userRef = ref(db, `users/${currentUser.uid}`);
-                     const userSnapshot = await get(userRef);
-                     const currentBalance = userSnapshot.val().wallet || 0;
-                     const refundBalance = currentBalance + requestData.walletDeducted;
-                     await update(userRef, { wallet: refundBalance });
-                     await update(ref(db, `requests/${requestId}`), { walletDeducted: 0 });
-                     alert(currentLanguage === 'ur' ? `Rs. ${requestData.walletDeducted} آپ کے والٹ میں واپس کر دیے گئے ہیں۔` : `Rs. ${requestData.walletDeducted} refunded to your Wallet.`);
-                }
-
 
                 alert(currentLanguage === 'ur' ? "سواری کی درخواست کامیابی سے منسوخ کر دی گئی ہے۔" : "Ride request cancelled successfully.");
                 // The listener will detect the status change and hide the map/waiting UI
@@ -3761,10 +3348,6 @@ input:checked + .slider:before {
                     if (qualified && !u.inviteBonusPaid) {
                         // Mark bonus paid on referred user node to avoid double-credit
                         await update(ref(db, `users/${u.uid}`), { inviteBonusPaid: true });
-                        // Credit referrer wallet
-                        const mySnap   = await get(ref(db, `users/${currentUser.uid}/wallet`));
-                        const myBal    = mySnap.val() || 0;
-                        await update(ref(db, `users/${currentUser.uid}`), { wallet: myBal + INVITE_BONUS_AMOUNT });
                     }
                 }
 
@@ -3813,14 +3396,6 @@ input:checked + .slider:before {
         };
         // ── END INVITE & EARN ─────────────────────────────────────────────────
 
-        function loadWalletBalance() {
-             if (!currentUser) return;
-             onValue(ref(db, `users/${currentUser.uid}/wallet`), (snapshot) => {
-                 currentWalletBalance = snapshot.val() || 0;
-                 document.getElementById('walletBalance').innerText = currentWalletBalance.toLocaleString('en-US');
-                 document.getElementById('sidebarWalletBalance').innerText = currentWalletBalance.toLocaleString('en-US');
-             });
-        }
         
         async function loadRideHistory() {
              const historyList = document.getElementById('history-list');
