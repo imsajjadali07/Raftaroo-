@@ -724,101 +724,187 @@ body {
     color: var(--text-main);
 }
 
-/* NEW: Fare Option Button Style */
-.fare-option-btn {
-    width: 32%; /* Fits three buttons with a small gap */
-    padding: 10px;
-    background: var(--bg-light);
-    color: var(--text-main);
-    border: 2px solid transparent;
+/* ═══════════════════════════════════════════════
+   PROFESSIONAL FARE SELECTION UI  — ±10% System
+   ═══════════════════════════════════════════════ */
+.fare-bid-wrapper {
+    background: #fff;
+    border-radius: 20px;
+    padding: 18px 16px 14px;
+    margin: 12px 0 16px;
+    border: 1.5px solid #e2e8f0;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.07);
+}
+.dark-mode .fare-bid-wrapper {
+    background: #1a2233;
+    border-color: #2d3a4f;
+}
+.fare-bid-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+}
+.fare-bid-title {
+    font-size: 13px;
+    font-weight: 800;
+    color: #64748b;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+}
+.fare-system-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    background: #f0fdf4;
+    border: 1px solid rgba(0,200,83,0.25);
+    color: #00A040;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 3px 9px;
+    border-radius: 50px;
+}
+.dark-mode .fare-system-tag { background: #0d2b1a; }
+
+/* Trip meta row */
+.fare-trip-meta {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 14px;
+}
+.fare-meta-chip {
+    flex: 1;
+    background: #f8fafc;
+    border: 1px solid #e2e8f0;
     border-radius: 12px;
-    font-size: 14px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.2s;
+    padding: 10px 10px 8px;
     text-align: center;
 }
-.fare-option-btn.selected {
-    border-color: var(--primary);
-    background: #edfff2;
-    box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
-    color: var(--secondary);
+.dark-mode .fare-meta-chip { background: #202c3e; border-color: #2d3a4f; }
+.fare-meta-chip .fmc-val {
+    font-size: 16px;
+    font-weight: 800;
+    color: #0f172a;
+    display: block;
+    line-height: 1;
 }
-.dark-mode .fare-option-btn.selected {
-    background: #0f2e1a;
-    color: var(--text-main);
-}
-.fare-options-container {
-    display: flex;
-    justify-content: space-between;
-    margin-top: 15px;
-    margin-bottom: 10px;
+.dark-mode .fare-meta-chip .fmc-val { color: #f1f5f9; }
+.fare-meta-chip .fmc-lbl {
+    font-size: 10px;
+    font-weight: 600;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.4px;
+    margin-top: 3px;
+    display: block;
 }
 
-/* Manual Fare Input Styles */
-.manual-fare-toggle {
-    width: 100%;
-    padding: 10px;
-    background: var(--bg-light);
-    color: var(--text-main);
-    border: 2px dashed var(--text-muted);
-    border-radius: 12px;
-    font-size: 13px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: 0.2s;
-    text-align: center;
-    margin-bottom: 10px;
+/* Range bar */
+.fare-range-bar-wrap {
+    position: relative;
+    margin: 6px 0 16px;
 }
-.manual-fare-toggle:hover, .manual-fare-toggle.active {
-    border-color: var(--primary);
-    background: #edfff2;
-    color: var(--primary);
-}
-.dark-mode .manual-fare-toggle.active {
-    background: #0f2e1a;
-}
-.manual-fare-input-row {
-    display: none;
-    align-items: center;
-    gap: 10px;
-    margin-bottom: 15px;
-    background: var(--bg-light);
-    border: 2px solid var(--primary);
-    border-radius: 12px;
-    padding: 10px 14px;
-}
-.manual-fare-input-row.visible {
+.fare-range-labels {
     display: flex;
+    justify-content: space-between;
+    margin-bottom: 5px;
 }
-.manual-fare-input-row span {
-    font-size: 16px;
+.fare-range-label {
+    font-size: 10px;
     font-weight: 700;
-    color: var(--text-main);
-    flex-shrink: 0;
+    color: #94a3b8;
 }
-#manualFareInput {
-    flex: 1;
-    border: none;
-    outline: none;
-    background: transparent;
-    font-size: 20px;
-    font-weight: 700;
-    color: var(--primary);
-    font-family: 'Poppins', sans-serif;
-    min-width: 0;
+.fare-range-label.min { color: #EF4444; }
+.fare-range-label.max { color: #00A040; }
+.fare-range-track {
+    position: relative;
+    height: 6px;
+    background: linear-gradient(90deg, #fee2e2 0%, #fef9c3 50%, #dcfce7 100%);
+    border-radius: 3px;
+    margin-bottom: 4px;
 }
-.manual-fare-apply-btn {
-    padding: 8px 16px;
-    background: var(--primary);
-    color: #fff;
-    border: none;
-    border-radius: 8px;
-    font-weight: 700;
-    font-size: 13px;
+.fare-range-fill {
+    position: absolute;
+    top: 0; bottom: 0; left: 0;
+    background: var(--primary, #00C853);
+    border-radius: 3px;
+    transition: width 0.25s;
+}
+.fare-range-pointer {
+    position: absolute;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 14px;
+    height: 14px;
+    background: #fff;
+    border: 2.5px solid var(--primary, #00C853);
+    border-radius: 50%;
+    box-shadow: 0 2px 8px rgba(0,200,83,0.4);
+    transition: left 0.25s;
+}
+
+/* Fare option buttons */
+.fare-options-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+.fare-option-btn {
+    padding: 12px 6px 10px;
+    background: #f8fafc;
+    color: #475569;
+    border: 2px solid #e2e8f0;
+    border-radius: 14px;
+    font-size: 15px;
+    font-weight: 800;
     cursor: pointer;
-    flex-shrink: 0;
+    transition: all 0.2s;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
 }
+.dark-mode .fare-option-btn { background: #1e2d42; color: #94a3b8; border-color: #2d3a4f; }
+.fare-option-btn .fob-label {
+    display: block;
+    font-size: 9px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #94a3b8;
+    margin-top: 3px;
+}
+.fare-option-btn:hover {
+    border-color: #00C853;
+    background: #f0fdf4;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0,200,83,0.15);
+}
+.fare-option-btn.selected {
+    border-color: #00C853;
+    background: linear-gradient(135deg, #f0fdf4, #dcfce7);
+    color: #00A040;
+    box-shadow: 0 4px 16px rgba(0,200,83,0.25);
+    transform: translateY(-2px);
+}
+.fare-option-btn.selected .fob-label { color: #00A040; }
+.dark-mode .fare-option-btn.selected { background: #0d2b1a; color: #00C853; }
+
+/* Fare note */
+.fare-note {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    color: #94a3b8;
+    background: #f8fafc;
+    border-radius: 8px;
+    padding: 7px 10px;
+    margin-top: 2px;
+}
+.dark-mode .fare-note { background: #1a2233; }
+.fare-note i { color: #f59e0b; font-size: 12px; }
 
 
 /* ─── MANUAL LOCATION SEARCH BOX ─── */
@@ -1664,31 +1750,54 @@ input:checked + .slider:before {
             <h4 id="mapControlHeader" data-lang-key="mapControlHeaderPickup">Set Pickup Location</h4>
             <div style="font-size: 14px; margin-bottom: 15px;"><span data-lang-key="mapAddressLabel">Address:</span> <strong id="selectedAddress" data-lang-key="mapAddressLoading">Moving Map...</strong></div>
             
-            <!-- START MODIFICATION: Fare Selection Options (Replaced input with options) -->
+            <!-- PROFESSIONAL FARE SELECTION -->
             <div id="fareBidSection" style="display: none;">
-                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 5px;"><span data-lang-key="mapDistanceLabel">2. Distance:</span> <strong id="tripDistanceDisplay">0 km</strong> | <span data-lang-key="mapBaseFareLabel">Base Fare (Min Offer):</span> <strong id="suggestedFareDisplay" style="color: var(--secondary);">Rs. 0</strong></p>
-                <h4 style="font-size: 16px; margin: 15px 0 10px;" data-lang-key="mapOfferPriceHeader">Select Your Offer Price:</h4>
-                
-                <div class="fare-options-container" id="fareOptionsContainer">
-                    <!-- Fare buttons will be dynamically inserted here -->
-                </div>
+                <div class="fare-bid-wrapper">
+                    <div class="fare-bid-header">
+                        <span class="fare-bid-title">💰 Apni Offer Price Chunein</span>
+                        <span class="fare-system-tag"><i class="fas fa-shield-alt"></i> System Fare ±10%</span>
+                    </div>
 
-                <!-- Manual Fare Section -->
-                <button class="manual-fare-toggle" id="manualFareToggle" onclick="toggleManualFare()">
-                    ✏️ Ya khud amount type karein (Custom Fare)
-                </button>
-                <div class="manual-fare-input-row" id="manualFareRow">
-                    <span>Rs.</span>
-                    <input type="number" id="manualFareInput" placeholder="Amount" min="0" inputmode="numeric">
-                    <button class="manual-fare-apply-btn" onclick="applyManualFare()">Apply</button>
-                </div>
-                <small id="manualFareNote" style="color: var(--text-muted); font-size: 11px; text-align: center; display: none; margin-bottom: 8px; display: block; text-align: center;">
-                    Aap system rate se <span id="fareCompareText" style="font-weight:700;"></span> dy rahe hain
-                </small>
+                    <!-- Trip Meta Chips -->
+                    <div class="fare-trip-meta">
+                        <div class="fare-meta-chip">
+                            <span class="fmc-val" id="tripDistanceDisplay">0 km</span>
+                            <span class="fmc-lbl">📍 Distance</span>
+                        </div>
+                        <div class="fare-meta-chip" style="border-color: rgba(0,200,83,0.3); background: #f0fdf4;">
+                            <span class="fmc-val" id="suggestedFareDisplay" style="color:#00A040;">Rs. 0</span>
+                            <span class="fmc-lbl">⚡ System Fare</span>
+                        </div>
+                        <div class="fare-meta-chip" style="border-color: rgba(245,158,11,0.3); background: #fffbeb;">
+                            <span class="fmc-val" id="fareRangeDisplay" style="color:#d97706;">Rs. 0–0</span>
+                            <span class="fmc-lbl">📊 Allowed Range</span>
+                        </div>
+                    </div>
 
-                <small id="fareErrorMsg" style="color: var(--error); display: none;" data-lang-key="fareErrorSelect">Please select an offer price before requesting a ride.</small>
+                    <!-- Visual Range Bar -->
+                    <div class="fare-range-bar-wrap" id="fareRangeBarWrap" style="display:none;">
+                        <div class="fare-range-labels">
+                            <span class="fare-range-label min" id="fareMinLabel">Min</span>
+                            <span class="fare-range-label" style="color:#64748b;font-size:10px;">System Rate</span>
+                            <span class="fare-range-label max" id="fareMaxLabel">Max</span>
+                        </div>
+                        <div class="fare-range-track">
+                            <div class="fare-range-fill" id="fareRangeFill" style="width:0%"></div>
+                            <div class="fare-range-pointer" id="fareRangePointer" style="left:0%"></div>
+                        </div>
+                    </div>
+
+                    <!-- Fare Option Buttons -->
+                    <div class="fare-options-container" id="fareOptionsContainer"></div>
+
+                    <div class="fare-note">
+                        <i class="fas fa-info-circle"></i>
+                        Sirf system fare se max <strong style="color:#0f172a;">10% kam ya 10% ziyada</strong> offer kar sakte hain
+                    </div>
+                    <small id="fareErrorMsg" style="color: var(--error); display: none; font-size:12px; font-weight:600; margin-top:6px; display:none;" data-lang-key="fareErrorSelect">⚠️ Pehle offer price select karein.</small>
+                </div>
             </div>
-            <!-- END MODIFICATION -->
+            <!-- END FARE SELECTION -->
             
             <button id="setPointBtn" data-lang-key="btnSetLocation" style="
                 display: flex;
@@ -1772,28 +1881,11 @@ input:checked + .slider:before {
             <span class="fare-highlight" id="offerFareDisplay">Rs. 0</span>
             
             <p><span data-lang-key="offerModalCaptain">Captain:</span> <strong id="offerCaptainName"></strong></p>
-            <p style="font-weight: 600; margin-top: 15px;"><span data-lang-key="offerModalOriginal">Aap ka offer:</span> <span id="originalFareDisplay" style="color: var(--error);">Rs. 0</span></p> 
+            <p style="font-weight: 600; margin-top: 15px;"><span data-lang-key="offerModalOriginal">Original Offer:</span> <span id="originalFareDisplay" style="color: var(--error);">Rs. 0</span></p> 
             <p style="margin-bottom: 5px;"><span data-lang-key="offerModalExpires">Expires in:</span> <span id="offerTimer">15s</span></p>
             
-            <button id="acceptOfferBtn" class="btn-primary" style="background: var(--success); margin-top: 20px;" data-lang-key="btnAcceptOffer">✅ Accept Offer</button>
-            
-            <!-- NEW: Passenger Counter-Offer Section -->
-            <div id="passengerCounterSection" style="margin-top: 14px; border-top: 1px dashed var(--text-muted); padding-top: 14px;">
-                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 8px; font-weight: 600;">Ya apna naya offer bhejein:</p>
-                <div style="display: flex; gap: 8px; margin-bottom: 8px;" id="passengerCounterBtns">
-                    <!-- Filled dynamically -->
-                </div>
-                <div style="display: flex; align-items: center; gap: 8px; background: var(--bg-light); border: 2px solid var(--primary); border-radius: 12px; padding: 8px 12px; margin-bottom: 10px;">
-                    <span style="font-weight: 700; flex-shrink: 0; color: var(--text-main);">Rs.</span>
-                    <input type="number" id="passengerCounterInput" placeholder="Custom amount" min="1" inputmode="numeric"
-                        style="flex:1; border:none; outline:none; background:transparent; font-size:18px; font-weight:700; color:var(--primary); font-family:'Poppins',sans-serif; min-width:0;">
-                </div>
-                <button id="sendCounterOfferBtn" class="btn-primary" style="background: var(--info); margin-bottom: 8px;" onclick="sendPassengerCounter()">
-                    📤 Apna Offer Bhejo Captain Ko
-                </button>
-            </div>
-            
-            <button id="rejectOfferBtn" class="btn-primary" style="background: #888; margin-top: 4px; font-size: 13px; padding: 12px;" data-lang-key="btnRejectOffer">❌ Reject — Naye Captain Dhundho</button>
+            <button id="acceptOfferBtn" class="btn-primary" style="background: var(--success); margin-top: 20px;" data-lang-key="btnAcceptOffer">Accept Offer</button>
+            <button id="rejectOfferBtn" class="btn-primary" style="background: var(--error); margin-top: 10px;" data-lang-key="btnRejectOffer">Reject & Search Again</button>
         </div>
     </div>
     <!-- END MODIFICATION: CAPTAIN OFFER MODAL -->
@@ -2715,8 +2807,8 @@ input:checked + .slider:before {
                      if (activeRequestData.status === 'counter_offered') {
                          document.getElementById('waiting-for-captain').style.display = 'none';
                          showCaptainOfferModal(activeBookingId, activeRequestData);
-                     } else if (activeRequestData.status === 'pending' || activeRequestData.status === 'passenger_counter') {
-                         document.getElementById('waiting-for-captain').style.display = 'flex';
+                     } else if (activeRequestData.status === 'pending') {
+                         document.getElementById('waiting-for-captain').style.display = 'flex'; // Now a visible semi-transparent overlay
                          document.getElementById('waitingFareDisplay').innerText = activeRequestData.fare;
                          document.getElementById('cancelWaitingBtn').onclick = () => cancelPendingRequest(activeBookingId);
                          hideCaptainOfferModal();
@@ -3469,75 +3561,68 @@ input:checked + .slider:before {
                 // Round to nearest 10
                 const calculatedFare = Math.round(fare / 10) * 10;
                 
-                // --- NEW BIDDING LOGIC: Generate 3 Options ---
-                tripDetails.systemMinFare = calculatedFare; 
+                // --- STRICT ±10% FARE BIDDING ---
+                tripDetails.systemMinFare = calculatedFare;
                 tripDetails.fare = 0; // Reset selected fare
 
+                // ±10% boundaries (rounded to nearest 10)
+                const minAllowed = Math.round(calculatedFare * 0.90 / 10) * 10;
+                const maxAllowed = Math.round(calculatedFare * 1.10 / 10) * 10;
+
                 // UPDATED to use corrected distance
-                document.getElementById('tripDistanceDisplay').innerText = dist.toFixed(2) + ' km'; 
+                document.getElementById('tripDistanceDisplay').innerText = dist.toFixed(2) + ' km';
                 document.getElementById('suggestedFareDisplay').innerText = `Rs. ${calculatedFare}`;
+                document.getElementById('fareRangeDisplay').innerText = `Rs. ${minAllowed}–${maxAllowed}`;
+                document.getElementById('fareMinLabel').textContent = `Min Rs.${minAllowed}`;
+                document.getElementById('fareMaxLabel').textContent = `Max Rs.${maxAllowed}`;
+                document.getElementById('fareRangeBarWrap').style.display = 'block';
                 document.getElementById('fareErrorMsg').style.display = 'none';
                 document.getElementById('requestRideBtn').disabled = true;
 
-                // Generate three options based on minimum fare
-                const option1 = calculatedFare; 
-                // Option 2: Min + ~10% (at least 10)
-                const option2 = calculatedFare + Math.max(10, Math.round(calculatedFare * 0.1 / 10) * 10); 
-                // Option 3: Min + ~20% (at least 20)
-                const option3 = calculatedFare + Math.max(20, Math.round(calculatedFare * 0.2 / 10) * 10); 
-                
-                // Ensure options are unique and in ascending order
-                const options = Array.from(new Set([option1, option2, option3])).sort((a, b) => a - b);
+                // 3 options: -10%, system, +10%
+                const option1 = minAllowed;  // -10%
+                const option2 = calculatedFare; // system (recommended)
+                const option3 = maxAllowed;  // +10%
 
-                renderFareOptions(options);
+                const options = Array.from(new Set([option1, option2, option3])).sort((a, b) => a - b);
+                renderFareOptions(options, calculatedFare, minAllowed, maxAllowed);
             });
         }
         
-        function renderFareOptions(options) {
+        function renderFareOptions(options, systemFare, minFare, maxFare) {
             const container = document.getElementById('fareOptionsContainer');
             container.innerHTML = '';
-            
-            options.forEach(fare => {
+            const labels = ['💸 Economy', '⭐ Recommended', '🚀 Premium'];
+            const range = maxFare - minFare || 1;
+
+            options.forEach((fare, idx) => {
                 const button = document.createElement('button');
                 button.className = 'fare-option-btn';
-                button.innerText = `Rs. ${fare}`;
+                const isRecommended = fare === systemFare;
+                button.innerHTML = `Rs. ${fare}<span class="fob-label">${isRecommended ? '✅ ' : ''}${labels[idx] || ''}</span>`;
                 button.dataset.fare = fare;
-                button.onclick = selectFareOption;
+                button.onclick = (e) => selectFareOption(e, systemFare, minFare, maxFare);
+                if (isRecommended) {
+                    button.style.borderColor = '#00C853';
+                }
                 container.appendChild(button);
             });
-
-            // Reset manual fare UI when new options are rendered
-            const manualRow = document.getElementById('manualFareRow');
-            const manualToggle = document.getElementById('manualFareToggle');
-            if (manualRow) manualRow.classList.remove('visible');
-            if (manualToggle) {
-                manualToggle.classList.remove('active');
-                manualToggle.innerHTML = '✏️ Ya khud amount type karein (Custom Fare)';
-            }
-            const noteEl = document.getElementById('manualFareNote');
-            if (noteEl) noteEl.style.display = 'none';
-            const inp = document.getElementById('manualFareInput');
-            if (inp) inp.value = '';
         }
         
-        function selectFareOption(event) {
+        function selectFareOption(event, systemFare, minFare, maxFare) {
             document.querySelectorAll('.fare-option-btn').forEach(btn => btn.classList.remove('selected'));
-            event.target.classList.add('selected');
-            
-            tripDetails.fare = parseInt(event.target.dataset.fare);
-            
-            // Reset manual fare UI when a preset is selected
-            const manualRow = document.getElementById('manualFareRow');
-            const manualToggle = document.getElementById('manualFareToggle');
-            if (manualRow) manualRow.classList.remove('visible');
-            if (manualToggle) {
-                manualToggle.classList.remove('active');
-                manualToggle.innerHTML = '✏️ Ya khud amount type karein (Custom Fare)';
+            const btn = event.target.closest('.fare-option-btn');
+            if (!btn) return;
+            btn.classList.add('selected');
+            tripDetails.fare = parseInt(btn.dataset.fare);
+
+            // Animate range bar pointer
+            if (minFare !== undefined && maxFare !== undefined) {
+                const range = maxFare - minFare || 1;
+                const pct = Math.min(100, Math.max(0, ((tripDetails.fare - minFare) / range) * 100));
+                document.getElementById('fareRangeFill').style.width = pct + '%';
+                document.getElementById('fareRangePointer').style.left = pct + '%';
             }
-            const noteEl = document.getElementById('manualFareNote');
-            if (noteEl) noteEl.style.display = 'none';
-            const inp = document.getElementById('manualFareInput');
-            if (inp) inp.value = '';
 
             // *** LANGUAGE: Update request button text with selected fare ***
             const btnText = currentLanguage === 'ur' ? `ریکویسٹ کریں (Rs. ${tripDetails.fare})` : `Request ${selectedVehicle.toUpperCase().replace('-', ' ')} (Rs. ${tripDetails.fare})`;
@@ -3545,79 +3630,7 @@ input:checked + .slider:before {
             document.getElementById('requestRideBtn').disabled = false;
             document.getElementById('fareErrorMsg').style.display = 'none';
         }
-        window.selectFareOption = selectFareOption; 
-        // --- END MODIFICATION: Fare option logic ---
-
-        // --- MANUAL FARE LOGIC ---
-        window.toggleManualFare = function() {
-            const row = document.getElementById('manualFareRow');
-            const toggle = document.getElementById('manualFareToggle');
-            const isVisible = row.classList.contains('visible');
-            if (isVisible) {
-                row.classList.remove('visible');
-                toggle.classList.remove('active');
-                toggle.innerHTML = '✏️ Ya khud amount type karein (Custom Fare)';
-                document.getElementById('manualFareNote').style.display = 'none';
-                document.getElementById('manualFareInput').value = '';
-            } else {
-                row.classList.add('visible');
-                toggle.classList.add('active');
-                toggle.innerHTML = '✖️ Custom fare band karein';
-                document.getElementById('manualFareInput').focus();
-            }
-        };
-
-        window.applyManualFare = function() {
-            const input = document.getElementById('manualFareInput');
-            const val = parseInt(input.value);
-            const minFare = tripDetails.systemMinFare || 0;
-            const errMsg = document.getElementById('fareErrorMsg');
-            const noteEl = document.getElementById('manualFareNote');
-            const compareEl = document.getElementById('fareCompareText');
-
-            if (!val || val < 1) {
-                input.style.borderBottom = '2px solid var(--error)';
-                alert(currentLanguage === 'ur' ? 'درست رقم درج کریں۔' : 'Pehle valid amount likhein.');
-                return;
-            }
-
-            // Deselect all preset buttons
-            document.querySelectorAll('.fare-option-btn').forEach(b => b.classList.remove('selected'));
-
-            tripDetails.fare = val;
-
-            // Show comparison note
-            noteEl.style.display = 'block';
-            if (val < minFare) {
-                compareEl.textContent = `Rs. ${minFare - val} kam (${minFare} base fare se neeche)`;
-                compareEl.style.color = 'var(--error)';
-            } else if (val === minFare) {
-                compareEl.textContent = `base fare ke barabar hain`;
-                compareEl.style.color = 'var(--success)';
-            } else {
-                compareEl.textContent = `Rs. ${val - minFare} zyada dy rahe hain`;
-                compareEl.style.color = 'var(--info)';
-            }
-
-            const btnText = currentLanguage === 'ur'
-                ? `ریکویسٹ کریں (Rs. ${val})`
-                : `Request ${selectedVehicle.toUpperCase().replace('-', ' ')} (Rs. ${val})`;
-            document.getElementById('requestRideBtn').innerText = btnText;
-            document.getElementById('requestRideBtn').disabled = false;
-            errMsg.style.display = 'none';
-
-            input.style.borderBottom = '';
-            // Visual feedback
-            const applyBtn = input.nextElementSibling;
-            const origText = applyBtn.textContent;
-            applyBtn.textContent = '✓ Applied!';
-            applyBtn.style.background = 'var(--success)';
-            setTimeout(() => {
-                applyBtn.textContent = origText;
-                applyBtn.style.background = '';
-            }, 1500);
-        };
-        // --- END MANUAL FARE LOGIC ---
+        window.selectFareOption = selectFareOption;
 
 
         // --- Payment Choice Modal Logic (FIXED: hidePaymentChoiceModal is now global) ---
@@ -3747,50 +3760,37 @@ input:checked + .slider:before {
         
         function showCaptainOfferModal(requestId, requestData) {
             
+            if (document.getElementById('captain-offer-modal').style.display === 'flex') return;
+            
             const offeredFare = requestData.fare;
-            const myLastOffer = requestData.passengerLastOffer || requestData.customerOriginalOffer || requestData.systemMinFare;
-            originalCustomerFare = myLastOffer;
+            const originalOffer = requestData.customerOriginalOffer || requestData.systemMinFare;
+            originalCustomerFare = originalOffer; // Store for rejection logic
             
             // 1. Populate Modal
             document.getElementById('offerFareDisplay').innerText = `Rs. ${offeredFare}`;
             document.getElementById('offerCaptainName').innerText = requestData.riderName || 'A Captain';
-            document.getElementById('originalFareDisplay').innerText = `Rs. ${myLastOffer}`;
+            document.getElementById('originalFareDisplay').innerText = `Rs. ${originalOffer}`; 
             
-            // 2. Populate passenger counter buttons (3 options around their last offer)
-            const pBtns = document.getElementById('passengerCounterBtns');
-            if (pBtns) {
-                const o1 = myLastOffer;
-                const midFare = Math.round((myLastOffer + offeredFare) / 2 / 10) * 10;
-                const o2 = midFare !== o1 && midFare !== offeredFare ? midFare : offeredFare - Math.round((offeredFare - myLastOffer) / 4 / 10) * 10;
-                const o3 = offeredFare;
-                const opts = Array.from(new Set([o1, o2 > 0 ? o2 : o1, o3])).sort((a,b) => a-b);
-                pBtns.innerHTML = opts.map(f => 
-                    `<button onclick="selectPassengerCounter(${f})" data-fare="${f}" class="fare-option-btn" style="flex:1; font-size:13px; padding:8px 4px;">Rs. ${f}</button>`
-                ).join('');
-            }
-            document.getElementById('passengerCounterInput').value = '';
-            
-            // 3. Set Button Actions
+            // 2. Set Button Actions
             document.getElementById('acceptOfferBtn').onclick = () => acceptCaptainOffer(requestId, offeredFare, requestData.riderId);
             document.getElementById('rejectOfferBtn').onclick = () => rejectCaptainOffer(requestId);
-            window._activeNegotiationRequestId = requestId;
-            window._activeNegotiationCaptainFare = offeredFare;
             
-            // 4. Start 60-second Timer
-            let secondsLeft = 60;
+            // 3. Start 15-second Timer
+            let secondsLeft = 15;
             document.getElementById('offerTimer').innerText = `${secondsLeft}s`;
             
             if (offerTimerInterval) clearInterval(offerTimerInterval);
             offerTimerInterval = setInterval(() => {
                 secondsLeft--;
                 document.getElementById('offerTimer').innerText = `${secondsLeft}s`;
+                
                 if (secondsLeft <= 0) {
                     clearInterval(offerTimerInterval);
-                    rejectCaptainOffer(requestId, true);
+                    rejectCaptainOffer(requestId, true); // Auto-reject on timeout
                 }
             }, 1000);
             
-            // 5. Show modal
+            // 4. Show modal (MODIFICATION: Hide waiting UI first)
             document.getElementById('waiting-for-captain').style.display = 'none';
             document.getElementById('captain-offer-modal').style.display = 'flex';
         }
@@ -3849,89 +3849,32 @@ input:checked + .slider:before {
         window.cancelPendingRequest = cancelPendingRequest;
 
 
-        // Select one of the preset counter amounts (passenger side)
-        window.selectPassengerCounter = function(fare) {
-            document.querySelectorAll('#passengerCounterBtns .fare-option-btn').forEach(b => b.classList.remove('selected'));
-            const btn = document.querySelector(`#passengerCounterBtns [data-fare="${fare}"]`);
-            if (btn) btn.classList.add('selected');
-            document.getElementById('passengerCounterInput').value = fare;
-        };
-
-        // Passenger sends their counter-offer back to captain
-        window.sendPassengerCounter = async function() {
-            const requestId = window._activeNegotiationRequestId;
-            if (!requestId) return;
-            const inputEl = document.getElementById('passengerCounterInput');
-            const fare = parseInt(inputEl.value);
-            if (!fare || fare < 1) {
-                alert('Pehle amount select ya type karein.');
-                return;
-            }
-            const captainFare = window._activeNegotiationCaptainFare || 0;
-
-            const btn = document.getElementById('sendCounterOfferBtn');
-            btn.disabled = true;
-            btn.innerHTML = '⏳ Bhej rahe hain...';
-
-            try {
-                // Get current riderId before clearing
-                const snap = await get(ref(db, `requests/${requestId}`));
-                const oldRiderId = snap.val()?.riderId;
-
-                // Update request: passenger_counter status, new passenger fare
-                await update(ref(db, `requests/${requestId}`), {
-                    status: 'passenger_counter',
-                    fare: fare,
-                    passengerLastOffer: fare,
-                    captainLastOffer: captainFare,
-                    riderId: null,
-                    riderName: null,
-                    riderPhone: null,
-                    passengerCounteredAt: new Date().toISOString()
-                });
-
-                // Free up the captain
-                if (oldRiderId) {
-                    await update(ref(db, `riders/${oldRiderId}`), { currentRequestId: null });
-                }
-
-                hideCaptainOfferModal();
-                // Show waiting screen — captain will now see this as a new offer
-                document.getElementById('waiting-for-captain').style.display = 'flex';
-                document.getElementById('waitingFareDisplay').innerText = fare;
-
-            } catch(e) {
-                alert('Counter offer nahi bheji ja saki. Dobara try karein.');
-                btn.disabled = false;
-                btn.innerHTML = '📤 Apna Offer Bhejo Captain Ko';
-            }
-        };
-
         async function rejectCaptainOffer(requestId, isTimeout = false) {
              hideCaptainOfferModal();
              
-             // Get old riderId before update
-             const requestSnapshot = await get(ref(db, `requests/${requestId}`));
-             const oldRiderId = requestSnapshot.val()?.riderId;
-
-             // Revert to pending — other captains can now see it
+             // 1. Update the request status:
              await update(ref(db, `requests/${requestId}`), {
-                 status: 'pending',
-                 riderId: null,
+                 status: 'pending', // Revert to pending for other captains to see
+                 riderId: null, // Clear the assigned captain
                  riderName: null,
                  riderPhone: null,
-                 fare: originalCustomerFare
+                 // Crucially, the 'fare' remains the original customer offer
+                 fare: originalCustomerFare 
              });
              
+             // 2. Clear the assigned captain in the rider's node so they can accept new rides
+             const requestSnapshot = await get(ref(db, `requests/${requestId}`));
+             const oldRiderId = requestSnapshot.val().riderId;
              if (oldRiderId) {
                   await update(ref(db, `riders/${oldRiderId}`), { currentRequestId: null });
              }
 
-             if (isTimeout) {
-                 alert(currentLanguage === 'ur' ? "وقت ختم۔ نئے کیپٹن کی تلاش ہے۔" : "Offer timed out. Searching for another Captain.");
-             }
+             alert(isTimeout ? (currentLanguage === 'ur' ? "پیشکش کا وقت ختم ہو گیا. ایک اور کیپٹن کی تلاش ہے." : "Offer timed out. Searching for another Captain.") : (currentLanguage === 'ur' ? "پیشکش مسترد کر دی گئی ہے۔ ایک اور کیپٹن کی تلاش ہے." : "Offer Rejected. Searching for another Captain."));
              
+             // 3. Re-enable the waiting UI (listenForActiveRide handles the showing of 'pending' UI)
              localStorage.setItem('activeBookingId', requestId);
+             
+             // The existing listener will detect the 'pending' status and re-display the waiting screen.
         }
         
         // --- END MODIFICATION: CAPTAIN OFFER MODAL LOGIC ---
