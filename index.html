@@ -724,187 +724,36 @@ body {
     color: var(--text-main);
 }
 
-/* ═══════════════════════════════════════════════
-   PROFESSIONAL FARE SELECTION UI  — ±10% System
-   ═══════════════════════════════════════════════ */
-.fare-bid-wrapper {
-    background: #fff;
-    border-radius: 20px;
-    padding: 18px 16px 14px;
-    margin: 12px 0 16px;
-    border: 1.5px solid #e2e8f0;
-    box-shadow: 0 4px 24px rgba(0,0,0,0.07);
-}
-.dark-mode .fare-bid-wrapper {
-    background: #1a2233;
-    border-color: #2d3a4f;
-}
-.fare-bid-header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 14px;
-}
-.fare-bid-title {
-    font-size: 13px;
-    font-weight: 800;
-    color: #64748b;
-    text-transform: uppercase;
-    letter-spacing: 0.6px;
-}
-.fare-system-tag {
-    display: inline-flex;
-    align-items: center;
-    gap: 4px;
-    background: #f0fdf4;
-    border: 1px solid rgba(0,200,83,0.25);
-    color: #00A040;
-    font-size: 11px;
-    font-weight: 700;
-    padding: 3px 9px;
-    border-radius: 50px;
-}
-.dark-mode .fare-system-tag { background: #0d2b1a; }
-
-/* Trip meta row */
-.fare-trip-meta {
-    display: flex;
-    gap: 8px;
-    margin-bottom: 14px;
-}
-.fare-meta-chip {
-    flex: 1;
-    background: #f8fafc;
-    border: 1px solid #e2e8f0;
-    border-radius: 12px;
-    padding: 10px 10px 8px;
-    text-align: center;
-}
-.dark-mode .fare-meta-chip { background: #202c3e; border-color: #2d3a4f; }
-.fare-meta-chip .fmc-val {
-    font-size: 16px;
-    font-weight: 800;
-    color: #0f172a;
-    display: block;
-    line-height: 1;
-}
-.dark-mode .fare-meta-chip .fmc-val { color: #f1f5f9; }
-.fare-meta-chip .fmc-lbl {
-    font-size: 10px;
-    font-weight: 600;
-    color: #94a3b8;
-    text-transform: uppercase;
-    letter-spacing: 0.4px;
-    margin-top: 3px;
-    display: block;
-}
-
-/* Range bar */
-.fare-range-bar-wrap {
-    position: relative;
-    margin: 6px 0 16px;
-}
-.fare-range-labels {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 5px;
-}
-.fare-range-label {
-    font-size: 10px;
-    font-weight: 700;
-    color: #94a3b8;
-}
-.fare-range-label.min { color: #EF4444; }
-.fare-range-label.max { color: #00A040; }
-.fare-range-track {
-    position: relative;
-    height: 6px;
-    background: linear-gradient(90deg, #fee2e2 0%, #fef9c3 50%, #dcfce7 100%);
-    border-radius: 3px;
-    margin-bottom: 4px;
-}
-.fare-range-fill {
-    position: absolute;
-    top: 0; bottom: 0; left: 0;
-    background: var(--primary, #00C853);
-    border-radius: 3px;
-    transition: width 0.25s;
-}
-.fare-range-pointer {
-    position: absolute;
-    top: 50%;
-    transform: translate(-50%, -50%);
-    width: 14px;
-    height: 14px;
-    background: #fff;
-    border: 2.5px solid var(--primary, #00C853);
-    border-radius: 50%;
-    box-shadow: 0 2px 8px rgba(0,200,83,0.4);
-    transition: left 0.25s;
-}
-
-/* Fare option buttons */
-.fare-options-container {
-    display: grid;
-    grid-template-columns: 1fr 1fr 1fr;
-    gap: 8px;
-    margin-bottom: 6px;
-}
+/* NEW: Fare Option Button Style */
 .fare-option-btn {
-    padding: 12px 6px 10px;
-    background: #f8fafc;
-    color: #475569;
-    border: 2px solid #e2e8f0;
-    border-radius: 14px;
-    font-size: 15px;
-    font-weight: 800;
+    width: 32%; /* Fits three buttons with a small gap */
+    padding: 10px;
+    background: var(--bg-light);
+    color: var(--text-main);
+    border: 2px solid transparent;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
     cursor: pointer;
-    transition: all 0.2s;
+    transition: 0.2s;
     text-align: center;
-    position: relative;
-    overflow: hidden;
-}
-.dark-mode .fare-option-btn { background: #1e2d42; color: #94a3b8; border-color: #2d3a4f; }
-.fare-option-btn .fob-label {
-    display: block;
-    font-size: 9px;
-    font-weight: 700;
-    text-transform: uppercase;
-    letter-spacing: 0.5px;
-    color: #94a3b8;
-    margin-top: 3px;
-}
-.fare-option-btn:hover {
-    border-color: #00C853;
-    background: #f0fdf4;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(0,200,83,0.15);
 }
 .fare-option-btn.selected {
-    border-color: #00C853;
-    background: linear-gradient(135deg, #f0fdf4, #dcfce7);
-    color: #00A040;
-    box-shadow: 0 4px 16px rgba(0,200,83,0.25);
-    transform: translateY(-2px);
+    border-color: var(--primary);
+    background: #edfff2;
+    box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+    color: var(--secondary);
 }
-.fare-option-btn.selected .fob-label { color: #00A040; }
-.dark-mode .fare-option-btn.selected { background: #0d2b1a; color: #00C853; }
-
-/* Fare note */
-.fare-note {
+.dark-mode .fare-option-btn.selected {
+    background: #0f2e1a;
+    color: var(--text-main);
+}
+.fare-options-container {
     display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 11px;
-    font-weight: 600;
-    color: #94a3b8;
-    background: #f8fafc;
-    border-radius: 8px;
-    padding: 7px 10px;
-    margin-top: 2px;
+    justify-content: space-between;
+    margin-top: 15px;
+    margin-bottom: 25px;
 }
-.dark-mode .fare-note { background: #1a2233; }
-.fare-note i { color: #f59e0b; font-size: 12px; }
 
 
 /* ─── MANUAL LOCATION SEARCH BOX ─── */
@@ -1750,54 +1599,17 @@ input:checked + .slider:before {
             <h4 id="mapControlHeader" data-lang-key="mapControlHeaderPickup">Set Pickup Location</h4>
             <div style="font-size: 14px; margin-bottom: 15px;"><span data-lang-key="mapAddressLabel">Address:</span> <strong id="selectedAddress" data-lang-key="mapAddressLoading">Moving Map...</strong></div>
             
-            <!-- PROFESSIONAL FARE SELECTION -->
+            <!-- START MODIFICATION: Fare Selection Options (Replaced input with options) -->
             <div id="fareBidSection" style="display: none;">
-                <div class="fare-bid-wrapper">
-                    <div class="fare-bid-header">
-                        <span class="fare-bid-title">💰 Apni Offer Price Chunein</span>
-                        <span class="fare-system-tag"><i class="fas fa-shield-alt"></i> System Fare ±10%</span>
-                    </div>
-
-                    <!-- Trip Meta Chips -->
-                    <div class="fare-trip-meta">
-                        <div class="fare-meta-chip">
-                            <span class="fmc-val" id="tripDistanceDisplay">0 km</span>
-                            <span class="fmc-lbl">📍 Distance</span>
-                        </div>
-                        <div class="fare-meta-chip" style="border-color: rgba(0,200,83,0.3); background: #f0fdf4;">
-                            <span class="fmc-val" id="suggestedFareDisplay" style="color:#00A040;">Rs. 0</span>
-                            <span class="fmc-lbl">⚡ System Fare</span>
-                        </div>
-                        <div class="fare-meta-chip" style="border-color: rgba(245,158,11,0.3); background: #fffbeb;">
-                            <span class="fmc-val" id="fareRangeDisplay" style="color:#d97706;">Rs. 0–0</span>
-                            <span class="fmc-lbl">📊 Allowed Range</span>
-                        </div>
-                    </div>
-
-                    <!-- Visual Range Bar -->
-                    <div class="fare-range-bar-wrap" id="fareRangeBarWrap" style="display:none;">
-                        <div class="fare-range-labels">
-                            <span class="fare-range-label min" id="fareMinLabel">Min</span>
-                            <span class="fare-range-label" style="color:#64748b;font-size:10px;">System Rate</span>
-                            <span class="fare-range-label max" id="fareMaxLabel">Max</span>
-                        </div>
-                        <div class="fare-range-track">
-                            <div class="fare-range-fill" id="fareRangeFill" style="width:0%"></div>
-                            <div class="fare-range-pointer" id="fareRangePointer" style="left:0%"></div>
-                        </div>
-                    </div>
-
-                    <!-- Fare Option Buttons -->
-                    <div class="fare-options-container" id="fareOptionsContainer"></div>
-
-                    <div class="fare-note">
-                        <i class="fas fa-info-circle"></i>
-                        Sirf system fare se max <strong style="color:#0f172a;">10% kam ya 10% ziyada</strong> offer kar sakte hain
-                    </div>
-                    <small id="fareErrorMsg" style="color: var(--error); display: none; font-size:12px; font-weight:600; margin-top:6px; display:none;" data-lang-key="fareErrorSelect">⚠️ Pehle offer price select karein.</small>
+                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 5px;"><span data-lang-key="mapDistanceLabel">2. Distance:</span> <strong id="tripDistanceDisplay">0 km</strong> | <span data-lang-key="mapBaseFareLabel">Base Fare (Min Offer):</span> <strong id="suggestedFareDisplay" style="color: var(--secondary);">Rs. 0</strong></p>
+                <h4 style="font-size: 16px; margin: 15px 0 10px;" data-lang-key="mapOfferPriceHeader">Select Your Offer Price:</h4>
+                
+                <div class="fare-options-container" id="fareOptionsContainer">
+                    <!-- Fare buttons will be dynamically inserted here -->
                 </div>
+                <small id="fareErrorMsg" style="color: var(--error); display: none;" data-lang-key="fareErrorSelect">Please select an offer price before requesting a ride.</small>
             </div>
-            <!-- END FARE SELECTION -->
+            <!-- END MODIFICATION -->
             
             <button id="setPointBtn" data-lang-key="btnSetLocation" style="
                 display: flex;
@@ -3561,76 +3373,58 @@ input:checked + .slider:before {
                 // Round to nearest 10
                 const calculatedFare = Math.round(fare / 10) * 10;
                 
-                // --- STRICT ±10% FARE BIDDING ---
-                tripDetails.systemMinFare = calculatedFare;
+                // --- NEW BIDDING LOGIC: Generate 3 Options ---
+                tripDetails.systemMinFare = calculatedFare; 
                 tripDetails.fare = 0; // Reset selected fare
 
-                // ±10% boundaries (rounded to nearest 10)
-                const minAllowed = Math.round(calculatedFare * 0.90 / 10) * 10;
-                const maxAllowed = Math.round(calculatedFare * 1.10 / 10) * 10;
-
                 // UPDATED to use corrected distance
-                document.getElementById('tripDistanceDisplay').innerText = dist.toFixed(2) + ' km';
+                document.getElementById('tripDistanceDisplay').innerText = dist.toFixed(2) + ' km'; 
                 document.getElementById('suggestedFareDisplay').innerText = `Rs. ${calculatedFare}`;
-                document.getElementById('fareRangeDisplay').innerText = `Rs. ${minAllowed}–${maxAllowed}`;
-                document.getElementById('fareMinLabel').textContent = `Min Rs.${minAllowed}`;
-                document.getElementById('fareMaxLabel').textContent = `Max Rs.${maxAllowed}`;
-                document.getElementById('fareRangeBarWrap').style.display = 'block';
                 document.getElementById('fareErrorMsg').style.display = 'none';
                 document.getElementById('requestRideBtn').disabled = true;
 
-                // 3 options: -10%, system, +10%
-                const option1 = minAllowed;  // -10%
-                const option2 = calculatedFare; // system (recommended)
-                const option3 = maxAllowed;  // +10%
-
+                // Generate three options based on minimum fare
+                const option1 = calculatedFare; 
+                // Option 2: Min + ~10% (at least 10)
+                const option2 = calculatedFare + Math.max(10, Math.round(calculatedFare * 0.1 / 10) * 10); 
+                // Option 3: Min + ~20% (at least 20)
+                const option3 = calculatedFare + Math.max(20, Math.round(calculatedFare * 0.2 / 10) * 10); 
+                
+                // Ensure options are unique and in ascending order
                 const options = Array.from(new Set([option1, option2, option3])).sort((a, b) => a - b);
-                renderFareOptions(options, calculatedFare, minAllowed, maxAllowed);
+
+                renderFareOptions(options);
             });
         }
         
-        function renderFareOptions(options, systemFare, minFare, maxFare) {
+        function renderFareOptions(options) {
             const container = document.getElementById('fareOptionsContainer');
             container.innerHTML = '';
-            const labels = ['💸 Economy', '⭐ Recommended', '🚀 Premium'];
-            const range = maxFare - minFare || 1;
-
-            options.forEach((fare, idx) => {
+            
+            options.forEach(fare => {
                 const button = document.createElement('button');
                 button.className = 'fare-option-btn';
-                const isRecommended = fare === systemFare;
-                button.innerHTML = `Rs. ${fare}<span class="fob-label">${isRecommended ? '✅ ' : ''}${labels[idx] || ''}</span>`;
+                button.innerText = `Rs. ${fare}`;
                 button.dataset.fare = fare;
-                button.onclick = (e) => selectFareOption(e, systemFare, minFare, maxFare);
-                if (isRecommended) {
-                    button.style.borderColor = '#00C853';
-                }
+                button.onclick = selectFareOption;
                 container.appendChild(button);
             });
         }
         
-        function selectFareOption(event, systemFare, minFare, maxFare) {
+        function selectFareOption(event) {
             document.querySelectorAll('.fare-option-btn').forEach(btn => btn.classList.remove('selected'));
-            const btn = event.target.closest('.fare-option-btn');
-            if (!btn) return;
-            btn.classList.add('selected');
-            tripDetails.fare = parseInt(btn.dataset.fare);
-
-            // Animate range bar pointer
-            if (minFare !== undefined && maxFare !== undefined) {
-                const range = maxFare - minFare || 1;
-                const pct = Math.min(100, Math.max(0, ((tripDetails.fare - minFare) / range) * 100));
-                document.getElementById('fareRangeFill').style.width = pct + '%';
-                document.getElementById('fareRangePointer').style.left = pct + '%';
-            }
-
+            event.target.classList.add('selected');
+            
+            tripDetails.fare = parseInt(event.target.dataset.fare);
+            
             // *** LANGUAGE: Update request button text with selected fare ***
             const btnText = currentLanguage === 'ur' ? `ریکویسٹ کریں (Rs. ${tripDetails.fare})` : `Request ${selectedVehicle.toUpperCase().replace('-', ' ')} (Rs. ${tripDetails.fare})`;
             document.getElementById('requestRideBtn').innerText = btnText;
             document.getElementById('requestRideBtn').disabled = false;
             document.getElementById('fareErrorMsg').style.display = 'none';
         }
-        window.selectFareOption = selectFareOption;
+        window.selectFareOption = selectFareOption; 
+        // --- END MODIFICATION: Fare option logic ---
 
 
         // --- Payment Choice Modal Logic (FIXED: hidePaymentChoiceModal is now global) ---

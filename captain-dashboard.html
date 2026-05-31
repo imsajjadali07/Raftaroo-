@@ -169,85 +169,23 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
 .modal-actions #modalAcceptBtn{flex:1;background:var(--primary);color:#fff;border:none;padding:14px;border-radius:12px;font-weight:700;font-size:15px;cursor:pointer;}
 .modal-actions #modalRejectBtn{background:#F1F5F9;color:var(--text-muted);border:none;padding:14px 18px;border-radius:12px;font-weight:600;font-size:14px;cursor:pointer;}
 
-/* ══════════════════════════════════════════
-   PROFESSIONAL CAPTAIN OFFER MODAL  ±10%
-   ══════════════════════════════════════════ */
-#offer-confirm-modal{position:fixed;inset:0;background:rgba(0,0,0,0.88);backdrop-filter:blur(6px);z-index:11000;display:none;flex-direction:column;justify-content:flex-end;align-items:center;padding:0;}
-.offer-confirm-content{
-    background:var(--white);
-    padding:0 0 env(safe-area-inset-bottom,20px);
-    border-radius:28px 28px 0 0;
-    width:100%;max-width:480px;
-    box-shadow:0 -12px 60px rgba(0,0,0,0.25);
-    animation:slideUp 0.35s cubic-bezier(0.34,1.2,0.64,1);
-    overflow:hidden;
-}
-@keyframes slideUp{from{transform:translateY(80px);opacity:0;}to{transform:translateY(0);opacity:1;}}
-
-/* Modal Top stripe */
-.ofc-stripe{height:5px;background:linear-gradient(90deg,#00C853,#00E676,#00C853);background-size:200% 100%;animation:stripe-anim 1.8s linear infinite;}
-
-/* Header */
-.ofc-header{padding:20px 22px 16px;border-bottom:1px solid #F1F5F9;}
-.ofc-header-row{display:flex;align-items:center;gap:12px;}
-.ofc-icon{width:46px;height:46px;background:var(--primary-light);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:20px;color:var(--primary);flex-shrink:0;}
-.ofc-header h3{font-size:18px;font-weight:900;color:var(--text-main);letter-spacing:-0.3px;}
-.ofc-header p{font-size:12px;color:var(--text-muted);font-weight:600;margin-top:2px;}
-
-/* Summary box */
-.ofc-summary{margin:14px 16px;background:#F8FAFC;border-radius:16px;overflow:hidden;border:1px solid #E2E8F0;}
-.ofc-summary-row{display:flex;justify-content:space-between;align-items:center;padding:12px 16px;border-bottom:1px solid #EEF2F7;font-size:14px;}
-.ofc-summary-row:last-child{border-bottom:none;}
-.ofc-summary-row .osr-label{color:var(--text-muted);font-weight:600;}
-.ofc-summary-row .osr-val{font-weight:800;color:var(--text-main);}
-.ofc-summary-row.net-row{background:#F0FFF4;}
-.ofc-summary-row.net-row .osr-label{color:var(--primary-dark);font-weight:700;}
-.ofc-summary-row.net-row .osr-val{font-size:17px;color:var(--primary);font-weight:900;}
-
-/* ±10% offer picker */
-.ofc-picker-section{padding:0 16px 4px;}
-.ofc-picker-label{font-size:11px;font-weight:800;color:#64748B;text-transform:uppercase;letter-spacing:0.6px;margin-bottom:10px;display:flex;align-items:center;gap:6px;}
-.ofc-picker-label span{background:#FEF3C7;color:#D97706;padding:2px 8px;border-radius:50px;font-size:10px;}
-
-/* Range indicator */
-.ofc-range-bar{position:relative;height:36px;background:#F8FAFC;border:1px solid #E2E8F0;border-radius:12px;margin-bottom:12px;overflow:hidden;display:flex;align-items:center;}
-.ofc-range-zone{position:absolute;top:0;bottom:0;background:linear-gradient(90deg,rgba(0,200,83,0.08),rgba(0,200,83,0.18));border-left:2px dashed rgba(0,200,83,0.35);border-right:2px dashed rgba(0,200,83,0.35);}
-.ofc-range-center{position:absolute;top:0;bottom:0;width:2px;background:rgba(0,200,83,0.5);}
-.ofc-range-labels{position:absolute;inset:0;display:flex;justify-content:space-between;align-items:center;padding:0 10px;font-size:10px;font-weight:700;pointer-events:none;}
-.ofc-range-labels .rl-min{color:#EF4444;}
-.ofc-range-labels .rl-sys{color:#00A040;}
-.ofc-range-labels .rl-max{color:#00A040;}
-
-/* Offer buttons grid */
-.ofc-btn-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:4px;}
-.ofc-offer-btn{
-    padding:14px 6px 10px;
-    background:#F8FAFC;
-    border:2px solid #E2E8F0;
-    border-radius:16px;
-    cursor:pointer;
-    transition:all 0.2s;
-    text-align:center;
-    position:relative;
-}
-.ofc-offer-btn:hover{border-color:var(--primary);background:#F0FFF4;transform:translateY(-2px);box-shadow:0 6px 16px rgba(0,200,83,0.15);}
-.ofc-offer-btn.selected{border-color:var(--primary);background:linear-gradient(135deg,#F0FFF4,#DCFCE7);box-shadow:0 6px 20px rgba(0,200,83,0.25);transform:translateY(-3px);}
-.ofc-offer-btn.recommended::after{content:'⭐';position:absolute;top:-8px;left:50%;transform:translateX(-50%);background:#00C853;color:#fff;font-size:9px;padding:1px 6px;border-radius:50px;white-space:nowrap;font-weight:800;}
-.ofc-offer-btn .ofb-amount{display:block;font-size:17px;font-weight:900;color:#0F172A;letter-spacing:-0.3px;}
-.ofc-offer-btn.selected .ofb-amount{color:var(--primary);}
-.ofc-offer-btn .ofb-diff{display:block;font-size:10px;font-weight:700;margin-top:3px;color:#94A3B8;}
-.ofc-offer-btn.selected .ofb-diff{color:var(--primary-dark);}
-.ofc-offer-btn .ofb-net{display:block;font-size:9px;font-weight:700;margin-top:2px;color:#64748B;}
-
-.ofc-note{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:#94A3B8;background:#F8FAFC;border-radius:8px;padding:7px 10px;margin:4px 16px 14px;}
-.ofc-note i{color:#F59E0B;}
-
-.ofc-actions{padding:0 16px 8px;display:flex;gap:8px;}
-.ofc-send-btn{flex:1;background:linear-gradient(135deg,var(--primary),#00E676);color:#fff;padding:16px;border-radius:14px;font-weight:900;font-size:15px;border:none;cursor:pointer;transition:0.2s;box-shadow:0 6px 20px rgba(0,200,83,0.35);letter-spacing:-0.2px;display:flex;align-items:center;justify-content:center;gap:8px;}
-.ofc-send-btn:hover{background:linear-gradient(135deg,var(--primary-dark),var(--primary));transform:translateY(-1px);}
-.ofc-send-btn:disabled{background:#CBD5E1;box-shadow:none;cursor:not-allowed;transform:none;}
-.ofc-cancel-btn{background:#F1F5F9;color:var(--text-muted);border:none;padding:16px 18px;border-radius:14px;font-weight:700;font-size:14px;cursor:pointer;transition:0.2s;}
-.ofc-cancel-btn:hover{background:#E2E8F0;}
+#offer-confirm-modal{position:fixed;inset:0;background:rgba(0,0,0,0.88);backdrop-filter:blur(4px);z-index:11000;display:none;flex-direction:column;justify-content:flex-end;align-items:center;padding:16px;}
+.offer-confirm-content{background:var(--white);padding:28px 22px 30px;border-radius:24px 24px 16px 16px;width:100%;max-width:440px;box-shadow:var(--shadow-lg);animation:slideUp 0.35s cubic-bezier(0.34,1.2,0.64,1);}
+@keyframes slideUp{from{transform:translateY(60px);opacity:0;}to{transform:translateY(0);opacity:1;}}
+.offer-confirm-header{text-align:center;margin-bottom:20px;}
+.offer-confirm-header h3{font-size:20px;font-weight:800;color:var(--text-main);}
+.offer-confirm-header p{font-size:13px;color:var(--text-muted);margin-top:4px;}
+.offer-summary{background:#F8FAFC;border-radius:12px;padding:16px;margin-bottom:18px;}
+.offer-summary-row{display:flex;justify-content:space-between;align-items:center;padding:8px 0;font-size:14px;border-bottom:1px solid #EEF2F7;}
+.offer-summary-row:last-child{border-bottom:none;font-weight:800;font-size:16px;color:var(--primary);}
+.offer-section-label{font-size:12px;font-weight:700;color:var(--text-muted);text-transform:uppercase;letter-spacing:0.5px;margin-bottom:10px;}
+.offer-button-group{display:flex;gap:8px;margin-bottom:18px;}
+.offer-btn{flex:1;padding:12px 8px;background:#F1F5F9;color:var(--text-main);border:2px solid transparent;border-radius:10px;font-weight:700;font-size:14px;cursor:pointer;transition:0.2s;text-align:center;}
+.offer-btn.selected{border-color:var(--primary);background:var(--primary-light);color:var(--primary-dark);}
+.btn-confirm-offer{background:var(--primary);color:#fff;padding:15px;border-radius:12px;font-weight:800;font-size:15px;border:none;cursor:pointer;width:100%;margin-bottom:10px;transition:0.2s;box-shadow:0 4px 15px var(--primary-glow);}
+.btn-confirm-offer:hover{background:var(--primary-dark);}
+.btn-confirm-offer:disabled{background:#CBD5E1;box-shadow:none;cursor:not-allowed;}
+.btn-cancel-offer{background:transparent;color:var(--text-muted);border:none;width:100%;padding:10px;font-size:14px;font-weight:600;cursor:pointer;}
 
 .approval-alert{background:#FFFBEB;border:1px solid #FDE68A;border-radius:var(--radius);padding:14px 16px;display:flex;align-items:flex-start;gap:10px;margin-bottom:16px;}
 .approval-alert i{color:var(--warning);font-size:18px;flex-shrink:0;margin-top:1px;}
@@ -666,73 +604,31 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
     </div>
 </div>
 
-<!-- PROFESSIONAL OFFER CONFIRM MODAL -->
+<!-- OFFER CONFIRM MODAL -->
 <div id="offer-confirm-modal" style="display:none;">
     <div class="offer-confirm-content">
-        <div class="ofc-stripe"></div>
-
-        <!-- Header -->
-        <div class="ofc-header">
-            <div class="ofc-header-row">
-                <div class="ofc-icon"><i class="fas fa-tag"></i></div>
-                <div>
-                    <h3>Apni Offer Set Karein</h3>
-                    <p>Customer ko offer bhejne se pehle price confirm karein</p>
-                </div>
+        <div class="offer-confirm-header">
+            <h3>Apni Offer Confirm Karein</h3>
+            <p>Customer ko offer bhejne se pehle check karein</p>
+        </div>
+        <div class="offer-summary">
+            <div class="offer-summary-row">
+                <span style="color:var(--text-muted);font-weight:600;">Customer Ki Fare</span>
+                <span id="offerSummaryCustomerFare" style="font-weight:700;">Rs. 0</span>
+            </div>
+            <div class="offer-summary-row">
+                <span style="color:var(--error);font-weight:600;">Platform Commission (10%)</span>
+                <span id="offerSummaryCommission" style="color:var(--error);font-weight:700;">-Rs. 0</span>
+            </div>
+            <div class="offer-summary-row">
+                <span>Aap Ki Net Earning</span>
+                <span id="offerSummaryNetEarnings" style="color:var(--primary);font-weight:700;">Rs. 0</span>
             </div>
         </div>
-
-        <!-- Earnings Summary -->
-        <div class="ofc-summary">
-            <div class="ofc-summary-row">
-                <span class="osr-label">👤 Customer Ki Fare</span>
-                <span class="osr-val" id="offerSummaryCustomerFare">Rs. 0</span>
-            </div>
-            <div class="ofc-summary-row">
-                <span class="osr-label" id="commissionLabel" style="color:#EF4444;">🏦 Platform Commission (10%)</span>
-                <span class="osr-val" id="offerSummaryCommission" style="color:#EF4444;">-Rs. 0</span>
-            </div>
-            <div class="ofc-summary-row net-row">
-                <span class="osr-label">💵 Aap Ki Net Earning</span>
-                <span class="osr-val" id="offerSummaryNetEarnings">Rs. 0</span>
-            </div>
-        </div>
-
-        <!-- Price Picker -->
-        <div class="ofc-picker-section">
-            <div class="ofc-picker-label">
-                <i class="fas fa-sliders-h"></i> Apni Price Select Karein
-                <span>System ±10%</span>
-            </div>
-
-            <!-- Range bar visual -->
-            <div class="ofc-range-bar" id="ofcRangeBar">
-                <div class="ofc-range-zone" id="ofcRangeZone"></div>
-                <div class="ofc-range-center" id="ofcRangeCenter"></div>
-                <div class="ofc-range-labels">
-                    <span class="rl-min" id="ofcMinLabel">Min</span>
-                    <span class="rl-sys" id="ofcSysLabel">⚡ System</span>
-                    <span class="rl-max" id="ofcMaxLabel">Max</span>
-                </div>
-            </div>
-
-            <!-- 3 offer buttons -->
-            <div class="ofc-btn-grid" id="counterOfferOptions"></div>
-        </div>
-
-        <div class="ofc-note">
-            <i class="fas fa-info-circle"></i>
-            System fare se max <strong style="color:#0f172a;">10% kam ya 10% ziyada</strong> offer kar sakte hain
-        </div>
-
-        <div class="ofc-actions">
-            <button class="ofc-send-btn" id="confirmSendOfferBtn" disabled>
-                <i class="fas fa-paper-plane"></i> Customer Ko Offer Bhejein
-            </button>
-            <button class="ofc-cancel-btn" id="cancelConfirmOfferBtn">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
+        <div class="offer-section-label">Apni Price Select Karein</div>
+        <div class="offer-button-group" id="counterOfferOptions"></div>
+        <button class="btn-confirm-offer" id="confirmSendOfferBtn"><i class="fas fa-paper-plane"></i> Offer Bhejein Customer Ko</button>
+        <button class="btn-cancel-offer" id="cancelConfirmOfferBtn">Cancel</button>
     </div>
 </div>
 
@@ -862,48 +758,10 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
 
     function showOfferConfirmationModal(requestId, customerFareStr) {
         offerConfirmRequestId = requestId;
-        const cf = parseInt(customerFareStr);
-        hideRequestModal();
-
-        // ±10% strict limits (rounded to nearest 10)
-        const minOffer = Math.round(cf * 0.90 / 10) * 10;
-        const sysOffer = cf; // system fare = customer fare (exact)
-        const maxOffer = Math.round(cf * 1.10 / 10) * 10;
-
+        const cf = parseInt(customerFareStr); hideRequestModal();
+        const o1=cf, o2=cf+10, o3=cf+20;
         selectedCounterOfferFare = cf;
-
-        // Update range bar labels
-        document.getElementById('ofcMinLabel').textContent = `Rs.${minOffer}`;
-        document.getElementById('ofcSysLabel').textContent = `⚡ Rs.${sysOffer}`;
-        document.getElementById('ofcMaxLabel').textContent = `Rs.${maxOffer}`;
-
-        // Position zone fill on range bar (zone = full allowed range = green zone)
-        // The bar is 100% wide; min=0%, max=100%, center=50%
-        // Just visually show the zone occupies the whole bar since all options are in zone
-        document.getElementById('ofcRangeZone').style.left = '0%';
-        document.getElementById('ofcRangeZone').style.width = '100%';
-        document.getElementById('ofcRangeCenter').style.left = '50%';
-
-        // Generate 3 offer buttons: -10%, system, +10%
-        const options = [minOffer, sysOffer, maxOffer];
-        const labels = ['-10%', '⚡ System', '+10%'];
-        const diffLabels = [`Rs.${minOffer} (kam)`, `Rs.${sysOffer} (normal)`, `Rs.${maxOffer} (ziyada)`];
-
-        const FREE_RIDES_LIMIT = 3;
-        const totalRidesDone = parseInt(captainData.totalRides || 0);
-        const isFreeRide = totalRidesDone < FREE_RIDES_LIMIT;
-
-        document.getElementById('counterOfferOptions').innerHTML = options.map((fare, i) => {
-            const commission = isFreeRide ? 0 : Math.round(fare * 0.10);
-            const net = fare - commission;
-            const isRec = fare === sysOffer;
-            return `<button class="ofc-offer-btn${isRec ? ' recommended selected' : ''}" data-fare="${fare}" onclick="selectCounterOffer(event)">
-                <span class="ofb-amount">Rs. ${fare}</span>
-                <span class="ofb-diff">${labels[i]}</span>
-                <span class="ofb-net">Net: Rs.${net}</span>
-            </button>`;
-        }).join('');
-
+        document.getElementById('counterOfferOptions').innerHTML = `<button class="offer-btn selected" data-fare="${o1}" onclick="selectCounterOffer(event)">Rs. ${o1}</button><button class="offer-btn" data-fare="${o2}" onclick="selectCounterOffer(event)">Rs. ${o2}</button><button class="offer-btn" data-fare="${o3}" onclick="selectCounterOffer(event)">Rs. ${o3}</button>`;
         updateOfferSummary(cf);
         const cb = document.getElementById('confirmSendOfferBtn');
         cb.onclick = () => sendOffer(requestId);
@@ -920,22 +778,21 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         const net = fare - commission;
         document.getElementById('offerSummaryCustomerFare').textContent = 'Rs. ' + fare;
         const commEl = document.getElementById('offerSummaryCommission');
-        const labelEl = document.getElementById('commissionLabel');
         if (isFreeRide) {
             commEl.textContent = 'Rs. 0 (FREE RIDE 🎁)';
             commEl.style.color = 'var(--primary)';
-            if(labelEl) { labelEl.textContent = '🏦 Platform Commission'; labelEl.style.color = 'var(--primary)'; }
+            commEl.previousElementSibling.textContent = 'Platform Commission';
         } else {
             commEl.textContent = '-Rs. ' + commission;
             commEl.style.color = 'var(--error)';
-            if(labelEl) { labelEl.textContent = '🏦 Platform Commission (10%)'; labelEl.style.color = 'var(--error)'; }
+            commEl.previousElementSibling.textContent = 'Platform Commission (10%)';
         }
         document.getElementById('offerSummaryNetEarnings').textContent = 'Rs. ' + net;
     }
 
     window.selectCounterOffer = function(event) {
-        document.querySelectorAll('#counterOfferOptions .ofc-offer-btn').forEach(b=>b.classList.remove('selected'));
-        const btn = event.target.closest('.ofc-offer-btn'); if (!btn) return;
+        document.querySelectorAll('#counterOfferOptions .offer-btn').forEach(b=>b.classList.remove('selected'));
+        const btn = event.target.closest('.offer-btn'); if (!btn) return;
         btn.classList.add('selected');
         const fare = parseInt(btn.dataset.fare);
         updateOfferSummary(fare);
