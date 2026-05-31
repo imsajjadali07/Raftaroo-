@@ -752,7 +752,72 @@ body {
     display: flex;
     justify-content: space-between;
     margin-top: 15px;
-    margin-bottom: 25px;
+    margin-bottom: 10px;
+}
+
+/* Manual Fare Input Styles */
+.manual-fare-toggle {
+    width: 100%;
+    padding: 10px;
+    background: var(--bg-light);
+    color: var(--text-main);
+    border: 2px dashed var(--text-muted);
+    border-radius: 12px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.2s;
+    text-align: center;
+    margin-bottom: 10px;
+}
+.manual-fare-toggle:hover, .manual-fare-toggle.active {
+    border-color: var(--primary);
+    background: #edfff2;
+    color: var(--primary);
+}
+.dark-mode .manual-fare-toggle.active {
+    background: #0f2e1a;
+}
+.manual-fare-input-row {
+    display: none;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 15px;
+    background: var(--bg-light);
+    border: 2px solid var(--primary);
+    border-radius: 12px;
+    padding: 10px 14px;
+}
+.manual-fare-input-row.visible {
+    display: flex;
+}
+.manual-fare-input-row span {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--text-main);
+    flex-shrink: 0;
+}
+#manualFareInput {
+    flex: 1;
+    border: none;
+    outline: none;
+    background: transparent;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--primary);
+    font-family: 'Poppins', sans-serif;
+    min-width: 0;
+}
+.manual-fare-apply-btn {
+    padding: 8px 16px;
+    background: var(--primary);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 13px;
+    cursor: pointer;
+    flex-shrink: 0;
 }
 
 
@@ -1607,6 +1672,20 @@ input:checked + .slider:before {
                 <div class="fare-options-container" id="fareOptionsContainer">
                     <!-- Fare buttons will be dynamically inserted here -->
                 </div>
+
+                <!-- Manual Fare Section -->
+                <button class="manual-fare-toggle" id="manualFareToggle" onclick="toggleManualFare()">
+                    ✏️ Ya khud amount type karein (Custom Fare)
+                </button>
+                <div class="manual-fare-input-row" id="manualFareRow">
+                    <span>Rs.</span>
+                    <input type="number" id="manualFareInput" placeholder="Amount" min="0" inputmode="numeric">
+                    <button class="manual-fare-apply-btn" onclick="applyManualFare()">Apply</button>
+                </div>
+                <small id="manualFareNote" style="color: var(--text-muted); font-size: 11px; text-align: center; display: none; margin-bottom: 8px; display: block; text-align: center;">
+                    Aap system rate se <span id="fareCompareText" style="font-weight:700;"></span> dy rahe hain
+                </small>
+
                 <small id="fareErrorMsg" style="color: var(--error); display: none;" data-lang-key="fareErrorSelect">Please select an offer price before requesting a ride.</small>
             </div>
             <!-- END MODIFICATION -->
@@ -3409,6 +3488,19 @@ input:checked + .slider:before {
                 button.onclick = selectFareOption;
                 container.appendChild(button);
             });
+
+            // Reset manual fare UI when new options are rendered
+            const manualRow = document.getElementById('manualFareRow');
+            const manualToggle = document.getElementById('manualFareToggle');
+            if (manualRow) manualRow.classList.remove('visible');
+            if (manualToggle) {
+                manualToggle.classList.remove('active');
+                manualToggle.innerHTML = '✏️ Ya khud amount type karein (Custom Fare)';
+            }
+            const noteEl = document.getElementById('manualFareNote');
+            if (noteEl) noteEl.style.display = 'none';
+            const inp = document.getElementById('manualFareInput');
+            if (inp) inp.value = '';
         }
         
         function selectFareOption(event) {
@@ -3417,6 +3509,19 @@ input:checked + .slider:before {
             
             tripDetails.fare = parseInt(event.target.dataset.fare);
             
+            // Reset manual fare UI when a preset is selected
+            const manualRow = document.getElementById('manualFareRow');
+            const manualToggle = document.getElementById('manualFareToggle');
+            if (manualRow) manualRow.classList.remove('visible');
+            if (manualToggle) {
+                manualToggle.classList.remove('active');
+                manualToggle.innerHTML = '✏️ Ya khud amount type karein (Custom Fare)';
+            }
+            const noteEl = document.getElementById('manualFareNote');
+            if (noteEl) noteEl.style.display = 'none';
+            const inp = document.getElementById('manualFareInput');
+            if (inp) inp.value = '';
+
             // *** LANGUAGE: Update request button text with selected fare ***
             const btnText = currentLanguage === 'ur' ? `ریکویسٹ کریں (Rs. ${tripDetails.fare})` : `Request ${selectedVehicle.toUpperCase().replace('-', ' ')} (Rs. ${tripDetails.fare})`;
             document.getElementById('requestRideBtn').innerText = btnText;
@@ -3425,6 +3530,77 @@ input:checked + .slider:before {
         }
         window.selectFareOption = selectFareOption; 
         // --- END MODIFICATION: Fare option logic ---
+
+        // --- MANUAL FARE LOGIC ---
+        window.toggleManualFare = function() {
+            const row = document.getElementById('manualFareRow');
+            const toggle = document.getElementById('manualFareToggle');
+            const isVisible = row.classList.contains('visible');
+            if (isVisible) {
+                row.classList.remove('visible');
+                toggle.classList.remove('active');
+                toggle.innerHTML = '✏️ Ya khud amount type karein (Custom Fare)';
+                document.getElementById('manualFareNote').style.display = 'none';
+                document.getElementById('manualFareInput').value = '';
+            } else {
+                row.classList.add('visible');
+                toggle.classList.add('active');
+                toggle.innerHTML = '✖️ Custom fare band karein';
+                document.getElementById('manualFareInput').focus();
+            }
+        };
+
+        window.applyManualFare = function() {
+            const input = document.getElementById('manualFareInput');
+            const val = parseInt(input.value);
+            const minFare = tripDetails.systemMinFare || 0;
+            const errMsg = document.getElementById('fareErrorMsg');
+            const noteEl = document.getElementById('manualFareNote');
+            const compareEl = document.getElementById('fareCompareText');
+
+            if (!val || val < 1) {
+                input.style.borderBottom = '2px solid var(--error)';
+                alert(currentLanguage === 'ur' ? 'درست رقم درج کریں۔' : 'Pehle valid amount likhein.');
+                return;
+            }
+
+            // Deselect all preset buttons
+            document.querySelectorAll('.fare-option-btn').forEach(b => b.classList.remove('selected'));
+
+            tripDetails.fare = val;
+
+            // Show comparison note
+            noteEl.style.display = 'block';
+            if (val < minFare) {
+                compareEl.textContent = `Rs. ${minFare - val} kam (${minFare} base fare se neeche)`;
+                compareEl.style.color = 'var(--error)';
+            } else if (val === minFare) {
+                compareEl.textContent = `base fare ke barabar hain`;
+                compareEl.style.color = 'var(--success)';
+            } else {
+                compareEl.textContent = `Rs. ${val - minFare} zyada dy rahe hain`;
+                compareEl.style.color = 'var(--info)';
+            }
+
+            const btnText = currentLanguage === 'ur'
+                ? `ریکویسٹ کریں (Rs. ${val})`
+                : `Request ${selectedVehicle.toUpperCase().replace('-', ' ')} (Rs. ${val})`;
+            document.getElementById('requestRideBtn').innerText = btnText;
+            document.getElementById('requestRideBtn').disabled = false;
+            errMsg.style.display = 'none';
+
+            input.style.borderBottom = '';
+            // Visual feedback
+            const applyBtn = input.nextElementSibling;
+            const origText = applyBtn.textContent;
+            applyBtn.textContent = '✓ Applied!';
+            applyBtn.style.background = 'var(--success)';
+            setTimeout(() => {
+                applyBtn.textContent = origText;
+                applyBtn.style.background = '';
+            }, 1500);
+        };
+        // --- END MANUAL FARE LOGIC ---
 
 
         // --- Payment Choice Modal Logic (FIXED: hidePaymentChoiceModal is now global) ---
