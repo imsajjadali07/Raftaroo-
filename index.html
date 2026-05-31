@@ -3516,19 +3516,17 @@ input:checked + .slider:before {
                 parcelDetails: tripDetails.parcelDetails || null 
             };
             
-            // If paying by wallet, deduct immediately
-            if (tripDetails.paymentMethod === 'wallet' && currentWalletBalance >= tripDetails.fare) {
-                 const newBalance = currentWalletBalance - tripDetails.fare;
-                 await update(ref(db, `users/${currentUser.uid}`), { wallet: newBalance });
-                 requestData.status = 'bidding'; // Set to bidding to indicate upfront payment made
-                 requestData.walletDeducted = tripDetails.fare; // Store deducted amount
-                 alert(currentLanguage === 'ur' ? `والٹ سے Rs. ${tripDetails.fare} کی کٹوتی کی گئی۔ کیپٹن کی تلاش ہے...` : `Rs. ${tripDetails.fare} deducted from Wallet. Searching for Captain...`);
-            } else if (tripDetails.paymentMethod === 'wallet') {
-                 // Should not happen due to pre-check, but as a safeguard
-                 alert(currentLanguage === 'ur' ? `نا کافی بیلنس۔ دوبارہ کوشش کریں یا نقد ادائیگی کا انتخاب کریں۔` : `Insufficient balance. Try again or choose cash payment.`);
-                 document.getElementById('requestRideBtn').disabled = false;
-                 document.getElementById('requestRideBtn').innerText = currentLanguage === 'ur' ? `ریکویسٹ کریں (Rs. ${tripDetails.fare})` : `Request ${selectedVehicle.toUpperCase().replace('-', ' ')} (Rs. ${tripDetails.fare})`; 
-                 return;
+            // Wallet payment: sirf flag karo, paise tab kato jab captain offer accept ho
+            if (tripDetails.paymentMethod === 'wallet') {
+                 if (currentWalletBalance < tripDetails.fare) {
+                     alert(currentLanguage === 'ur' ? `نا کافی بیلنس۔ دوبارہ کوشش کریں یا نقد ادائیگی کا انتخاب کریں۔` : `Insufficient balance. Try again or choose cash payment.`);
+                     document.getElementById('requestRideBtn').disabled = false;
+                     document.getElementById('requestRideBtn').innerText = currentLanguage === 'ur' ? `ریکویسٹ کریں (Rs. ${tripDetails.fare})` : `Request ${selectedVehicle.toUpperCase().replace('-', ' ')} (Rs. ${tripDetails.fare})`; 
+                     return;
+                 }
+                 // Status 'bidding' — paise abhi nahi katenge, offer accept par katenge
+                 requestData.status = 'bidding';
+                 requestData.walletDeducted = 0; // Abhi kuch nahi kata
             }
 
 
@@ -3609,13 +3607,33 @@ input:checked + .slider:before {
              
              document.getElementById('acceptOfferBtn').disabled = true;
              
+             // Wallet payment: ab final fare kato (jo captain ne accept ki)
+             const reqSnap = await get(ref(db, `requests/${requestId}`));
+             const reqData = reqSnap.val();
+             
+             if (reqData && reqData.paymentMethod === 'wallet') {
+                 // Fresh balance lo Firebase se
+                 const walSnap = await get(ref(db, `users/${currentUser.uid}/wallet`));
+                 const freshBal = walSnap.val() || 0;
+                 
+                 if (freshBal < finalFare) {
+                     alert(currentLanguage === 'ur' ? `والٹ میں ناکافی بیلنس۔ براہ کرم پہلے رقم ڈالیں۔` : `Insufficient wallet balance. Please add funds first.`);
+                     document.getElementById('acceptOfferBtn').disabled = false;
+                     return;
+                 }
+                 
+                 // Exact final fare kato
+                 await update(ref(db, `users/${currentUser.uid}`), { wallet: freshBal - finalFare });
+                 await update(ref(db, `requests/${requestId}`), { walletDeducted: finalFare });
+             }
+             
              // Finalize the request with status 'accepted'
              await update(ref(db, `requests/${requestId}`), {
                  status: 'accepted',
                  fare: finalFare, 
              });
              
-             alert(currentLanguage === 'ur' ? "پیشکش قبول کر لی گئی! آپ کا کیپٹن راستے میں ہے۔" : "Offer Accepted! Your Captain is on the way.");
+             alert(currentLanguage === 'ur' ? `پیشکش قبول کر لی گئی! والٹ سے Rs. ${finalFare} کی کٹوتی کی گئی۔ آپ کا کیپٹن راستے میں ہے۔` : `Offer Accepted! Rs. ${finalFare} deducted from Wallet. Your Captain is on the way.`);
              // The listener redirects to track-live-rider.html
         }
         
@@ -3639,13 +3657,14 @@ input:checked + .slider:before {
                      await update(ref(db, `riders/${assignedRiderId}`), { currentRequestId: null });
                 }
                 
-                // Refund wallet if payment was made upfront
+                // Refund wallet only if payment was actually deducted (i.e., offer was accepted then something went wrong)
                 if (requestData.paymentMethod === 'wallet' && requestData.walletDeducted > 0) {
                      const userRef = ref(db, `users/${currentUser.uid}`);
                      const userSnapshot = await get(userRef);
                      const currentBalance = userSnapshot.val().wallet || 0;
                      const refundBalance = currentBalance + requestData.walletDeducted;
                      await update(userRef, { wallet: refundBalance });
+                     await update(ref(db, `requests/${requestId}`), { walletDeducted: 0 });
                      alert(currentLanguage === 'ur' ? `Rs. ${requestData.walletDeducted} آپ کے والٹ میں واپس کر دیے گئے ہیں۔` : `Rs. ${requestData.walletDeducted} refunded to your Wallet.`);
                 }
 
