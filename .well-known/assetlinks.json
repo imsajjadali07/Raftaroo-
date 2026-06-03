@@ -1,0 +1,8 @@
+[{
+      "relation": ["delegate_permission/common.handle_all_urls"],
+      "target": {
+        "namespace": "android_app",
+        "package_name": "online.raftaroo.www.twa",
+        "sha256_cert_fingerprints": ["B2:D1:F9:86:2C:88:40:0E:EE:B2:CC:89:D8:B7:3A:62:CB:8C:85:11:C1:C2:66:01:61:3C:67:2A:D8:9F:79:DB"]
+      }
+    }]
