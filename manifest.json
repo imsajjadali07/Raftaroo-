@@ -1,19 +1,26 @@
 {
-  "name": "Raftaroo - Pakistan's Fastest Ride",
+  "name": "Raftaroo - Pakistan's Fastest Ridehttps://www.raftaroo.online/manifest.json
   "short_name": "Raftaroo",
   "description": "Pakistan ka sabse tez ride-hailing, delivery aur cargo platform. Abhi book karein!",
   "start_url": "/index.html?source=pwa",
   "scope": "/",
   "display": "standalone",
-  "display_override": ["window-controls-overlay", "standalone", "minimal-ui"],
+  "display_override": [
+    "window-controls-overlay",
+    "standalone",
+    "minimal-ui"
+  ],
   "orientation": "portrait-primary",
   "background_color": "#0A0F1E",
   "theme_color": "#00C853",
   "lang": "ur-PK",
   "dir": "ltr",
-  "categories": ["transportation", "travel", "utilities"],
-  "id": "online.raftaroo.www.twa",
-  "iarc_rating_id": "",
+  "categories": [
+    "transportation",
+    "travel",
+    "utilities"
+  ],
+  "id": "com.raftaroo.app",
   "prefer_related_applications": false,
   "icons": [
     {
@@ -74,29 +81,49 @@
       "name": "Ride Book Karein",
       "short_name": "Book Ride",
       "description": "Abhi ride book karein",
-      "url": "/index.html?action=book-ride&source=shortcut",
-      "icons": [{ "src": "/android-192.png", "sizes": "192x192" }]
+      "url": "/index.html?action=book-ride&amp;source=shortcut",
+      "icons": [
+        {
+          "src": "/android-192.png",
+          "sizes": "192x192"
+        }
+      ]
     },
     {
       "name": "Captain Login",
       "short_name": "Captain",
       "description": "Captain dashboard access karein",
       "url": "/captain-dashboard.html?source=shortcut",
-      "icons": [{ "src": "/android-192.png", "sizes": "192x192" }]
+      "icons": [
+        {
+          "src": "/android-192.png",
+          "sizes": "192x192"
+        }
+      ]
     },
     {
       "name": "Captain Banen",
       "short_name": "Register",
       "description": "Raftaroo Captain ke tor par register karein",
       "url": "/rider-register.html?source=shortcut",
-      "icons": [{ "src": "/android-192.png", "sizes": "192x192" }]
+      "icons": [
+        {
+          "src": "/android-192.png",
+          "sizes": "192x192"
+        }
+      ]
     },
     {
       "name": "Hamare Se Rabta",
       "short_name": "Contact",
       "description": "Support team se rabta karein",
       "url": "/contact-us.html?source=shortcut",
-      "icons": [{ "src": "/android-192.png", "sizes": "192x192" }]
+      "icons": [
+        {
+          "src": "/android-192.png",
+          "sizes": "192x192"
+        }
+      ]
     }
   ],
   "share_target": {
@@ -114,7 +141,6 @@
       "url": "/index.html?protocol=%s"
     }
   ],
-  "related_applications": [],
   "edge_side_panel": {
     "preferred_width": 400
   }
