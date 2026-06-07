@@ -732,9 +732,10 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         currentPendingRequest = request;
         document.getElementById('modalFare').textContent = 'Rs. ' + request.fare;
         document.getElementById('modalMeta').textContent = request.distance + ' km ride \u2022 ' + distanceToPickup.toFixed(1) + ' km door aap se';
+        const modalRideLabel = request.tripMode === 'delivery' ? 'DELIVERY' : (request.vehicle || request.service || 'N/A').toUpperCase().replace(/\/SMALL DELIVERY|\/DELIVERY/gi, '').trim();
         document.getElementById('modalDetails').innerHTML = `
             <div class="modal-detail-row"><span class="label">🧑 Customer</span><span class="value">${request.name}</span></div>
-            <div class="modal-detail-row"><span class="label">🚘 Ride Type</span><span class="value">${(request.service||request.vehicle||'N/A').toUpperCase()}</span></div>
+            <div class="modal-detail-row"><span class="label">🚘 Ride Type</span><span class="value">${modalRideLabel}</span></div>
             <div class="modal-detail-row"><span class="label">📍 Pickup</span><span class="value">${request.pickup.address.substring(0,35)}...</span></div>
             <div class="modal-detail-row"><span class="label">🏁 Dropoff</span><span class="value">${request.destination.address.substring(0,35)}...</span></div>`;
         const tb = document.getElementById('modalTimerBar'); tb.style.animation='none'; tb.offsetHeight; tb.style.animation='timer-shrink 60s linear forwards';
@@ -1138,7 +1139,7 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         filtered.forEach(req=>{
             const el=document.createElement('div'); el.className='request-card';
             const dc=req.distanceToPickup!==null?'<span class="distance-chip"><i class="fas fa-location-dot"></i>'+req.distanceToPickup.toFixed(1)+' km door</span>':'';
-            const isDelivery = req.tripMode === 'delivery';
+            const isDelivery = req.tripMode === 'delivery' || (req.service && req.service.toLowerCase().includes('delivery'));
             const pd = req.parcelDetails;
             const deliveryBadge = isDelivery ? '<span style="background:#FFF3CD;color:#B45309;font-size:11px;font-weight:800;padding:3px 9px;border-radius:6px;display:inline-flex;align-items:center;gap:4px;"><i class="fas fa-box"></i> DELIVERY</span>' : '';
             const parcelBlock = (isDelivery && pd) ? `<div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:8px;padding:10px 12px;margin:8px 0;font-size:12px;">
@@ -1150,7 +1151,8 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
                     <div><b>Receiver Ph:</b> ${pd.recipientPhone}</div>
                 </div>
             </div>` : (isDelivery ? '<div style="background:#FEF9C3;border-radius:8px;padding:8px 12px;font-size:12px;color:#B45309;margin:8px 0;"><i class="fas fa-exclamation-circle"></i> Parcel details milti hain confirm ke baad</div>' : '');
-            el.innerHTML='<div class="request-card-top"><div><div class="request-card-type">'+(req.vehicle||req.service||'N/A').toUpperCase()+'</div></div><div class="request-card-fare">Rs. '+req.fare+' <span>offered</span></div></div><div class="request-detail customer"><i class="fas fa-user"></i><div><div class="detail-label">Customer</div><div class="detail-text">'+req.name+'</div></div></div><div class="request-detail pickup"><i class="fas fa-circle-dot"></i><div><div class="detail-label">Pickup (Sender)</div><div class="detail-text">'+req.pickup.address.substring(0,50)+'...</div></div></div><div class="request-detail dropoff"><i class="fas fa-location-dot"></i><div><div class="detail-label">'+(isDelivery?'Delivery Address':'Dropoff')+'</div><div class="detail-text">'+req.destination.address.substring(0,50)+'...</div></div></div>'+parcelBlock+'<div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;"><div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;"><span style="background:#F1F5F9;color:var(--text-muted);font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;"><i class="fas fa-road"></i> '+req.distance+' km '+(isDelivery?'delivery':'ride')+'</span>'+deliveryBadge+dc+'</div></div><div class="request-actions"><button class="btn-accept" data-id="'+req.id+'" data-fare="'+req.fare+'" onclick="openRidePreview(this.dataset.id,this.dataset.fare)"><i class="fas fa-map-marked-alt"></i> Map Pe Dekhen &amp; Offer</button><button class="btn-reject" onclick="this.closest(\'.request-card\').remove()">&#x2715;</button></div>';
+            const cardTypeLabel = isDelivery ? 'DELIVERY' : (req.vehicle||req.service||'N/A').toUpperCase().replace(/\/SMALL DELIVERY|\/DELIVERY/gi,'').trim();
+            el.innerHTML='<div class="request-card-top"><div><div class="request-card-type">'+cardTypeLabel+'</div></div><div class="request-card-fare">Rs. '+req.fare+' <span>offered</span></div></div><div class="request-detail customer"><i class="fas fa-user"></i><div><div class="detail-label">Customer</div><div class="detail-text">'+req.name+'</div></div></div><div class="request-detail pickup"><i class="fas fa-circle-dot"></i><div><div class="detail-label">Pickup (Sender)</div><div class="detail-text">'+req.pickup.address.substring(0,50)+'...</div></div></div><div class="request-detail dropoff"><i class="fas fa-location-dot"></i><div><div class="detail-label">'+(isDelivery?'Delivery Address':'Dropoff')+'</div><div class="detail-text">'+req.destination.address.substring(0,50)+'...</div></div></div>'+parcelBlock+'<div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;"><div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;"><span style="background:#F1F5F9;color:var(--text-muted);font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;"><i class="fas fa-road"></i> '+req.distance+' km '+(isDelivery?'delivery':'ride')+'</span>'+deliveryBadge+dc+'</div></div><div class="request-actions"><button class="btn-accept" data-id="'+req.id+'" data-fare="'+req.fare+'" onclick="openRidePreview(this.dataset.id,this.dataset.fare)"><i class="fas fa-map-marked-alt"></i> Map Pe Dekhen &amp; Offer</button><button class="btn-reject" onclick="this.closest(\'.request-card\').remove()">&#x2715;</button></div>';
             con.appendChild(el);
         });
     }
@@ -1193,7 +1195,7 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         const name = req.name || 'Passenger';
         const rating = parseFloat(req.passengerRating || req.customerRating || 4.8).toFixed(1);
         const trips = parseInt(req.passengerTrips || req.totalRides || 0);
-        const vehicle = (req.vehicle || req.service || 'Motorcycle').toUpperCase();
+        const vehicle = req.tripMode === 'delivery' ? 'DELIVERY' : (req.vehicle || req.service || 'Motorcycle').toUpperCase().replace(/\/SMALL DELIVERY|\/DELIVERY/gi, '').trim();
 
         document.getElementById('rpm-avatar-letter').textContent = name.charAt(0).toUpperCase();
         document.getElementById('rpm-name').textContent = name;
@@ -1226,7 +1228,7 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         document.getElementById('rpm-dest-addr').textContent = req.destination?.address || '—';
 
         // Delivery section
-        const isDelivery = req.tripMode === 'delivery';
+        const isDelivery = req.tripMode === 'delivery' || (req.service && req.service.toLowerCase().includes('delivery'));
         const delivSec = document.getElementById('rpm-delivery-section');
         if (isDelivery && req.parcelDetails) {
             const pd = req.parcelDetails;
