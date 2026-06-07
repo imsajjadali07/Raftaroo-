@@ -825,6 +825,13 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
             const status = snap.val();
             if (status==='accepted') {
                 if (offerAcceptanceListener) { offerAcceptanceListener(); offerAcceptanceListener=null; }
+                // ── SW Notification: passenger ne offer accept ki ──
+                if (window.RaftarooNotify) {
+                    get(ref(db,'requests/'+requestId)).then(s => {
+                        const rd = s.val() || {};
+                        RaftarooNotify.passengerAccepted(rd.name || 'Customer', requestId);
+                    });
+                }
                 alert("🎉 Customer ne aap ki offer accept kar li! Ride page par ja rahe hain.");
                 stopRingtone(); window.location.href='captain-active-ride.html?rideId='+requestId;
             } else if (status==='pending'||status==='cancelled'||status==='CancelledByCustomer') {
@@ -1121,7 +1128,18 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
                     }
                 });
             }
-            if(closest&&!captainData.currentRequestId&&captainData.status==='active'&&requestModalOverlay.style.display!=='flex') showRequestModal(closest,minD);
+            if(closest&&!captainData.currentRequestId&&captainData.status==='active'&&requestModalOverlay.style.display!=='flex') {
+                showRequestModal(closest,minD);
+                // ── SW Notification: naya ride request (screen off ho tab bhi) ──
+                if (window.RaftarooNotify) {
+                    RaftarooNotify.rideRequest(
+                        closest.fare,
+                        closest.distance,
+                        closest.name || 'Customer',
+                        closest.id
+                    );
+                }
+            }
             else if(!closest) hideRequestModal();
             renderIncomingRequests(pending);
         });
@@ -1358,6 +1376,7 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
     };
 </script>
 
+<script src="/raftaroo-notify.js"></script>
 <script>
 if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").then(()=>console.log("SW Registered")).catch(e=>console.log(e));
 </script>
