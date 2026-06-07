@@ -1071,6 +1071,13 @@ html, body { height:100%; overflow:hidden; background:var(--bg); color:var(--tex
             msg.textContent = '✅ Captain Aa Gaya!';
             sub.textContent = 'Please pickup point par tashire lao.';
             cancelBtn.style.display='flex';
+            // ── SW Notification: captain pahunch gaya ──
+            if (window.RaftarooNotify && !window._arrivedNotifSent) {
+                window._arrivedNotifSent = true;
+                RaftarooNotify.captainArriving(
+                    request.riderName || 'Captain', '0', bookingId
+                );
+            }
         } else if (request.status==='in_progress') {
             banner.classList.add('status-in_progress');
             icon.className='fas fa-route';
@@ -1097,6 +1104,11 @@ html, body { height:100%; overflow:hidden; background:var(--bg); color:var(--tex
             } else if (request.status==='completed') {
                 document.getElementById('map-controls-container').style.display='none';
                 document.getElementById('floating-actions').style.display='none';
+                // ── SW Notification: ride complete ──
+                if (window.RaftarooNotify && !window._completeNotifSent) {
+                    window._completeNotifSent = true;
+                    RaftarooNotify.rideComplete(request.fare, bookingId);
+                }
                 if (!request.isRated) showRatingModal(request);
                 else returnToDashboard();
             } else if (['pending','counter_offered'].includes(request.status)) {
@@ -1697,5 +1709,6 @@ if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").catc
 
 })();
 </script>
+<script src="/raftaroo-notify.js"></script>
 </body>
 </html>
