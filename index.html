@@ -2515,6 +2515,14 @@ input:checked + .slider:before {
                      if (activeRequestData.status === 'counter_offered') {
                          document.getElementById('waiting-for-captain').style.display = 'none';
                          showCaptainOfferModal(activeBookingId, activeRequestData);
+                         // ── SW Notification: captain ne counter offer bheja ──
+                         if (window.RaftarooNotify) {
+                             RaftarooNotify.counterOffer(
+                                 activeRequestData.riderName || 'Captain',
+                                 activeRequestData.fare,
+                                 activeBookingId
+                             );
+                         }
                      } else if (activeRequestData.status === 'pending') {
                          document.getElementById('waiting-for-captain').style.display = 'flex'; // Now a visible semi-transparent overlay
                          document.getElementById('waitingFareDisplay').innerText = activeRequestData.fare;
@@ -4200,5 +4208,6 @@ onMessage(_msg, payload => {
   };
 })();
 </script>
+<script src="/raftaroo-notify.js"></script>
 </body>
 </html>
