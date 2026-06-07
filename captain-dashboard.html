@@ -825,13 +825,6 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
             const status = snap.val();
             if (status==='accepted') {
                 if (offerAcceptanceListener) { offerAcceptanceListener(); offerAcceptanceListener=null; }
-                // ── SW Notification: passenger ne offer accept ki ──
-                if (window.RaftarooNotify) {
-                    get(ref(db,'requests/'+requestId)).then(s => {
-                        const rd = s.val() || {};
-                        RaftarooNotify.passengerAccepted(rd.name || 'Customer', requestId);
-                    });
-                }
                 alert("🎉 Customer ne aap ki offer accept kar li! Ride page par ja rahe hain.");
                 stopRingtone(); window.location.href='captain-active-ride.html?rideId='+requestId;
             } else if (status==='pending'||status==='cancelled'||status==='CancelledByCustomer') {
@@ -1128,18 +1121,7 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
                     }
                 });
             }
-            if(closest&&!captainData.currentRequestId&&captainData.status==='active'&&requestModalOverlay.style.display!=='flex') {
-                showRequestModal(closest,minD);
-                // ── SW Notification: naya ride request (screen off ho tab bhi) ──
-                if (window.RaftarooNotify) {
-                    RaftarooNotify.rideRequest(
-                        closest.fare,
-                        closest.distance,
-                        closest.name || 'Customer',
-                        closest.id
-                    );
-                }
-            }
+            if(closest&&!captainData.currentRequestId&&captainData.status==='active'&&requestModalOverlay.style.display!=='flex') showRequestModal(closest,minD);
             else if(!closest) hideRequestModal();
             renderIncomingRequests(pending);
         });
@@ -1156,7 +1138,7 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         filtered.forEach(req=>{
             const el=document.createElement('div'); el.className='request-card';
             const dc=req.distanceToPickup!==null?'<span class="distance-chip"><i class="fas fa-location-dot"></i>'+req.distanceToPickup.toFixed(1)+' km door</span>':'';
-            const isDelivery = req.tripMode === 'delivery' || (req.service && req.service.toLowerCase().includes('delivery'));
+            const isDelivery = req.tripMode === 'delivery';
             const pd = req.parcelDetails;
             const deliveryBadge = isDelivery ? '<span style="background:#FFF3CD;color:#B45309;font-size:11px;font-weight:800;padding:3px 9px;border-radius:6px;display:inline-flex;align-items:center;gap:4px;"><i class="fas fa-box"></i> DELIVERY</span>' : '';
             const parcelBlock = (isDelivery && pd) ? `<div style="background:#FFFBEB;border:1px solid #FDE68A;border-radius:8px;padding:10px 12px;margin:8px 0;font-size:12px;">
@@ -1244,7 +1226,7 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         document.getElementById('rpm-dest-addr').textContent = req.destination?.address || '—';
 
         // Delivery section
-        const isDelivery = req.tripMode === 'delivery' || (req.service && req.service.toLowerCase().includes('delivery'));
+        const isDelivery = req.tripMode === 'delivery';
         const delivSec = document.getElementById('rpm-delivery-section');
         if (isDelivery && req.parcelDetails) {
             const pd = req.parcelDetails;
@@ -1376,7 +1358,6 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
     };
 </script>
 
-<script src="/raftaroo-notify.js"></script>
 <script>
 if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").then(()=>console.log("SW Registered")).catch(e=>console.log(e));
 </script>
