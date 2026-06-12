@@ -1306,6 +1306,7 @@ function renderHistory(filter){
 
         const el=document.createElement('div');
         el.className=`ride-card ${cardClass}`;
+        const alreadyReported = ride.captainReported === true;
         el.innerHTML=`
             <div class="ride-card-head">
                 <div class="ride-date">${dateStr}</div>
@@ -1322,10 +1323,177 @@ function renderHistory(filter){
             <div class="ride-card-foot">
                 ${fareSection}
                 ${isComp?`<span class="ride-tag"><i class="fas fa-road"></i> ${ride.distance||'—'} km</span>`:''}
+            </div>
+            <div style="margin-top:10px;text-align:right;">
+                ${alreadyReported
+                    ? `<span style="font-size:12px;color:var(--text-muted);font-weight:600;">✓ Reported</span>`
+                    : `<button onclick="openCaptainReportModal('${ride.id||''}')" style="background:none;border:1px solid var(--error,#ef4444);color:var(--error,#ef4444);border-radius:8px;padding:5px 12px;font-size:12px;font-weight:700;cursor:pointer;">⚑ Masla Report Karein</button>`
+                }
             </div>`;
         list.appendChild(el);
     });
 }
+</script>
+
+<!-- ═══════════════════════════════════════════════════════
+     REPORT ISSUE MODAL  (Captain side — captain-profile.html)
+═══════════════════════════════════════════════════════ -->
+<div id="captainReportModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:9999;align-items:flex-end;justify-content:center;">
+  <div style="background:var(--bg-card,#1e1e2e);border-radius:20px 20px 0 0;width:100%;max-width:480px;padding:24px 20px 36px;animation:capRepSlide 0.3s ease;">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <h3 style="margin:0;font-size:17px;font-weight:800;">⚑ Ride Report</h3>
+      <button onclick="closeCaptainReportModal()" style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--text-muted);">✕</button>
+    </div>
+    <p style="font-size:13px;color:var(--text-muted);margin:0 0 14px;">Koi masla hua? Humein batayein — hum jald review karenge.</p>
+
+    <div style="margin-bottom:14px;">
+      <p style="font-size:11px;font-weight:700;margin:0 0 8px;color:var(--text-muted);letter-spacing:0.5px;">MASLE KI NAWIYAT</p>
+      <div id="capReportCatRow" style="display:flex;flex-wrap:wrap;gap:8px;">
+        <button class="cap-rep-chip" data-cat="passenger_behavior">😠 Passenger Ka Sulook</button>
+        <button class="cap-rep-chip" data-cat="wrong_location">📍 Ghalat Location</button>
+        <button class="cap-rep-chip" data-cat="fare_dispute">💰 Fare Ka Masla</button>
+        <button class="cap-rep-chip" data-cat="no_show">🚫 Passenger Nahi Aaya</button>
+        <button class="cap-rep-chip" data-cat="safety">🚨 Safety</button>
+        <button class="cap-rep-chip" data-cat="payment_issue">💳 Payment Masla</button>
+        <button class="cap-rep-chip" data-cat="other">📝 Aur Kuch</button>
+      </div>
+    </div>
+
+    <textarea id="capReportDesc" placeholder="Thori detail batayein..." rows="3"
+      style="width:100%;border-radius:10px;border:1px solid var(--border,#333);background:var(--bg-page,#131320);color:var(--text-main,#fff);padding:10px 12px;font-size:13px;resize:none;box-sizing:border-box;margin-bottom:14px;font-family:inherit;"></textarea>
+
+    <button id="capSubmitReportBtn" onclick="submitCaptainReport()"
+      style="width:100%;background:#ef4444;color:#fff;border:none;border-radius:12px;padding:13px;font-size:15px;font-weight:800;cursor:pointer;">
+      Report Submit Karein
+    </button>
+    <p id="capReportStatus" style="text-align:center;font-size:12px;margin-top:10px;color:var(--text-muted);min-height:18px;"></p>
+  </div>
+</div>
+
+<style>
+.cap-rep-chip {
+  background: var(--bg-page, #131320);
+  border: 1px solid var(--border, #333);
+  color: var(--text-main, #fff);
+  border-radius: 20px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.cap-rep-chip.active {
+  background: var(--primary, #8b5cf6);
+  border-color: var(--primary, #8b5cf6);
+  color: #fff;
+}
+@keyframes capRepSlide {
+  from { transform: translateY(60px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+</style>
+
+<script type="module">
+import { getDatabase, ref, push, update }
+    from "https://www.gstatic.com/firebasejs/12.8.0/firebase-database.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+import { getApps, initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+
+const _crCfg = {
+  apiKey: "AIzaSyBBS7jGzuVlTIIeN9VFBxpwHkNf-mIRzDo",
+  authDomain: "raftaroo-9ce8d.firebaseapp.com",
+  databaseURL: "https://raftaroo-9ce8d-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "raftaroo-9ce8d",
+  storageBucket: "raftaroo-9ce8d.firebasestorage.app",
+  messagingSenderId: "773738074182",
+  appId: "1:773738074182:web:b7a873959c7ab8edc0ba47"
+};
+const _crApp  = getApps().find(a => a.name === 'cap-rep') || initializeApp(_crCfg, 'cap-rep');
+const _crDb   = getDatabase(_crApp);
+const _crAuth = getAuth(_crApp);
+
+let _crRideId = null;
+let _crCat    = null;
+
+window.openCaptainReportModal = function(rideId) {
+  _crRideId = rideId;
+  _crCat    = null;
+  document.getElementById('capReportDesc').value = '';
+  document.getElementById('capReportStatus').textContent = '';
+  document.getElementById('capSubmitReportBtn').disabled = false;
+  document.getElementById('capSubmitReportBtn').textContent = 'Report Submit Karein';
+  document.querySelectorAll('.cap-rep-chip').forEach(c => c.classList.remove('active'));
+  document.getElementById('captainReportModal').style.display = 'flex';
+};
+
+window.closeCaptainReportModal = function() {
+  document.getElementById('captainReportModal').style.display = 'none';
+};
+
+document.getElementById('captainReportModal').addEventListener('click', function(e){
+  if (e.target === this) closeCaptainReportModal();
+});
+
+document.getElementById('capReportCatRow').addEventListener('click', function(e){
+  const chip = e.target.closest('.cap-rep-chip');
+  if (!chip) return;
+  document.querySelectorAll('.cap-rep-chip').forEach(c => c.classList.remove('active'));
+  chip.classList.add('active');
+  _crCat = chip.dataset.cat;
+});
+
+window.submitCaptainReport = async function() {
+  const desc     = document.getElementById('capReportDesc').value.trim();
+  const statusEl = document.getElementById('capReportStatus');
+  const btn      = document.getElementById('capSubmitReportBtn');
+
+  if (!_crCat) {
+    statusEl.textContent = '⚠️ Pehle masle ki nawiyat chunein.';
+    statusEl.style.color = '#ef4444';
+    return;
+  }
+  if (!desc) {
+    statusEl.textContent = '⚠️ Thori detail zaroor likhein.';
+    statusEl.style.color = '#ef4444';
+    return;
+  }
+
+  const user = _crAuth.currentUser;
+  if (!user) { statusEl.textContent = 'Login session expire ho gaya.'; return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Submit ho raha hai...';
+
+  try {
+    const newRef = push(ref(_crDb, 'reports'));
+    await update(newRef, {
+      rideId:        _crRideId,
+      reporterId:    user.uid,
+      reporterEmail: user.email || '',
+      reporterRole:  'captain',
+      category:      _crCat,
+      description:   desc,
+      status:        'pending',
+      createdAt:     new Date().toISOString()
+    });
+    await update(ref(_crDb, `requests/${_crRideId}`), { captainReported: true });
+
+    statusEl.textContent = '✅ Report submit ho gayi! Hum jald review karenge.';
+    statusEl.style.color = '#22c55e';
+    btn.textContent = '✓ Submit Ho Gaya';
+    setTimeout(() => {
+      closeCaptainReportModal();
+      // re-render history to reflect reported state
+      if (typeof renderHistory === 'function') renderHistory(window._currentFilter || 'all');
+    }, 1800);
+  } catch(err) {
+    console.error(err);
+    statusEl.textContent = '❌ Error aayi. Dobara koshish karein.';
+    statusEl.style.color = '#ef4444';
+    btn.disabled = false;
+    btn.textContent = 'Report Submit Karein';
+  }
+};
 </script>
 </body>
 </html>
