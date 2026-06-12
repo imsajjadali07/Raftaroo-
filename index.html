@@ -2515,14 +2515,6 @@ input:checked + .slider:before {
                      if (activeRequestData.status === 'counter_offered') {
                          document.getElementById('waiting-for-captain').style.display = 'none';
                          showCaptainOfferModal(activeBookingId, activeRequestData);
-                         // ── SW Notification: captain ne counter offer bheja ──
-                         if (window.RaftarooNotify) {
-                             RaftarooNotify.counterOffer(
-                                 activeRequestData.riderName || 'Captain',
-                                 activeRequestData.fare,
-                                 activeBookingId
-                             );
-                         }
                      } else if (activeRequestData.status === 'pending') {
                          document.getElementById('waiting-for-captain').style.display = 'flex'; // Now a visible semi-transparent overlay
                          document.getElementById('waitingFareDisplay').innerText = activeRequestData.fare;
@@ -3731,6 +3723,10 @@ input:checked + .slider:before {
                  const fareText = currentLanguage === 'ur' ? 'کرایہ:' : 'Fare:';
 
 
+                 const reportBtnText = currentLanguage === 'ur' ? '⚑ مسئلہ رپورٹ کریں' : '⚑ Report Issue';
+                 const alreadyReported = req.customerReported === true;
+                 const reportedText = currentLanguage === 'ur' ? '✓ رپورٹ ہو گئی' : '✓ Reported';
+
                  card.innerHTML = `
                      <div class="ride-card-header">
                          <span>${req.service} - ${req.vehicle.toUpperCase().replace('-', ' ')}</span>
@@ -3741,6 +3737,12 @@ input:checked + .slider:before {
                          <p><strong>${toText}</strong> ${req.destination.address.substring(0, 30)}...</p>
                          <p><strong>${fareText}</strong> Rs. ${req.fare}</p>
                          <small style="color: var(--text-muted);">${date}</small>
+                     </div>
+                     <div style="margin-top:10px;text-align:right;">
+                         ${alreadyReported
+                             ? `<span style="font-size:12px;color:var(--text-muted);font-weight:600;">${reportedText}</span>`
+                             : `<button onclick="openReportModal('${req.id}','${(req.service||'').replace(/'/g,"\\'")}','customer')" style="background:none;border:1px solid var(--error);color:var(--error);border-radius:8px;padding:5px 12px;font-size:12px;font-weight:700;cursor:pointer;">${reportBtnText}</button>`
+                         }
                      </div>
                  `;
                  historyList.appendChild(card);
@@ -4208,6 +4210,165 @@ onMessage(_msg, payload => {
   };
 })();
 </script>
-<script src="/raftaroo-notify.js"></script>
+
+<!-- ═══════════════════════════════════════════════════════
+     REPORT ISSUE MODAL  (Passenger side — index.html)
+═══════════════════════════════════════════════════════ -->
+<div id="reportModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:9999;align-items:flex-end;justify-content:center;">
+  <div style="background:var(--surface,#1e1e2e);border-radius:20px 20px 0 0;width:100%;max-width:480px;padding:24px 20px 36px;animation:repSlideUp 0.3s ease;" id="reportModalInner">
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <h3 style="margin:0;font-size:17px;font-weight:800;">⚑ Ride Report</h3>
+      <button onclick="closeReportModal()" style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--text-muted,#888);">✕</button>
+    </div>
+    <p style="font-size:13px;color:var(--text-muted,#888);margin:0 0 14px;">Koi masla hua? Humein batayein — hum jald review karenge.</p>
+
+    <div style="margin-bottom:14px;">
+      <p style="font-size:11px;font-weight:700;margin:0 0 8px;color:var(--text-muted,#888);letter-spacing:0.5px;">MASLE KI NAWIYAT</p>
+      <div id="reportCategoryRow" style="display:flex;flex-wrap:wrap;gap:8px;">
+        <button class="rep-chip" data-cat="overcharging">💰 Ziyada Charge</button>
+        <button class="rep-chip" data-cat="rude_behavior">😠 Bura Sulook</button>
+        <button class="rep-chip" data-cat="route_issue">🗺️ Ghalat Rasta</button>
+        <button class="rep-chip" data-cat="safety">🚨 Safety</button>
+        <button class="rep-chip" data-cat="vehicle_issue">🚗 Gaadi Ka Masla</button>
+        <button class="rep-chip" data-cat="other">📝 Aur Kuch</button>
+      </div>
+    </div>
+
+    <textarea id="reportDesc" placeholder="Thori detail batayein..." rows="3"
+      style="width:100%;border-radius:10px;border:1px solid var(--border,#333);background:var(--surface2,#2a2a3e);color:var(--text,#fff);padding:10px 12px;font-size:13px;resize:none;box-sizing:border-box;margin-bottom:14px;font-family:inherit;"></textarea>
+
+    <button id="submitReportBtn" onclick="submitReport()"
+      style="width:100%;background:#ef4444;color:#fff;border:none;border-radius:12px;padding:13px;font-size:15px;font-weight:800;cursor:pointer;">
+      Report Submit Karein
+    </button>
+    <p id="reportStatus" style="text-align:center;font-size:12px;margin-top:10px;color:var(--text-muted,#888);min-height:18px;"></p>
+  </div>
+</div>
+
+<style>
+.rep-chip {
+  background: var(--surface2, #2a2a3e);
+  border: 1px solid var(--border, #444);
+  color: var(--text, #fff);
+  border-radius: 20px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.rep-chip.active {
+  background: var(--primary, #7c3aed);
+  border-color: var(--primary, #7c3aed);
+  color: #fff;
+}
+@keyframes repSlideUp {
+  from { transform: translateY(60px); opacity: 0; }
+  to   { transform: translateY(0);    opacity: 1; }
+}
+</style>
+
+<script type="module">
+import { getDatabase, ref, push, update }
+    from "https://www.gstatic.com/firebasejs/12.8.0/firebase-database.js";
+import { getAuth } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+import { getApps, initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+
+const _rCfg = {
+  apiKey: "AIzaSyBBS7jGzuVlTIIeN9VFBxpwHkNf-mIRzDo",
+  authDomain: "raftaroo-9ce8d.firebaseapp.com",
+  databaseURL: "https://raftaroo-9ce8d-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "raftaroo-9ce8d",
+  storageBucket: "raftaroo-9ce8d.firebasestorage.app",
+  messagingSenderId: "773738074182",
+  appId: "1:773738074182:web:b7a873959c7ab8edc0ba47"
+};
+const _rApp  = getApps().find(a => a.name === 'rep-mod') || initializeApp(_rCfg, 'rep-mod');
+const _rDb   = getDatabase(_rApp);
+const _rAuth = getAuth(_rApp);
+
+let _repRideId = null;
+let _selCat    = null;
+
+window.openReportModal = function(rideId) {
+  _repRideId = rideId;
+  _selCat    = null;
+  document.getElementById('reportDesc').value = '';
+  document.getElementById('reportStatus').textContent = '';
+  document.getElementById('submitReportBtn').disabled = false;
+  document.getElementById('submitReportBtn').textContent = 'Report Submit Karein';
+  document.querySelectorAll('.rep-chip').forEach(c => c.classList.remove('active'));
+  const m = document.getElementById('reportModal');
+  m.style.display = 'flex';
+};
+
+window.closeReportModal = function() {
+  document.getElementById('reportModal').style.display = 'none';
+};
+
+document.getElementById('reportModal').addEventListener('click', function(e){
+  if (e.target === this) closeReportModal();
+});
+
+document.getElementById('reportCategoryRow').addEventListener('click', function(e){
+  const chip = e.target.closest('.rep-chip');
+  if (!chip) return;
+  document.querySelectorAll('.rep-chip').forEach(c => c.classList.remove('active'));
+  chip.classList.add('active');
+  _selCat = chip.dataset.cat;
+});
+
+window.submitReport = async function() {
+  const desc    = document.getElementById('reportDesc').value.trim();
+  const statusEl = document.getElementById('reportStatus');
+  const btn      = document.getElementById('submitReportBtn');
+
+  if (!_selCat) {
+    statusEl.textContent = '⚠️ Pehle masle ki nawiyat chunein.';
+    statusEl.style.color = '#ef4444';
+    return;
+  }
+  if (!desc) {
+    statusEl.textContent = '⚠️ Thori detail zaroor likhein.';
+    statusEl.style.color = '#ef4444';
+    return;
+  }
+
+  const user = _rAuth.currentUser;
+  if (!user) { statusEl.textContent = 'Login session expire ho gaya.'; return; }
+
+  btn.disabled = true;
+  btn.textContent = 'Submit ho raha hai...';
+
+  try {
+    const newRef = push(ref(_rDb, 'reports'));
+    await update(newRef, {
+      rideId:        _repRideId,
+      reporterId:    user.uid,
+      reporterEmail: user.email || '',
+      reporterRole:  'customer',
+      category:      _selCat,
+      description:   desc,
+      status:        'pending',
+      createdAt:     new Date().toISOString()
+    });
+    await update(ref(_rDb, `requests/${_repRideId}`), { customerReported: true });
+
+    statusEl.textContent = '✅ Report submit ho gayi! Hum jald review karenge.';
+    statusEl.style.color = '#22c55e';
+    btn.textContent = '✓ Submit Ho Gaya';
+    setTimeout(() => {
+      closeReportModal();
+      if (typeof loadRideHistory === 'function') loadRideHistory();
+    }, 1800);
+  } catch(err) {
+    console.error(err);
+    statusEl.textContent = '❌ Error aayi. Dobara koshish karein.';
+    statusEl.style.color = '#ef4444';
+    btn.disabled = false;
+    btn.textContent = 'Report Submit Karein';
+  }
+};
+</script>
 </body>
 </html>
