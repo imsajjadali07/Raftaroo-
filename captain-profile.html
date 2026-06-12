@@ -1338,16 +1338,16 @@ function renderHistory(filter){
 <!-- ═══════════════════════════════════════════════════════
      REPORT ISSUE MODAL  (Captain side — captain-profile.html)
 ═══════════════════════════════════════════════════════ -->
-<div id="captainReportModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.65);z-index:9999;align-items:flex-end;justify-content:center;">
-  <div style="background:var(--bg-card,#1e1e2e);border-radius:20px 20px 0 0;width:100%;max-width:480px;padding:24px 20px 36px;animation:capRepSlide 0.3s ease;">
+<div id="captainReportModal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:9999;align-items:flex-end;justify-content:center;">
+  <div style="background:#ffffff;border-radius:20px 20px 0 0;width:100%;max-width:480px;padding:24px 20px 36px;animation:capRepSlide 0.3s ease;">
     <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
-      <h3 style="margin:0;font-size:17px;font-weight:800;">⚑ Ride Report</h3>
-      <button onclick="closeCaptainReportModal()" style="background:none;border:none;font-size:22px;cursor:pointer;color:var(--text-muted);">✕</button>
+      <h3 style="margin:0;font-size:17px;font-weight:800;color:#0A0F1E;">⚑ Ride Report</h3>
+      <button onclick="closeCaptainReportModal()" style="background:none;border:none;font-size:22px;cursor:pointer;color:#64748B;">✕</button>
     </div>
-    <p style="font-size:13px;color:var(--text-muted);margin:0 0 14px;">Koi masla hua? Humein batayein — hum jald review karenge.</p>
+    <p style="font-size:13px;color:#64748B;margin:0 0 14px;">Koi masla hua? Humein batayein — hum jald review karenge.</p>
 
     <div style="margin-bottom:14px;">
-      <p style="font-size:11px;font-weight:700;margin:0 0 8px;color:var(--text-muted);letter-spacing:0.5px;">MASLE KI NAWIYAT</p>
+      <p style="font-size:11px;font-weight:700;margin:0 0 8px;color:#94A3B8;letter-spacing:0.5px;">MASLE KI NAWIYAT</p>
       <div id="capReportCatRow" style="display:flex;flex-wrap:wrap;gap:8px;">
         <button class="cap-rep-chip" data-cat="passenger_behavior">😠 Passenger Ka Sulook</button>
         <button class="cap-rep-chip" data-cat="wrong_location">📍 Ghalat Location</button>
@@ -1360,21 +1360,21 @@ function renderHistory(filter){
     </div>
 
     <textarea id="capReportDesc" placeholder="Thori detail batayein..." rows="3"
-      style="width:100%;border-radius:10px;border:1px solid var(--border,#333);background:var(--bg-page,#131320);color:var(--text-main,#fff);padding:10px 12px;font-size:13px;resize:none;box-sizing:border-box;margin-bottom:14px;font-family:inherit;"></textarea>
+      style="width:100%;border-radius:10px;border:1px solid rgba(0,0,0,0.12);background:#F8FAFC;color:#0A0F1E;padding:10px 12px;font-size:13px;resize:none;box-sizing:border-box;margin-bottom:14px;font-family:inherit;outline:none;"></textarea>
 
     <button id="capSubmitReportBtn" onclick="submitCaptainReport()"
-      style="width:100%;background:#ef4444;color:#fff;border:none;border-radius:12px;padding:13px;font-size:15px;font-weight:800;cursor:pointer;">
+      style="width:100%;background:#EF4444;color:#fff;border:none;border-radius:12px;padding:13px;font-size:15px;font-weight:800;cursor:pointer;">
       Report Submit Karein
     </button>
-    <p id="capReportStatus" style="text-align:center;font-size:12px;margin-top:10px;color:var(--text-muted);min-height:18px;"></p>
+    <p id="capReportStatus" style="text-align:center;font-size:12px;margin-top:10px;color:#64748B;min-height:18px;"></p>
   </div>
 </div>
 
 <style>
 .cap-rep-chip {
-  background: var(--bg-page, #131320);
-  border: 1px solid var(--border, #333);
-  color: var(--text-main, #fff);
+  background: #F1F5F9;
+  border: 1px solid rgba(0,0,0,0.10);
+  color: #0A0F1E;
   border-radius: 20px;
   padding: 6px 12px;
   font-size: 12px;
@@ -1383,8 +1383,8 @@ function renderHistory(filter){
   transition: all 0.15s;
 }
 .cap-rep-chip.active {
-  background: var(--primary, #8b5cf6);
-  border-color: var(--primary, #8b5cf6);
+  background: var(--primary, #00C853);
+  border-color: var(--primary, #00C853);
   color: #fff;
 }
 @keyframes capRepSlide {
