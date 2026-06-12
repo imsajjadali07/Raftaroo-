@@ -1397,18 +1397,10 @@ function renderHistory(filter){
 import { getDatabase, ref, push, update }
     from "https://www.gstatic.com/firebasejs/12.8.0/firebase-database.js";
 import { getAuth } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
-import { getApps, initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+import { getApps } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
 
-const _crCfg = {
-  apiKey: "AIzaSyBBS7jGzuVlTIIeN9VFBxpwHkNf-mIRzDo",
-  authDomain: "raftaroo-9ce8d.firebaseapp.com",
-  databaseURL: "https://raftaroo-9ce8d-default-rtdb.asia-southeast1.firebasedatabase.app",
-  projectId: "raftaroo-9ce8d",
-  storageBucket: "raftaroo-9ce8d.firebasestorage.app",
-  messagingSenderId: "773738074182",
-  appId: "1:773738074182:web:b7a873959c7ab8edc0ba47"
-};
-const _crApp  = getApps().find(a => a.name === 'cap-rep') || initializeApp(_crCfg, 'cap-rep');
+// Main app instance reuse — alag initializeApp se auth state share nahi hoti
+const _crApp  = getApps()[0];
 const _crDb   = getDatabase(_crApp);
 const _crAuth = getAuth(_crApp);
 
@@ -1458,11 +1450,21 @@ window.submitCaptainReport = async function() {
     return;
   }
 
-  const user = _crAuth.currentUser;
-  if (!user) { statusEl.textContent = 'Login session expire ho gaya.'; return; }
-
   btn.disabled = true;
   btn.textContent = 'Submit ho raha hai...';
+
+  // onAuthStateChanged se guaranteed user milega
+  const user = await new Promise(resolve => {
+    const unsub = _crAuth.onAuthStateChanged(u => { unsub(); resolve(u); });
+  });
+
+  if (!user) {
+    statusEl.textContent = '❌ Aap login nahi hain. Page reload karein.';
+    statusEl.style.color = '#ef4444';
+    btn.disabled = false;
+    btn.textContent = 'Report Submit Karein';
+    return;
+  }
 
   try {
     const newRef = push(ref(_crDb, 'reports'));
@@ -1483,7 +1485,6 @@ window.submitCaptainReport = async function() {
     btn.textContent = '✓ Submit Ho Gaya';
     setTimeout(() => {
       closeCaptainReportModal();
-      // re-render history to reflect reported state
       if (typeof renderHistory === 'function') renderHistory(window._currentFilter || 'all');
     }, 1800);
   } catch(err) {
