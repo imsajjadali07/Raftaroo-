@@ -850,8 +850,6 @@ body { background:var(--bg); color:var(--text-main); overflow:hidden; height:100
                     listenForActiveRide(lockedRideId);
                     listenForMessages(lockedRideId);
                     setupRatingListeners();
-                    // ─── FCM TOKEN SAVE (captain) ───
-                    saveFcmTokenForCaptain(user.uid);
                 } else {
                     alert("Koi active ride nahi mili. Dashboard par ja rahe hain.");
                     window.location.href = 'captain-dashboard.html';
@@ -863,48 +861,6 @@ body { background:var(--bg); color:var(--text-main); overflow:hidden; height:100
             window.location.href = 'index.html';
         }
     });
-
-    // ─── FCM TOKEN FUNCTION (captain) ───
-    async function saveFcmTokenForCaptain(captainUid) {
-        try {
-            if (!('Notification' in window) || !('serviceWorker' in navigator)) return;
-            if (Notification.permission === 'denied') return;
-
-            let perm = Notification.permission;
-            if (perm === 'default') {
-                perm = await Notification.requestPermission();
-            }
-            if (perm !== 'granted') return;
-
-            const swReg = await navigator.serviceWorker.ready;
-            const { getMessaging, getToken, onMessage } = await import(
-                "https://www.gstatic.com/firebasejs/12.8.0/firebase-messaging.js"
-            );
-            const messaging = getMessaging(app);
-            const VAPID_KEY = "BAhTsS4OrHcgOe3REg1F-k-tXrR_6UZWD2euZaY-bemEczD7CefwWjuwopXMgaN39i1ew8Oldo-KJjz2x01wGmI";
-
-            const token = await getToken(messaging, {
-                vapidKey: VAPID_KEY,
-                serviceWorkerRegistration: swReg
-            });
-            if (!token) return;
-
-            // Sirf update karo agar token change hua ho
-            const existing = await get(ref(db, `riders/${captainUid}/fcmToken`));
-            if (existing.val() !== token) {
-                await set(ref(db, `riders/${captainUid}/fcmToken`), token);
-                console.log('[FCM] ✅ Captain token saved/refreshed');
-            }
-
-            // Foreground pe sirf vibrate karo
-            onMessage(messaging, () => {
-                if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
-            });
-
-        } catch(e) {
-            console.warn('[FCM] Captain token save failed:', e.message);
-        }
-    }
 
     // ─── MAP ───
     function initializeMap() {

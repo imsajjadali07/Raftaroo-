@@ -705,11 +705,11 @@ body::before {
 
 <!-- Firebase SDK -->
 <script type="module">
-import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
 import { getDatabase, ref, get, set, push, serverTimestamp, onValue }
-  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-database.js";
+  from "https://www.gstatic.com/firebasejs/12.8.0/firebase-database.js";
 import { getAuth, onAuthStateChanged }
-  from "https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+  from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
 
 // ══════════════════════════════════════════════
 //  ✅ Firebase Config (auto-filled from project)
@@ -745,7 +745,7 @@ onAuthStateChanged(auth, (user) => {
     if (user.uid !== EXPECTED_ADMIN_UID) {
       // Wrong user — force logout
       console.warn('Unauthorized UID:', user.uid);
-      import('https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js')
+      import('https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js')
         .then(m => m.signOut(auth));
       alert('❌ Aap ko yeh panel access karne ki ijazat nahi hai.');
     }
@@ -807,15 +807,18 @@ async function loadHistory() {
     const list = document.getElementById('historyList');
     if (items.length === 0) return;
 
-    list.innerHTML = items.slice(0,20).map(n => `
+    list.innerHTML = items.slice(0,20).map(n => {
+      const statusIcon = n.status === 'sent' ? '✅' : n.status === 'processing' ? '⏳' : n.status === 'queued' ? '🟡' : '❌';
+      const sentInfo = n.successCount !== undefined ? ` · ${n.successCount} sent / ${n.failCount || 0} failed` : '';
+      return `
       <div class="history-item">
-        <div class="h-dot"></div>
+        <div class="h-dot" style="background:${n.status==='sent'?'#00C853':n.status==='queued'?'#FFD600':'#FF4545'}"></div>
         <div>
-          <div class="h-title">${escHtml(n.title || '')}</div>
-          <div class="h-meta">${escHtml(n.body?.substring(0,60) || '')}… &nbsp;·&nbsp; ${n.audience || 'all'} &nbsp;·&nbsp; ${formatTs(n.sentAt)}</div>
+          <div class="h-title">${escHtml(n.title || '')} ${statusIcon}</div>
+          <div class="h-meta">${escHtml(n.body?.substring(0,60) || '')}… · ${n.audience || 'all'} · ${n.tokenCount || 0} tokens${sentInfo} · ${formatTs(n.sentAt)}</div>
         </div>
-      </div>
-    `).join('');
+      </div>`;
+    }).join('');
 
   } catch(e) { console.warn(e); }
 }
@@ -825,26 +828,21 @@ window.loadHistory = loadHistory;
 
 // Main send function
 window.doSendNotification = async function(title, body, type, audience, url) {
-  const db   = window._db;
-  const rref = window._ref;
-  const rget = window._get;
+  const db    = window._db;
+  const rref  = window._ref;
+  const rget  = window._get;
   const rpush = window._push;
   const rset  = window._set;
 
-  // UID check — sirf admin send kar sakta hai
-  if (window._currentUid && window._currentUid !== '94DrBI29E0WvUqqNCInlKNMfE1z2') {
-    return { success: false, error: 'Unauthorized: aap admin nahi hain.' };
-  }
-
-  // Collect tokens
-  const tokens = [];
+  // Collect tokens (Set se duplicates avoid)
+  const tokenSet = new Set();
 
   if (audience === 'all' || audience === 'customers') {
     const usersSnap = await rget(rref(db, 'users'));
     if (usersSnap.exists()) {
       usersSnap.forEach(child => {
         const token = child.val().fcmToken;
-        if (token) tokens.push(token);
+        if (token) tokenSet.add(token);
       });
     }
   }
@@ -854,30 +852,35 @@ window.doSendNotification = async function(title, body, type, audience, url) {
     if (ridersSnap.exists()) {
       ridersSnap.forEach(child => {
         const token = child.val().fcmToken;
-        if (token) tokens.push(token);
+        if (token) tokenSet.add(token);
       });
     }
   }
+
+  const tokens = [...tokenSet];
 
   if (tokens.length === 0) {
     return { success: false, error: 'Koi FCM token nahi mila. Users ne notification allow ki hai?' };
   }
 
-  // Save to DB → Firebase Function se send hoga
-  const notifRef = rpush(rref(db, 'admin_notifications'));
-  await rset(notifRef, {
+  // ─── FIX: push() key lo aur set() ek hi call mein karo
+  // Cloud Function status:queued check karti hai — pehle se hi set hona zaroori hai
+  const newKey     = rpush(rref(db, 'admin_notifications')).key;
+  const newItemRef = rref(db, `admin_notifications/${newKey}`);
+
+  await rset(newItemRef, {
     title,
     body,
     type,
     audience,
-    url: url || '/',
+    url:        url || '/',
     tokens,
     tokenCount: tokens.length,
-    sentAt: Date.now(),
-    status: 'queued'
+    sentAt:     Date.now(),
+    status:     'queued'
   });
 
-  return { success: true, count: tokens.length, id: notifRef.key };
+  return { success: true, count: tokens.length, id: newKey };
 };
 
 // Init

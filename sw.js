@@ -527,39 +527,6 @@ self.addEventListener('message', (event) => {
         event.source?.postMessage({ type: 'CACHE_SIZE', size });
       });
       break;
-
-    // ═══════════════════════════════════════════════════════
-    //  SHOW_NOTIFICATION — Firebase Cloud Functions ke baghair
-    //  seedha client se SW ko notification dikhane ka command
-    //  Usage: navigator.serviceWorker.controller.postMessage({
-    //    type: 'SHOW_NOTIFICATION',
-    //    payload: { title, body, url, notifType, tag }
-    //  })
-    // ═══════════════════════════════════════════════════════
-    case 'SHOW_NOTIFICATION': {
-      const p = payload || {};
-      const nType = p.notifType || 'general';
-
-      const opts = {
-        body:              p.body    || 'Raftaroo se naya update!',
-        icon:              '/android-192.png',
-        badge:             '/favicon-32.png',
-        tag:               p.tag    || `raftaroo-${nType}-${Date.now()}`,
-        renotify:          true,
-        requireInteraction: (nType === 'ride_request' || nType === 'ride_matched' || nType === 'offer_accepted'),
-        vibrate:           nType === 'ride_request'
-                             ? [300, 100, 300, 100, 600]
-                             : [200, 100, 200],
-        data:              { url: p.url || '/', type: nType, timestamp: Date.now() },
-        actions:           getNotifActions(nType),
-        silent:            false,
-      };
-
-      event.waitUntil(
-        self.registration.showNotification(p.title || 'Raftaroo 🏍️', opts)
-      );
-      break;
-    }
   }
 });
 

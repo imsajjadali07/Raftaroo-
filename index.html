@@ -3779,29 +3779,12 @@ const _msg  = getMessaging(_app);
 async function saveFcmToken(uid, isRider) {
   try {
     if (!('Notification' in window) || !('serviceWorker' in navigator)) return;
-    if (Notification.permission === 'denied') return;
-
-    // Permission maango agar default hai
-    let perm = Notification.permission;
-    if (perm === 'default') {
-      perm = await Notification.requestPermission();
-    }
-    if (perm !== 'granted') return;
-
     const swReg = await navigator.serviceWorker.ready;
     const token = await getToken(_msg, { vapidKey: VAPID_KEY, serviceWorkerRegistration: swReg });
     if (!token) { console.warn('[FCM] Token nahi mila'); return; }
-
     const path = isRider ? `riders/${uid}/fcmToken` : `users/${uid}/fcmToken`;
-
-    // Sirf tab write karo jab token naya ho (unnecessary Firebase writes avoid)
-    const existing = await get(ref(_db, path));
-    if (existing.val() !== token) {
-      await set(ref(_db, path), token);
-      console.log('[Raftaroo FCM] ✅ Token saved -', isRider ? 'rider' : 'customer', uid);
-    } else {
-      console.log('[Raftaroo FCM] Token unchanged -', isRider ? 'rider' : 'customer');
-    }
+    await set(ref(_db, path), token);
+    console.log('[Raftaroo FCM] Token saved -', isRider ? 'rider' : 'customer', uid);
   } catch(e) {
     console.warn('[Raftaroo FCM] Error:', e.message);
   }
