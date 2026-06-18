@@ -1071,13 +1071,6 @@ html, body { height:100%; overflow:hidden; background:var(--bg); color:var(--tex
             msg.textContent = '✅ Captain Aa Gaya!';
             sub.textContent = 'Please pickup point par tashire lao.';
             cancelBtn.style.display='flex';
-            // ── SW Notification: captain pahunch gaya ──
-            if (window.RaftarooNotify && !window._arrivedNotifSent) {
-                window._arrivedNotifSent = true;
-                RaftarooNotify.captainArriving(
-                    request.riderName || 'Captain', '0', bookingId
-                );
-            }
         } else if (request.status==='in_progress') {
             banner.classList.add('status-in_progress');
             icon.className='fas fa-route';
@@ -1104,11 +1097,6 @@ html, body { height:100%; overflow:hidden; background:var(--bg); color:var(--tex
             } else if (request.status==='completed') {
                 document.getElementById('map-controls-container').style.display='none';
                 document.getElementById('floating-actions').style.display='none';
-                // ── SW Notification: ride complete ──
-                if (window.RaftarooNotify && !window._completeNotifSent) {
-                    window._completeNotifSent = true;
-                    RaftarooNotify.rideComplete(request.fare, bookingId);
-                }
                 if (!request.isRated) showRatingModal(request);
                 else returnToDashboard();
             } else if (['pending','counter_offered'].includes(request.status)) {
@@ -1464,7 +1452,60 @@ html, body { height:100%; overflow:hidden; background:var(--bg); color:var(--tex
         });
 
         startBookingListener(activeBookingRef);
+
+        // ─── FCM TOKEN SAVE (customer) ───
+        // Jab customer track page pe ho tab bhi token fresh rakho
+        // Taake chat notification mile jab app background mein ho
+        saveFcmTokenForCustomer();
     });
+
+    async function saveFcmTokenForCustomer() {
+        try {
+            if (!('Notification' in window) || !('serviceWorker' in navigator)) return;
+            if (Notification.permission === 'denied') return;
+
+            // Permission maango agar abhi tak nahi li
+            let perm = Notification.permission;
+            if (perm === 'default') {
+                perm = await Notification.requestPermission();
+            }
+            if (perm !== 'granted') return;
+
+            // Request se customerId nikalo
+            if (!bookingId) return;
+            const reqSnap = await get(ref(db, `requests/${bookingId}/customerId`));
+            const customerId = reqSnap.val();
+            if (!customerId) { console.warn('[FCM] customerId nahi mila'); return; }
+
+            const swReg = await navigator.serviceWorker.ready;
+            const { getMessaging, getToken, onMessage } = await import(
+                "https://www.gstatic.com/firebasejs/12.8.0/firebase-messaging.js"
+            );
+            const messaging = getMessaging(app);
+            const VAPID_KEY = "BAhTsS4OrHcgOe3REg1F-k-tXrR_6UZWD2euZaY-bemEczD7CefwWjuwopXMgaN39i1ew8Oldo-KJjz2x01wGmI";
+
+            const token = await getToken(messaging, {
+                vapidKey: VAPID_KEY,
+                serviceWorkerRegistration: swReg
+            });
+            if (!token) return;
+
+            // Sirf update karo agar token change hua ho
+            const existing = await get(ref(db, `users/${customerId}/fcmToken`));
+            if (existing.val() !== token) {
+                await set(ref(db, `users/${customerId}/fcmToken`), token);
+                console.log('[FCM] ✅ Customer token saved/refreshed');
+            }
+
+            // Foreground pe sirf vibrate karo (chat already realtime update hota hai)
+            onMessage(messaging, () => {
+                if (navigator.vibrate) navigator.vibrate([100, 50, 100]);
+            });
+
+        } catch(e) {
+            console.warn('[FCM] Customer token save failed:', e.message);
+        }
+    }
 </script>
 
 <script>
@@ -1709,6 +1750,5 @@ if("serviceWorker" in navigator) navigator.serviceWorker.register("/sw.js").catc
 
 })();
 </script>
-<script src="/raftaroo-notify.js"></script>
 </body>
 </html>
