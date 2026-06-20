@@ -19,17 +19,18 @@
     "window-controls-overlay",
     "standalone"
   ],
-  "orientation": "portrait",
-  "background_color": "#ffffff",
-  "theme_color": "#ffffff",
+  "orientation": "portrait-primary",
+  "background_color": "#0A0F1E",
+  "theme_color": "#00C853",
   "lang": "ur-PK",
   "dir": "ltr",
+  "iarc_rating_id": "e84b072d-71b3-4d3e-86ae-31a8ce4e53b7",
   "categories": [
     "transportation",
     "travel",
     "utilities"
   ],
-  "prefer_related_applications": true,
+  "prefer_related_applications": false,
   "icons": [
     {
       "src": "/favicon-16.png",
@@ -95,7 +96,7 @@
       "name": "Ride Book Karein",
       "short_name": "Book Ride",
       "description": "Abhi ride book karein",
-      "url": "/?action=book-ride&amp;source=shortcut",
+      "url": "/?action=book-ride&source=shortcut",
       "icons": [
         {
           "src": "/android-192.png",
@@ -142,6 +143,14 @@
           "type": "image/png"
         }
       ]
+    }
+  ],
+  "file_handlers": [
+    {
+      "action": "/",
+      "accept": {
+        "text/plain": [".txt"]
+      }
     }
   ],
   "share_target": {
