@@ -1,0 +1,539 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>Shop Register | Raftaroo Mart</title>
+<meta name="theme-color" content="#28a745">
+<meta name="description" content="Apni shop Raftaroo Mart par register karein aur online orders lena shuru karein.">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Raftaroo Mart">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+:root {
+    --primary: #28a745;
+    --primary-dark: #1e7e34;
+    --secondary: #000000;
+    --bg-light: #f4f6f5;
+    --white: #ffffff;
+    --text-main: #1a1a1a;
+    --text-muted: #707070;
+    --shadow: 0 4px 20px rgba(0,0,0,0.08);
+    --error: #e74c3c;
+    --success: #2ecc71;
+    --info: #3498db;
+    --card-bg: var(--white);
+    --header-bg: var(--white);
+    --input-bg: #fafafa;
+    --border: #eaeaea;
+}
+.dark-mode {
+    --secondary: #FFFFFF;
+    --bg-light: #101312;
+    --white: #1c1f1e;
+    --text-main: #eaeaea;
+    --text-muted: #9a9a9a;
+    --shadow: 0 4px 20px rgba(0,0,0,0.4);
+    --card-bg: #1c1f1e;
+    --header-bg: #171a19;
+    --input-bg: #232726;
+    --border: #2b2f2e;
+}
+* { margin:0; padding:0; box-sizing:border-box; font-family:'Poppins',sans-serif; -webkit-tap-highlight-color:transparent; }
+body { background:var(--bg-light); color:var(--text-main); overflow-x:hidden; min-height:100vh; transition:background-color .3s; padding-bottom:40px; }
+.hidden { display:none !important; }
+a { text-decoration:none; color:inherit; }
+img { -webkit-user-drag:none; }
+button { cursor:pointer; border:none; font-family:'Poppins',sans-serif; }
+input, textarea, select { font-family:'Poppins',sans-serif; }
+
+/* ---------- HEADER ---------- */
+.reg-header { position:sticky; top:0; z-index:50; background:var(--header-bg); box-shadow:var(--shadow); padding:14px 16px; display:flex; align-items:center; gap:12px; }
+.reg-logo { width:36px; height:36px; border-radius:10px; background:var(--primary); color:#fff; display:flex; align-items:center; justify-content:center; font-size:16px; flex-shrink:0; }
+.reg-header h1 { font-size:15px; font-weight:800; flex:1; }
+.reg-header p { font-size:10.5px; color:var(--text-muted); margin-top:1px; }
+.dark-toggle-wrap { display:flex; align-items:center; }
+.switch { position:relative; width:40px; height:22px; }
+.switch input { opacity:0; width:0; height:0; }
+.slider { position:absolute; cursor:pointer; inset:0; background:var(--border); border-radius:22px; transition:.3s; }
+.slider:before { content:""; position:absolute; height:16px; width:16px; left:3px; bottom:3px; background:#fff; border-radius:50%; transition:.3s; }
+input:checked + .slider { background:var(--primary); }
+input:checked + .slider:before { transform:translateX(18px); }
+
+/* ---------- HERO ---------- */
+.reg-hero { padding:26px 20px 20px; text-align:center; }
+.reg-hero .hero-icon { width:64px; height:64px; border-radius:20px; background:linear-gradient(135deg, var(--primary), var(--primary-dark)); color:#fff; display:flex; align-items:center; justify-content:center; font-size:28px; margin:0 auto 14px; box-shadow:0 8px 24px rgba(40,167,69,0.28); }
+.reg-hero h2 { font-size:19px; font-weight:800; margin-bottom:6px; }
+.reg-hero p { font-size:12.5px; color:var(--text-muted); line-height:1.6; max-width:340px; margin:0 auto; }
+
+/* ---------- CONTAINER ---------- */
+.reg-container { max-width:480px; margin:0 auto; padding:0 16px; }
+
+/* ---------- AUTH CARD ---------- */
+.auth-card { background:var(--card-bg); border-radius:20px; box-shadow:var(--shadow); padding:26px 20px; text-align:center; margin-top:6px; }
+.auth-card i.fa-store { font-size:34px; color:var(--primary); margin-bottom:12px; }
+.auth-card h3 { font-size:15px; font-weight:700; margin-bottom:6px; }
+.auth-card p { font-size:12px; color:var(--text-muted); margin-bottom:18px; line-height:1.6; }
+.google-btn { width:100%; background:var(--white); border:1.5px solid var(--border); color:var(--text-main); padding:13px; border-radius:14px; font-size:13.5px; font-weight:600; display:flex; align-items:center; justify-content:center; gap:10px; transition:.2s; }
+.google-btn:active { transform:scale(0.98); }
+.google-btn img { width:19px; height:19px; }
+
+/* ---------- STATUS CARD (existing request) ---------- */
+.status-card { background:var(--card-bg); border-radius:20px; box-shadow:var(--shadow); padding:24px 20px; margin-top:6px; }
+.status-top { display:flex; align-items:center; gap:12px; margin-bottom:16px; }
+.status-icon { width:48px; height:48px; border-radius:14px; display:flex; align-items:center; justify-content:center; font-size:20px; flex-shrink:0; }
+.status-icon.pending { background:#fff3cd; color:#8a6d00; }
+.status-icon.approved { background:#d4f7dc; color:#1e7e34; }
+.status-icon.rejected { background:#fde2e0; color:#c0392b; }
+.status-top h3 { font-size:15px; font-weight:800; margin-bottom:2px; }
+.status-pill-lg { display:inline-block; font-size:10.5px; font-weight:700; padding:4px 12px; border-radius:20px; text-transform:capitalize; }
+.status-pill-lg.pending { background:#fff3cd; color:#8a6d00; }
+.status-pill-lg.approved { background:#d4f7dc; color:#1e7e34; }
+.status-pill-lg.rejected { background:#fde2e0; color:#c0392b; }
+.status-detail { font-size:12.5px; color:var(--text-muted); line-height:1.7; border-top:1px solid var(--border); padding-top:14px; margin-top:4px; }
+.status-detail b { color:var(--text-main); font-weight:600; }
+.status-note { font-size:11.5px; background:var(--input-bg); border-radius:12px; padding:10px 12px; margin-top:14px; color:var(--text-muted); line-height:1.6; }
+.reapply-btn { width:100%; margin-top:16px; background:var(--error); color:#fff; padding:12px; border-radius:14px; font-size:13px; font-weight:700; }
+
+/* ---------- FORM ---------- */
+.reg-form { background:var(--card-bg); border-radius:20px; box-shadow:var(--shadow); padding:22px 18px; margin-top:6px; }
+.form-section-title { font-size:12px; font-weight:700; color:var(--primary); text-transform:uppercase; letter-spacing:.5px; margin-bottom:12px; display:flex; align-items:center; gap:7px; }
+.form-section-title:not(:first-child) { margin-top:26px; }
+.field-group { margin-bottom:14px; }
+.field-group label { display:block; font-size:12px; font-weight:600; margin-bottom:6px; color:var(--text-main); }
+.field-group label .req { color:var(--error); }
+.field-group input[type="text"], .field-group input[type="tel"], .field-group textarea, .field-group select {
+  width:100%; background:var(--input-bg); border:1.5px solid var(--border); border-radius:12px; padding:12px 14px; font-size:13.5px; color:var(--text-main); transition:.2s;
+}
+.field-group input:focus, .field-group textarea:focus, .field-group select:focus { outline:none; border-color:var(--primary); }
+.field-group textarea { resize:vertical; min-height:70px; line-height:1.5; }
+.field-hint { font-size:10.5px; color:var(--text-muted); margin-top:5px; }
+
+.cat-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+.cat-chip { border:1.5px solid var(--border); background:var(--input-bg); border-radius:12px; padding:10px 6px; text-align:center; font-size:11px; font-weight:600; color:var(--text-muted); transition:.15s; }
+.cat-chip i { display:block; font-size:16px; margin-bottom:5px; color:var(--text-muted); }
+.cat-chip.active { background:var(--primary); border-color:var(--primary); color:#fff; }
+.cat-chip.active i { color:#fff; }
+
+.logo-upload { display:flex; align-items:center; gap:14px; }
+.logo-preview { width:64px; height:64px; border-radius:16px; background:var(--input-bg); border:1.5px dashed var(--border); display:flex; align-items:center; justify-content:center; font-size:20px; color:var(--text-muted); overflow:hidden; flex-shrink:0; }
+.logo-preview img { width:100%; height:100%; object-fit:cover; }
+.logo-upload-btn { flex:1; background:var(--input-bg); border:1.5px solid var(--border); border-radius:12px; padding:11px 14px; font-size:12.5px; font-weight:600; color:var(--text-main); display:flex; align-items:center; justify-content:center; gap:8px; }
+.logo-upload-btn i { color:var(--primary); }
+
+.loc-btn { width:100%; background:var(--input-bg); border:1.5px solid var(--border); border-radius:12px; padding:12px 14px; font-size:12.5px; font-weight:600; color:var(--text-main); display:flex; align-items:center; gap:10px; }
+.loc-btn i { color:var(--primary); font-size:15px; }
+.loc-btn.set { border-color:var(--primary); color:var(--primary); }
+
+.submit-btn { width:100%; background:var(--primary); color:#fff; padding:15px; border-radius:14px; font-size:14.5px; font-weight:700; margin-top:22px; display:flex; align-items:center; justify-content:center; gap:8px; transition:.2s; }
+.submit-btn:active { transform:scale(0.98); }
+.submit-btn:disabled { opacity:0.6; }
+.owner-info { display:flex; align-items:center; gap:10px; background:var(--input-bg); border-radius:12px; padding:10px 12px; margin-bottom:18px; }
+.owner-info img { width:34px; height:34px; border-radius:50%; }
+.owner-info .oi-name { font-size:12.5px; font-weight:600; }
+.owner-info .oi-email { font-size:10.5px; color:var(--text-muted); }
+.owner-info .oi-logout { margin-left:auto; font-size:11px; color:var(--error); font-weight:600; }
+
+/* ---------- TOAST ---------- */
+.toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%) translateY(100px); background:var(--secondary); color:var(--bg-light); padding:12px 22px; border-radius:30px; font-size:12.5px; font-weight:600; z-index:999; box-shadow:0 6px 20px rgba(0,0,0,0.25); transition:transform .3s ease; white-space:nowrap; }
+.dark-mode .toast { background:var(--primary); }
+.toast.show { transform:translateX(-50%) translateY(0); }
+
+.spin { animation: spin .8s linear infinite; }
+@keyframes spin { to { transform:rotate(360deg); } }
+
+.footer-note { text-align:center; font-size:11px; color:var(--text-muted); margin-top:20px; line-height:1.7; }
+.footer-note i { color:var(--primary); }
+</style>
+</head>
+<body>
+
+<div class="reg-header">
+  <div class="reg-logo"><i class="fa-solid fa-store"></i></div>
+  <div style="flex:1;">
+    <h1>Raftaroo Mart</h1>
+    <p>Shop Registration</p>
+  </div>
+  <div class="dark-toggle-wrap">
+    <label class="switch">
+      <input type="checkbox" id="darkToggle">
+      <span class="slider"></span>
+    </label>
+  </div>
+</div>
+
+<div class="reg-hero">
+  <div class="hero-icon"><i class="fa-solid fa-shop"></i></div>
+  <h2>Apni Shop Register Karein</h2>
+  <p>Raftaroo Mart par apni shop list karein aur customers tak seedha pohnchein — fast, digital aur asaan.</p>
+</div>
+
+<div class="reg-container">
+
+  <!-- AUTH CARD -->
+  <div class="auth-card" id="authCard">
+    <i class="fa-solid fa-store"></i>
+    <h3>Shuru Karne Ke Liye Sign In Karein</h3>
+    <p>Apni shop register karne ke liye pehle apne Google account se sign in karein.</p>
+    <button class="google-btn" onclick="doGoogleSignIn()">
+      <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google">
+      Continue with Google
+    </button>
+  </div>
+
+  <!-- STATUS CARD (shown if user already has a request) -->
+  <div class="status-card hidden" id="statusCard">
+    <div class="status-top">
+      <div class="status-icon" id="statusIcon"><i class="fa-solid fa-clock"></i></div>
+      <div>
+        <h3 id="statusShopName">Shop Name</h3>
+        <span class="status-pill-lg" id="statusPill">pending</span>
+      </div>
+    </div>
+    <div class="status-detail" id="statusDetail"></div>
+    <div class="status-note" id="statusNote"></div>
+    <button class="reapply-btn hidden" id="reapplyBtn" onclick="resetForReapply()">
+      <i class="fa-solid fa-rotate-right"></i> Naya Request Bhejein
+    </button>
+  </div>
+
+  <!-- REGISTRATION FORM -->
+  <form class="reg-form hidden" id="regForm" onsubmit="return submitShopRequest(event)">
+
+    <div class="owner-info" id="ownerInfo"></div>
+
+    <div class="form-section-title"><i class="fa-solid fa-shop"></i> Shop Details</div>
+
+    <div class="field-group">
+      <label>Shop Name <span class="req">*</span></label>
+      <input type="text" id="shopName" placeholder="e.g. Al-Madina General Store" required maxlength="60">
+    </div>
+
+    <div class="field-group">
+      <label>Shop Category <span class="req">*</span></label>
+      <div class="cat-grid" id="catGrid"></div>
+      <input type="hidden" id="shopCategory" required>
+    </div>
+
+    <div class="field-group">
+      <label>Shop Description</label>
+      <textarea id="shopDesc" placeholder="Apni shop ke baare mein thoda batayein — kya bechte hain, kab tak khuli rehti hai, waghera." maxlength="220"></textarea>
+    </div>
+
+    <div class="field-group">
+      <label>Shop Logo / Photo</label>
+      <div class="logo-upload">
+        <div class="logo-preview" id="logoPreview"><i class="fa-solid fa-image"></i></div>
+        <button type="button" class="logo-upload-btn" onclick="document.getElementById('logoFileInput').click()">
+          <i class="fa-solid fa-upload"></i> <span id="logoBtnText">Upload Photo</span>
+        </button>
+        <input type="file" id="logoFileInput" accept="image/*" class="hidden" onchange="handleLogoSelect(event)">
+      </div>
+      <p class="field-hint">Optional — lekin logo wali shops zyada trust build karti hain.</p>
+    </div>
+
+    <div class="form-section-title"><i class="fa-solid fa-location-dot"></i> Contact & Location</div>
+
+    <div class="field-group">
+      <label>Phone Number <span class="req">*</span></label>
+      <input type="tel" id="shopPhone" placeholder="03XXXXXXXXX" required pattern="[0-9+ ]{10,15}">
+    </div>
+
+    <div class="field-group">
+      <label>Shop Address <span class="req">*</span></label>
+      <textarea id="shopAddress" placeholder="Complete address likhein (area, street, landmark)" required maxlength="160"></textarea>
+    </div>
+
+    <div class="field-group">
+      <label>GPS Location</label>
+      <button type="button" class="loc-btn" id="locBtn" onclick="captureLocation()">
+        <i class="fa-solid fa-location-crosshairs"></i>
+        <span id="locBtnText">Current Location Set Karein</span>
+      </button>
+    </div>
+
+    <button type="submit" class="submit-btn" id="submitBtn">
+      <i class="fa-solid fa-paper-plane"></i> Registration Request Bhejein
+    </button>
+
+    <p class="footer-note"><i class="fa-solid fa-shield-halved"></i> Aapka request Raftaroo team review karegi. Approval ke baad shop live ho jayegi.</p>
+  </form>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+import { getDatabase, ref, push, set, onValue, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-database.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBBS7jGzuVlTIIeN9VFBxpwHkNf-mIRzDo",
+  authDomain: "raftaroo-9ce8d.firebaseapp.com",
+  databaseURL: "https://raftaroo-9ce8d-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "raftaroo-9ce8d",
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getDatabase(app);
+const googleProvider = new GoogleAuthProvider();
+
+const CLOUD_NAME = "dw4btouzp";
+const UPLOAD_PRESET = "sell-it-fast";
+
+const SHOP_CATEGORIES = [
+  { id:'grocery', name:'Grocery', icon:'fa-basket-shopping' },
+  { id:'pharmacy', name:'Pharmacy', icon:'fa-briefcase-medical' },
+  { id:'bakery', name:'Bakery', icon:'fa-bread-slice' },
+  { id:'restaurant', name:'Restaurant', icon:'fa-utensils' },
+  { id:'electronics', name:'Electronics', icon:'fa-plug' },
+  { id:'general', name:'General Store', icon:'fa-shop' },
+];
+
+let currentUser = null;
+let pendingLogoFile = null;
+let capturedLoc = null;
+let myRequestId = null;
+let myRequestData = null;
+
+/* ---------- DARK MODE ---------- */
+const darkToggle = document.getElementById('darkToggle');
+if(localStorage.getItem('mart_dark') === '1'){ document.body.classList.add('dark-mode'); darkToggle.checked = true; }
+darkToggle.addEventListener('change', () => {
+  document.body.classList.toggle('dark-mode', darkToggle.checked);
+  localStorage.setItem('mart_dark', darkToggle.checked ? '1':'0');
+});
+
+/* ---------- CATEGORY GRID ---------- */
+const catGrid = document.getElementById('catGrid');
+catGrid.innerHTML = SHOP_CATEGORIES.map(c => `
+  <div class="cat-chip" data-cat="${c.id}" onclick="selectCategory('${c.id}')">
+    <i class="fa-solid ${c.icon}"></i>${c.name}
+  </div>`).join('');
+
+window.selectCategory = (id) => {
+  document.getElementById('shopCategory').value = id;
+  document.querySelectorAll('.cat-chip').forEach(el => el.classList.toggle('active', el.dataset.cat===id));
+};
+
+function labelForCat(id){ return (SHOP_CATEGORIES.find(c=>c.id===id)||{}).name || 'Shop'; }
+function iconForCat(id){ return (SHOP_CATEGORIES.find(c=>c.id===id)||{}).icon || 'fa-shop'; }
+
+/* ---------- TOAST ---------- */
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+/* ---------- AUTH ---------- */
+window.doGoogleSignIn = async () => {
+  try { await signInWithPopup(auth, googleProvider); }
+  catch(e){ toast('Sign in nahi ho saka — dobara koshish karein'); }
+};
+
+window.doSignOut = async () => { await signOut(auth); };
+
+onAuthStateChanged(auth, (user) => {
+  currentUser = user;
+  if(user){
+    document.getElementById('authCard').classList.add('hidden');
+    document.getElementById('ownerInfo').innerHTML = `
+      <img src="${user.photoURL || 'https://www.svgrepo.com/show/384674/account-avatar-profile-user-11.svg'}" alt="">
+      <div>
+        <div class="oi-name">${user.displayName || 'Shop Owner'}</div>
+        <div class="oi-email">${user.email || ''}</div>
+      </div>
+      <span class="oi-logout" onclick="doSignOut()">Sign Out</span>`;
+    checkExistingRequest();
+  } else {
+    document.getElementById('authCard').classList.remove('hidden');
+    document.getElementById('statusCard').classList.add('hidden');
+    document.getElementById('regForm').classList.add('hidden');
+  }
+});
+
+/* ---------- CHECK EXISTING REQUEST ---------- */
+function checkExistingRequest(){
+  const q = query(ref(db, 'shopRequests'), orderByChild('ownerUid'), equalTo(currentUser.uid));
+  onValue(q, (snap) => {
+    const data = snap.val() || {};
+    const entries = Object.entries(data).sort((a,b) => (b[1].createdAt||0)-(a[1].createdAt||0));
+    if(entries.length === 0){
+      myRequestId = null; myRequestData = null;
+      document.getElementById('statusCard').classList.add('hidden');
+      document.getElementById('regForm').classList.remove('hidden');
+      return;
+    }
+    const [id, r] = entries[0];
+    myRequestId = id; myRequestData = r;
+
+    if(r.status === 'rejected'){
+      renderStatusCard(r, true);
+      document.getElementById('regForm').classList.add('hidden');
+    } else {
+      renderStatusCard(r, false);
+      document.getElementById('regForm').classList.add('hidden');
+    }
+  });
+}
+
+function renderStatusCard(r, showReapply){
+  const card = document.getElementById('statusCard');
+  card.classList.remove('hidden');
+  const status = r.status || 'pending';
+  document.getElementById('statusShopName').textContent = r.name || 'Your Shop';
+  const pill = document.getElementById('statusPill');
+  pill.textContent = status;
+  pill.className = 'status-pill-lg ' + status;
+  const icon = document.getElementById('statusIcon');
+  icon.className = 'status-icon ' + status;
+  icon.innerHTML = status==='approved' ? '<i class="fa-solid fa-check"></i>' : status==='rejected' ? '<i class="fa-solid fa-xmark"></i>' : '<i class="fa-solid fa-clock"></i>';
+
+  document.getElementById('statusDetail').innerHTML = `
+    <div>🏷️ <b>${labelForCat(r.category)}</b></div>
+    <div>📞 <b>${r.phone||''}</b></div>
+    <div>📍 ${r.address||''}</div>`;
+
+  const note = document.getElementById('statusNote');
+  if(status==='pending') note.textContent = 'Aapka registration request review mein hai. Approval hote hi aapki shop Raftaroo Mart par live ho jayegi.';
+  else if(status==='approved') note.textContent = 'Mubarak ho! Aapki shop approve ho chuki hai aur ab live hai. Products add karne ke liye Raftaroo Mart app open karein.';
+  else note.textContent = 'Yeh request reject ho gayi. Aap details update karke dobara request bhej sakte hain.';
+
+  document.getElementById('reapplyBtn').classList.toggle('hidden', !showReapply);
+}
+
+window.resetForReapply = () => {
+  document.getElementById('statusCard').classList.add('hidden');
+  document.getElementById('regForm').classList.remove('hidden');
+  if(myRequestData){
+    document.getElementById('shopName').value = myRequestData.name || '';
+    document.getElementById('shopDesc').value = myRequestData.description || '';
+    document.getElementById('shopPhone').value = myRequestData.phone || '';
+    document.getElementById('shopAddress').value = myRequestData.address || '';
+    if(myRequestData.category) window.selectCategory(myRequestData.category);
+  }
+};
+
+/* ---------- LOGO UPLOAD ---------- */
+window.handleLogoSelect = (e) => {
+  const file = e.target.files[0];
+  if(!file) return;
+  pendingLogoFile = file;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    document.getElementById('logoPreview').innerHTML = `<img src="${ev.target.result}">`;
+  };
+  reader.readAsDataURL(file);
+  document.getElementById('logoBtnText').textContent = 'Photo Selected ✓';
+};
+
+async function uploadLogoToCloudinary(file){
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', UPLOAD_PRESET);
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), 20000); // 20s safety timeout
+
+  let res;
+  try{
+    res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
+      method:'POST', body:formData, signal: controller.signal
+    });
+  } catch(err){
+    if(err.name === 'AbortError') throw new Error('Photo upload timeout ho gaya — internet check karein');
+    throw new Error('Photo upload fail ho gaya — internet check karein');
+  } finally {
+    clearTimeout(timeoutId);
+  }
+
+  const data = await res.json();
+
+  if(!res.ok || !data.secure_url){
+    console.error('Cloudinary upload error:', data);
+    throw new Error(data?.error?.message || 'Photo upload fail ho gaya');
+  }
+
+  return data.secure_url;
+}
+
+/* ---------- LOCATION ---------- */
+window.captureLocation = () => {
+  if(!navigator.geolocation){ toast('Location support nahi hai is device mein'); return; }
+  const btn = document.getElementById('locBtn');
+  const btnText = document.getElementById('locBtnText');
+  btnText.innerHTML = '<i class="fa-solid fa-spinner spin"></i> Location fetch ho rahi hai...';
+  navigator.geolocation.getCurrentPosition((pos) => {
+    capturedLoc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+    btn.classList.add('set');
+    btnText.innerHTML = '<i class="fa-solid fa-check"></i> Location Set Ho Gayi ✓';
+  }, () => {
+    btnText.innerHTML = '<i class="fa-solid fa-location-crosshairs"></i> Current Location Set Karein';
+    toast('Location access nahi mili — permission check karein');
+  });
+};
+
+/* ---------- SUBMIT ---------- */
+window.submitShopRequest = async (e) => {
+  e.preventDefault();
+  if(!currentUser){ toast('Pehle sign in karein'); return false; }
+
+  const name = document.getElementById('shopName').value.trim();
+  const category = document.getElementById('shopCategory').value;
+  const desc = document.getElementById('shopDesc').value.trim();
+  const phone = document.getElementById('shopPhone').value.trim();
+  const address = document.getElementById('shopAddress').value.trim();
+
+  if(!name){ toast('Shop name likhein'); return false; }
+  if(!category){ toast('Shop category select karein'); return false; }
+  if(!phone){ toast('Phone number likhein'); return false; }
+  if(!address){ toast('Shop address likhein'); return false; }
+
+  const submitBtn = document.getElementById('submitBtn');
+  submitBtn.disabled = true;
+  submitBtn.innerHTML = '<i class="fa-solid fa-spinner spin"></i> Bheja ja raha hai...';
+
+  try{
+    let logoUrl = '';
+    if(pendingLogoFile){
+      submitBtn.innerHTML = '<i class="fa-solid fa-spinner spin"></i> Photo upload ho rahi hai...';
+      logoUrl = await uploadLogoToCloudinary(pendingLogoFile);
+      submitBtn.innerHTML = '<i class="fa-solid fa-spinner spin"></i> Bheja ja raha hai...';
+    }
+
+    const newReqRef = push(ref(db, 'shopRequests'));
+    await set(newReqRef, {
+      name, category, description: desc, phone, address,
+      logoUrl: logoUrl || '',
+      lat: capturedLoc ? capturedLoc.lat : null,
+      lng: capturedLoc ? capturedLoc.lng : null,
+      ownerUid: currentUser.uid,
+      ownerName: currentUser.displayName || '',
+      ownerEmail: currentUser.email || '',
+      status: 'pending',
+      createdAt: Date.now()
+    });
+
+    toast('Request bhej diya gaya — review ka intezar karein');
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Registration Request Bhejein';
+  } catch(err){
+    console.error('Submit shop request failed:', err);
+    toast(err?.message || 'Kuch masla ho gaya — dobara koshish karein');
+    submitBtn.disabled = false;
+    submitBtn.innerHTML = '<i class="fa-solid fa-paper-plane"></i> Registration Request Bhejein';
+  }
+  return false;
+};
+</script>
+</body>
+</html>
