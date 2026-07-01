@@ -364,6 +364,10 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
             <i class="fas fa-motorcycle"></i> Requests
             <span class="badge-pill" id="pendingRequestsCount">0</span>
         </div>
+        <div class="tab-button" data-tab="mart-tab">
+            <i class="fas fa-cart-shopping"></i> Mart
+            <span class="badge-pill" id="pendingMartCount">0</span>
+        </div>
     </div>
 
     <div class="tab-content">
@@ -460,6 +464,22 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
                     <div class="empty-icon"><i class="fas fa-search-location"></i></div>
                     <h4>Koi Request Nahi</h4>
                     <p>Aap ke 10 km radius mein abhi koi ride request nahi hai</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- MART DELIVERIES TAB -->
+        <div id="mart-tab" class="tab-panel hidden">
+            <div id="activeMartDeliveryWrap"></div>
+            <div class="requests-header">
+                <h3>Mart Deliveries — Ready for Pickup</h3>
+                <div class="requests-count-chip"><span id="martCountChip">0</span> available</div>
+            </div>
+            <div id="martOrdersList">
+                <div class="empty-state">
+                    <div class="empty-icon"><i class="fas fa-cart-shopping"></i></div>
+                    <h4>Koi Mart Delivery Nahi</h4>
+                    <p>Abhi koi shop se pickup ke liye ready order nahi hai</p>
                 </div>
             </div>
         </div>
@@ -637,7 +657,7 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
-    import { getDatabase, ref, update, onValue, get, push } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-database.js";
+    import { getDatabase, ref, update, onValue, get, push, runTransaction } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-database.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
 
     const firebaseConfig = {
@@ -990,9 +1010,101 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
 
     function initializeDashboard() {
         initializeMap(); setupTabNavigation();
-        if (isApproved(captainData)) { listenForRideLockStatus(); listenForIncomingRequests(); loadWalletBalance(); }
+        if (isApproved(captainData)) { listenForRideLockStatus(); listenForIncomingRequests(); loadWalletBalance(); listenForMartOrders(); }
         else document.getElementById('incomingRequestsList').innerHTML='<div class="empty-state"><div class="empty-icon"><i class="fas fa-lock"></i></div><h4>Approved Nahi Hain</h4><p>Ride requests dekhne ke liye approval zaroori hai</p></div>';
     }
+
+    /* ══════════════════════════ MART DELIVERIES ══════════════════════════ */
+    let martOrdersCache = {};
+    function listenForMartOrders() {
+        onValue(ref(db,'martOrders'), (snap) => {
+            martOrdersCache = snap.val() || {};
+            renderMartOrders();
+        });
+    }
+
+    function getCaptainLatLng() {
+        if (captainMarker) { const p = captainMarker.getLatLng(); return { lat: p.lat, lng: p.lng }; }
+        return null;
+    }
+
+    function renderMartOrders() {
+        const myLoc = getCaptainLatLng();
+        const entries = Object.entries(martOrdersCache);
+
+        // Active delivery this captain already accepted
+        const active = entries.find(([id,o]) => o.captainId===currentCaptain.uid && (o.status==='out_for_delivery' || o.status==='picked_up'));
+        const activeWrap = document.getElementById('activeMartDeliveryWrap');
+        if (active) {
+            const [id,o] = active;
+            const pickupBtn = o.status==='out_for_delivery' ? `<button class="btn-accept" onclick="markMartPickedUp('${id}')"><i class="fas fa-box"></i> Shop Se Pickup Ho Gaya</button>` : `<button class="btn-accept" onclick="markMartDelivered('${id}')"><i class="fas fa-flag-checkered"></i> Customer Ko Deliver Ho Gaya</button>`;
+            activeWrap.innerHTML = `<div class="request-card" style="border-left-color:#8B5CF6;">
+                <div class="request-card-top"><div><div class="request-card-type" style="background:#EDE9FE;color:#6D28D9;">Active Mart Delivery</div></div><div class="request-card-fare">Rs. ${o.deliveryFee||0} <span>delivery fee</span></div></div>
+                <div class="request-detail pickup"><i class="fas fa-store"></i><div><div class="detail-label">Pickup — ${o.shopName||'Shop'}</div><div class="detail-text">${(o.shopAddress||'').substring(0,60)}</div></div></div>
+                <div class="request-detail dropoff"><i class="fas fa-location-dot"></i><div><div class="detail-label">Deliver To — ${o.customerName||''}</div><div class="detail-text">${(o.address||'').substring(0,60)} · ${o.customerPhone||''}</div></div></div>
+                <div class="request-actions">${pickupBtn}</div>
+            </div>`;
+            activeWrap.classList.remove('hidden');
+        } else {
+            activeWrap.innerHTML = ''; activeWrap.classList.add('hidden');
+        }
+
+        // Available orders: ready_for_pickup, no captain assigned yet
+        let available = entries.filter(([id,o]) => o.status==='ready_for_pickup' && !o.captainId);
+        if (myLoc) {
+            available = available.map(([id,o]) => [id,o,getDistance(myLoc.lat,myLoc.lng,o.shopLat,o.shopLng)]);
+            available.sort((a,b) => (a[2]??999)-(b[2]??999));
+        } else {
+            available = available.map(([id,o]) => [id,o,null]);
+        }
+
+        document.getElementById('martCountChip').textContent = available.length;
+        document.getElementById('pendingMartCount').textContent = available.length;
+        document.getElementById('pendingMartCount').style.display = available.length ? 'inline-flex' : 'none';
+
+        const listWrap = document.getElementById('martOrdersList');
+        if (active) { listWrap.innerHTML = '<div class="empty-state"><div class="empty-icon"><i class="fas fa-lock"></i></div><h4>Ek Active Delivery Chal Rahi Hai</h4><p>Nayi delivery accept karne se pehle current delivery complete karein</p></div>'; return; }
+        if (available.length===0) { listWrap.innerHTML = '<div class="empty-state"><div class="empty-icon"><i class="fas fa-cart-shopping"></i></div><h4>Koi Mart Delivery Nahi</h4><p>Abhi koi shop se pickup ke liye ready order nahi hai</p></div>'; return; }
+
+        listWrap.innerHTML = available.map(([id,o,d]) => `
+            <div class="request-card" style="border-left-color:#8B5CF6;">
+                <div class="request-card-top"><div><div class="request-card-type" style="background:#EDE9FE;color:#6D28D9;">Mart Delivery</div></div><div class="request-card-fare">Rs. ${o.deliveryFee||0} <span>delivery fee</span></div></div>
+                <div class="request-detail pickup"><i class="fas fa-store"></i><div><div class="detail-label">Pickup — ${o.shopName||'Shop'}</div><div class="detail-text">${(o.shopAddress||'').substring(0,60)}</div></div></div>
+                <div class="request-detail dropoff"><i class="fas fa-location-dot"></i><div><div class="detail-label">Deliver To</div><div class="detail-text">${(o.address||'').substring(0,60)}</div></div></div>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;">
+                    <span style="background:#F1F5F9;color:var(--text-muted);font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;"><i class="fas fa-road"></i> ${d!=null?d.toFixed(1)+' km to shop':'distance N/A'}</span>
+                    <span style="background:#F1F5F9;color:var(--text-muted);font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;"><i class="fas fa-boxes-stacked"></i> ${(o.items||[]).length} items</span>
+                </div>
+                <div class="request-actions"><button class="btn-accept" onclick="acceptMartOrder('${id}')"><i class="fas fa-check"></i> Delivery Accept Karein</button></div>
+            </div>`).join('');
+    }
+
+    window.acceptMartOrder = async (id) => {
+        const result = await runTransaction(ref(db,'martOrders/'+id+'/captainId'), (curr) => {
+            if (curr) return; // already taken, abort
+            return currentCaptain.uid;
+        });
+        if (!result.committed) { alert('Yeh delivery kisi aur captain ne le li hai.'); return; }
+        await update(ref(db,'martOrders/'+id), {
+            captainName: captainData.fullName || 'Captain',
+            captainPhone: captainData.mobileNumber || '',
+            status: 'out_for_delivery',
+            acceptedAt: new Date().toISOString()
+        });
+        document.querySelector('.tab-button[data-tab="mart-tab"]').click();
+    };
+
+    window.markMartPickedUp = async (id) => {
+        await update(ref(db,'martOrders/'+id), { status: 'picked_up', pickedUpAt: new Date().toISOString() });
+    };
+
+    window.markMartDelivered = async (id) => {
+        const o = martOrdersCache[id];
+        if (!o) return;
+        const fee = parseInt(o.deliveryFee) || 0;
+        await runTransaction(ref(db,'riders/'+currentCaptain.uid+'/walletBalance'), (curr) => (parseInt(curr)||0) + fee);
+        await update(ref(db,'martOrders/'+id), { status: 'delivered', deliveredAt: new Date().toISOString() });
+    };
 
     let lowBalanceChecked=false;
     function loadWalletBalance() {
