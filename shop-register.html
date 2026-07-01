@@ -197,6 +197,9 @@ input:checked + .slider:before { transform:translateX(18px); }
     </div>
     <div class="status-detail" id="statusDetail"></div>
     <div class="status-note" id="statusNote"></div>
+    <a class="submit-btn hidden" id="dashboardBtn" href="shop-dashboard.html" style="text-decoration:none; margin-top:16px;">
+      <i class="fa-solid fa-gauge"></i> Shop Dashboard Kholein
+    </a>
     <button class="reapply-btn hidden" id="reapplyBtn" onclick="resetForReapply()">
       <i class="fa-solid fa-rotate-right"></i> Naya Request Bhejein
     </button>
@@ -215,8 +218,9 @@ input:checked + .slider:before { transform:translateX(18px); }
     </div>
 
     <div class="field-group">
-      <label>Shop Category <span class="req">*</span></label>
+      <label>Shop Categories <span class="req">*</span></label>
       <div class="cat-grid" id="catGrid"></div>
+      <div class="field-hint">Ek ya zyada select karein. Agar aap har type ka saman bechte hain to "All Categories" select karein.</div>
       <input type="hidden" id="shopCategory" required>
     </div>
 
@@ -319,6 +323,7 @@ const CLOUD_NAME = "dw4btouzp";
 const UPLOAD_PRESET = "sell-it-fast";
 
 const SHOP_CATEGORIES = [
+  { id:'all', name:'All Categories', icon:'fa-border-all' },
   { id:'grocery', name:'Grocery', icon:'fa-basket-shopping' },
   { id:'pharmacy', name:'Pharmacy', icon:'fa-briefcase-medical' },
   { id:'bakery', name:'Bakery', icon:'fa-bread-slice' },
@@ -334,6 +339,7 @@ let pendingCnicBackFile = null;
 let capturedLoc = null;
 let myRequestId = null;
 let myRequestData = null;
+let selectedCategories = [];
 
 /* ---------- DARK MODE ---------- */
 const darkToggle = document.getElementById('darkToggle');
@@ -343,19 +349,47 @@ darkToggle.addEventListener('change', () => {
   localStorage.setItem('mart_dark', darkToggle.checked ? '1':'0');
 });
 
-/* ---------- CATEGORY GRID ---------- */
+/* ---------- CATEGORY GRID (multi-select) ---------- */
 const catGrid = document.getElementById('catGrid');
 catGrid.innerHTML = SHOP_CATEGORIES.map(c => `
-  <div class="cat-chip" data-cat="${c.id}" onclick="selectCategory('${c.id}')">
+  <div class="cat-chip" data-cat="${c.id}" onclick="toggleCategory('${c.id}')">
     <i class="fa-solid ${c.icon}"></i>${c.name}
   </div>`).join('');
 
-window.selectCategory = (id) => {
-  document.getElementById('shopCategory').value = id;
-  document.querySelectorAll('.cat-chip').forEach(el => el.classList.toggle('active', el.dataset.cat===id));
+function syncCategoryUI(){
+  document.querySelectorAll('.cat-chip').forEach(el => el.classList.toggle('active', selectedCategories.includes(el.dataset.cat)));
+  document.getElementById('shopCategory').value = selectedCategories.join(',');
+}
+
+window.toggleCategory = (id) => {
+  if(id === 'all'){
+    // "All Categories" is exclusive - selecting it clears everything else
+    selectedCategories = selectedCategories.includes('all') ? [] : ['all'];
+  } else {
+    selectedCategories = selectedCategories.filter(c => c !== 'all'); // picking a specific cat clears "all"
+    if(selectedCategories.includes(id)) selectedCategories = selectedCategories.filter(c => c !== id);
+    else selectedCategories.push(id);
+  }
+  syncCategoryUI();
 };
 
-function labelForCat(id){ return (SHOP_CATEGORIES.find(c=>c.id===id)||{}).name || 'Shop'; }
+// Backward-compat: some old callers may still invoke selectCategory(id) with a single value
+window.selectCategory = (id) => {
+  selectedCategories = id === 'all' ? ['all'] : [id];
+  syncCategoryUI();
+};
+
+function getCatArray(r){
+  if(Array.isArray(r)) return r;
+  if(typeof r === 'string') return r.split(',').filter(Boolean);
+  return [];
+}
+function labelForCat(catField){
+  const ids = getCatArray(catField);
+  if(ids.length===0) return 'Shop';
+  if(ids.includes('all')) return 'All Categories';
+  return ids.map(id => (SHOP_CATEGORIES.find(c=>c.id===id)||{}).name || id).join(', ');
+}
 function iconForCat(id){ return (SHOP_CATEGORIES.find(c=>c.id===id)||{}).icon || 'fa-shop'; }
 
 /* ---------- TOAST ---------- */
@@ -431,16 +465,17 @@ function renderStatusCard(r, showReapply){
   icon.innerHTML = status==='approved' ? '<i class="fa-solid fa-check"></i>' : status==='rejected' ? '<i class="fa-solid fa-xmark"></i>' : '<i class="fa-solid fa-clock"></i>';
 
   document.getElementById('statusDetail').innerHTML = `
-    <div>🏷️ <b>${labelForCat(r.category)}</b></div>
+    <div>🏷️ <b>${labelForCat(r.categories || r.category)}</b></div>
     <div>📞 <b>${r.phone||''}</b></div>
     <div>📍 ${r.address||''}</div>`;
 
   const note = document.getElementById('statusNote');
   if(status==='pending') note.textContent = 'Aapka registration request review mein hai. Approval hote hi aapki shop Raftaroo Mart par live ho jayegi.';
-  else if(status==='approved') note.textContent = 'Mubarak ho! Aapki shop approve ho chuki hai aur ab live hai. Products add karne ke liye Raftaroo Mart app open karein.';
+  else if(status==='approved') note.textContent = 'Mubarak ho! Aapki shop approve ho chuki hai aur ab live hai. Neeche diye button se apna Shop Dashboard kholein aur products add karein.';
   else note.textContent = 'Yeh request reject ho gayi. Aap details update karke dobara request bhej sakte hain.';
 
   document.getElementById('reapplyBtn').classList.toggle('hidden', !showReapply);
+  document.getElementById('dashboardBtn').classList.toggle('hidden', status!=='approved');
 }
 
 window.resetForReapply = () => {
@@ -454,7 +489,10 @@ window.resetForReapply = () => {
     document.getElementById('ownerCnic').value = myRequestData.cnicNumber || '';
     if(myRequestData.cnicFrontUrl) document.getElementById('cnicFrontPreview').innerHTML = `<img src="${myRequestData.cnicFrontUrl}">`;
     if(myRequestData.cnicBackUrl) document.getElementById('cnicBackPreview').innerHTML = `<img src="${myRequestData.cnicBackUrl}">`;
-    if(myRequestData.category) window.selectCategory(myRequestData.category);
+    if(myRequestData.categories || myRequestData.category){
+      selectedCategories = getCatArray(myRequestData.categories || myRequestData.category);
+      syncCategoryUI();
+    }
   }
 };
 
@@ -536,14 +574,14 @@ window.submitShopRequest = async (e) => {
   if(!currentUser){ toast('Pehle sign in karein'); return false; }
 
   const name = document.getElementById('shopName').value.trim();
-  const category = document.getElementById('shopCategory').value;
+  const categories = selectedCategories.slice();
   const desc = document.getElementById('shopDesc').value.trim();
   const phone = document.getElementById('shopPhone').value.trim();
   const address = document.getElementById('shopAddress').value.trim();
   const cnicNumber = document.getElementById('ownerCnic').value.trim();
 
   if(!name){ toast('Shop name likhein'); return false; }
-  if(!category){ toast('Shop category select karein'); return false; }
+  if(categories.length===0){ toast('Kam se kam ek shop category select karein'); return false; }
   if(!phone){ toast('Phone number likhein'); return false; }
   if(!address){ toast('Shop address likhein'); return false; }
   if(!cnicNumber){ toast('CNIC number likhein'); return false; }
@@ -578,7 +616,7 @@ window.submitShopRequest = async (e) => {
 
     const newReqRef = push(ref(db, 'shopRequests'));
     await set(newReqRef, {
-      name, category, description: desc, phone, address,
+      name, categories, category: categories[0], description: desc, phone, address,
       logoUrl: logoUrl || '',
       cnicNumber, cnicFrontUrl, cnicBackUrl,
       lat: capturedLoc ? capturedLoc.lat : null,

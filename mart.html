@@ -3,13 +3,63 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
-<title>Raftaroo Mart | Shopping Made Fast</title>
+
+<!-- ===== PRIMARY SEO ===== -->
+<title>Raftaroo Mart | Grocery & Daily Essentials Delivery in Pakistan</title>
+<meta name="description" content="Raftaroo Mart se groceries, daily essentials aur mart items order karein — nearby shops, fast delivery, best prices. Pakistan ka apna grocery delivery app.">
+<meta name="keywords" content="Raftaroo Mart, grocery delivery Pakistan, online grocery app Pakistan, daily essentials delivery, mart app, fast grocery delivery, online shopping Pakistan">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="author" content="Raftaroo">
 <meta name="theme-color" content="#28a745">
-<meta name="description" content="Raftaroo Mart - Order groceries, essentials and more, delivered fast.">
+<link rel="canonical" href="https://mart.raftaroo.app/">
+
+<!-- ===== FAVICON / APP ICONS ===== -->
+<link rel="icon" type="image/png" href="https://iili.io/C7kWnf4.png">
 <link rel="apple-touch-icon" href="/apple-touch-icon.png">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
 <meta name="apple-mobile-web-app-title" content="Raftaroo Mart">
+
+<!-- ===== OPEN GRAPH (Facebook / WhatsApp / Telegram) ===== -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Raftaroo Mart">
+<meta property="og:title" content="Raftaroo Mart | Grocery & Daily Essentials Delivery in Pakistan">
+<meta property="og:description" content="Groceries aur daily essentials, ab ek hi app se order karein — fast delivery ke saath. Nearby shops se best prices par shopping.">
+<meta property="og:image" content="https://iili.io/C7vaynp.jpg">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:url" content="https://mart.raftaroo.app/">
+<meta property="og:locale" content="en_PK">
+
+<!-- ===== TWITTER CARD ===== -->
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Raftaroo Mart | Grocery & Daily Essentials Delivery in Pakistan">
+<meta name="twitter:description" content="Groceries aur daily essentials, ab ek hi app se order karein — fast delivery ke saath.">
+<meta name="twitter:image" content="https://iili.io/C7vaynp.jpg">
+
+<!-- ===== STRUCTURED DATA (JSON-LD) ===== -->
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "GroceryStore",
+  "name": "Raftaroo Mart",
+  "url": "https://mart.raftaroo.app/",
+  "image": "https://iili.io/C7vaynp.jpg",
+  "logo": "https://iili.io/C7kWnf4.png",
+  "description": "Raftaroo Mart - Order groceries, daily essentials and more, delivered fast across Pakistan.",
+  "areaServed": {
+    "@type": "Country",
+    "name": "Pakistan"
+  },
+  "priceRange": "$$",
+  "sameAs": []
+}
+</script>
+
+<!-- ===== PERFORMANCE (helps SEO ranking too) ===== -->
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="preconnect" href="https://cdnjs.cloudflare.com">
 
 <!-- Fonts & Icons -->
 <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
@@ -95,9 +145,11 @@ input, textarea, select { font-family:'Poppins',sans-serif; }
 .mart-banner img { width:100%; height:auto; display:block; border-radius:16px; }
 
 /* ---------- SECTION ---------- */
-.section-title { display:flex; align-items:center; justify-content:space-between; padding:16px 16px 8px; }
-.section-title h4 { font-size:14.5px; font-weight:700; }
-.section-title span { font-size:11.5px; color:var(--primary); font-weight:600; }
+.section-title { display:flex; flex-wrap:wrap; align-items:center; justify-content:space-between; padding:16px 16px 8px; gap:6px 8px; }
+.section-title h4 { font-size:14.5px; font-weight:700; flex:1 1 100%; }
+.section-title span { font-size:11.5px; color:var(--primary); font-weight:600; white-space:nowrap; }
+.section-title-right { display:flex; align-items:center; gap:8px; margin-left:auto; }
+.sort-select { -webkit-appearance:none; appearance:none; border:none; outline:none; background:var(--card-bg); box-shadow:var(--shadow); border-radius:10px; padding:6px 24px 6px 10px; font-size:10.5px; font-weight:600; color:var(--text-main); background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 24 24' fill='none' stroke='%23707070' stroke-width='3'><polyline points='6 9 12 15 18 9'/></svg>"); background-repeat:no-repeat; background-position:right 7px center; max-width:112px; }
 
 /* ---------- PRODUCT GRID ---------- */
 .product-grid { display:grid; grid-template-columns:1fr 1fr; gap:12px; padding:0 16px 16px; }
@@ -130,7 +182,7 @@ input, textarea, select { font-family:'Poppins',sans-serif; }
 /* ---------- FLOATING CART BAR ---------- */
 .floating-cart { position:fixed; left:16px; right:16px; bottom:78px; background:var(--secondary); color:#fff; border-radius:16px; padding:12px 16px; display:flex; align-items:center; justify-content:space-between; box-shadow:0 8px 24px rgba(0,0,0,0.25); z-index:590; }
 .dark-mode .floating-cart { background:var(--primary); }
-.floating-cart .fc-left { font-size:12.5px; }
+.floating-cart .fc-left { font-size:12.5px; display:flex; align-items:center; gap:6px; }
 .floating-cart .fc-left b { font-size:14.5px; }
 .floating-cart .fc-right { display:flex; align-items:center; gap:8px; font-weight:700; font-size:13px; }
 
@@ -146,7 +198,42 @@ input, textarea, select { font-family:'Poppins',sans-serif; }
 .cart-item-info { flex:1; }
 .cart-item-info .ci-name { font-size:13px; font-weight:600; margin-bottom:2px; }
 .cart-item-info .ci-price { font-size:12px; color:var(--primary); font-weight:700; }
+.cart-item-actions { display:flex; flex-direction:column; align-items:center; gap:8px; }
+.ci-delete-btn { background:rgba(231,76,60,0.1); border:none; color:var(--error); font-size:13px; width:30px; height:30px; border-radius:9px; display:flex; align-items:center; justify-content:center; transition:transform .15s ease, background .15s ease; }
+.ci-delete-btn:active { transform:scale(.88); background:rgba(231,76,60,0.2); }
 .remove-item { color:var(--error); font-size:15px; padding:6px; }
+
+/* ---------- CART HEADER / SUMMARY POLISH ---------- */
+.cart-count-pill { background:rgba(40,167,69,0.12); color:var(--primary); font-size:11px; font-weight:700; padding:3px 10px; border-radius:20px; margin-left:auto; }
+.cart-item { position:relative; transition:transform .15s ease, box-shadow .15s ease; animation:cartItemIn .38s cubic-bezier(.22,.9,.35,1.1) backwards; }
+.cart-item:active { transform:scale(.98); }
+@keyframes cartItemIn { from{ opacity:0; transform:translateY(14px) scale(.97); } to{ opacity:1; transform:translateY(0) scale(1); } }
+.cart-item.removing { animation:cartItemOut .28s ease forwards; }
+@keyframes cartItemOut { to{ opacity:0; transform:translateX(60px) scale(.9); margin-bottom:0; max-height:0; padding-top:0; padding-bottom:0; } }
+.cart-item-info .ci-price { display:flex; align-items:center; gap:6px; }
+.cart-item-info .ci-unit { color:var(--text-muted); font-weight:400; font-size:11px; }
+
+.summary-box { position:relative; overflow:hidden; }
+.summary-box::before { content:''; position:absolute; top:0; left:0; width:4px; height:100%; background:var(--primary); }
+.summary-row i { width:16px; color:var(--primary); margin-right:6px; font-size:11px; }
+.savings-strip { display:flex; align-items:center; gap:8px; background:rgba(40,167,69,0.1); color:var(--primary); font-size:11.5px; font-weight:600; padding:9px 14px; border-radius:12px; margin:6px 16px 2px; }
+.savings-strip i { font-size:13px; }
+
+.cart-empty-hero { text-align:center; padding:50px 24px 20px; }
+.cart-empty-hero img { width:120px; height:120px; object-fit:contain; opacity:.85; margin-bottom:14px; animation:trolleyFloat 2.6s ease-in-out infinite; }
+@keyframes trolleyFloat { 0%,100%{ transform:translateY(0) rotate(-2deg); } 50%{ transform:translateY(-8px) rotate(2deg); } }
+.cart-empty-hero h3 { font-size:15px; font-weight:700; margin-bottom:5px; }
+.cart-empty-hero p { font-size:12.5px; color:var(--text-muted); margin-bottom:18px; }
+.cart-empty-hero .start-shop-btn { display:inline-flex; align-items:center; gap:8px; background:var(--primary); color:#fff; font-weight:700; font-size:13px; padding:12px 24px; border-radius:14px; box-shadow:0 8px 18px rgba(40,167,69,0.3); }
+
+/* ---------- FLY TO CART ANIMATION ---------- */
+.fly-cart-item { position:fixed; width:46px; height:46px; border-radius:12px; object-fit:cover; z-index:9999; pointer-events:none; box-shadow:0 6px 18px rgba(0,0,0,0.35); transition:transform .68s cubic-bezier(.35,.02,.35,1), opacity .68s ease .1s, width .68s ease, height .68s ease; }
+@keyframes cartBump { 0%{ transform:scale(1); } 35%{ transform:scale(1.4) rotate(-10deg); } 60%{ transform:scale(.88) rotate(8deg); } 100%{ transform:scale(1) rotate(0); } }
+.cart-bump-target { animation:cartBump .45s ease; }
+@keyframes badgePop { 0%{ transform:scale(1); } 45%{ transform:scale(1.7); } 100%{ transform:scale(1); } }
+.badge-pop { animation:badgePop .35s cubic-bezier(.4,1.6,.6,1); }
+.nav-cart-trolley { width:19px; height:19px; object-fit:contain; }
+.floating-cart .fc-trolley { width:20px; height:20px; object-fit:contain; margin-right:2px; }
 
 .summary-box { background:var(--card-bg); border-radius:16px; margin:8px 16px; padding:14px 16px; box-shadow:var(--shadow); }
 .summary-row { display:flex; justify-content:space-between; font-size:13px; color:var(--text-muted); padding:5px 0; }
@@ -199,17 +286,37 @@ textarea.input-field { resize:vertical; min-height:64px; }
 input:checked + .slider { background:var(--primary); }
 input:checked + .slider::before { transform:translateX(18px); }
 
-/* ---------- MODAL ---------- */
-.modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:8000; display:flex; align-items:flex-end; }
-.modal-sheet { background:var(--card-bg); width:100%; max-height:88vh; overflow-y:auto; border-radius:22px 22px 0 0; padding:18px; animation:slideUp .25s ease-out; }
-@keyframes slideUp { from{ transform:translateY(30px); opacity:0;} to{ transform:translateY(0); opacity:1;} }
-.modal-handle { width:40px; height:4px; background:var(--border); border-radius:4px; margin:0 auto 14px; }
-.pd-img { width:100%; aspect-ratio:1/0.85; object-fit:cover; border-radius:16px; background:var(--input-bg); margin-bottom:14px; }
-.pd-name { font-size:17px; font-weight:800; margin-bottom:4px; }
-.pd-cat { font-size:11px; color:var(--text-muted); text-transform:uppercase; margin-bottom:10px; }
-.pd-price { font-size:20px; font-weight:800; color:var(--primary); margin-bottom:10px; }
-.pd-desc { font-size:13px; color:var(--text-muted); line-height:1.6; margin-bottom:16px; }
-.close-modal-btn { position:absolute; top:14px; right:16px; width:32px; height:32px; border-radius:50%; background:var(--input-bg); display:flex; align-items:center; justify-content:center; }
+/* ---------- PRODUCT DETAIL (FULLSCREEN) ---------- */
+.product-detail-view { position:fixed; inset:0; background:var(--bg-light); z-index:8000; overflow-y:auto; animation:pdFadeIn .2s ease-out; }
+@keyframes pdFadeIn { from{ opacity:0; transform:translateY(12px);} to{ opacity:1; transform:translateY(0);} }
+.pd-header { display:flex; align-items:center; justify-content:space-between; padding:14px 16px; background:var(--header-bg); position:sticky; top:0; z-index:10; box-shadow:var(--shadow); }
+.pd-header i { font-size:16px; width:36px; height:36px; border-radius:11px; background:var(--input-bg); display:flex; align-items:center; justify-content:center; color:var(--text-main); }
+.pd-body { padding-bottom:30px; }
+.pd-img { width:100%; aspect-ratio:1/0.9; object-fit:cover; background:var(--input-bg); display:block; }
+.pd-content { padding:18px 16px 6px; }
+.pd-name { font-size:19px; font-weight:800; margin-bottom:4px; }
+.pd-cat { font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.3px; margin-bottom:10px; }
+.pd-price { font-size:22px; font-weight:800; color:var(--primary); margin-bottom:12px; }
+.pd-desc { font-size:13px; color:var(--text-muted); line-height:1.6; margin-bottom:18px; }
+
+/* ---------- SHARE ---------- */
+.pd-header-right { display:flex; align-items:center; gap:8px; }
+.share-sheet-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.5); z-index:9500; display:flex; align-items:flex-end; opacity:0; pointer-events:none; transition:opacity .25s; }
+.share-sheet-overlay.open { opacity:1; pointer-events:auto; }
+.share-sheet { background:var(--card-bg); width:100%; border-radius:20px 20px 0 0; padding:20px 16px calc(20px + env(safe-area-inset-bottom)); transform:translateY(100%); transition:transform .28s ease-out; }
+.share-sheet-overlay.open .share-sheet { transform:translateY(0); }
+.share-sheet h4 { font-size:14.5px; font-weight:700; margin-bottom:16px; text-align:center; }
+.share-sheet-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:14px; margin-bottom:10px; }
+.share-opt { display:flex; flex-direction:column; align-items:center; gap:7px; font-size:10.5px; font-weight:600; color:var(--text-main); }
+.share-opt .share-ic { width:52px; height:52px; border-radius:16px; display:flex; align-items:center; justify-content:center; font-size:22px; color:#fff; }
+.share-opt.whatsapp .share-ic { background:#25D366; }
+.share-opt.facebook .share-ic { background:#1877F2; }
+.share-opt.twitter .share-ic { background:#000000; }
+.share-opt.copy .share-ic { background:var(--text-muted); }
+.share-opt.more .share-ic { background:var(--primary); }
+.share-sheet-cancel { width:100%; padding:13px; border-radius:13px; background:var(--input-bg); color:var(--text-main); font-weight:700; font-size:13.5px; margin-top:6px; }
+.related-section { margin-top:8px; }
+.related-empty { padding:10px 16px 20px; color:var(--text-muted); font-size:12.5px; }
 
 .toast { position:fixed; bottom:90px; left:50%; transform:translateX(-50%); background:var(--secondary); color:#fff; padding:11px 20px; border-radius:30px; font-size:12.5px; font-weight:600; z-index:9500; box-shadow:0 6px 20px rgba(0,0,0,0.3); opacity:0; transition:.3s; pointer-events:none; }
 .dark-mode .toast { background:var(--primary); }
@@ -255,7 +362,7 @@ input:checked + .slider::before { transform:translateX(18px); }
   <h1>Raftaroo Mart</h1>
   <p>Groceries aur daily essentials, ab ek hi app se order karein — fast delivery ke saath.</p>
   <button class="google-btn" id="googleLoginBtn">
-    <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="">
+    <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="Google">
     Continue with Google
   </button>
   <p class="auth-note">Same Raftaroo account, ek hi wallet.</p>
@@ -288,7 +395,18 @@ input:checked + .slider::before { transform:translateX(18px); }
       <img src="https://iili.io/C7vaynp.jpg" alt="Raftaroo Mart Banner">
     </div>
 
-    <div class="section-title"><h4 id="shopGridTitle">Qareeb ki Shops ke Products</h4><span id="shopGridCount"></span></div>
+    <div class="section-title">
+      <h4 id="shopGridTitle">Qareeb ki Shops ke Products</h4>
+      <div class="section-title-right">
+        <span id="shopGridCount"></span>
+        <select class="sort-select" id="homeSortSelect" onchange="setHomeSort(this.value)">
+          <option value="default">Sort: Default</option>
+          <option value="price-asc">Price: Low to High</option>
+          <option value="price-desc">Price: High to Low</option>
+          <option value="name-asc">Name: A to Z</option>
+        </select>
+      </div>
+    </div>
     <div class="product-grid" id="homeProductGrid"></div>
     <div class="empty-state hidden" id="shopsEmpty"><i class="fa-solid fa-box-open"></i><p>Is category mein abhi koi product available nahi.</p></div>
   </div>
@@ -301,7 +419,18 @@ input:checked + .slider::before { transform:translateX(18px); }
     </div>
     <div class="shop-hero" id="shopHero"></div>
     <div class="cat-scroll" id="categoryScroll"></div>
-    <div class="section-title"><h4 id="gridTitle">All Products</h4><span id="gridCount"></span></div>
+    <div class="section-title">
+      <h4 id="gridTitle">All Products</h4>
+      <div class="section-title-right">
+        <span id="gridCount"></span>
+        <select class="sort-select" id="shopSortSelect" onchange="setShopSort(this.value)">
+          <option value="default">Sort: Default</option>
+          <option value="price-asc">Price: Low to High</option>
+          <option value="price-desc">Price: High to Low</option>
+          <option value="name-asc">Name: A to Z</option>
+        </select>
+      </div>
+    </div>
     <div class="product-grid" id="productGrid"></div>
     <div class="empty-state hidden" id="homeEmpty"><i class="fa-solid fa-box-open"></i><p>Koi product is category mein abhi available nahi.</p></div>
   </div>
@@ -317,7 +446,17 @@ input:checked + .slider::before { transform:translateX(18px); }
     </div>
     <div class="section-title hidden" id="searchShopsTitle"><h4>Shops</h4></div>
     <div class="shop-list" id="searchShopList"></div>
-    <div class="section-title hidden" id="searchProductsTitle"><h4>Products</h4></div>
+    <div class="section-title hidden" id="searchProductsTitle">
+      <h4>Products</h4>
+      <div class="section-title-right">
+        <select class="sort-select" id="searchSortSelect" onchange="setSearchSort(this.value)">
+          <option value="default">Sort: Default</option>
+          <option value="price-asc">Price: Low to High</option>
+          <option value="price-desc">Price: High to Low</option>
+          <option value="name-asc">Name: A to Z</option>
+        </select>
+      </div>
+    </div>
     <div class="product-grid" id="searchGrid" style="padding-top:6px;"></div>
     <div class="empty-state" id="searchEmpty"><i class="fa-solid fa-magnifying-glass"></i><p>Type kuch bhi search karne ke liye</p></div>
   </div>
@@ -327,9 +466,17 @@ input:checked + .slider::before { transform:translateX(18px); }
     <div class="view-header">
       <i class="fa-solid fa-arrow-left back-icon" onclick="showView('home-view')"></i>
       <h2>My Cart</h2>
+      <span class="cart-count-pill hidden" id="cartHeaderCount">0 items</span>
     </div>
     <div id="cartItemsWrap" style="padding-top:14px;"></div>
-    <div class="empty-state hidden" id="cartEmpty"><i class="fa-solid fa-cart-shopping"></i><p>Aapka cart khali hai</p></div>
+    <div class="empty-state hidden" id="cartEmpty">
+      <div class="cart-empty-hero">
+        <img src="https://iili.io/CY9UUCu.png" alt="Empty Cart">
+        <h3>Aapka cart khali hai</h3>
+        <p>Koi cheez add nahi ki abhi tak — chaliye shopping shuru karte hain!</p>
+        <button class="start-shop-btn" onclick="showView('home-view')"><i class="fa-solid fa-store"></i> Start Shopping</button>
+      </div>
+    </div>
     <div id="cartSummaryWrap"></div>
     <button class="primary-btn hidden" id="goCheckoutBtn" onclick="showView('checkout-view')">Proceed to Checkout</button>
   </div>
@@ -396,30 +543,62 @@ input:checked + .slider::before { transform:translateX(18px); }
   <nav class="bottom-nav">
     <div class="nav-item active" data-nav="home-view" onclick="showView('home-view')"><i class="fa-solid fa-house"></i>Home</div>
     <div class="nav-item" data-nav="search-view" onclick="showView('search-view')"><i class="fa-solid fa-magnifying-glass"></i>Search</div>
-    <div class="nav-item" data-nav="cart-view" onclick="showView('cart-view')"><i class="fa-solid fa-cart-shopping"></i>Cart<span class="nav-cart-badge hidden" id="navCartBadge">0</span></div>
+    <div class="nav-item" data-nav="cart-view" id="cartNavIcon" onclick="showView('cart-view')"><img class="nav-cart-trolley" src="https://iili.io/CY9UUCu.png" alt="Cart">Cart<span class="nav-cart-badge hidden" id="navCartBadge">0</span></div>
     <div class="nav-item" data-nav="orders-view" onclick="showView('orders-view')"><i class="fa-solid fa-receipt"></i>Orders</div>
     <div class="nav-item" data-nav="profile-view" onclick="showView('profile-view')"><i class="fa-solid fa-user"></i>Profile</div>
   </nav>
 
   <!-- FLOATING CART BAR -->
   <div class="floating-cart hidden" id="floatingCart" onclick="showView('cart-view')">
-    <div class="fc-left"><b id="fcCount">0</b> items · Rs. <span id="fcTotal">0</span></div>
+    <div class="fc-left"><img class="fc-trolley" src="https://iili.io/CY9UUCu.png" alt=""><b id="fcCount">0</b> items · Rs. <span id="fcTotal">0</span></div>
     <div class="fc-right">View Cart <i class="fa-solid fa-arrow-right"></i></div>
   </div>
 
 </div>
 
-<!-- PRODUCT DETAIL MODAL -->
-<div class="modal-overlay hidden" id="productModal" onclick="closeProductModalBg(event)">
-  <div class="modal-sheet" style="position:relative;" onclick="event.stopPropagation()">
-    <div class="close-modal-btn" onclick="closeProductModal()"><i class="fa-solid fa-xmark"></i></div>
-    <div class="modal-handle"></div>
+<!-- PRODUCT DETAIL FULLSCREEN VIEW -->
+<div class="product-detail-view hidden" id="productModal">
+  <div class="pd-header">
+    <i class="fa-solid fa-arrow-left" onclick="closeProductModal()"></i>
+    <div class="pd-header-right">
+      <i class="fa-solid fa-share-nodes" onclick="openShareSheet()"></i>
+      <i class="fa-solid fa-xmark" onclick="closeProductModal()"></i>
+    </div>
+  </div>
+  <div class="pd-body">
     <img class="pd-img" id="pdImg" src="">
-    <div class="pd-cat" id="pdCat"></div>
-    <div class="pd-name" id="pdName"></div>
-    <div class="pd-price">Rs. <span id="pdPrice"></span></div>
-    <div class="pd-desc" id="pdDesc"></div>
-    <div id="pdCartAction"></div>
+    <div class="pd-content">
+      <div class="pd-cat" id="pdCat"></div>
+      <div class="pd-name" id="pdName"></div>
+      <div class="pd-price">Rs. <span id="pdPrice"></span></div>
+      <div class="pd-desc" id="pdDesc"></div>
+      <div id="pdCartAction"></div>
+    </div>
+    <div class="related-section">
+      <div class="section-title"><h4>Related Products</h4></div>
+      <div class="product-grid" id="relatedProductGrid"></div>
+    </div>
+  </div>
+
+  <!-- FLOATING CART BAR (so cart stays visible inside product modal too) -->
+  <div class="floating-cart hidden" id="pdFloatingCart" style="position:fixed; z-index:8500;" onclick="closeProductModal(); showView('cart-view');">
+    <div class="fc-left"><img class="fc-trolley" src="https://iili.io/CY9UUCu.png" alt=""><b id="pdFcCount">0</b> items · Rs. <span id="pdFcTotal">0</span></div>
+    <div class="fc-right">View Cart <i class="fa-solid fa-arrow-right"></i></div>
+  </div>
+</div>
+
+<!-- SHARE SHEET -->
+<div class="share-sheet-overlay" id="shareSheetOverlay" onclick="if(event.target===this)closeShareSheet()">
+  <div class="share-sheet">
+    <h4>Product Share Karein</h4>
+    <div class="share-sheet-grid">
+      <div class="share-opt whatsapp" onclick="doShare('whatsapp')"><div class="share-ic"><i class="fa-brands fa-whatsapp"></i></div>WhatsApp</div>
+      <div class="share-opt facebook" onclick="doShare('facebook')"><div class="share-ic"><i class="fa-brands fa-facebook-f"></i></div>Facebook</div>
+      <div class="share-opt twitter" onclick="doShare('twitter')"><div class="share-ic"><i class="fa-brands fa-x-twitter"></i></div>X</div>
+      <div class="share-opt copy" onclick="doShare('copy')"><div class="share-ic"><i class="fa-solid fa-link"></i></div>Copy Link</div>
+      <div class="share-opt more" onclick="doShare('more')"><div class="share-ic"><i class="fa-solid fa-ellipsis"></i></div>More</div>
+    </div>
+    <button class="share-sheet-cancel" onclick="closeShareSheet()">Cancel</button>
   </div>
 </div>
 
@@ -447,7 +626,6 @@ const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 
 const CATEGORIES = [
-  { id:'all', name:'All', icon:'fa-border-all' },
   { id:'grocery', name:'Grocery', icon:'fa-basket-shopping' },
   { id:'fruits', name:'Fruits & Veg', icon:'fa-apple-whole' },
   { id:'bakery', name:'Bakery', icon:'fa-bread-slice' },
@@ -478,7 +656,59 @@ let currentShopData = null;
 let previousView = 'home-view';
 let cart = {};
 let activeCategory = 'all';
-let activeShopCategory = 'all';
+let activeHomeCategory = 'all';
+let homeSortMode = 'default';
+let shopSortMode = 'default';
+let searchSortMode = 'default';
+
+function sortProductEntries(list, mode){
+  const arr = [...list];
+  if(mode==='price-asc') arr.sort((a,b) => (parseInt(a[1].price)||0)-(parseInt(b[1].price)||0));
+  else if(mode==='price-desc') arr.sort((a,b) => (parseInt(b[1].price)||0)-(parseInt(a[1].price)||0));
+  else if(mode==='name-asc') arr.sort((a,b) => (a[1].name||'').localeCompare(b[1].name||''));
+  return arr;
+}
+window.setHomeSort = (mode) => { homeSortMode = mode; renderHomeProducts(); };
+window.setShopSort = (mode) => { shopSortMode = mode; renderProductGrid(); };
+window.setSearchSort = (mode) => { searchSortMode = mode; renderSearch(); };
+
+/* ---------------- HOME FEED FRESHNESS MIX ----------------
+   Har app open (page load) par ek naya random seed banta hai, jis se
+   home feed ka order thora sa shuffle hota hai aur naye products
+   purane products ke beech mix ho kar dikhte hain. Isse user ko
+   lagta hai ke har baar app open karne par kuch naya add hua hai. */
+const homeFeedSeed = (Date.now() % 2147483647) ^ Math.floor(Math.random()*2147483647);
+function seededRandom(seed){
+  let t = seed + 0x6D2B79F5;
+  t = Math.imul(t ^ (t >>> 15), t | 1);
+  t ^= t + Math.imul(t ^ (t >>> 7), t | 61);
+  return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+}
+function seededShuffle(arr, seed){
+  const a = [...arr];
+  for(let i=a.length-1;i>0;i--){
+    const r = seededRandom(seed + i*7919);
+    const j = Math.floor(r*(i+1));
+    [a[i],a[j]] = [a[j],a[i]];
+  }
+  return a;
+}
+function mixFreshProducts(products){
+  if(products.length<=3) return seededShuffle(products, homeFeedSeed);
+  const byNew = [...products].sort((a,b)=>(b[1].createdAt||0)-(a[1].createdAt||0));
+  const newCount = Math.max(3, Math.min(byNew.length, Math.ceil(byNew.length*0.25)));
+  const newPool = seededShuffle(byNew.slice(0, newCount), homeFeedSeed+1);
+  const oldPool = seededShuffle(byNew.slice(newCount), homeFeedSeed+2);
+  const gap = 3 + Math.floor(seededRandom(homeFeedSeed+3)*3); // har 3-5 card ke baad ek naya product
+  const result = [];
+  let ni = 0;
+  oldPool.forEach((item, idx) => {
+    result.push(item);
+    if((idx+1)%gap===0 && ni<newPool.length) result.push(newPool[ni++]);
+  });
+  while(ni<newPool.length) result.push(newPool[ni++]);
+  return result;
+}
 let walletBalance = 0;
 let customerLoc = null; // {lat,lng}
 
@@ -604,14 +834,32 @@ function listenShops(){
 function renderShopCategories(){
   const wrap = document.getElementById('shopCategoryScroll');
   if(!wrap) return;
-  wrap.innerHTML = SHOP_CATEGORIES.map(c => `
-    <div class="cat-chip ${c.id===activeShopCategory?'active':''}" onclick="selectShopCategory('${c.id}')">
+  wrap.innerHTML = `
+    <div class="cat-chip ${activeHomeCategory==='all'?'active':''}" onclick="selectShopCategory('all')">
+      <i class="fa-solid fa-border-all"></i><span>All</span>
+    </div>` + CATEGORIES.map(c => `
+    <div class="cat-chip ${c.id===activeHomeCategory?'active':''}" onclick="selectShopCategory('${c.id}')">
       <i class="fa-solid ${c.icon}"></i><span>${c.name}</span>
     </div>`).join('');
 }
-window.selectShopCategory = (id) => { activeShopCategory = id; renderShopCategories(); renderHomeProducts(); };
+window.selectShopCategory = (id) => { activeHomeCategory = id; renderShopCategories(); renderHomeProducts(); };
 
-function labelForShopCat(id){ return (SHOP_CATEGORIES.find(c=>c.id===id)||{}).name || 'Shop'; }
+function shopCategoryList(s){
+  if(Array.isArray(s.categories)) return s.categories;
+  if(typeof s.categories === 'string') return s.categories.split(',').filter(Boolean);
+  return s.category ? [s.category] : [];
+}
+function shopMatchesCategory(s, catId){
+  if(catId==='all') return true;
+  const cats = shopCategoryList(s);
+  return cats.includes('all') || cats.includes(catId);
+}
+function labelForShopCat(catField){
+  const ids = Array.isArray(catField) ? catField : (typeof catField==='string' ? catField.split(',').filter(Boolean) : []);
+  if(ids.length===0) return 'Shop';
+  if(ids.includes('all')) return 'All Categories';
+  return ids.map(id => (SHOP_CATEGORIES.find(c=>c.id===id)||{}).name || id).join(', ');
+}
 
 function getSortedShops(list){
   const withDist = list.map(([id,s]) => {
@@ -646,8 +894,8 @@ function homeProductCardHTML(id, p, distanceKm){
           <div class="qty-stepper">
             <button onclick="changeQty('${id}', -1)">−</button>
             <span>${qty}</span>
-            <button onclick="changeQty('${id}', 1)">+</button>
-          </div>` : `<button class="add-btn" onclick="changeQty('${id}', 1)"><i class="fa-solid fa-plus"></i></button>`)}
+            <button onclick="changeQty('${id}', 1, false, event)">+</button>
+          </div>` : `<button class="add-btn" onclick="changeQty('${id}', 1, false, event)"><i class="fa-solid fa-plus"></i></button>`)}
       </div>
     </div>
   </div>`;
@@ -657,20 +905,24 @@ function renderHomeProducts(){
   const wrap = document.getElementById('homeProductGrid');
   const empty = document.getElementById('shopsEmpty');
   if(!wrap) return;
-  let shopEntries = Object.entries(allShops);
-  if(activeShopCategory!=='all') shopEntries = shopEntries.filter(([id,s]) => s.category===activeShopCategory);
 
+  // All shops sorted by distance (used for display order + distance badge on each product card)
+  const shopEntries = Object.entries(allShops);
   const sortedShops = getSortedShops(shopEntries);
   const distanceById = {};
   const shopOrder = {};
   sortedShops.forEach(([id,s,d], i) => { distanceById[id] = d; shopOrder[id] = i; });
 
+  // Products are filtered by THEIR OWN category, regardless of which shop sells them
   let products = Object.entries(allProducts).filter(([id,p]) => shopOrder.hasOwnProperty(p.shopId));
-  products.sort((a,b) => {
-    const ia = shopOrder[a[1].shopId], ib = shopOrder[b[1].shopId];
-    if(ia!==ib) return ia-ib;
-    return (b[1].createdAt||0)-(a[1].createdAt||0);
-  });
+  if(activeHomeCategory!=='all') products = products.filter(([id,p]) => p.category===activeHomeCategory);
+
+  if(homeSortMode==='default'){
+    // Naya/purana mix — har app open par order thora shuffle hota hai
+    products = mixFreshProducts(products);
+  } else {
+    products = sortProductEntries(products, homeSortMode);
+  }
 
   document.getElementById('shopGridCount').textContent = products.length ? `${products.length} products` : '';
   if(products.length===0){ wrap.innerHTML=''; empty.classList.remove('hidden'); return; }
@@ -683,7 +935,6 @@ function renderShopList(){
   const empty = document.getElementById('shopsEmpty');
   if(!wrap) return;
   let entries = Object.entries(allShops);
-  if(activeShopCategory!=='all') entries = entries.filter(([id,s]) => s.category===activeShopCategory);
   document.getElementById('shopGridCount').textContent = entries.length ? `${entries.length} shops` : '';
   if(entries.length===0){ wrap.innerHTML=''; empty.classList.remove('hidden'); return; }
   empty.classList.add('hidden');
@@ -697,7 +948,7 @@ function shopCardHTML(id, s, distanceKm){
     <img src="${s.logoUrl||'https://via.placeholder.com/64?text=Shop'}" alt="${s.name}">
     <div class="sc-info">
       <div class="sc-name">${s.name} ${s.isOpen===false?'<span class="shop-closed-badge">Closed</span>':''}</div>
-      <div class="sc-cat">${labelForShopCat(s.category)}</div>
+      <div class="sc-cat">${labelForShopCat(s.categories || s.category)}</div>
       <div class="sc-meta">
         ${distanceKm!=null ? `<span><i class="fa-solid fa-location-dot"></i> ${distanceKm.toFixed(1)} km away</span>` : `<span><i class="fa-solid fa-location-dot"></i> Distance N/A</span>`}
         ${s.phone ? `<span><i class="fa-solid fa-phone"></i> ${s.phone}</span>` : ''}
@@ -726,14 +977,17 @@ function renderShopHero(){
     <img src="${currentShopData.logoUrl||'https://via.placeholder.com/52?text=Shop'}" alt="">
     <div>
       <h3>${currentShopData.name} ${currentShopData.isOpen===false?'<span class="shop-closed-badge">Closed</span>':''}</h3>
-      <p>${labelForShopCat(currentShopData.category)} ${d!=null?` · ${d.toFixed(1)} km away`:''}${currentShopData.address?` · ${currentShopData.address}`:''}</p>
+      <p>${labelForShopCat(currentShopData.categories || currentShopData.category)} ${d!=null?` · ${d.toFixed(1)} km away`:''}${currentShopData.address?` · ${currentShopData.address}`:''}</p>
     </div>`;
 }
 
 /* ---------------- CATEGORIES ---------------- */
 function renderCategories(){
   const wrap = document.getElementById('categoryScroll');
-  wrap.innerHTML = CATEGORIES.map(c => `
+  wrap.innerHTML = `
+    <div class="cat-chip ${activeCategory==='all'?'active':''}" onclick="selectCategory('all')">
+      <i class="fa-solid fa-border-all"></i><span>All</span>
+    </div>` + CATEGORIES.map(c => `
     <div class="cat-chip ${c.id===activeCategory?'active':''}" onclick="selectCategory('${c.id}')">
       <i class="fa-solid ${c.icon}"></i><span>${c.name}</span>
     </div>`).join('');
@@ -741,6 +995,7 @@ function renderCategories(){
 window.selectCategory = (id) => { activeCategory = id; renderCategories(); renderProductGrid(); };
 
 /* ---------------- PRODUCTS ---------------- */
+let __sharedProductHandled = false;
 function listenProducts(){
   onValue(ref(db, 'martProducts'), (snap) => {
     allProducts = snap.val() || {};
@@ -748,8 +1003,58 @@ function listenProducts(){
     renderProductGrid();
     renderHomeProducts();
     if(document.getElementById('search-view').classList.contains('hidden')===false) renderSearch();
+
+    // deep-link: auto open shared product once products are loaded
+    if(!__sharedProductHandled){
+      const params = new URLSearchParams(window.location.search);
+      const sharedId = params.get('product');
+      if(sharedId && allProducts[sharedId]){
+        __sharedProductHandled = true;
+        setTimeout(() => openProductModal(sharedId), 400);
+      }
+    }
   });
 }
+
+/* ---------------- SHARE ---------------- */
+window.openShareSheet = () => {
+  document.getElementById('shareSheetOverlay').classList.add('open');
+};
+window.closeShareSheet = () => {
+  document.getElementById('shareSheetOverlay').classList.remove('open');
+};
+function getShareLinkAndText(){
+  const modal = document.getElementById('productModal');
+  const id = modal.dataset.pid;
+  const p = allProducts[id] || {};
+  const url = `${window.location.origin}${window.location.pathname}?product=${id}`;
+  const text = `${p.name || 'Check this product'} - Rs. ${parseInt(p.price)||0} on Raftaroo Mart`;
+  return { id, p, url, text };
+}
+window.doShare = async (platform) => {
+  const { url, text } = getShareLinkAndText();
+  if(platform==='whatsapp'){
+    window.open(`https://wa.me/?text=${encodeURIComponent(text + ' ' + url)}`, '_blank');
+  } else if(platform==='facebook'){
+    window.open(`https://www.facebook.com/sharer/sharer.php?u=${encodeURIComponent(url)}`, '_blank');
+  } else if(platform==='twitter'){
+    window.open(`https://twitter.com/intent/tweet?text=${encodeURIComponent(text)}&url=${encodeURIComponent(url)}`, '_blank');
+  } else if(platform==='copy'){
+    try{
+      await navigator.clipboard.writeText(url);
+      toast('Link copy ho gaya!');
+    }catch(e){
+      toast('Copy nahi ho saka');
+    }
+  } else if(platform==='more'){
+    if(navigator.share){
+      try{ await navigator.share({ title: text, text, url }); }catch(e){}
+    } else {
+      try{ await navigator.clipboard.writeText(url); toast('Link copy ho gaya!'); }catch(e){}
+    }
+  }
+  closeShareSheet();
+};
 
 function getFilteredProducts(){
   return Object.entries(allProducts).filter(([id,p]) => p.shopId===currentShopId && (activeCategory==='all' || p.category===activeCategory));
@@ -773,8 +1078,8 @@ function productCardHTML(id, p){
           <div class="qty-stepper">
             <button onclick="changeQty('${id}', -1)">−</button>
             <span>${qty}</span>
-            <button onclick="changeQty('${id}', 1)">+</button>
-          </div>` : `<button class="add-btn" onclick="changeQty('${id}', 1)"><i class="fa-solid fa-plus"></i></button>`)}
+            <button onclick="changeQty('${id}', 1, false, event)">+</button>
+          </div>` : `<button class="add-btn" onclick="changeQty('${id}', 1, false, event)"><i class="fa-solid fa-plus"></i></button>`)}
       </div>
     </div>
   </div>`;
@@ -783,7 +1088,8 @@ function productCardHTML(id, p){
 function labelForCat(id){ return (CATEGORIES.find(c=>c.id===id)||{}).name || 'General'; }
 
 function renderProductGrid(){
-  const list = getFilteredProducts();
+  let list = getFilteredProducts();
+  if(shopSortMode!=='default') list = sortProductEntries(list, shopSortMode);
   document.getElementById('gridTitle').textContent = activeCategory==='all' ? 'All Products' : labelForCat(activeCategory);
   document.getElementById('gridCount').textContent = list.length ? `${list.length} items` : '';
   const grid = document.getElementById('productGrid');
@@ -821,7 +1127,8 @@ function renderSearch(){
 
   if(prodResults.length){
     prodTitle.classList.remove('hidden');
-    grid.innerHTML = prodResults.map(([id,p]) => globalProductCardHTML(id,p)).join('');
+    const sortedProds = searchSortMode!=='default' ? sortProductEntries(prodResults, searchSortMode) : prodResults;
+    grid.innerHTML = sortedProds.map(([id,p]) => globalProductCardHTML(id,p)).join('');
   } else { prodTitle.classList.add('hidden'); grid.innerHTML=''; }
 }
 window.renderSearch = renderSearch;
@@ -849,7 +1156,7 @@ window.goToProductFromSearch = (id) => {
   setTimeout(()=>openProductModal(id), 150);
 };
 
-/* ---------------- PRODUCT MODAL ---------------- */
+/* ---------------- PRODUCT DETAIL (FULLSCREEN) ---------------- */
 window.openProductModal = (id) => {
   const p = allProducts[id]; if(!p) return;
   document.getElementById('pdImg').src = p.image || 'https://via.placeholder.com/400x340?text=Raftaroo+Mart';
@@ -858,9 +1165,41 @@ window.openProductModal = (id) => {
   document.getElementById('pdPrice').textContent = parseInt(p.price)||0;
   document.getElementById('pdDesc').textContent = p.description || 'No description available.';
   renderModalCartAction(id, p);
-  document.getElementById('productModal').classList.remove('hidden');
-  document.getElementById('productModal').dataset.pid = id;
+  renderRelatedProducts(id, p);
+  const modal = document.getElementById('productModal');
+  modal.classList.remove('hidden');
+  modal.dataset.pid = id;
+  modal.scrollTop = 0;
+  renderCartBadges();
 };
+
+function renderRelatedProducts(id, p){
+  const wrap = document.getElementById('relatedProductGrid');
+  if(!wrap) return;
+  const used = new Set([id]);
+  let related = Object.entries(allProducts).filter(([pid,pr]) => pid!==id && pr.shopId===p.shopId && pr.category===p.category);
+  related.forEach(([pid]) => used.add(pid));
+
+  if(related.length < 6){
+    const more = Object.entries(allProducts).filter(([pid,pr]) => !used.has(pid) && pr.shopId===p.shopId);
+    more.forEach(([pid]) => used.add(pid));
+    related = related.concat(more);
+  }
+  if(related.length < 6){
+    const more2 = Object.entries(allProducts).filter(([pid,pr]) => !used.has(pid) && pr.category===p.category);
+    more2.forEach(([pid]) => used.add(pid));
+    related = related.concat(more2);
+  }
+  related = related.slice(0, 10);
+
+  if(related.length===0){
+    wrap.className = 'related-empty';
+    wrap.innerHTML = 'Koi related product nahi mila';
+    return;
+  }
+  wrap.className = 'product-grid';
+  wrap.innerHTML = related.map(([rid,rp]) => productCardHTML(rid, rp)).join('');
+}
 function renderModalCartAction(id, p){
   const stock = parseInt(p.stock)||0;
   const qty = cart[id]?.qty || 0;
@@ -870,14 +1209,13 @@ function renderModalCartAction(id, p){
     wrap.innerHTML = `<div class="qty-stepper" style="justify-content:center; padding:10px;">
       <button onclick="changeQty('${id}',-1,true)" style="width:36px;height:36px;font-size:18px;">−</button>
       <span style="font-size:16px; min-width:30px;">${qty}</span>
-      <button onclick="changeQty('${id}',1,true)" style="width:36px;height:36px;font-size:18px;">+</button>
+      <button onclick="changeQty('${id}',1,true,event)" style="width:36px;height:36px;font-size:18px;">+</button>
     </div>`;
   } else {
-    wrap.innerHTML = `<button class="primary-btn" style="margin:0; width:100%;" onclick="changeQty('${id}',1,true)">Add to Cart</button>`;
+    wrap.innerHTML = `<button class="primary-btn" style="margin:0; width:100%;" onclick="changeQty('${id}',1,true,event)">Add to Cart</button>`;
   }
 }
-window.closeProductModal = () => document.getElementById('productModal').classList.add('hidden');
-window.closeProductModalBg = (e) => { if(e.target.id==='productModal') closeProductModal(); };
+window.closeProductModal = () => { document.getElementById('productModal').classList.add('hidden'); renderCartBadges(); };
 
 /* ---------------- CART ---------------- */
 function loadCart(){
@@ -893,7 +1231,58 @@ function saveCart(){
   if(!document.getElementById('search-view').classList.contains('hidden')) renderSearch();
 }
 
-window.changeQty = (id, delta, fromModal) => {
+/* ---------------- FLY TO CART ANIMATION ---------------- */
+function flyToCart(imgSrc, startRect){
+  const target = document.getElementById('cartNavIcon');
+  if(!target || !imgSrc || !startRect) return;
+  const endRect = target.getBoundingClientRect();
+  if(endRect.width===0 && endRect.height===0) return;
+
+  const fly = document.createElement('img');
+  fly.src = imgSrc;
+  fly.className = 'fly-cart-item';
+  const size = 46;
+  fly.style.left = (startRect.left + startRect.width/2 - size/2) + 'px';
+  fly.style.top = (startRect.top + startRect.height/2 - size/2) + 'px';
+  document.body.appendChild(fly);
+
+  const dx = (endRect.left + endRect.width/2) - (startRect.left + startRect.width/2);
+  const dy = (endRect.top + endRect.height/2) - (startRect.top + startRect.height/2);
+
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      fly.style.transform = `translate(${dx}px, ${dy}px) scale(0.12) rotate(420deg)`;
+      fly.style.opacity = '0.25';
+      fly.style.width = size*0.6 + 'px';
+      fly.style.height = size*0.6 + 'px';
+    });
+  });
+
+  setTimeout(() => {
+    fly.remove();
+    target.classList.add('cart-bump-target');
+    setTimeout(() => target.classList.remove('cart-bump-target'), 460);
+    const badge = document.getElementById('navCartBadge');
+    if(badge){ badge.classList.add('badge-pop'); setTimeout(()=>badge.classList.remove('badge-pop'), 360); }
+  }, 700);
+}
+
+function triggerFlyAnimation(sourceEl){
+  if(!sourceEl) return;
+  let imgEl = null;
+  const card = sourceEl.closest ? sourceEl.closest('.product-card') : null;
+  if(card) imgEl = card.querySelector('.product-img-wrap img');
+  if(!imgEl){
+    const modal = document.getElementById('productModal');
+    if(modal && !modal.classList.contains('hidden')) imgEl = document.getElementById('pdImg');
+  }
+  if(!imgEl) return;
+  const rect = imgEl.getBoundingClientRect();
+  if(rect.width===0 || rect.height===0) return;
+  flyToCart(imgEl.src, rect);
+}
+
+window.changeQty = (id, delta, fromModal, evt) => {
   const p = allProducts[id]; if(!p) return;
   const cartEntries = Object.values(cart);
   if(delta>0 && cartEntries.length && cartEntries[0].shopId && cartEntries[0].shopId!==p.shopId){
@@ -906,8 +1295,21 @@ window.changeQty = (id, delta, fromModal) => {
   if(next > stock){ toast('Stock available: '+stock); next = stock; }
   if(next <= 0){ delete cart[id]; }
   else { cart[id] = { qty: next, price: parseInt(p.price)||0, name:p.name, image:p.image||'', shopId:p.shopId }; }
+  if(delta>0){
+    const ev = evt || window.event;
+    if(ev && ev.target) triggerFlyAnimation(ev.target);
+  }
   saveCart();
   if(fromModal) renderModalCartAction(id, p);
+};
+
+window.removeFromCart = (id) => {
+  const item = cart[id]; if(!item) return;
+  if(!confirm(`"${item.name}" ko cart se remove karein?`)) return;
+  const row = document.getElementById(`cartRow-${id}`);
+  const finish = () => { delete cart[id]; saveCart(); toast('Item cart se remove ho gaya'); };
+  if(row){ row.classList.add('removing'); setTimeout(finish, 260); }
+  else finish();
 };
 
 function cartTotals(){
@@ -921,14 +1323,24 @@ function renderCartBadges(){
   const { count, subtotal, total } = cartTotals();
   const badge = document.getElementById('navCartBadge');
   const fc = document.getElementById('floatingCart');
+  const pdFc = document.getElementById('pdFloatingCart');
   if(count>0){
     badge.textContent = count; badge.classList.remove('hidden');
     document.getElementById('fcCount').textContent = count;
     document.getElementById('fcTotal').textContent = total.toLocaleString();
     fc.classList.remove('hidden');
+    if(pdFc){
+      document.getElementById('pdFcCount').textContent = count;
+      document.getElementById('pdFcTotal').textContent = total.toLocaleString();
+      // Only show inside product modal while it's actually open
+      const modal = document.getElementById('productModal');
+      if(modal && !modal.classList.contains('hidden')) pdFc.classList.remove('hidden');
+      else pdFc.classList.add('hidden');
+    }
   } else {
     badge.classList.add('hidden');
     fc.classList.add('hidden');
+    if(pdFc) pdFc.classList.add('hidden');
   }
 }
 
@@ -937,27 +1349,34 @@ function renderCartView(){
   const empty = document.getElementById('cartEmpty');
   const summaryWrap = document.getElementById('cartSummaryWrap');
   const goBtn = document.getElementById('goCheckoutBtn');
+  const headerCount = document.getElementById('cartHeaderCount');
   const entries = Object.entries(cart);
   if(entries.length===0){
-    wrap.innerHTML=''; summaryWrap.innerHTML=''; empty.classList.remove('hidden'); goBtn.classList.add('hidden'); return;
+    wrap.innerHTML=''; summaryWrap.innerHTML=''; empty.classList.remove('hidden'); goBtn.classList.add('hidden');
+    if(headerCount) headerCount.classList.add('hidden');
+    return;
   }
   empty.classList.add('hidden'); goBtn.classList.remove('hidden');
-  wrap.innerHTML = entries.map(([id,c]) => `
-    <div class="cart-item">
+  const { subtotal, delivery, total, count } = cartTotals();
+  if(headerCount){ headerCount.textContent = `${count} item${count>1?'s':''}`; headerCount.classList.remove('hidden'); }
+  wrap.innerHTML = entries.map(([id,c], idx) => `
+    <div class="cart-item" id="cartRow-${id}" style="animation-delay:${idx*45}ms;">
       <img src="${c.image||'https://via.placeholder.com/60'}" alt="">
       <div class="cart-item-info">
         <div class="ci-name">${c.name}</div>
-        <div class="ci-price">Rs. ${c.price} x ${c.qty} = Rs. ${c.price*c.qty}</div>
+        <div class="ci-price">Rs. ${c.price*c.qty} <span class="ci-unit">(Rs. ${c.price} × ${c.qty})</span></div>
       </div>
-      <div class="qty-stepper">
-        <button onclick="changeQty('${id}',-1)">−</button><span>${c.qty}</span><button onclick="changeQty('${id}',1)">+</button>
+      <div class="cart-item-actions">
+        <button class="ci-delete-btn" onclick="removeFromCart('${id}')"><i class="fa-solid fa-trash"></i></button>
+        <div class="qty-stepper">
+          <button onclick="changeQty('${id}',-1)">−</button><span>${c.qty}</span><button onclick="changeQty('${id}',1)">+</button>
+        </div>
       </div>
     </div>`).join('');
-  const { subtotal, delivery, total } = cartTotals();
   summaryWrap.innerHTML = `
     <div class="summary-box">
-      <div class="summary-row"><span>Subtotal</span><span>Rs. ${subtotal}</span></div>
-      <div class="summary-row"><span>Delivery Fee</span><span>Rs. ${delivery}</span></div>
+      <div class="summary-row"><span><i class="fa-solid fa-basket-shopping"></i>Subtotal</span><span>Rs. ${subtotal}</span></div>
+      <div class="summary-row"><span><i class="fa-solid fa-truck"></i>Delivery Fee</span><span>Rs. ${delivery}</span></div>
       <div class="summary-row total"><span>Total</span><span>Rs. ${total}</span></div>
     </div>`;
 }

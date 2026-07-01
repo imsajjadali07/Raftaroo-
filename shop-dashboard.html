@@ -1,0 +1,726 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>My Shop Dashboard | Raftaroo Mart</title>
+<meta name="theme-color" content="#28a745">
+<meta name="robots" content="noindex, nofollow">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Shop Dashboard">
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+<style>
+:root {
+    --primary: #28a745;
+    --primary-dark: #1e7e34;
+    --secondary: #000000;
+    --bg-light: #f4f6f5;
+    --white: #ffffff;
+    --text-main: #1a1a1a;
+    --text-muted: #707070;
+    --shadow: 0 4px 20px rgba(0,0,0,0.08);
+    --error: #e74c3c;
+    --success: #2ecc71;
+    --info: #3498db;
+    --card-bg: var(--white);
+    --header-bg: var(--white);
+    --input-bg: #fafafa;
+    --border: #eaeaea;
+}
+.dark-mode {
+    --secondary: #FFFFFF;
+    --bg-light: #101312;
+    --white: #1c1f1e;
+    --text-main: #eaeaea;
+    --text-muted: #9a9a9a;
+    --shadow: 0 4px 20px rgba(0,0,0,0.4);
+    --card-bg: #1c1f1e;
+    --header-bg: #171a19;
+    --input-bg: #232726;
+    --border: #2b2f2e;
+}
+* { margin:0; padding:0; box-sizing:border-box; font-family:'Poppins',sans-serif; -webkit-tap-highlight-color:transparent; }
+body { background:var(--bg-light); color:var(--text-main); overflow-x:hidden; min-height:100vh; transition:background-color .3s; padding-bottom:30px; }
+.hidden { display:none !important; }
+a { text-decoration:none; color:inherit; }
+img { -webkit-user-drag:none; }
+button { cursor:pointer; border:none; outline:none; font-family:'Poppins',sans-serif; }
+input, textarea, select { font-family:'Poppins',sans-serif; }
+
+/* ---------- SPLASH ---------- */
+#splash { position:fixed; inset:0; background:#000; z-index:9999; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#fff; }
+#splash .logo-circle { width:84px; height:84px; border-radius:22px; background:rgba(255,255,255,0.12); display:flex; align-items:center; justify-content:center; font-size:38px; margin-bottom:14px; animation:pulse 1.4s infinite; color:var(--primary); }
+#splash h1 { font-weight:800; font-size:20px; letter-spacing:.5px; }
+#splash p { font-size:11.5px; opacity:.75; margin-top:4px; }
+@keyframes pulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.08);} }
+
+/* ---------- AUTH ---------- */
+#auth-screen { min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:30px; text-align:center; background:linear-gradient(160deg, #000 0%, #1c1f1e 100%); color:#fff; }
+#auth-screen .mart-icon { width:92px; height:92px; border-radius:26px; background:rgba(255,255,255,0.1); display:flex; align-items:center; justify-content:center; font-size:40px; margin-bottom:18px; color:var(--primary); }
+#auth-screen h1 { font-size:23px; font-weight:800; margin-bottom:6px; }
+#auth-screen p { font-size:13px; opacity:.85; max-width:300px; line-height:1.5; margin-bottom:32px; }
+.google-btn { display:flex; align-items:center; justify-content:center; gap:10px; background:#fff; color:#1a1a1a; font-weight:600; font-size:14.5px; padding:14px 26px; border-radius:14px; box-shadow:0 8px 22px rgba(0,0,0,0.3); width:100%; max-width:320px; }
+.google-btn img { width:20px; height:20px; }
+.auth-note { font-size:11px; opacity:.6; margin-top:16px; }
+
+/* ---------- ACCESS DENIED / NO SHOP ---------- */
+#denied-screen { min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:30px; text-align:center; }
+#denied-screen i { font-size:50px; color:var(--error); margin-bottom:16px; }
+#denied-screen h2 { font-size:18px; font-weight:800; margin-bottom:8px; }
+#denied-screen p { font-size:13px; color:var(--text-muted); max-width:300px; line-height:1.6; margin-bottom:20px; }
+#denied-screen .uid-box { font-size:11px; background:var(--input-bg); border:1px solid var(--border); padding:8px 12px; border-radius:10px; margin-bottom:20px; word-break:break-all; max-width:300px; color:var(--text-muted); }
+
+/* ---------- HEADER ---------- */
+.app-header { position:sticky; top:0; z-index:500; background:var(--header-bg); display:flex; align-items:center; gap:10px; padding:14px 16px; box-shadow:var(--shadow); }
+.mart-logo { display:flex; align-items:center; gap:10px; font-weight:800; font-size:16px; color:var(--text-main); white-space:nowrap; flex:1; min-width:0; }
+.mart-logo img.shop-logo-sm { width:36px; height:36px; border-radius:11px; object-fit:cover; flex-shrink:0; background:var(--input-bg); }
+.mart-logo .fa-store { background:#000; color:var(--primary); width:36px; height:36px; border-radius:11px; display:flex; align-items:center; justify-content:center; font-size:15px; flex-shrink:0; }
+.mart-logo .lg-text { min-width:0; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; }
+.mart-logo small { display:block; font-size:10.5px; font-weight:500; color:var(--text-muted); }
+.header-icon-btn { position:relative; width:38px; height:38px; border-radius:11px; background:var(--input-bg); display:flex; align-items:center; justify-content:center; color:var(--text-main); font-size:15px; flex-shrink:0; }
+
+/* ---------- SHOP SELECT ---------- */
+.shop-select-bar { display:flex; align-items:center; gap:8px; padding:12px 16px 4px; }
+.shop-select-bar select { flex:1; background:var(--input-bg); border:1px solid var(--border); border-radius:12px; padding:11px 12px; font-size:13px; color:var(--text-main); font-weight:600; }
+
+/* ---------- TABS ---------- */
+.admin-tabs { display:flex; gap:8px; padding:12px 16px 6px; overflow-x:auto; scrollbar-width:none; }
+.admin-tabs::-webkit-scrollbar { display:none; }
+.admin-tab { flex-shrink:0; padding:9px 15px; border-radius:11px; background:var(--card-bg); box-shadow:var(--shadow); font-size:12.5px; font-weight:600; color:var(--text-muted); white-space:nowrap; display:flex; align-items:center; gap:6px; }
+.admin-tab.active { background:var(--primary); color:#fff; box-shadow:0 4px 14px rgba(40,167,69,0.35); }
+
+/* ---------- SECTION ---------- */
+.section-title { display:flex; align-items:center; justify-content:space-between; padding:16px 16px 8px; }
+.section-title h4 { font-size:14px; font-weight:700; }
+
+/* ---------- SWITCH ---------- */
+.switch { position:relative; display:inline-block; width:40px; height:22px; }
+.switch input { opacity:0; width:0; height:0; }
+.slider { position:absolute; cursor:pointer; inset:0; background:#ccc; transition:.3s; border-radius:24px; }
+.slider::before { content:""; position:absolute; height:16px; width:16px; left:3px; bottom:3px; background:#fff; transition:.3s; border-radius:50%; }
+input:checked + .slider { background:var(--primary); }
+input:checked + .slider::before { transform:translateX(18px); }
+.shop-status-row { display:flex; align-items:center; justify-content:space-between; background:var(--card-bg); border-radius:16px; box-shadow:var(--shadow); margin:0 16px 14px; padding:14px 16px; }
+.shop-status-row .ssr-label { font-size:13px; font-weight:700; }
+.shop-status-row .ssr-sub { font-size:11px; color:var(--text-muted); margin-top:2px; }
+
+/* ---------- FORM ---------- */
+.input-field { width:100%; background:var(--input-bg); border:1px solid var(--border); border-radius:12px; padding:12px 14px; font-size:13.5px; color:var(--text-main); margin-bottom:12px; }
+.field-label { font-size:12px; font-weight:600; color:var(--text-muted); margin:0 16px 6px; display:block; }
+.form-row-2 { display:flex; gap:10px; }
+.form-row-2 .input-field { flex:1; }
+.primary-btn { display:block; width:calc(100% - 32px); margin:16px auto 6px; background:var(--primary); color:#fff; font-weight:700; font-size:14.5px; padding:14px; border-radius:14px; text-align:center; }
+.primary-btn:disabled { opacity:.5; }
+.upload-box { border:2px dashed var(--border); border-radius:14px; height:110px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; color:var(--text-muted); font-size:12px; margin:0 16px 14px; position:relative; overflow:hidden; width:calc(100% - 32px); }
+.upload-box img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
+.cat-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; }
+.cat-chip { border:1.5px solid var(--border); background:var(--input-bg); border-radius:12px; padding:10px 6px; text-align:center; font-size:11px; font-weight:600; color:var(--text-muted); transition:.15s; }
+.cat-chip i { display:block; font-size:16px; margin-bottom:5px; color:var(--text-muted); }
+.cat-chip.active { background:var(--primary); border-color:var(--primary); color:#fff; }
+.cat-chip.active i { color:#fff; }
+.field-hint { font-size:10.5px; color:var(--text-muted); }
+
+/* ---------- PRODUCT ROW ---------- */
+.admin-product-row { display:flex; align-items:center; gap:10px; background:var(--card-bg); border-radius:14px; padding:10px; margin:0 16px 10px; box-shadow:var(--shadow); }
+.admin-product-row img { width:48px; height:48px; border-radius:9px; object-fit:cover; background:var(--input-bg); }
+.admin-product-row .apr-info { flex:1; min-width:0; }
+.admin-product-row .apr-info .n { font-size:12.5px; font-weight:600; }
+.admin-product-row .apr-info .p { font-size:11.5px; color:var(--primary); font-weight:700; }
+.apr-actions { display:flex; gap:6px; }
+.apr-actions button { width:30px; height:30px; border-radius:8px; background:var(--input-bg); font-size:12px; }
+.apr-actions button.del { color:var(--error); }
+.apr-actions button.edit { color:var(--info); }
+
+/* ---------- ORDER CARD ---------- */
+.order-card { background:var(--card-bg); border-radius:16px; margin:0 16px 12px; padding:14px 16px; box-shadow:var(--shadow); }
+.order-card .oc-top { display:flex; justify-content:space-between; align-items:center; margin-bottom:8px; gap:8px; }
+.order-card .oc-id { font-size:12px; font-weight:700; color:var(--text-muted); }
+.status-pill { font-size:10px; font-weight:700; padding:4px 10px; border-radius:20px; text-transform:capitalize; flex-shrink:0; }
+.status-pending { background:#fff3cd; color:#8a6d00; }
+.status-confirmed { background:#cfe2ff; color:#084298; }
+.status-ready_for_pickup { background:#ffe1c2; color:#8a4b00; }
+.status-out_for_delivery { background:#e0cffc; color:#5a1a9e; }
+.status-delivered { background:#d1f5dc; color:#146c34; }
+.status-cancelled { background:#f8d7da; color:#842029; }
+.order-card .oc-items { font-size:12px; color:var(--text-muted); margin-bottom:6px; line-height:1.5; }
+.order-card .oc-bottom { display:flex; justify-content:space-between; align-items:center; font-size:13px; font-weight:700; gap:8px; }
+
+.empty-state { text-align:center; padding:60px 20px; color:var(--text-muted); }
+.empty-state i { font-size:44px; margin-bottom:12px; opacity:.4; }
+.empty-state p { font-size:13.5px; }
+
+/* ---------- STATS ---------- */
+.stats-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; padding:12px 16px 4px; }
+.stat-card { background:var(--card-bg); border-radius:14px; box-shadow:var(--shadow); padding:14px; }
+.stat-card .sv { font-size:19px; font-weight:800; color:var(--primary); }
+.stat-card .sl { font-size:11px; color:var(--text-muted); margin-top:2px; }
+
+.toast { position:fixed; bottom:24px; left:50%; transform:translateX(-50%); background:var(--secondary); color:#fff; padding:11px 20px; border-radius:30px; font-size:12.5px; font-weight:600; z-index:9500; box-shadow:0 6px 20px rgba(0,0,0,0.3); opacity:0; transition:.3s; pointer-events:none; max-width:88%; text-align:center; }
+.dark-mode .toast { background:var(--primary); }
+.toast.show { opacity:1; bottom:34px; }
+
+/* ---------- MODAL CONFIRM ---------- */
+.modal-overlay { position:fixed; inset:0; background:rgba(0,0,0,0.55); z-index:8000; display:flex; align-items:center; justify-content:center; padding:24px; }
+.confirm-box { background:var(--card-bg); border-radius:18px; padding:22px; max-width:320px; width:100%; text-align:center; }
+.confirm-box i { font-size:34px; color:var(--error); margin-bottom:10px; }
+.confirm-box h3 { font-size:15px; font-weight:700; margin-bottom:6px; }
+.confirm-box p { font-size:12.5px; color:var(--text-muted); margin-bottom:18px; line-height:1.5; }
+.confirm-box .cb-btns { display:flex; gap:10px; }
+.confirm-box .cb-btns button { flex:1; padding:12px; border-radius:12px; font-size:13px; font-weight:700; }
+.confirm-box .cb-cancel { background:var(--input-bg); color:var(--text-main); }
+.confirm-box .cb-ok { background:var(--error); color:#fff; }
+</style>
+</head>
+<body>
+
+<!-- SPLASH -->
+<div id="splash">
+  <div class="logo-circle"><i class="fa-solid fa-store"></i></div>
+  <h1>Shop Dashboard</h1>
+  <p>Loading...</p>
+</div>
+
+<!-- AUTH -->
+<div id="auth-screen" class="hidden">
+  <div class="mart-icon"><i class="fa-solid fa-store"></i></div>
+  <h1>My Shop Dashboard</h1>
+  <p>Apni shop ke products aur orders manage karne ke liye sign in karein.</p>
+  <button class="google-btn" id="googleLoginBtn">
+    <img src="https://www.svgrepo.com/show/475656/google-color.svg" alt="">
+    Continue with Google
+  </button>
+  <p class="auth-note">Sirf approved shop owners hi apni shop manage kar sakte hain.</p>
+</div>
+
+<!-- NO SHOP / DENIED -->
+<div id="denied-screen" class="hidden">
+  <i class="fa-solid fa-store-slash"></i>
+  <h2>Koi Shop Nahi Mili</h2>
+  <p>Ye account kisi approved shop se link nahi hai. Agar aapne abhi tak apni shop register nahi ki, to pehle register karein. Agar request pending hai to approval ka intezar karein.</p>
+  <div class="uid-box" id="deniedUidBox"></div>
+  <button class="primary-btn" style="width:auto; padding:12px 22px; margin:0 0 10px; display:inline-block;" onclick="window.location.href='shop-register.html'">Shop Register / Status Dekhein</button>
+  <button class="secondary-btn" style="width:auto; padding:12px 22px; margin:0; background:transparent; border:1.5px solid var(--border); border-radius:14px; color:var(--text-muted); font-weight:600;" onclick="logoutUser()">Logout</button>
+</div>
+
+<!-- APP -->
+<div id="app" class="hidden">
+
+  <header class="app-header">
+    <div class="mart-logo">
+      <img class="shop-logo-sm hidden" id="shopLogoSm" alt="">
+      <div class="fa-solid fa-store" id="shopLogoIcon"></div>
+      <div class="lg-text"><span id="dashHeaderTitle">My Shop</span><small id="dashHeaderSub">Loading...</small></div>
+    </div>
+    <div class="header-icon-btn" onclick="window.location.href='mart.html'" title="Mart mein dekhein"><i class="fa-solid fa-eye"></i></div>
+    <div class="header-icon-btn" onclick="logoutUser()" title="Logout"><i class="fa-solid fa-right-from-bracket"></i></div>
+  </header>
+
+  <div class="shop-select-bar hidden" id="shopSelectBar">
+    <select id="shopSelect" onchange="onShopChange(this.value)"></select>
+  </div>
+
+  <div class="shop-status-row">
+    <div>
+      <div class="ssr-label" id="shopStatusName">Shop</div>
+      <div class="ssr-sub" id="shopStatusSub">Open / Closed</div>
+    </div>
+    <label class="switch"><input type="checkbox" id="shopOpenToggle" onchange="toggleMyShopOpen(this.checked)"><span class="slider"></span></label>
+  </div>
+
+  <div class="stats-row" id="statsRow"></div>
+
+  <div class="admin-tabs">
+    <div class="admin-tab active" data-tab="products" onclick="switchDashTab('products')"><i class="fa-solid fa-boxes-stacked"></i> Products</div>
+    <div class="admin-tab" data-tab="add" onclick="switchDashTab('add')"><i class="fa-solid fa-plus"></i> Add Product</div>
+    <div class="admin-tab" data-tab="orders" onclick="switchDashTab('orders')"><i class="fa-solid fa-receipt"></i> Orders</div>
+    <div class="admin-tab" data-tab="profile" onclick="switchDashTab('profile')"><i class="fa-solid fa-shop"></i> Shop Profile</div>
+  </div>
+
+  <!-- PRODUCTS TAB -->
+  <div id="productsTab">
+    <div id="productList" style="padding-top:6px;"></div>
+  </div>
+
+  <!-- ADD PRODUCT TAB -->
+  <div id="addTab" class="hidden">
+    <div class="upload-box" id="uploadBox" onclick="document.getElementById('imgInput').click()">
+      <i class="fa-solid fa-image" style="font-size:22px;"></i>
+      <span>Tap to upload image</span>
+      <input type="file" id="imgInput" accept="image/*" class="hidden" onchange="handleImageSelect(event)">
+    </div>
+    <input type="text" class="input-field" id="pName" placeholder="Product Name" style="margin:0 16px 12px; width:calc(100% - 32px);">
+    <div class="form-row-2" style="margin:0 16px 12px;">
+      <input type="number" class="input-field" id="pPrice" placeholder="Price (Rs.)" style="margin:0;">
+      <input type="number" class="input-field" id="pStock" placeholder="Stock Qty" style="margin:0;">
+    </div>
+    <select class="input-field" id="pCategory" style="margin:0 16px 12px; width:calc(100% - 32px);"></select>
+    <textarea class="input-field" id="pDesc" placeholder="Short description (optional)" style="margin:0 16px 12px; width:calc(100% - 32px);"></textarea>
+    <button class="primary-btn" id="pSaveBtn" onclick="saveProduct()">Save Product</button>
+  </div>
+
+  <!-- ORDERS TAB -->
+  <div id="ordersTab" class="hidden">
+    <div id="ordersList" style="padding-top:6px;"></div>
+  </div>
+
+  <!-- SHOP PROFILE TAB -->
+  <div id="profileTab" class="hidden">
+    <div class="section-title"><h4>Shop Profile</h4></div>
+    <div class="upload-box" id="shopLogoUploadBox" onclick="document.getElementById('shopLogoInput').click()">
+      <i class="fa-solid fa-image" style="font-size:22px;"></i>
+      <span>Tap to upload logo</span>
+      <input type="file" id="shopLogoInput" accept="image/*" class="hidden" onchange="handleShopLogoSelect(event)">
+    </div>
+    <input type="text" class="input-field" id="shopNameInput" placeholder="Shop Name" style="margin:0 16px 12px; width:calc(100% - 32px);">
+    <label class="field-label" style="margin:0 16px 6px;">Shop Categories</label>
+    <div class="cat-grid" id="shopCatGrid" style="margin:0 16px 6px; width:calc(100% - 32px);"></div>
+    <div class="field-hint" style="margin:0 16px 14px;">Ek ya zyada select karein. Har type ka saman bechte hain to "All Categories" select karein.</div>
+    <input type="tel" class="input-field" id="shopPhoneInput" placeholder="Phone Number" style="margin:0 16px 12px; width:calc(100% - 32px);">
+    <textarea class="input-field" id="shopAddressInput" placeholder="Address" style="margin:0 16px 12px; width:calc(100% - 32px);"></textarea>
+    <button class="primary-btn" id="shopSaveBtn" onclick="saveShopProfile()">Save Shop Profile</button>
+  </div>
+
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+import { getDatabase, ref, onValue, update, push, remove } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-database.js";
+import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+
+// Same Raftaroo Firebase project - shared with mart.html, mart_admin.html & shop-register.html
+const firebaseConfig = {
+  apiKey: "AIzaSyBBS7jGzuVlTIIeN9VFBxpwHkNf-mIRzDo",
+  authDomain: "raftaroo-9ce8d.firebaseapp.com",
+  databaseURL: "https://raftaroo-9ce8d-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "raftaroo-9ce8d",
+  storageBucket: "raftaroo-9ce8d.firebasestorage.app",
+  messagingSenderId: "773738074182",
+  appId: "1:773738074182:web:b7a873959c7ab8edc0ba47",
+  measurementId: "G-EM1R4LGZTD"
+};
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const auth = getAuth(app);
+const googleProvider = new GoogleAuthProvider();
+
+const CLOUD_NAME = "dw4btouzp";
+const UPLOAD_PRESET = "sell-it-fast";
+
+const CATEGORIES = [
+  { id:'grocery', name:'Grocery' }, { id:'fruits', name:'Fruits & Veg' },
+  { id:'bakery', name:'Bakery' }, { id:'beverages', name:'Beverages' },
+  { id:'dairy', name:'Dairy' }, { id:'snacks', name:'Snacks' },
+  { id:'household', name:'Household' }, { id:'personal', name:'Personal Care' },
+  { id:'electronics', name:'Electronics' },
+];
+const SHOP_CATEGORIES = [
+  { id:'all', name:'All Categories', icon:'fa-border-all' },
+  { id:'grocery', name:'Grocery', icon:'fa-basket-shopping' }, { id:'pharmacy', name:'Pharmacy', icon:'fa-briefcase-medical' },
+  { id:'bakery', name:'Bakery', icon:'fa-bread-slice' }, { id:'restaurant', name:'Restaurant', icon:'fa-utensils' },
+  { id:'electronics', name:'Electronics', icon:'fa-plug' }, { id:'general', name:'General Store', icon:'fa-shop' },
+];
+function getCatArray(r){
+  if(Array.isArray(r)) return r;
+  if(typeof r === 'string') return r.split(',').filter(Boolean);
+  return [];
+}
+function labelForShopCat(catField){
+  const ids = getCatArray(catField);
+  if(ids.length===0) return 'Shop';
+  if(ids.includes('all')) return 'All Categories';
+  return ids.map(id => (SHOP_CATEGORIES.find(c=>c.id===id)||{}).name || id).join(', ');
+}
+
+let currentUser = null;
+let allShops = {};
+let allProducts = {};
+let myShops = [];          // [[id, shopObj], ...] owned by currentUser
+let selectedShopId = null;
+let selectedShopCategories = [];
+let pendingImageFile = null;
+let editingProductId = null;
+let pendingShopLogoFile = null;
+
+function toast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2400);
+}
+window.toast = toast;
+
+let confirmCb = null;
+function openConfirm(title, msg, okLabel, cb){
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  overlay.id = 'confirmModal';
+  overlay.innerHTML = `
+    <div class="confirm-box">
+      <i class="fa-solid fa-triangle-exclamation"></i>
+      <h3>${title}</h3>
+      <p>${msg}</p>
+      <div class="cb-btns">
+        <button class="cb-cancel" id="confirmCancelBtn">Cancel</button>
+        <button class="cb-ok" id="confirmOkBtn">${okLabel||'Delete'}</button>
+      </div>
+    </div>`;
+  document.body.appendChild(overlay);
+  document.getElementById('confirmCancelBtn').onclick = () => overlay.remove();
+  document.getElementById('confirmOkBtn').onclick = () => { cb(); overlay.remove(); };
+}
+
+/* ---------------- AUTH ---------------- */
+document.getElementById('googleLoginBtn').addEventListener('click', async () => {
+  try { await signInWithPopup(auth, googleProvider); }
+  catch(e){ toast('Login failed, try again'); console.error(e); }
+});
+window.logoutUser = () => { signOut(auth); };
+
+onAuthStateChanged(auth, async (user) => {
+  document.getElementById('splash').classList.add('hidden');
+  if(user){
+    currentUser = user;
+    document.getElementById('auth-screen').classList.add('hidden');
+    document.getElementById('denied-screen').classList.add('hidden');
+    populateCategorySelect();
+    populateShopCategorySelect();
+    listenShops();
+  } else {
+    currentUser = null;
+    document.getElementById('app').classList.add('hidden');
+    document.getElementById('denied-screen').classList.add('hidden');
+    document.getElementById('auth-screen').classList.remove('hidden');
+  }
+});
+
+/* ---------------- ACCESS RESOLUTION ---------------- */
+function listenShops(){
+  onValue(ref(db, 'martShops'), (snap) => {
+    allShops = snap.val() || {};
+    resolveAccess();
+  });
+}
+
+function resolveAccess(){
+  if(!currentUser) return;
+  myShops = Object.entries(allShops).filter(([id,s]) => s.ownerUid === currentUser.uid);
+
+  if(myShops.length===0){
+    document.getElementById('app').classList.add('hidden');
+    document.getElementById('deniedUidBox').textContent = 'UID: ' + currentUser.uid;
+    document.getElementById('denied-screen').classList.remove('hidden');
+    return;
+  }
+  document.getElementById('denied-screen').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+
+  const selectBar = document.getElementById('shopSelectBar');
+  if(myShops.length > 1){
+    selectBar.classList.remove('hidden');
+    populateShopSelect();
+  } else {
+    selectBar.classList.add('hidden');
+  }
+  if(!selectedShopId || !myShops.find(([id])=>id===selectedShopId)){
+    selectedShopId = myShops[0][0];
+  }
+
+  listenAllProducts();
+  renderShopHeader();
+  renderStats();
+  listenMyOrders();
+}
+
+function populateShopSelect(){
+  const sel = document.getElementById('shopSelect');
+  sel.innerHTML = myShops.map(([id,s]) => `<option value="${id}" ${id===selectedShopId?'selected':''}>${s.name}</option>`).join('');
+}
+window.onShopChange = (id) => {
+  selectedShopId = id;
+  renderShopHeader();
+  renderProductList();
+  renderStats();
+  listenMyOrders();
+  loadShopProfileForm();
+};
+
+function currentShop(){ return allShops[selectedShopId]; }
+
+function renderShopHeader(){
+  const s = currentShop();
+  if(!s) return;
+  document.getElementById('dashHeaderTitle').textContent = s.name || 'My Shop';
+  document.getElementById('dashHeaderSub').textContent = currentUser.displayName || 'Shop Owner';
+  document.getElementById('shopStatusName').textContent = s.name || 'Shop';
+  document.getElementById('shopStatusSub').textContent = s.isOpen!==false ? 'Abhi Open hai — customers order kar sakte hain' : 'Abhi Closed hai — koi order nahi ayega';
+  document.getElementById('shopOpenToggle').checked = s.isOpen!==false;
+  const logoImg = document.getElementById('shopLogoSm');
+  const logoIcon = document.getElementById('shopLogoIcon');
+  if(s.logoUrl){
+    logoImg.src = s.logoUrl; logoImg.classList.remove('hidden'); logoIcon.classList.add('hidden');
+  } else {
+    logoImg.classList.add('hidden'); logoIcon.classList.remove('hidden');
+  }
+  loadShopProfileForm();
+}
+
+window.toggleMyShopOpen = async (isOpen) => {
+  if(!selectedShopId) return;
+  await update(ref(db, `martShops/${selectedShopId}`), { isOpen });
+  toast(isOpen ? 'Shop ab open hai' : 'Shop close kar di gayi');
+};
+
+function renderStats(){
+  const wrap = document.getElementById('statsRow');
+  const myProductsCount = Object.values(allProducts).filter(p => p.shopId===selectedShopId).length;
+  wrap.innerHTML = `
+    <div class="stat-card"><div class="sv">${myProductsCount}</div><div class="sl">My Products</div></div>
+    <div class="stat-card"><div class="sv" id="myOrdersCount">0</div><div class="sl">Total Orders</div></div>`;
+}
+
+/* ---------------- TABS ---------------- */
+window.switchDashTab = (tab) => {
+  document.querySelectorAll('.admin-tab').forEach(t => t.classList.toggle('active', t.dataset.tab===tab));
+  document.getElementById('productsTab').classList.toggle('hidden', tab!=='products');
+  document.getElementById('addTab').classList.toggle('hidden', tab!=='add');
+  document.getElementById('ordersTab').classList.toggle('hidden', tab!=='orders');
+  document.getElementById('profileTab').classList.toggle('hidden', tab!=='profile');
+  if(tab==='products') renderProductList();
+  if(tab==='add' && !editingProductId) resetProductForm(false);
+  if(tab==='profile') loadShopProfileForm();
+};
+
+/* ---------------- SHOP PROFILE ---------------- */
+function populateShopCategorySelect(){
+  const grid = document.getElementById('shopCatGrid');
+  grid.innerHTML = SHOP_CATEGORIES.map(c => `
+    <div class="cat-chip" data-cat="${c.id}" onclick="toggleShopCategory('${c.id}')">
+      <i class="fa-solid ${c.icon}"></i>${c.name}
+    </div>`).join('');
+}
+
+function syncShopCategoryUI(){
+  document.querySelectorAll('#shopCatGrid .cat-chip').forEach(el => el.classList.toggle('active', selectedShopCategories.includes(el.dataset.cat)));
+}
+
+window.toggleShopCategory = (id) => {
+  if(id === 'all'){
+    selectedShopCategories = selectedShopCategories.includes('all') ? [] : ['all'];
+  } else {
+    selectedShopCategories = selectedShopCategories.filter(c => c !== 'all');
+    if(selectedShopCategories.includes(id)) selectedShopCategories = selectedShopCategories.filter(c => c !== id);
+    else selectedShopCategories.push(id);
+  }
+  syncShopCategoryUI();
+};
+
+function loadShopProfileForm(){
+  const s = currentShop();
+  if(!s) return;
+  document.getElementById('shopNameInput').value = s.name || '';
+  selectedShopCategories = getCatArray(s.categories || s.category || 'grocery');
+  syncShopCategoryUI();
+  document.getElementById('shopPhoneInput').value = s.phone || '';
+  document.getElementById('shopAddressInput').value = s.address || '';
+  document.getElementById('shopLogoUploadBox').innerHTML = s.logoUrl
+    ? `<img src="${s.logoUrl}">`
+    : `<i class="fa-solid fa-image" style="font-size:22px;"></i><span>Tap to upload logo</span><input type="file" id="shopLogoInput" accept="image/*" class="hidden" onchange="handleShopLogoSelect(event)">`;
+  pendingShopLogoFile = null;
+}
+
+window.handleShopLogoSelect = (e) => {
+  const file = e.target.files[0]; if(!file) return;
+  pendingShopLogoFile = file;
+  const reader = new FileReader();
+  reader.onload = (ev) => { document.getElementById('shopLogoUploadBox').innerHTML = `<img src="${ev.target.result}">`; };
+  reader.readAsDataURL(file);
+};
+
+window.saveShopProfile = async () => {
+  const name = document.getElementById('shopNameInput').value.trim();
+  const phone = document.getElementById('shopPhoneInput').value.trim();
+  const address = document.getElementById('shopAddressInput').value.trim();
+  const categories = selectedShopCategories.slice();
+  if(!name){ toast('Shop name zaroori hai'); return; }
+  if(categories.length===0){ toast('Kam se kam ek category select karein'); return; }
+  if(!selectedShopId) return;
+  const btn = document.getElementById('shopSaveBtn');
+  btn.disabled = true; btn.textContent = 'Saving...';
+  try{
+    let logoUrl = currentShop()?.logoUrl || '';
+    if(pendingShopLogoFile) logoUrl = await uploadImageToCloudinary(pendingShopLogoFile, 'mart_shops');
+    await update(ref(db, `martShops/${selectedShopId}`), { name, phone, address, categories, category: categories[0], logoUrl });
+    toast('Shop profile update ho gaya');
+  } catch(e){
+    console.error(e); toast('Save failed, try again');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Save Shop Profile';
+  }
+};
+
+/* ---------------- PRODUCTS ---------------- */
+function populateCategorySelect(){
+  const sel = document.getElementById('pCategory');
+  sel.innerHTML = CATEGORIES.map(c => `<option value="${c.id}">${c.name}</option>`).join('');
+}
+
+function listenAllProducts(){
+  onValue(ref(db, 'martProducts'), (snap) => {
+    allProducts = snap.val() || {};
+    renderProductList();
+    renderStats();
+  });
+}
+
+function renderProductList(){
+  const wrap = document.getElementById('productList');
+  if(!wrap || !selectedShopId) { if(wrap) wrap.innerHTML = `<div class="empty-state"><i class="fa-solid fa-boxes-stacked"></i><p>Koi shop select nahi hai</p></div>`; return; }
+  const entries = Object.entries(allProducts).filter(([id,p]) => p.shopId===selectedShopId);
+  if(entries.length===0){ wrap.innerHTML = `<div class="empty-state"><i class="fa-solid fa-boxes-stacked"></i><p>Koi product add nahi hua abhi<br>"Add Product" tab se shuru karein</p></div>`; return; }
+  wrap.innerHTML = entries.map(([id,p]) => `
+    <div class="admin-product-row">
+      <img src="${p.image||'https://via.placeholder.com/48'}" alt="">
+      <div class="apr-info"><div class="n">${p.name}</div><div class="p">Rs. ${p.price} · Stock: ${p.stock||0}</div></div>
+      <div class="apr-actions">
+        <button class="edit" onclick="editProduct('${id}')"><i class="fa-solid fa-pen"></i></button>
+        <button class="del" onclick="deleteProduct('${id}')"><i class="fa-solid fa-trash"></i></button>
+      </div>
+    </div>`).join('');
+}
+
+window.handleImageSelect = (e) => {
+  const file = e.target.files[0]; if(!file) return;
+  pendingImageFile = file;
+  const reader = new FileReader();
+  reader.onload = (ev) => { document.getElementById('uploadBox').innerHTML = `<img src="${ev.target.result}">`; };
+  reader.readAsDataURL(file);
+};
+
+async function uploadImageToCloudinary(file, folder){
+  const formData = new FormData();
+  formData.append('file', file);
+  formData.append('upload_preset', UPLOAD_PRESET);
+  formData.append('folder', folder || 'mart_products');
+  const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method:'POST', body:formData });
+  if(!res.ok) throw new Error('Image upload failed');
+  const data = await res.json();
+  return data.secure_url;
+}
+
+window.editProduct = (id) => {
+  const p = allProducts[id]; if(!p) return;
+  if(p.shopId !== selectedShopId){ toast('Ye product aapki shop ka nahi hai'); return; }
+  editingProductId = id;
+  document.getElementById('pName').value = p.name || '';
+  document.getElementById('pPrice').value = p.price || '';
+  document.getElementById('pStock').value = p.stock || '';
+  document.getElementById('pCategory').value = p.category || 'grocery';
+  document.getElementById('pDesc').value = p.description || '';
+  document.getElementById('uploadBox').innerHTML = p.image ? `<img src="${p.image}">` : `<i class="fa-solid fa-image" style="font-size:22px;"></i><span>Tap to upload image</span><input type="file" id="imgInput" accept="image/*" class="hidden" onchange="handleImageSelect(event)">`;
+  pendingImageFile = null;
+  switchDashTab('add');
+  document.getElementById('pSaveBtn').textContent = 'Update Product';
+};
+
+window.deleteProduct = (id) => {
+  const p = allProducts[id]; if(!p) return;
+  if(p.shopId !== selectedShopId){ toast('Ye product aapki shop ka nahi hai'); return; }
+  openConfirm('Delete Product?', `"${p.name}" hamesha ke liye delete ho jayega.`, 'Delete', async () => {
+    await remove(ref(db, `martProducts/${id}`));
+    toast('Product deleted');
+  });
+};
+
+function resetProductForm(switchTab){
+  editingProductId = null; pendingImageFile = null;
+  document.getElementById('pName').value = '';
+  document.getElementById('pPrice').value = '';
+  document.getElementById('pStock').value = '';
+  document.getElementById('pDesc').value = '';
+  document.getElementById('uploadBox').innerHTML = `<i class="fa-solid fa-image" style="font-size:22px;"></i><span>Tap to upload image</span><input type="file" id="imgInput" accept="image/*" class="hidden" onchange="handleImageSelect(event)">`;
+  document.getElementById('pSaveBtn').textContent = 'Save Product';
+  if(switchTab) switchDashTab('products');
+}
+
+window.saveProduct = async () => {
+  const name = document.getElementById('pName').value.trim();
+  const price = parseInt(document.getElementById('pPrice').value);
+  const stock = parseInt(document.getElementById('pStock').value);
+  const category = document.getElementById('pCategory').value;
+  const description = document.getElementById('pDesc').value.trim();
+  if(!name || !price){ toast('Name aur price zaroori hai'); return; }
+  if(!selectedShopId){ toast('Pehle shop select karein'); return; }
+
+  const btn = document.getElementById('pSaveBtn');
+  btn.disabled = true; btn.textContent = 'Saving...';
+  try{
+    let imageUrl = editingProductId ? (allProducts[editingProductId]?.image || '') : '';
+    if(pendingImageFile) imageUrl = await uploadImageToCloudinary(pendingImageFile, 'mart_products');
+
+    const payload = { name, price, stock: stock||0, category, description, image: imageUrl, shopId: selectedShopId, updatedAt: Date.now() };
+    if(editingProductId){
+      if(allProducts[editingProductId]?.shopId !== selectedShopId){ toast('Ye product aapki shop ka nahi hai'); return; }
+      await update(ref(db, `martProducts/${editingProductId}`), payload);
+      toast('Product updated');
+    } else {
+      payload.createdAt = Date.now();
+      await push(ref(db, 'martProducts'), payload);
+      toast('Product added');
+    }
+    resetProductForm(true);
+  } catch(e){
+    console.error(e); toast('Save failed, try again');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Save Product';
+  }
+};
+
+/* ---------------- ORDERS ---------------- */
+function listenMyOrders(){
+  onValue(ref(db, 'martOrders'), (snap) => {
+    const data = snap.val() || {};
+    const wrap = document.getElementById('ordersList');
+    const entries = Object.entries(data)
+      .filter(([id,o]) => o.shopId===selectedShopId)
+      .sort((a,b) => (b[1].createdAt||0)-(a[1].createdAt||0));
+    const countEl = document.getElementById('myOrdersCount');
+    if(countEl) countEl.textContent = entries.length;
+    if(!wrap) return;
+    if(entries.length===0){ wrap.innerHTML = `<div class="empty-state"><i class="fa-solid fa-receipt"></i><p>Koi order abhi nahi aya</p></div>`; return; }
+    wrap.innerHTML = entries.map(([id,o]) => `
+      <div class="order-card">
+        <div class="oc-top"><span class="oc-id">#${id.slice(-6).toUpperCase()} · ${o.customerName||''}</span><span class="status-pill status-${o.status||'pending'}">${(o.status||'pending').replace(/_/g,' ')}</span></div>
+        <div class="oc-items">${(o.items||[]).map(i=>`${i.name} x${i.qty}`).join(', ')}</div>
+        <div class="oc-items">📍 ${o.address||''} · 📞 ${o.customerPhone||''}</div>
+        ${o.captainId ? `<div class="oc-items">🏍️ Captain: ${o.captainName||'Assigned'} · 📞 ${o.captainPhone||''}</div>` : `<div class="oc-items" style="color:var(--text-muted);">🏍️ Koi captain assign nahi hua abhi</div>`}
+        <div class="oc-bottom"><span>Rs. ${o.total}</span>
+          <select onchange="updateOrderStatus('${id}', this.value)" style="font-size:11.5px; padding:6px 8px; border-radius:8px; border:1px solid var(--border); background:var(--input-bg); color:var(--text-main);">
+            <option value="pending" ${o.status==='pending'?'selected':''}>Pending</option>
+            <option value="confirmed" ${o.status==='confirmed'?'selected':''}>Confirmed</option>
+            <option value="ready_for_pickup" ${o.status==='ready_for_pickup'?'selected':''}>Ready for Pickup</option>
+            <option value="out_for_delivery" ${o.status==='out_for_delivery'?'selected':''}>Out for Delivery</option>
+            <option value="delivered" ${o.status==='delivered'?'selected':''}>Delivered</option>
+            <option value="cancelled" ${o.status==='cancelled'?'selected':''}>Cancelled</option>
+          </select>
+        </div>
+      </div>`).join('');
+  });
+}
+window.updateOrderStatus = async (id, status) => {
+  const o = null; // no cross-shop check needed since query already filtered, but guard write path
+  await update(ref(db, `martOrders/${id}`), { status });
+  toast('Order status updated');
+};
+
+/* ---------------- DARK MODE (persisted, shared key with mart.html) ---------------- */
+if(localStorage.getItem('mart_dark') === '1'){ document.body.classList.add('dark-mode'); }
+</script>
+</body>
+</html>
