@@ -237,37 +237,7 @@ input:checked + .slider:before { transform:translateX(18px); }
       <p class="field-hint">Optional — lekin logo wali shops zyada trust build karti hain.</p>
     </div>
 
-    <div class="form-section-title"><i class="fa-solid fa-id-card"></i> Owner Verification (CNIC)</div>
-
-    <div class="field-group">
-      <label>CNIC Number <span class="req">*</span></label>
-      <input type="text" id="ownerCnic" placeholder="XXXXX-XXXXXXX-X" required maxlength="15" inputmode="numeric">
-    </div>
-
-    <div class="field-group">
-      <label>CNIC Front Photo <span class="req">*</span></label>
-      <div class="logo-upload">
-        <div class="logo-preview" id="cnicFrontPreview"><i class="fa-solid fa-id-card"></i></div>
-        <button type="button" class="logo-upload-btn" onclick="document.getElementById('cnicFrontInput').click()">
-          <i class="fa-solid fa-upload"></i> <span id="cnicFrontBtnText">Upload Front</span>
-        </button>
-        <input type="file" id="cnicFrontInput" accept="image/*" class="hidden" onchange="handleCnicSelect(event,'front')">
-      </div>
-    </div>
-
-    <div class="field-group">
-      <label>CNIC Back Photo <span class="req">*</span></label>
-      <div class="logo-upload">
-        <div class="logo-preview" id="cnicBackPreview"><i class="fa-solid fa-id-card"></i></div>
-        <button type="button" class="logo-upload-btn" onclick="document.getElementById('cnicBackInput').click()">
-          <i class="fa-solid fa-upload"></i> <span id="cnicBackBtnText">Upload Back</span>
-        </button>
-        <input type="file" id="cnicBackInput" accept="image/*" class="hidden" onchange="handleCnicSelect(event,'back')">
-      </div>
-      <p class="field-hint">CNIC front aur back dono clear photos zaroori hain verification ke liye.</p>
-    </div>
-
-    <div class="form-section-title"><i class="fa-solid fa-location-dot"></i> Contact &amp; Location</div>
+    <div class="form-section-title"><i class="fa-solid fa-location-dot"></i> Contact & Location</div>
 
     <div class="field-group">
       <label>Phone Number <span class="req">*</span></label>
@@ -329,8 +299,6 @@ const SHOP_CATEGORIES = [
 
 let currentUser = null;
 let pendingLogoFile = null;
-let pendingCnicFrontFile = null;
-let pendingCnicBackFile = null;
 let capturedLoc = null;
 let myRequestId = null;
 let myRequestData = null;
@@ -451,9 +419,6 @@ window.resetForReapply = () => {
     document.getElementById('shopDesc').value = myRequestData.description || '';
     document.getElementById('shopPhone').value = myRequestData.phone || '';
     document.getElementById('shopAddress').value = myRequestData.address || '';
-    document.getElementById('ownerCnic').value = myRequestData.cnicNumber || '';
-    if(myRequestData.cnicFrontUrl) document.getElementById('cnicFrontPreview').innerHTML = `<img src="${myRequestData.cnicFrontUrl}">`;
-    if(myRequestData.cnicBackUrl) document.getElementById('cnicBackPreview').innerHTML = `<img src="${myRequestData.cnicBackUrl}">`;
     if(myRequestData.category) window.selectCategory(myRequestData.category);
   }
 };
@@ -469,19 +434,6 @@ window.handleLogoSelect = (e) => {
   };
   reader.readAsDataURL(file);
   document.getElementById('logoBtnText').textContent = 'Photo Selected ✓';
-};
-
-/* ---------- CNIC UPLOAD ---------- */
-window.handleCnicSelect = (e, side) => {
-  const file = e.target.files[0];
-  if(!file) return;
-  const preview = document.getElementById(side==='front' ? 'cnicFrontPreview' : 'cnicBackPreview');
-  const btnText = document.getElementById(side==='front' ? 'cnicFrontBtnText' : 'cnicBackBtnText');
-  if(side==='front') pendingCnicFrontFile = file; else pendingCnicBackFile = file;
-  const reader = new FileReader();
-  reader.onload = (ev) => { preview.innerHTML = `<img src="${ev.target.result}">`; };
-  reader.readAsDataURL(file);
-  btnText.textContent = 'Photo Selected ✓';
 };
 
 async function uploadLogoToCloudinary(file){
@@ -540,15 +492,11 @@ window.submitShopRequest = async (e) => {
   const desc = document.getElementById('shopDesc').value.trim();
   const phone = document.getElementById('shopPhone').value.trim();
   const address = document.getElementById('shopAddress').value.trim();
-  const cnicNumber = document.getElementById('ownerCnic').value.trim();
 
   if(!name){ toast('Shop name likhein'); return false; }
   if(!category){ toast('Shop category select karein'); return false; }
   if(!phone){ toast('Phone number likhein'); return false; }
   if(!address){ toast('Shop address likhein'); return false; }
-  if(!cnicNumber){ toast('CNIC number likhein'); return false; }
-  if(!pendingCnicFrontFile && !myRequestData?.cnicFrontUrl){ toast('CNIC front photo upload karein'); return false; }
-  if(!pendingCnicBackFile && !myRequestData?.cnicBackUrl){ toast('CNIC back photo upload karein'); return false; }
 
   const submitBtn = document.getElementById('submitBtn');
   submitBtn.disabled = true;
@@ -562,25 +510,10 @@ window.submitShopRequest = async (e) => {
       submitBtn.innerHTML = '<i class="fa-solid fa-spinner spin"></i> Bheja ja raha hai...';
     }
 
-    let cnicFrontUrl = myRequestData?.cnicFrontUrl || '';
-    if(pendingCnicFrontFile){
-      submitBtn.innerHTML = '<i class="fa-solid fa-spinner spin"></i> CNIC Front upload ho rahi hai...';
-      cnicFrontUrl = await uploadLogoToCloudinary(pendingCnicFrontFile);
-      submitBtn.innerHTML = '<i class="fa-solid fa-spinner spin"></i> Bheja ja raha hai...';
-    }
-
-    let cnicBackUrl = myRequestData?.cnicBackUrl || '';
-    if(pendingCnicBackFile){
-      submitBtn.innerHTML = '<i class="fa-solid fa-spinner spin"></i> CNIC Back upload ho rahi hai...';
-      cnicBackUrl = await uploadLogoToCloudinary(pendingCnicBackFile);
-      submitBtn.innerHTML = '<i class="fa-solid fa-spinner spin"></i> Bheja ja raha hai...';
-    }
-
     const newReqRef = push(ref(db, 'shopRequests'));
     await set(newReqRef, {
       name, category, description: desc, phone, address,
       logoUrl: logoUrl || '',
-      cnicNumber, cnicFrontUrl, cnicBackUrl,
       lat: capturedLoc ? capturedLoc.lat : null,
       lng: capturedLoc ? capturedLoc.lng : null,
       ownerUid: currentUser.uid,

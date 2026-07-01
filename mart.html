@@ -54,10 +54,11 @@ button { cursor:pointer; border:none; outline:none; font-family:'Poppins',sans-s
 input, textarea, select { font-family:'Poppins',sans-serif; }
 
 /* ---------- LOADING / SPLASH ---------- */
-#splash { position:fixed; inset:0; background:var(--primary); z-index:9999; display:flex; flex-direction:column; align-items:center; justify-content:center; color:#fff; }
-#splash .logo-circle { width:84px; height:84px; border-radius:22px; background:rgba(255,255,255,0.15); display:flex; align-items:center; justify-content:center; font-size:38px; margin-bottom:14px; animation:pulse 1.4s infinite; }
-#splash h1 { font-weight:800; font-size:22px; letter-spacing:.5px; }
-#splash p { font-size:12px; opacity:.85; margin-top:4px; }
+#splash { position:fixed; inset:0; background:#ffffff; z-index:9999; display:flex; flex-direction:column; align-items:center; justify-content:center; color:var(--primary); }
+#splash .logo-circle { width:110px; height:110px; border-radius:22px; background:transparent; display:flex; align-items:center; justify-content:center; margin-bottom:14px; animation:pulse 1.4s infinite; }
+#splash .logo-circle img { width:100%; height:100%; object-fit:contain; }
+#splash h1 { font-weight:800; font-size:22px; letter-spacing:.5px; color:var(--primary); }
+#splash p { font-size:12px; opacity:.7; margin-top:4px; color:var(--primary); }
 @keyframes pulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.08);} }
 
 /* ---------- AUTH ---------- */
@@ -73,6 +74,7 @@ input, textarea, select { font-family:'Poppins',sans-serif; }
 .app-header { position:sticky; top:0; z-index:500; background:var(--header-bg); display:flex; align-items:center; gap:10px; padding:12px 16px; box-shadow:var(--shadow); }
 .mart-logo { display:flex; align-items:center; gap:8px; font-weight:800; font-size:17px; color:var(--primary); white-space:nowrap; }
 .mart-logo .fa-cart-shopping { background:var(--primary); color:#fff; width:34px; height:34px; border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:15px; }
+.mart-logo img.mart-logo-img { width:34px; height:34px; border-radius:10px; object-fit:cover; flex-shrink:0; }
 .header-search { flex:1; display:flex; align-items:center; background:var(--input-bg); border:1px solid var(--border); border-radius:12px; padding:9px 12px; gap:8px; }
 .header-search i { color:var(--text-muted); font-size:14px; }
 .header-search input { border:none; background:transparent; outline:none; font-size:13.5px; width:100%; color:var(--text-main); }
@@ -89,10 +91,8 @@ input, textarea, select { font-family:'Poppins',sans-serif; }
 .cat-chip.active i { color:#fff; }
 
 /* ---------- BANNER ---------- */
-.mart-banner { margin:12px 16px; border-radius:16px; background:linear-gradient(120deg,var(--primary),#2fbf55); color:#fff; padding:16px 18px; display:flex; align-items:center; justify-content:space-between; overflow:hidden; position:relative; }
-.mart-banner h3 { font-size:15.5px; font-weight:800; margin-bottom:4px; }
-.mart-banner p { font-size:11.5px; opacity:.92; }
-.mart-banner i { font-size:44px; opacity:.35; }
+.mart-banner { margin:12px 16px; border-radius:16px; overflow:hidden; position:relative; }
+.mart-banner img { width:100%; height:auto; display:block; border-radius:16px; }
 
 /* ---------- SECTION ---------- */
 .section-title { display:flex; align-items:center; justify-content:space-between; padding:16px 16px 8px; }
@@ -215,25 +215,6 @@ input:checked + .slider::before { transform:translateX(18px); }
 .dark-mode .toast { background:var(--primary); }
 .toast.show { opacity:1; bottom:100px; }
 
-/* ---------- ADMIN ---------- */
-.admin-fab { position:fixed; bottom:150px; right:16px; width:48px; height:48px; border-radius:50%; background:#000; color:#fff; display:flex; align-items:center; justify-content:center; font-size:18px; box-shadow:0 6px 18px rgba(0,0,0,0.3); z-index:590; }
-.admin-tabs { display:flex; gap:8px; padding:10px 16px; overflow-x:auto; }
-.admin-tab { padding:8px 14px; border-radius:10px; background:var(--card-bg); font-size:12px; font-weight:600; color:var(--text-muted); white-space:nowrap; }
-.admin-tab.active { background:var(--primary); color:#fff; }
-.admin-product-row { display:flex; align-items:center; gap:10px; background:var(--card-bg); border-radius:14px; padding:10px; margin:0 16px 10px; box-shadow:var(--shadow); }
-.admin-product-row img { width:48px; height:48px; border-radius:9px; object-fit:cover; background:var(--input-bg); }
-.admin-product-row .apr-info { flex:1; }
-.admin-product-row .apr-info .n { font-size:12.5px; font-weight:600; }
-.admin-product-row .apr-info .p { font-size:11.5px; color:var(--primary); font-weight:700; }
-.apr-actions { display:flex; gap:6px; }
-.apr-actions button { width:30px; height:30px; border-radius:8px; background:var(--input-bg); font-size:12px; }
-.apr-actions button.del { color:var(--error); }
-.apr-actions button.edit { color:var(--info); }
-.upload-box { border:2px dashed var(--border); border-radius:14px; height:110px; display:flex; flex-direction:column; align-items:center; justify-content:center; gap:6px; color:var(--text-muted); font-size:12px; margin-bottom:14px; position:relative; overflow:hidden; }
-.upload-box img { position:absolute; inset:0; width:100%; height:100%; object-fit:cover; }
-.form-row-2 { display:flex; gap:10px; }
-.form-row-2 .input-field { flex:1; }
-
 /* ---------- LOCATION BAR ---------- */
 .location-bar { display:flex; align-items:center; gap:8px; padding:10px 16px; background:var(--card-bg); font-size:12px; color:var(--text-muted); border-bottom:1px solid var(--border); }
 .location-bar i { color:var(--primary); font-size:14px; }
@@ -258,18 +239,15 @@ input:checked + .slider::before { transform:translateX(18px); }
 .shop-hero h3 { font-size:15px; font-weight:800; }
 .shop-hero p { font-size:11px; color:var(--text-muted); }
 
-.shop-select-bar { display:flex; align-items:center; gap:8px; padding:10px 16px; }
-.shop-select-bar select { flex:1; background:var(--input-bg); border:1px solid var(--border); border-radius:12px; padding:10px 12px; font-size:13px; color:var(--text-main); }
 </style>
 </head>
 <body>
 
 <!-- SPLASH -->
 <div id="splash">
-  <div class="logo-circle"><i class="fa-solid fa-cart-shopping"></i></div>
-  <h1>Raftaroo Mart</h1>
-  <p>Shopping made fast</p>
+  <div class="logo-circle"><img src="https://iili.io/C7kWnf4.png" alt="Raftaroo Mart"></div>
 </div>
+<script>window.__splashStart = Date.now();</script>
 
 <!-- AUTH -->
 <div id="auth-screen" class="hidden">
@@ -288,7 +266,7 @@ input:checked + .slider::before { transform:translateX(18px); }
 
   <!-- HEADER -->
   <header class="app-header">
-    <div class="mart-logo" id="adminTapZone"><i class="fa-solid fa-cart-shopping"></i></div>
+    <div class="mart-logo"><img class="mart-logo-img" src="https://iili.io/C7vLVna.jpg" alt="Raftaroo Mart"></div>
     <div class="header-search" onclick="showView('search-view')">
       <i class="fa-solid fa-magnifying-glass"></i>
       <input type="text" id="searchInputTop" placeholder="Search Raftaroo Mart" readonly>
@@ -307,8 +285,7 @@ input:checked + .slider::before { transform:translateX(18px); }
     <div class="cat-scroll" id="shopCategoryScroll"></div>
 
     <div class="mart-banner">
-      <div><h3>Fast Delivery</h3><p>Apne qareeb ki shops se order karein — fast delivery ke saath</p></div>
-      <i class="fa-solid fa-truck-fast"></i>
+      <img src="https://iili.io/C7vaynp.jpg" alt="Raftaroo Mart Banner">
     </div>
 
     <div class="section-title"><h4 id="shopGridTitle">Qareeb ki Shops ke Products</h4><span id="shopGridCount"></span></div>
@@ -415,51 +392,6 @@ input:checked + .slider::before { transform:translateX(18px); }
     <p style="text-align:center; font-size:10.5px; color:var(--text-muted); margin-top:10px;">Raftaroo Mart v1.0</p>
   </div>
 
-  <!-- ================= ADMIN VIEW ================= -->
-  <div id="admin-view" class="view-panel hidden">
-    <div class="view-header">
-      <i class="fa-solid fa-arrow-left back-icon" onclick="showView('home-view')"></i>
-      <h2>Mart Admin</h2>
-    </div>
-    <div class="shop-select-bar hidden" id="adminShopSelectBar">
-      <select id="adminShopSelect" onchange="onAdminShopChange(this.value)"></select>
-    </div>
-    <div class="admin-tabs">
-      <div class="admin-tab active" data-tab="products" onclick="switchAdminTab('products')">Products</div>
-      <div class="admin-tab" data-tab="add" onclick="switchAdminTab('add')">Add Product</div>
-      <div class="admin-tab" data-tab="orders" onclick="switchAdminTab('orders')">Orders</div>
-      <div class="admin-tab hidden" id="requestsTabBtn" data-tab="requests" onclick="switchAdminTab('requests')">Shop Requests <span class="badge-dot hidden" id="requestsBadge" style="position:static; margin-left:4px; display:inline-flex;">0</span></div>
-    </div>
-
-    <div id="adminProductsTab">
-      <div id="adminProductList" style="padding-top:6px;"></div>
-    </div>
-
-    <div id="adminAddTab" class="hidden">
-      <div class="upload-box" id="adminUploadBox" onclick="document.getElementById('adminImgInput').click()">
-        <i class="fa-solid fa-image" style="font-size:22px;"></i>
-        <span>Tap to upload image</span>
-        <input type="file" id="adminImgInput" accept="image/*" class="hidden" onchange="handleAdminImageSelect(event)">
-      </div>
-      <input type="text" class="input-field" id="admName" placeholder="Product Name" style="margin:0 16px 12px; width:calc(100% - 32px);">
-      <div class="form-row-2" style="margin:0 16px 12px;">
-        <input type="number" class="input-field" id="admPrice" placeholder="Price (Rs.)" style="margin:0;">
-        <input type="number" class="input-field" id="admStock" placeholder="Stock Qty" style="margin:0;">
-      </div>
-      <select class="input-field" id="admCategory" style="margin:0 16px 12px; width:calc(100% - 32px);"></select>
-      <textarea class="input-field" id="admDesc" placeholder="Short description (optional)" style="margin:0 16px 12px; width:calc(100% - 32px);"></textarea>
-      <button class="primary-btn" id="admSaveBtn" onclick="saveAdminProduct()">Save Product</button>
-    </div>
-
-    <div id="adminOrdersTab" class="hidden">
-      <div id="adminOrdersList" style="padding-top:6px;"></div>
-    </div>
-
-    <div id="adminRequestsTab" class="hidden">
-      <div id="adminRequestsList" style="padding-top:6px;"></div>
-    </div>
-  </div>
-
   <!-- BOTTOM NAV -->
   <nav class="bottom-nav">
     <div class="nav-item active" data-nav="home-view" onclick="showView('home-view')"><i class="fa-solid fa-house"></i>Home</div>
@@ -475,7 +407,6 @@ input:checked + .slider::before { transform:translateX(18px); }
     <div class="fc-right">View Cart <i class="fa-solid fa-arrow-right"></i></div>
   </div>
 
-  <button class="admin-fab hidden" id="adminFab" onclick="showView('admin-view')"><i class="fa-solid fa-screwdriver-wrench"></i></button>
 </div>
 
 <!-- PRODUCT DETAIL MODAL -->
@@ -515,13 +446,6 @@ const db = getDatabase(app);
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 
-const CLOUD_NAME = "dw4btouzp";
-const UPLOAD_PRESET = "sell-it-fast";
-
-// ⚠️ IMPORTANT: Apna Firebase Auth UID yahan daalein taake Admin Panel access ho sake.
-// Console mein "console.log(currentUser.uid)" likh kar login ke baad UID nikal sakte hain.
-const ADMIN_UIDS = ["94DrBI29E0WvUqqNCInlKNMfE1z2"];
-
 const CATEGORIES = [
   { id:'all', name:'All', icon:'fa-border-all' },
   { id:'grocery', name:'Grocery', icon:'fa-basket-shopping' },
@@ -556,10 +480,7 @@ let cart = {};
 let activeCategory = 'all';
 let activeShopCategory = 'all';
 let walletBalance = 0;
-let pendingImageFile = null;
-let editingProductId = null;
 let customerLoc = null; // {lat,lng}
-let adminSelectedShopId = null;
 
 /* ---------------- LOCATION / DISTANCE ---------------- */
 function haversineKm(lat1, lng1, lat2, lng2){
@@ -613,7 +534,10 @@ document.getElementById('googleLoginBtn').addEventListener('click', async () => 
 window.logoutUser = () => { signOut(auth); };
 
 onAuthStateChanged(auth, async (user) => {
-  document.getElementById('splash').classList.add('hidden');
+  const splashStart = window.__splashStart || Date.now();
+  const elapsed = Date.now() - splashStart;
+  const remaining = Math.max(0, 3000 - elapsed);
+  setTimeout(() => { document.getElementById('splash').classList.add('hidden'); }, remaining);
   if(user){
     currentUser = user;
     console.log("Raftaroo Mart UID:", user.uid);
@@ -638,7 +562,6 @@ onAuthStateChanged(auth, async (user) => {
     listenShops();
     listenMyOrders();
     detectLocation();
-    populateAdminCategorySelect();
   } else {
     currentUser = null;
     document.getElementById('app').classList.add('hidden');
@@ -670,7 +593,6 @@ function listenShops(){
     allShops = snap.val() || {};
     renderShopCategories();
     renderHomeProducts();
-    resolveAdminAccess();
     if(currentShopId && allShops[currentShopId]){
       currentShopData = allShops[currentShopId];
       renderShopHero();
@@ -808,63 +730,6 @@ function renderShopHero(){
     </div>`;
 }
 
-/* ---------------- ADMIN ACCESS (super admin OR shop owner) ---------------- */
-function resolveAdminAccess(){
-  if(!currentUser) return;
-  const myShops = Object.entries(allShops).filter(([id,s]) => s.ownerUid===currentUser.uid);
-  const isSuper = ADMIN_UIDS.includes(currentUser.uid);
-  const fab = document.getElementById('adminFab');
-  const selectBar = document.getElementById('adminShopSelectBar');
-
-  if(isSuper){
-    fab.classList.remove('hidden');
-    document.getElementById('requestsTabBtn').classList.remove('hidden');
-    const allEntries = Object.entries(allShops);
-    if(allEntries.length){
-      selectBar.classList.remove('hidden');
-      populateAdminShopSelect(allEntries);
-      if(!adminSelectedShopId || !allShops[adminSelectedShopId]) adminSelectedShopId = allEntries[0][0];
-    } else {
-      selectBar.classList.add('hidden');
-      adminSelectedShopId = null;
-    }
-    startAdminListeners();
-    listenShopRequests();
-  } else if(myShops.length){
-    fab.classList.remove('hidden');
-    if(myShops.length>1){
-      selectBar.classList.remove('hidden');
-      populateAdminShopSelect(myShops);
-    } else {
-      selectBar.classList.add('hidden');
-    }
-    if(!adminSelectedShopId || !myShops.find(([id])=>id===adminSelectedShopId)) adminSelectedShopId = myShops[0][0];
-    startAdminListeners();
-  } else {
-    fab.classList.add('hidden');
-    selectBar.classList.add('hidden');
-    document.getElementById('requestsTabBtn').classList.add('hidden');
-    adminSelectedShopId = null;
-  }
-}
-
-let adminListenersStarted = false;
-function startAdminListeners(){
-  if(adminListenersStarted) return;
-  adminListenersStarted = true;
-  listenAdminOrders();
-  renderAdminProductList();
-}
-
-function populateAdminShopSelect(entries){
-  const sel = document.getElementById('adminShopSelect');
-  sel.innerHTML = entries.map(([id,s]) => `<option value="${id}" ${id===adminSelectedShopId?'selected':''}>${s.name}</option>`).join('');
-}
-window.onAdminShopChange = (id) => {
-  adminSelectedShopId = id;
-  renderAdminProductList();
-};
-
 /* ---------------- CATEGORIES ---------------- */
 function renderCategories(){
   const wrap = document.getElementById('categoryScroll');
@@ -883,7 +748,6 @@ function listenProducts(){
     renderProductGrid();
     renderHomeProducts();
     if(document.getElementById('search-view').classList.contains('hidden')===false) renderSearch();
-    if(adminSelectedShopId) renderAdminProductList();
   });
 }
 
@@ -1225,223 +1089,6 @@ window.showView = (viewId) => {
   window.scrollTo(0,0);
 };
 
-/* ---------------- ADMIN PANEL ---------------- */
-let adminTapCount = 0, adminTapTimer = null;
-document.getElementById('adminTapZone').addEventListener('click', () => {
-  adminTapCount++;
-  clearTimeout(adminTapTimer);
-  adminTapTimer = setTimeout(()=>adminTapCount=0, 1500);
-  if(adminTapCount>=7){
-    adminTapCount = 0;
-    if(currentUser && adminSelectedShopId) showView('admin-view');
-    else toast('Access denied');
-  }
-});
-
-function populateAdminCategorySelect(){
-  const sel = document.getElementById('admCategory');
-  sel.innerHTML = CATEGORIES.filter(c=>c.id!=='all').map(c => `<option value="${c.id}">${c.name}</option>`).join('');
-}
-
-window.switchAdminTab = (tab) => {
-  document.querySelectorAll('.admin-tab').forEach(t => t.classList.toggle('active', t.dataset.tab===tab));
-  document.getElementById('adminProductsTab').classList.toggle('hidden', tab!=='products');
-  document.getElementById('adminAddTab').classList.toggle('hidden', tab!=='add');
-  document.getElementById('adminOrdersTab').classList.toggle('hidden', tab!=='orders');
-  document.getElementById('adminRequestsTab').classList.toggle('hidden', tab!=='requests');
-  if(tab==='products') renderAdminProductList();
-  if(tab==='requests') renderShopRequests();
-};
-
-function renderAdminProductList(){
-  const wrap = document.getElementById('adminProductList');
-  if(!wrap || !adminSelectedShopId) return;
-  const entries = Object.entries(allProducts).filter(([id,p]) => p.shopId===adminSelectedShopId);
-  if(entries.length===0){ wrap.innerHTML = `<p style="text-align:center; color:var(--text-muted); padding:30px; font-size:12.5px;">Koi product add nahi hua abhi</p>`; return; }
-  wrap.innerHTML = entries.map(([id,p]) => `
-    <div class="admin-product-row">
-      <img src="${p.image||'https://via.placeholder.com/48'}" alt="">
-      <div class="apr-info"><div class="n">${p.name}</div><div class="p">Rs. ${p.price} · Stock: ${p.stock||0}</div></div>
-      <div class="apr-actions">
-        <button class="edit" onclick="editAdminProduct('${id}')"><i class="fa-solid fa-pen"></i></button>
-        <button class="del" onclick="deleteAdminProduct('${id}')"><i class="fa-solid fa-trash"></i></button>
-      </div>
-    </div>`).join('');
-}
-
-window.handleAdminImageSelect = (e) => {
-  const file = e.target.files[0]; if(!file) return;
-  pendingImageFile = file;
-  const reader = new FileReader();
-  reader.onload = (ev) => {
-    document.getElementById('adminUploadBox').innerHTML = `<img src="${ev.target.result}">`;
-  };
-  reader.readAsDataURL(file);
-};
-
-async function uploadImageToCloudinary(file){
-  const formData = new FormData();
-  formData.append('file', file);
-  formData.append('upload_preset', UPLOAD_PRESET);
-  formData.append('folder', 'mart_products');
-  const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, { method:'POST', body:formData });
-  if(!res.ok) throw new Error('Image upload failed');
-  const data = await res.json();
-  return data.secure_url;
-}
-
-window.editAdminProduct = (id) => {
-  const p = allProducts[id]; if(!p) return;
-  editingProductId = id;
-  document.getElementById('admName').value = p.name || '';
-  document.getElementById('admPrice').value = p.price || '';
-  document.getElementById('admStock').value = p.stock || '';
-  document.getElementById('admCategory').value = p.category || 'grocery';
-  document.getElementById('admDesc').value = p.description || '';
-  document.getElementById('adminUploadBox').innerHTML = p.image ? `<img src="${p.image}">` : `<i class="fa-solid fa-image" style="font-size:22px;"></i><span>Tap to upload image</span><input type="file" id="adminImgInput" accept="image/*" class="hidden" onchange="handleAdminImageSelect(event)">`;
-  pendingImageFile = null;
-  switchAdminTab('add');
-  document.getElementById('admSaveBtn').textContent = 'Update Product';
-};
-
-window.deleteAdminProduct = async (id) => {
-  if(!confirm('Delete this product?')) return;
-  await remove(ref(db, `martProducts/${id}`));
-  toast('Product deleted');
-};
-
-window.saveAdminProduct = async () => {
-  const name = document.getElementById('admName').value.trim();
-  const price = parseInt(document.getElementById('admPrice').value);
-  const stock = parseInt(document.getElementById('admStock').value);
-  const category = document.getElementById('admCategory').value;
-  const description = document.getElementById('admDesc').value.trim();
-  if(!name || !price){ toast('Name aur price zaroori hai'); return; }
-  if(!adminSelectedShopId){ toast('Pehle shop select karein'); return; }
-
-  const btn = document.getElementById('admSaveBtn');
-  btn.disabled = true; btn.textContent = 'Saving...';
-  try{
-    let imageUrl = editingProductId ? (allProducts[editingProductId]?.image || '') : '';
-    if(pendingImageFile) imageUrl = await uploadImageToCloudinary(pendingImageFile);
-
-    const payload = { name, price, stock: stock||0, category, description, image: imageUrl, shopId: adminSelectedShopId, updatedAt: Date.now() };
-    if(editingProductId){
-      await update(ref(db, `martProducts/${editingProductId}`), payload);
-      toast('Product updated');
-    } else {
-      payload.createdAt = Date.now();
-      await push(ref(db, 'martProducts'), payload);
-      toast('Product added');
-    }
-    resetAdminForm();
-    switchAdminTab('products');
-  } catch(e){
-    console.error(e); toast('Save failed, try again');
-  } finally {
-    btn.disabled = false; btn.textContent = 'Save Product';
-  }
-};
-
-function resetAdminForm(){
-  editingProductId = null; pendingImageFile = null;
-  document.getElementById('admName').value = '';
-  document.getElementById('admPrice').value = '';
-  document.getElementById('admStock').value = '';
-  document.getElementById('admDesc').value = '';
-  document.getElementById('adminUploadBox').innerHTML = `<i class="fa-solid fa-image" style="font-size:22px;"></i><span>Tap to upload image</span><input type="file" id="adminImgInput" accept="image/*" class="hidden" onchange="handleAdminImageSelect(event)">`;
-  document.getElementById('admSaveBtn').textContent = 'Save Product';
-}
-
-function listenAdminOrders(){
-  onValue(ref(db, 'martOrders'), (snap) => {
-    const data = snap.val() || {};
-    const wrap = document.getElementById('adminOrdersList');
-    if(!wrap) return;
-    const entries = Object.entries(data)
-      .filter(([id,o]) => o.shopId===adminSelectedShopId)
-      .sort((a,b) => (b[1].createdAt||0)-(a[1].createdAt||0));
-    if(entries.length===0){ wrap.innerHTML = `<p style="text-align:center; color:var(--text-muted); padding:30px; font-size:12.5px;">Koi order abhi nahi aya</p>`; return; }
-    wrap.innerHTML = entries.map(([id,o]) => `
-      <div class="order-card">
-        <div class="oc-top"><span class="oc-id">#${id.slice(-6).toUpperCase()} · ${o.customerName||''}</span><span class="status-pill status-${o.status||'pending'}">${(o.status||'pending').replace(/_/g,' ')}</span></div>
-        <div class="oc-items">${(o.items||[]).map(i=>`${i.name} x${i.qty}`).join(', ')}</div>
-        <div class="oc-items">📍 ${o.address||''} · 📞 ${o.customerPhone||''}</div>
-        ${o.captainId ? `<div class="oc-items">🏍️ Captain: ${o.captainName||'Assigned'} · 📞 ${o.captainPhone||''}</div>` : `<div class="oc-items" style="color:var(--text-muted);">🏍️ Koi captain assign nahi hua abhi</div>`}
-        <div class="oc-bottom"><span>Rs. ${o.total}</span>
-          <select onchange="updateOrderStatus('${id}', this.value)" style="font-size:11.5px; padding:6px 8px; border-radius:8px; border:1px solid var(--border); background:var(--input-bg); color:var(--text-main);">
-            <option value="pending" ${o.status==='pending'?'selected':''}>Pending</option>
-            <option value="confirmed" ${o.status==='confirmed'?'selected':''}>Confirmed</option>
-            <option value="ready_for_pickup" ${o.status==='ready_for_pickup'?'selected':''}>Ready for Pickup</option>
-            <option value="out_for_delivery" ${o.status==='out_for_delivery'?'selected':''}>Out for Delivery</option>
-            <option value="delivered" ${o.status==='delivered'?'selected':''}>Delivered</option>
-            <option value="cancelled" ${o.status==='cancelled'?'selected':''}>Cancelled</option>
-          </select>
-        </div>
-      </div>`).join('');
-  });
-}
-window.updateOrderStatus = async (id, status) => {
-  await update(ref(db, `martOrders/${id}`), { status });
-  toast('Order status updated');
-};
-
-/* ---------------- SHOP REGISTRATION REQUESTS (super admin only) ---------------- */
-let shopRequestsData = {};
-function listenShopRequests(){
-  onValue(ref(db, 'shopRequests'), (snap) => {
-    shopRequestsData = snap.val() || {};
-    const pendingCount = Object.values(shopRequestsData).filter(r => r.status==='pending').length;
-    const badge = document.getElementById('requestsBadge');
-    if(pendingCount > 0){ badge.textContent = pendingCount; badge.classList.remove('hidden'); }
-    else { badge.classList.add('hidden'); }
-    renderShopRequests();
-  });
-}
-
-function renderShopRequests(){
-  const wrap = document.getElementById('adminRequestsList');
-  if(!wrap) return;
-  const entries = Object.entries(shopRequestsData).sort((a,b) => (b[1].createdAt||0)-(a[1].createdAt||0));
-  if(entries.length===0){ wrap.innerHTML = `<p style="text-align:center; color:var(--text-muted); padding:30px; font-size:12.5px;">Koi shop registration request nahi hai</p>`; return; }
-  wrap.innerHTML = entries.map(([id,r]) => `
-    <div class="order-card">
-      <div class="oc-top"><span class="oc-id">${r.name||'Shop'}</span><span class="status-pill status-${r.status==='pending'?'pending':(r.status==='approved'?'confirmed':'cancelled')}">${r.status||'pending'}</span></div>
-      <div class="oc-items">🏷️ ${labelForShopCat(r.category)} · 📞 ${r.phone||''}</div>
-      <div class="oc-items">📍 ${r.address||''}</div>
-      ${r.description ? `<div class="oc-items">${r.description}</div>` : ''}
-      <div class="oc-items">👤 ${r.ownerName||''} · ${r.ownerEmail||''}</div>
-      <div class="oc-items">🪪 CNIC: ${r.cnicNumber||'N/A'}</div>
-      ${(r.cnicFrontUrl || r.cnicBackUrl) ? `
-      <div class="oc-items" style="display:flex; gap:8px;">
-        ${r.cnicFrontUrl ? `<a href="${r.cnicFrontUrl}" target="_blank" style="color:var(--primary); font-weight:600;">📄 CNIC Front</a>` : ''}
-        ${r.cnicBackUrl ? `<a href="${r.cnicBackUrl}" target="_blank" style="color:var(--primary); font-weight:600;">📄 CNIC Back</a>` : ''}
-      </div>` : ''}
-      ${r.status==='pending' ? `
-      <div class="oc-bottom" style="gap:8px;">
-        <button class="primary-btn" style="margin:0; flex:1; padding:10px; font-size:12.5px;" onclick="approveShopRequest('${id}')">Approve</button>
-        <button class="primary-btn" style="margin:0; flex:1; padding:10px; font-size:12.5px; background:var(--error);" onclick="rejectShopRequest('${id}')">Reject</button>
-      </div>` : ''}
-    </div>`).join('');
-}
-
-window.approveShopRequest = async (id) => {
-  const r = shopRequestsData[id]; if(!r) return;
-  const newShopRef = push(ref(db, 'martShops'));
-  await set(newShopRef, {
-    name: r.name, category: r.category, phone: r.phone||'', address: r.address||'',
-    logoUrl: r.logoUrl||'', lat: r.lat||null, lng: r.lng||null,
-    cnicNumber: r.cnicNumber||'', cnicFrontUrl: r.cnicFrontUrl||'', cnicBackUrl: r.cnicBackUrl||'',
-    isOpen: true, ownerUid: r.ownerUid, createdAt: Date.now()
-  });
-  await update(ref(db, `shopRequests/${id}`), { status:'approved' });
-  toast('Shop approved — ab live hai');
-};
-
-window.rejectShopRequest = async (id) => {
-  await update(ref(db, `shopRequests/${id}`), { status:'rejected' });
-  toast('Request reject kar di gayi');
-};
 </script>
 </body>
 </html>
