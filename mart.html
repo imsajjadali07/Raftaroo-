@@ -311,9 +311,9 @@ input:checked + .slider::before { transform:translateX(18px); }
       <i class="fa-solid fa-truck-fast"></i>
     </div>
 
-    <div class="section-title"><h4 id="shopGridTitle">Nearby Shops</h4><span id="shopGridCount"></span></div>
-    <div class="shop-list" id="shopList"></div>
-    <div class="empty-state hidden" id="shopsEmpty"><i class="fa-solid fa-store-slash"></i><p>Is category mein abhi koi shop available nahi.</p></div>
+    <div class="section-title"><h4 id="shopGridTitle">Qareeb ki Shops ke Products</h4><span id="shopGridCount"></span></div>
+    <div class="product-grid" id="homeProductGrid"></div>
+    <div class="empty-state hidden" id="shopsEmpty"><i class="fa-solid fa-box-open"></i><p>Is category mein abhi koi product available nahi.</p></div>
   </div>
 
   <!-- SHOP VIEW (products of a selected shop) -->
@@ -584,8 +584,8 @@ window.detectLocation = (forCheckout) => {
   navigator.geolocation.getCurrentPosition((pos) => {
     customerLoc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
     if(!forCheckout){
-      document.getElementById('locationText').innerHTML = `Aapki location mil gayi — nearby shops dikha rahe hain`;
-      renderShopList();
+      document.getElementById('locationText').innerHTML = `Aapki location mil gayi — nearby products dikha rahe hain`;
+      renderHomeProducts();
     } else {
       document.getElementById('deliveryLocStatus').textContent = 'Current location delivery point set ho gayi ✓';
     }
@@ -669,7 +669,7 @@ function listenShops(){
   onValue(ref(db, 'martShops'), (snap) => {
     allShops = snap.val() || {};
     renderShopCategories();
-    renderShopList();
+    renderHomeProducts();
     resolveAdminAccess();
     if(currentShopId && allShops[currentShopId]){
       currentShopData = allShops[currentShopId];
@@ -687,7 +687,7 @@ function renderShopCategories(){
       <i class="fa-solid ${c.icon}"></i><span>${c.name}</span>
     </div>`).join('');
 }
-window.selectShopCategory = (id) => { activeShopCategory = id; renderShopCategories(); renderShopList(); };
+window.selectShopCategory = (id) => { activeShopCategory = id; renderShopCategories(); renderHomeProducts(); };
 
 function labelForShopCat(id){ return (SHOP_CATEGORIES.find(c=>c.id===id)||{}).name || 'Shop'; }
 
@@ -703,6 +703,57 @@ function getSortedShops(list){
     return a[2]-b[2];
   });
   return withDist;
+}
+
+function homeProductCardHTML(id, p, distanceKm){
+  const stock = parseInt(p.stock)||0;
+  const qty = cart[id]?.qty || 0;
+  const shop = allShops[p.shopId];
+  return `
+  <div class="product-card">
+    <div class="product-img-wrap" onclick="openProductModal('${id}')">
+      <img src="${p.image||'https://via.placeholder.com/300x270?text=Raftaroo+Mart'}" alt="${p.name}">
+      ${stock<=0 ? `<span class="stock-badge out">Out of Stock</span>` : (stock<=5?`<span class="stock-badge">Only ${stock} left</span>`:'')}
+    </div>
+    <div class="product-info">
+      <div class="product-cat">${shop?shop.name:''}${distanceKm!=null?` · ${distanceKm.toFixed(1)} km`:''}</div>
+      <div class="product-name" onclick="openProductModal('${id}')">${p.name}</div>
+      <div class="product-bottom">
+        <div class="product-price">Rs. ${parseInt(p.price)||0}</div>
+        ${stock<=0 ? '' : (qty>0 ? `
+          <div class="qty-stepper">
+            <button onclick="changeQty('${id}', -1)">−</button>
+            <span>${qty}</span>
+            <button onclick="changeQty('${id}', 1)">+</button>
+          </div>` : `<button class="add-btn" onclick="changeQty('${id}', 1)"><i class="fa-solid fa-plus"></i></button>`)}
+      </div>
+    </div>
+  </div>`;
+}
+
+function renderHomeProducts(){
+  const wrap = document.getElementById('homeProductGrid');
+  const empty = document.getElementById('shopsEmpty');
+  if(!wrap) return;
+  let shopEntries = Object.entries(allShops);
+  if(activeShopCategory!=='all') shopEntries = shopEntries.filter(([id,s]) => s.category===activeShopCategory);
+
+  const sortedShops = getSortedShops(shopEntries);
+  const distanceById = {};
+  const shopOrder = {};
+  sortedShops.forEach(([id,s,d], i) => { distanceById[id] = d; shopOrder[id] = i; });
+
+  let products = Object.entries(allProducts).filter(([id,p]) => shopOrder.hasOwnProperty(p.shopId));
+  products.sort((a,b) => {
+    const ia = shopOrder[a[1].shopId], ib = shopOrder[b[1].shopId];
+    if(ia!==ib) return ia-ib;
+    return (b[1].createdAt||0)-(a[1].createdAt||0);
+  });
+
+  document.getElementById('shopGridCount').textContent = products.length ? `${products.length} products` : '';
+  if(products.length===0){ wrap.innerHTML=''; empty.classList.remove('hidden'); return; }
+  empty.classList.add('hidden');
+  wrap.innerHTML = products.map(([id,p]) => homeProductCardHTML(id, p, distanceById[p.shopId])).join('');
 }
 
 function renderShopList(){
@@ -830,6 +881,7 @@ function listenProducts(){
     allProducts = snap.val() || {};
     renderCategories();
     renderProductGrid();
+    renderHomeProducts();
     if(document.getElementById('search-view').classList.contains('hidden')===false) renderSearch();
     if(adminSelectedShopId) renderAdminProductList();
   });
@@ -972,6 +1024,7 @@ function saveCart(){
   localStorage.setItem(`mart_cart_${currentUser.uid}`, JSON.stringify(cart));
   renderCartBadges();
   renderProductGrid();
+  renderHomeProducts();
   if(!document.getElementById('cart-view').classList.contains('hidden')) renderCartView();
   if(!document.getElementById('search-view').classList.contains('hidden')) renderSearch();
 }
@@ -1358,6 +1411,12 @@ function renderShopRequests(){
       <div class="oc-items">📍 ${r.address||''}</div>
       ${r.description ? `<div class="oc-items">${r.description}</div>` : ''}
       <div class="oc-items">👤 ${r.ownerName||''} · ${r.ownerEmail||''}</div>
+      <div class="oc-items">🪪 CNIC: ${r.cnicNumber||'N/A'}</div>
+      ${(r.cnicFrontUrl || r.cnicBackUrl) ? `
+      <div class="oc-items" style="display:flex; gap:8px;">
+        ${r.cnicFrontUrl ? `<a href="${r.cnicFrontUrl}" target="_blank" style="color:var(--primary); font-weight:600;">📄 CNIC Front</a>` : ''}
+        ${r.cnicBackUrl ? `<a href="${r.cnicBackUrl}" target="_blank" style="color:var(--primary); font-weight:600;">📄 CNIC Back</a>` : ''}
+      </div>` : ''}
       ${r.status==='pending' ? `
       <div class="oc-bottom" style="gap:8px;">
         <button class="primary-btn" style="margin:0; flex:1; padding:10px; font-size:12.5px;" onclick="approveShopRequest('${id}')">Approve</button>
@@ -1372,6 +1431,7 @@ window.approveShopRequest = async (id) => {
   await set(newShopRef, {
     name: r.name, category: r.category, phone: r.phone||'', address: r.address||'',
     logoUrl: r.logoUrl||'', lat: r.lat||null, lng: r.lng||null,
+    cnicNumber: r.cnicNumber||'', cnicFrontUrl: r.cnicFrontUrl||'', cnicBackUrl: r.cnicBackUrl||'',
     isOpen: true, ownerUid: r.ownerUid, createdAt: Date.now()
   });
   await update(ref(db, `shopRequests/${id}`), { status:'approved' });
