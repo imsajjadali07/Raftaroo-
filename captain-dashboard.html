@@ -451,6 +451,20 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
 
         <!-- REQUESTS TAB -->
         <div id="requests-tab" class="tab-panel hidden">
+            <div id="martOrdersSection" class="hidden" style="margin-bottom:18px;">
+                <div class="requests-header">
+                    <h3><i class="fas fa-store" style="color:#B45309;"></i> Mart Delivery Orders</h3>
+                    <div class="requests-count-chip" style="background:#FFF3CD;color:#8a6d00;"><span id="martReqCountChip">0</span> pending</div>
+                </div>
+                <div id="martActiveDeliveryList"></div>
+                <div id="martOrdersList">
+                    <div class="empty-state">
+                        <div class="empty-icon" style="background:#FFF3CD;color:#B45309;"><i class="fas fa-store"></i></div>
+                        <h4>Koi Mart Order Nahi</h4>
+                        <p>Aap ke radius mein abhi koi mart delivery order nahi hai</p>
+                    </div>
+                </div>
+            </div>
             <div class="requests-header">
                 <h3>Nearby Ride Requests</h3>
                 <div class="requests-count-chip"><span id="reqCountChip">0</span> pending</div>
@@ -991,7 +1005,7 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
 
     function initializeDashboard() {
         initializeMap(); setupTabNavigation();
-        if (isApproved(captainData)) { listenForRideLockStatus(); listenForIncomingRequests(); loadWalletBalance(); }
+        if (isApproved(captainData)) { listenForRideLockStatus(); listenForIncomingRequests(); listenForMartOrders(); loadWalletBalance(); }
         else document.getElementById('incomingRequestsList').innerHTML='<div class="empty-state"><div class="empty-icon"><i class="fas fa-lock"></i></div><h4>Approved Nahi Hain</h4><p>Ride requests dekhne ke liye approval zaroori hai</p></div>';
     }
 
@@ -1080,6 +1094,99 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         if(rickshaws.some(t=>c.includes(t))&&rickshaws.some(t=>r.includes(t))) return true;
         return c===r;
     }
+
+    function isBikeVehicle(v) {
+        if(!v) return false;
+        const s = v.toLowerCase();
+        return s.includes('bike') || s.includes('motorcycle') || s.includes('motorbike');
+    }
+
+    // ═══════════════ MART DELIVERY ORDERS (bike captains only) ═══════════════
+    function listenForMartOrders() {
+        const section = document.getElementById('martOrdersSection');
+        if (!isBikeVehicle(captainData.vehicleType)) { section.classList.add('hidden'); return; }
+        section.classList.remove('hidden');
+        onValue(ref(db, 'martOrders'), (snapshot) => {
+            const od = snapshot.val() || {};
+            window._allMartOrdersCache = od;
+            const cl = captainMarker ? captainMarker.getLatLng() : captainData.location;
+            let pending = [], mine = [];
+            Object.keys(od).forEach(key => {
+                const o = { ...od[key], id: key };
+                if (o.captainId === currentCaptain.uid && (o.status === 'out_for_delivery')) {
+                    mine.push(o);
+                } else if (o.status === 'ready_for_pickup' && !o.captainId) {
+                    let d = null;
+                    if (cl && o.shopLat && o.shopLng) d = getDistance(cl.lat, cl.lng, o.shopLat, o.shopLng);
+                    if (d === null || d <= RIDE_RADIUS_KM) pending.push({ ...o, distanceToShop: d });
+                }
+            });
+            renderMartOrders(pending, mine);
+        });
+    }
+
+    function renderMartOrders(pending, mine) {
+        const activeCon = document.getElementById('martActiveDeliveryList');
+        const con = document.getElementById('martOrdersList');
+        document.getElementById('martReqCountChip').textContent = pending.length;
+
+        activeCon.innerHTML = mine.map(o => {
+            const itemCount = (o.items || []).length;
+            return `<div class="request-card" style="border:1.5px solid #B45309;">
+                <div class="request-card-top"><div><div class="request-card-type" style="color:#B45309;">MART DELIVERY · ON THE WAY</div></div><div class="request-card-fare">Rs. ${o.deliveryFee ?? 0} <span>delivery fee</span></div></div>
+                <div class="request-detail customer"><i class="fas fa-user"></i><div><div class="detail-label">Customer</div><div class="detail-text">${o.customerName || ''} · ${o.customerPhone || ''}</div></div></div>
+                <div class="request-detail pickup"><i class="fas fa-store"></i><div><div class="detail-label">Pickup (Shop)</div><div class="detail-text">${(o.shopName || '')} — ${(o.shopAddress || '').substring(0,50)}</div></div></div>
+                <div class="request-detail dropoff"><i class="fas fa-location-dot"></i><div><div class="detail-label">Delivery Address</div><div class="detail-text">${(o.address || '').substring(0,50)}</div></div></div>
+                <div style="font-size:11px;color:var(--text-muted);margin:6px 0;"><i class="fas fa-box"></i> ${itemCount} item${itemCount!==1?'s':''} · Total Rs. ${o.total ?? 0}</div>
+                <div class="request-actions"><button class="btn-accept" style="background:#B45309;" onclick="markMartOrderDelivered('${o.id}')"><i class="fas fa-check-circle"></i> Delivered Mark Karein</button></div>
+            </div>`;
+        }).join('');
+
+        if (pending.length === 0) {
+            con.innerHTML = '<div class="empty-state"><div class="empty-icon" style="background:#FFF3CD;color:#B45309;"><i class="fas fa-store"></i></div><h4>Koi Mart Order Nahi</h4><p>Aap ke radius mein abhi koi mart delivery order nahi hai</p></div>';
+            return;
+        }
+        con.innerHTML = pending.map(o => {
+            const dc = o.distanceToShop !== null ? '<span class="distance-chip"><i class="fas fa-location-dot"></i>'+o.distanceToShop.toFixed(1)+' km door</span>' : '';
+            const itemCount = (o.items || []).length;
+            return `<div class="request-card" style="border:1.5px solid #FDE68A;">
+                <div class="request-card-top"><div><div class="request-card-type" style="color:#B45309;">MART DELIVERY</div></div><div class="request-card-fare">Rs. ${o.deliveryFee ?? 0} <span>delivery fee</span></div></div>
+                <div class="request-detail customer"><i class="fas fa-user"></i><div><div class="detail-label">Customer</div><div class="detail-text">${o.customerName || ''}</div></div></div>
+                <div class="request-detail pickup"><i class="fas fa-store"></i><div><div class="detail-label">Pickup (Shop)</div><div class="detail-text">${(o.shopName || '')} — ${(o.shopAddress || '').substring(0,50)}...</div></div></div>
+                <div class="request-detail dropoff"><i class="fas fa-location-dot"></i><div><div class="detail-label">Delivery Address</div><div class="detail-text">${(o.address || '').substring(0,50)}...</div></div></div>
+                <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;"><div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;"><span style="background:#F1F5F9;color:var(--text-muted);font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;"><i class="fas fa-box"></i> ${itemCount} item${itemCount!==1?'s':''}</span><span style="background:#FFF3CD;color:#B45309;font-size:11px;font-weight:800;padding:3px 9px;border-radius:6px;"><i class="fas fa-motorcycle"></i> BIKE</span>${dc}</div></div>
+                <div class="request-actions"><button class="btn-accept" style="background:#B45309;" onclick="acceptMartOrder('${o.id}')"><i class="fas fa-check"></i> Order Accept Karein</button><button class="btn-reject" onclick="this.closest('.request-card').remove()">&#x2715;</button></div>
+            </div>`;
+        }).join('');
+    }
+
+    async function acceptMartOrder(orderId) {
+        if (!confirm('Ye mart delivery order accept karna chahte hain?')) return;
+        try {
+            const snap = await get(ref(db, 'martOrders/' + orderId));
+            const o = snap.val();
+            if (!o || o.captainId || o.status !== 'ready_for_pickup') { alert('Ye order ab available nahi hai.'); return; }
+            await update(ref(db, 'martOrders/' + orderId), {
+                captainId: currentCaptain.uid,
+                captainName: captainData.fullName || '',
+                captainPhone: captainData.mobileNumber || '',
+                status: 'out_for_delivery',
+                acceptedAt: new Date().toISOString()
+            });
+            alert('Order accept ho gaya! Shop se parcel pick karein.');
+        } catch (e) { console.error(e); alert('Order accept nahi ho saka, dobara koshish karein.'); }
+    }
+
+    async function markMartOrderDelivered(orderId) {
+        if (!confirm('Order deliver ho gaya hai?')) return;
+        try {
+            await update(ref(db, 'martOrders/' + orderId), { status: 'delivered', deliveredAt: new Date().toISOString() });
+            alert('Order delivered mark ho gaya. Shabash!');
+        } catch (e) { console.error(e); alert('Update nahi ho saka, dobara koshish karein.'); }
+    }
+    window.acceptMartOrder = acceptMartOrder;
+    window.markMartOrderDelivered = markMartOrderDelivered;
+    // ═══════════════════════════════════════════════════════════════════════
 
     function listenForIncomingRequests() {
         onValue(ref(db,'requests'), async(snapshot)=>{
