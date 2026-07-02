@@ -511,6 +511,10 @@ input:checked + .slider::before { transform:translateX(18px); }
     <p id="walletInsufficientMsg" class="hidden" style="color:var(--error); font-size:11.5px; margin:-4px 16px 10px;">⚠️ Wallet balance kafi nahi hai.</p>
 
     <div class="summary-box" id="checkoutSummaryBox"></div>
+    <div style="display:flex; align-items:flex-start; gap:8px; margin:0 16px 12px; padding:10px 12px; background:#e9fbe9; border-radius:10px; font-size:11.5px; color:#2b7a2b;">
+      <i class="fa-brands fa-whatsapp" style="font-size:16px; margin-top:1px;"></i>
+      <span>Order place karne k baad WhatsApp automatically khulega, order details bhej dein. Shop check karke website par order confirm kare gi.</span>
+    </div>
     <button class="primary-btn" id="placeOrderBtn" onclick="placeOrder()">Place Order</button>
   </div>
 
@@ -1459,9 +1463,24 @@ window.placeOrder = async () => {
       createdAt: Date.now()
     });
 
+    // WhatsApp par shop/admin ko order ki notification bhejna
+    const waMsg = `🛒 *Naya Order Aaya Hai!*\n\n` +
+      `Order ID: ${orderRef.key}\n` +
+      `Customer: ${currentUser.displayName || 'Customer'}\n` +
+      `Phone: ${phone}\n` +
+      `Address: ${address}\n` +
+      `Shop: ${orderShop.name || ''}\n\n` +
+      `Items:\n${Object.values(cart).map(c => `- ${c.name} x${c.qty} (Rs. ${c.price * c.qty})`).join('\n')}\n\n` +
+      `Subtotal: Rs. ${subtotal}\n` +
+      `Delivery Fee: Rs. ${delivery}\n` +
+      `Total: Rs. ${total}\n` +
+      `Payment Method: ${selectedPayment === 'wallet' ? 'Raftaroo Wallet' : 'Cash on Delivery'}\n\n` +
+      `Order kar diya hai, please check karke website par confirm karein. Shukriya!`;
+    window.open(`https://wa.me/923222732251?text=${encodeURIComponent(waMsg)}`, '_blank');
+
     cart = {};
     saveCart();
-    toast('Order placed successfully!');
+    toast('Order submit ho gaya! WhatsApp par message bhej dein, confirm hone ka wait karein.');
     showView('orders-view');
   } catch(e){
     console.error(e);
