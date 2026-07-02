@@ -1,5 +1,5 @@
 export const config = {
-  matcher: '/', // agar mart.html kisi aur route par serve hoti hai (e.g. '/mart') to ye path badal dein
+  matcher: '/mart.html',
 };
 
 // Known social media / chat app crawlers jo link preview banate hain
