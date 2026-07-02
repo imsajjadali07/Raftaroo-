@@ -1221,6 +1221,10 @@ input:checked + .slider:before {
                 <div class="menu-item captain-panel-item hidden" id="captainPanelLink" onclick="window.location.href='captain-dashboard.html'">
                     <i class="fas fa-tachometer-alt" style="color: var(--info);"></i> <span data-lang-key="menuCaptainPanel">Captain Panel</span>
                 </div>
+                <!-- NEW: Shop Registration Link -->
+                <div class="menu-item" id="shopRegisterLink" onclick="window.open('https://www.raftaroo.online/shop-register.html','_blank')">
+                    <i class="fas fa-store" style="color: var(--success);"></i> <span data-lang-key="menuShopRegister">Shop Registration</span>
+                </div>
                 <div class="menu-item" id="btnSignOut">
                     <i class="fas fa-sign-out-alt"></i> <span data-lang-key="menuSignOut">Sign Out</span>
                 </div>
@@ -1715,6 +1719,7 @@ input:checked + .slider:before {
             menuDarkMode: { en: "Dark Mode", ur: "ڈارک موڈ" },
             menuLanguage: { en: "Language", ur: "زبان" },
             menuBecomeCaptain: { en: "Become a Captain", ur: "کیپٹن بنیں" },
+            menuShopRegister: { en: "Shop Registration", ur: "دکان رجسٹریشن" },
             menuCaptainPanel: { en: "Captain Panel", ur: "کیپٹن پینل" },
             menuSignOut: { en: "Sign Out", ur: "سائن آؤٹ" },
             paymentMethods: { en: "Payment Methods", ur: "ادائیگی کے طریقے" },

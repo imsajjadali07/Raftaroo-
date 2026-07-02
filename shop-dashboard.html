@@ -125,6 +125,19 @@ input:checked + .slider::before { transform:translateX(18px); }
 .cat-chip.active i { color:#fff; }
 .field-hint { font-size:10.5px; color:var(--text-muted); }
 
+/* ---------- VARIANTS (ADMIN) ---------- */
+.variant-toggle-row { display:flex; align-items:center; justify-content:space-between; background:var(--card-bg); border-radius:16px; box-shadow:var(--shadow); margin:0 16px 14px; padding:14px 16px; }
+.variant-toggle-row .vt-label { font-size:13px; font-weight:700; }
+.variant-toggle-row .vt-sub { font-size:11px; color:var(--text-muted); margin-top:2px; max-width:230px; }
+.variant-admin-card { display:flex; gap:10px; align-items:flex-start; background:var(--card-bg); border:1px solid var(--border); border-radius:14px; padding:10px; margin:0 16px 10px; box-shadow:var(--shadow); }
+.variant-admin-card .va-thumb { width:54px; height:54px; border-radius:10px; background:var(--input-bg); border:1.5px dashed var(--border); display:flex; align-items:center; justify-content:center; overflow:hidden; flex-shrink:0; position:relative; color:var(--text-muted); font-size:15px; }
+.variant-admin-card .va-thumb img { width:100%; height:100%; object-fit:cover; }
+.variant-admin-card .va-fields { flex:1; min-width:0; display:flex; flex-direction:column; gap:6px; }
+.variant-admin-card .va-fields .input-field { margin:0; padding:9px 10px; font-size:12px; }
+.variant-admin-card .va-row2 { display:flex; gap:6px; }
+.variant-remove-btn { width:32px; height:32px; border-radius:9px; background:rgba(231,76,60,0.1); color:var(--error); display:flex; align-items:center; justify-content:center; font-size:12px; flex-shrink:0; }
+.add-variant-btn { display:flex; align-items:center; justify-content:center; gap:8px; width:calc(100% - 32px); margin:0 16px 16px; padding:12px; border-radius:12px; border:1.5px dashed var(--border); background:transparent; color:var(--primary); font-weight:700; font-size:12.5px; }
+
 /* ---------- PRODUCT ROW ---------- */
 .admin-product-row { display:flex; align-items:center; gap:10px; background:var(--card-bg); border-radius:14px; padding:10px; margin:0 16px 10px; box-shadow:var(--shadow); }
 .admin-product-row img { width:48px; height:48px; border-radius:9px; object-fit:cover; background:var(--input-bg); }
@@ -149,6 +162,8 @@ input:checked + .slider::before { transform:translateX(18px); }
 .status-cancelled { background:#f8d7da; color:#842029; }
 .order-card .oc-items { font-size:12px; color:var(--text-muted); margin-bottom:6px; line-height:1.5; }
 .order-card .oc-bottom { display:flex; justify-content:space-between; align-items:center; font-size:13px; font-weight:700; gap:8px; }
+.slip-btn { width:100%; margin-top:12px; background:var(--input-bg); border:1px solid var(--border); color:var(--primary); font-weight:700; font-size:12.5px; padding:10px; border-radius:11px; display:flex; align-items:center; justify-content:center; gap:6px; }
+.slip-btn:active { opacity:.75; }
 
 .empty-state { text-align:center; padding:60px 20px; color:var(--text-muted); }
 .empty-state i { font-size:44px; margin-bottom:12px; opacity:.4; }
@@ -253,11 +268,26 @@ input:checked + .slider::before { transform:translateX(18px); }
       <span>Tap to upload image</span>
       <input type="file" id="imgInput" accept="image/*" class="hidden" onchange="handleImageSelect(event)">
     </div>
-    <input type="text" class="input-field" id="pName" placeholder="Product Name" style="margin:0 16px 12px; width:calc(100% - 32px);">
-    <div class="form-row-2" style="margin:0 16px 12px;">
+    <input type="text" class="input-field" id="pName" placeholder="Product Name (e.g. Pepsi, Super Biscuit)" style="margin:0 16px 12px; width:calc(100% - 32px);">
+
+    <div class="variant-toggle-row">
+      <div>
+        <div class="vt-label">Variants / Sizes</div>
+        <div class="vt-sub">e.g. Pepsi 1 Litre, 1.5 Litre — ya Biscuit Rs.10, 20, 50, sab alag price/stock ke sath</div>
+      </div>
+      <label class="switch"><input type="checkbox" id="pHasVariants" onchange="toggleVariantMode(this.checked)"><span class="slider"></span></label>
+    </div>
+
+    <div id="simplePriceStockRow" class="form-row-2" style="margin:0 16px 12px;">
       <input type="number" class="input-field" id="pPrice" placeholder="Price (Rs.)" style="margin:0;">
       <input type="number" class="input-field" id="pStock" placeholder="Stock Qty" style="margin:0;">
     </div>
+
+    <div id="variantSection" class="hidden">
+      <div id="variantRows"></div>
+      <button type="button" class="add-variant-btn" onclick="addVariantRow()"><i class="fa-solid fa-plus"></i> Variant Add Karein</button>
+    </div>
+
     <select class="input-field" id="pCategory" style="margin:0 16px 12px; width:calc(100% - 32px);"></select>
     <textarea class="input-field" id="pDesc" placeholder="Short description (optional)" style="margin:0 16px 12px; width:calc(100% - 32px);"></textarea>
     <button class="primary-btn" id="pSaveBtn" onclick="saveProduct()">Save Product</button>
@@ -289,6 +319,7 @@ input:checked + .slider::before { transform:translateX(18px); }
 
 <div class="toast" id="toast"></div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
 import { getDatabase, ref, onValue, update, push, remove } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-database.js";
@@ -318,7 +349,7 @@ const CATEGORIES = [
   { id:'bakery', name:'Bakery' }, { id:'beverages', name:'Beverages' },
   { id:'dairy', name:'Dairy' }, { id:'snacks', name:'Snacks' },
   { id:'household', name:'Household' }, { id:'personal', name:'Personal Care' },
-  { id:'electronics', name:'Electronics' },
+  { id:'electronics', name:'Electronics' }, { id:'pharmacy', name:'Pharmacy' },
 ];
 const SHOP_CATEGORIES = [
   { id:'all', name:'All Categories', icon:'fa-border-all' },
@@ -347,6 +378,7 @@ let selectedShopCategories = [];
 let pendingImageFile = null;
 let editingProductId = null;
 let pendingShopLogoFile = null;
+let currentVariants = []; // [{id, label, price, stock}] while editing/adding a product
 
 function toast(msg){
   const t = document.getElementById('toast');
@@ -565,6 +597,64 @@ window.saveShopProfile = async () => {
   }
 };
 
+/* ---------------- VARIANTS ---------------- */
+function genVariantId(){ return 'v_' + Date.now().toString(36) + Math.random().toString(36).slice(2,6); }
+
+let pendingVariantImages = {}; // vid -> File
+
+window.toggleVariantMode = (on) => {
+  document.getElementById('variantSection').classList.toggle('hidden', !on);
+  document.getElementById('simplePriceStockRow').classList.toggle('hidden', on);
+  if(on && currentVariants.length===0) addVariantRow();
+};
+
+window.addVariantRow = () => {
+  currentVariants.push({ id: genVariantId(), label:'', price:'', stock:'', image:'' });
+  renderVariantRows();
+};
+window.removeVariantRow = (vid) => {
+  currentVariants = currentVariants.filter(v => v.id !== vid);
+  delete pendingVariantImages[vid];
+  renderVariantRows();
+};
+window.updateVariantField = (vid, field, val) => {
+  const v = currentVariants.find(x => x.id === vid); if(!v) return;
+  v[field] = val;
+};
+window.handleVariantImageSelect = (e, vid) => {
+  const file = e.target.files[0]; if(!file) return;
+  pendingVariantImages[vid] = file;
+  const reader = new FileReader();
+  reader.onload = (ev) => {
+    const v = currentVariants.find(x => x.id === vid);
+    if(v) v.imagePreview = ev.target.result;
+    renderVariantRows();
+  };
+  reader.readAsDataURL(file);
+};
+function renderVariantRows(){
+  const wrap = document.getElementById('variantRows');
+  if(!wrap) return;
+  wrap.innerHTML = currentVariants.map(v => {
+    const thumbSrc = v.imagePreview || v.image || '';
+    return `
+    <div class="variant-admin-card">
+      <div class="va-thumb" onclick="document.getElementById('vImgInput_${v.id}').click()">
+        ${thumbSrc ? `<img src="${thumbSrc}">` : `<i class="fa-solid fa-camera"></i>`}
+        <input type="file" id="vImgInput_${v.id}" accept="image/*" class="hidden" onchange="handleVariantImageSelect(event,'${v.id}')">
+      </div>
+      <div class="va-fields">
+        <input type="text" class="input-field" placeholder="Size / Variant e.g. 1 Litre" value="${v.label||''}" oninput="updateVariantField('${v.id}','label',this.value)">
+        <div class="va-row2">
+          <input type="number" class="input-field" placeholder="Price" value="${v.price||''}" oninput="updateVariantField('${v.id}','price',this.value)">
+          <input type="number" class="input-field" placeholder="Stock" value="${v.stock||''}" oninput="updateVariantField('${v.id}','stock',this.value)">
+        </div>
+      </div>
+      <button type="button" class="variant-remove-btn" onclick="removeVariantRow('${v.id}')"><i class="fa-solid fa-trash"></i></button>
+    </div>`;
+  }).join('');
+}
+
 /* ---------------- PRODUCTS ---------------- */
 function populateCategorySelect(){
   const sel = document.getElementById('pCategory');
@@ -584,15 +674,25 @@ function renderProductList(){
   if(!wrap || !selectedShopId) { if(wrap) wrap.innerHTML = `<div class="empty-state"><i class="fa-solid fa-boxes-stacked"></i><p>Koi shop select nahi hai</p></div>`; return; }
   const entries = Object.entries(allProducts).filter(([id,p]) => p.shopId===selectedShopId);
   if(entries.length===0){ wrap.innerHTML = `<div class="empty-state"><i class="fa-solid fa-boxes-stacked"></i><p>Koi product add nahi hua abhi<br>"Add Product" tab se shuru karein</p></div>`; return; }
-  wrap.innerHTML = entries.map(([id,p]) => `
+  wrap.innerHTML = entries.map(([id,p]) => {
+    let priceLabel;
+    if(p.hasVariants && Array.isArray(p.variants) && p.variants.length){
+      const prices = p.variants.map(v=>parseInt(v.price)||0);
+      const mn = Math.min(...prices), mx = Math.max(...prices);
+      priceLabel = `${mn===mx?`Rs. ${mn}`:`Rs. ${mn}-${mx}`} · ${p.variants.length} variants`;
+    } else {
+      priceLabel = `Rs. ${p.price} · Stock: ${p.stock||0}`;
+    }
+    return `
     <div class="admin-product-row">
       <img src="${p.image||'https://via.placeholder.com/48'}" alt="">
-      <div class="apr-info"><div class="n">${p.name}</div><div class="p">Rs. ${p.price} · Stock: ${p.stock||0}</div></div>
+      <div class="apr-info"><div class="n">${p.name}</div><div class="p">${priceLabel}</div></div>
       <div class="apr-actions">
         <button class="edit" onclick="editProduct('${id}')"><i class="fa-solid fa-pen"></i></button>
         <button class="del" onclick="deleteProduct('${id}')"><i class="fa-solid fa-trash"></i></button>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
 }
 
 window.handleImageSelect = (e) => {
@@ -619,10 +719,24 @@ window.editProduct = (id) => {
   if(p.shopId !== selectedShopId){ toast('Ye product aapki shop ka nahi hai'); return; }
   editingProductId = id;
   document.getElementById('pName').value = p.name || '';
-  document.getElementById('pPrice').value = p.price || '';
-  document.getElementById('pStock').value = p.stock || '';
   document.getElementById('pCategory').value = p.category || 'grocery';
   document.getElementById('pDesc').value = p.description || '';
+
+  const hasVariants = !!p.hasVariants && Array.isArray(p.variants) && p.variants.length>0;
+  document.getElementById('pHasVariants').checked = hasVariants;
+  pendingVariantImages = {};
+  if(hasVariants){
+    currentVariants = p.variants.map(v => ({ id: v.id || genVariantId(), label: v.label||'', price: v.price||'', stock: v.stock||'', image: v.image||'' }));
+    document.getElementById('pPrice').value = '';
+    document.getElementById('pStock').value = '';
+  } else {
+    currentVariants = [];
+    document.getElementById('pPrice').value = p.price || '';
+    document.getElementById('pStock').value = p.stock || '';
+  }
+  renderVariantRows();
+  toggleVariantMode(hasVariants);
+
   document.getElementById('uploadBox').innerHTML = p.image ? `<img src="${p.image}">` : `<i class="fa-solid fa-image" style="font-size:22px;"></i><span>Tap to upload image</span><input type="file" id="imgInput" accept="image/*" class="hidden" onchange="handleImageSelect(event)">`;
   pendingImageFile = null;
   switchDashTab('add');
@@ -644,6 +758,11 @@ function resetProductForm(switchTab){
   document.getElementById('pPrice').value = '';
   document.getElementById('pStock').value = '';
   document.getElementById('pDesc').value = '';
+  document.getElementById('pHasVariants').checked = false;
+  currentVariants = [];
+  pendingVariantImages = {};
+  renderVariantRows();
+  toggleVariantMode(false);
   document.getElementById('uploadBox').innerHTML = `<i class="fa-solid fa-image" style="font-size:22px;"></i><span>Tap to upload image</span><input type="file" id="imgInput" accept="image/*" class="hidden" onchange="handleImageSelect(event)">`;
   document.getElementById('pSaveBtn').textContent = 'Save Product';
   if(switchTab) switchDashTab('products');
@@ -651,11 +770,24 @@ function resetProductForm(switchTab){
 
 window.saveProduct = async () => {
   const name = document.getElementById('pName').value.trim();
-  const price = parseInt(document.getElementById('pPrice').value);
-  const stock = parseInt(document.getElementById('pStock').value);
+  const hasVariants = document.getElementById('pHasVariants').checked;
   const category = document.getElementById('pCategory').value;
   const description = document.getElementById('pDesc').value.trim();
-  if(!name || !price){ toast('Name aur price zaroori hai'); return; }
+
+  let price, stock, variants = null;
+  if(hasVariants){
+    variants = currentVariants
+      .map(v => ({ id: v.id || genVariantId(), label: (v.label||'').trim(), price: parseInt(v.price)||0, stock: parseInt(v.stock)||0, image: v.image||'' }))
+      .filter(v => v.label && v.price>0);
+    if(variants.length===0){ toast('Kam se kam ek variant (naam aur price ke sath) add karein'); return; }
+    price = Math.min(...variants.map(v=>v.price));
+    stock = variants.reduce((s,v) => s+v.stock, 0);
+  } else {
+    price = parseInt(document.getElementById('pPrice').value);
+    stock = parseInt(document.getElementById('pStock').value);
+    if(!price){ toast('Price zaroori hai'); return; }
+  }
+  if(!name){ toast('Name zaroori hai'); return; }
   if(!selectedShopId){ toast('Pehle shop select karein'); return; }
 
   const btn = document.getElementById('pSaveBtn');
@@ -664,7 +796,15 @@ window.saveProduct = async () => {
     let imageUrl = editingProductId ? (allProducts[editingProductId]?.image || '') : '';
     if(pendingImageFile) imageUrl = await uploadImageToCloudinary(pendingImageFile, 'mart_products');
 
-    const payload = { name, price, stock: stock||0, category, description, image: imageUrl, shopId: selectedShopId, updatedAt: Date.now() };
+    if(hasVariants){
+      for(const v of variants){
+        if(pendingVariantImages[v.id]){
+          v.image = await uploadImageToCloudinary(pendingVariantImages[v.id], 'mart_variants');
+        }
+      }
+    }
+
+    const payload = { name, price, stock: stock||0, category, description, image: imageUrl, shopId: selectedShopId, hasVariants: !!hasVariants, variants: hasVariants ? variants : null, updatedAt: Date.now() };
     if(editingProductId){
       if(allProducts[editingProductId]?.shopId !== selectedShopId){ toast('Ye product aapki shop ka nahi hai'); return; }
       await update(ref(db, `martProducts/${editingProductId}`), payload);
@@ -683,9 +823,11 @@ window.saveProduct = async () => {
 };
 
 /* ---------------- ORDERS ---------------- */
+let shopOrdersCache = {};
 function listenMyOrders(){
   onValue(ref(db, 'martOrders'), (snap) => {
     const data = snap.val() || {};
+    shopOrdersCache = data;
     const wrap = document.getElementById('ordersList');
     const entries = Object.entries(data)
       .filter(([id,o]) => o.shopId===selectedShopId)
@@ -710,6 +852,7 @@ function listenMyOrders(){
             <option value="cancelled" ${o.status==='cancelled'?'selected':''}>Cancelled</option>
           </select>
         </div>
+        <button class="slip-btn" onclick="downloadSlip('${id}')"><i class="fa-solid fa-receipt"></i> Slip Download Karein</button>
       </div>`).join('');
   });
 }
@@ -717,6 +860,134 @@ window.updateOrderStatus = async (id, status) => {
   const o = null; // no cross-shop check needed since query already filtered, but guard write path
   await update(ref(db, `martOrders/${id}`), { status });
   toast('Order status updated');
+};
+
+/* ---------------- ORDER SLIP (PDF) ---------------- */
+function loadImageAsDataURL(url){
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      try{
+        const canvas = document.createElement('canvas');
+        canvas.width = img.naturalWidth; canvas.height = img.naturalHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img,0,0);
+        resolve(canvas.toDataURL('image/png'));
+      }catch(e){ resolve(null); }
+    };
+    img.onerror = () => resolve(null);
+    img.src = url;
+  });
+}
+
+async function buildSlipPDF(orderId, o){
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit:'pt', format:'a4' });
+  const pw = doc.internal.pageSize.getWidth();
+  let y = 44;
+
+  const logoData = await loadImageAsDataURL('https://iili.io/C7kWnf4.png');
+  if(logoData){
+    try{ doc.addImage(logoData, 'PNG', 40, y, 40, 40); }catch(e){}
+  } else {
+    doc.setFillColor(40,167,69);
+    doc.roundedRect(40, y, 40, 40, 8, 8, 'F');
+    doc.setTextColor(255,255,255); doc.setFontSize(18); doc.setFont(undefined,'bold');
+    doc.text('R', 55, y+27);
+  }
+  doc.setTextColor(20,20,20); doc.setFontSize(18); doc.setFont(undefined,'bold');
+  doc.text('Raftaroo Mart', 90, y+16);
+  doc.setFontSize(10); doc.setFont(undefined,'normal'); doc.setTextColor(110,110,110);
+  doc.text('Grocery & Daily Essentials Delivery', 90, y+30);
+
+  y += 58;
+  doc.setDrawColor(225,225,225); doc.line(40, y, pw-40, y);
+  y += 22;
+
+  doc.setFontSize(13); doc.setFont(undefined,'bold'); doc.setTextColor(20,20,20);
+  doc.text('Order Receipt / Slip', 40, y);
+  doc.setFontSize(10); doc.setFont(undefined,'normal'); doc.setTextColor(20,20,20);
+  doc.text(`#${orderId.slice(-6).toUpperCase()}`, pw-40, y, {align:'right'});
+  y += 15;
+  doc.setTextColor(120,120,120);
+  doc.text(new Date(o.createdAt).toLocaleString(), pw-40, y, {align:'right'});
+  y += 24;
+
+  doc.setFontSize(10); doc.setFont(undefined,'bold'); doc.setTextColor(20,20,20);
+  doc.text('Shop', 40, y);
+  doc.text('Customer', pw/2+10, y);
+  y += 14;
+  doc.setFont(undefined,'normal'); doc.setTextColor(90,90,90);
+  doc.text(o.shopName || '-', 40, y);
+  doc.text(o.customerName || '-', pw/2+10, y);
+  y += 14;
+  doc.text(doc.splitTextToSize(o.shopAddress||'-', pw/2-60), 40, y);
+  doc.text(o.customerPhone || '-', pw/2+10, y);
+  y += 14;
+  doc.text(doc.splitTextToSize(o.address||'-', pw/2-60), pw/2+10, y);
+  y += 34;
+
+  doc.setFillColor(245,247,246); doc.rect(40, y, pw-80, 24, 'F');
+  doc.setFont(undefined,'bold'); doc.setFontSize(10); doc.setTextColor(20,20,20);
+  doc.text('Item', 48, y+16);
+  doc.text('Qty', pw-220, y+16);
+  doc.text('Price', pw-150, y+16);
+  doc.text('Amount', pw-48, y+16, {align:'right'});
+  y += 24;
+  doc.setFont(undefined,'normal');
+
+  (o.items||[]).forEach((it) => {
+    y += 22;
+    if(y > 740){ doc.addPage(); y = 60; }
+    const label = it.variantLabel ? `${it.name} (${it.variantLabel})` : it.name;
+    doc.setTextColor(40,40,40); doc.setFontSize(10);
+    doc.text(label, 48, y, {maxWidth: pw-320});
+    doc.text(String(it.qty), pw-220, y);
+    doc.text(`Rs. ${it.price}`, pw-150, y);
+    doc.text(`Rs. ${it.price*it.qty}`, pw-48, y, {align:'right'});
+    doc.setDrawColor(240,240,240); doc.line(40, y+8, pw-40, y+8);
+  });
+
+  y += 30;
+  const summaryLine = (label, val, bold) => {
+    doc.setFont(undefined, bold?'bold':'normal');
+    doc.setFontSize(bold?12:10);
+    doc.setTextColor(bold?20:100, bold?20:100, bold?20:100);
+    doc.text(label, pw-220, y);
+    doc.text(val, pw-48, y, {align:'right'});
+    y += bold?20:16;
+  };
+  summaryLine('Subtotal', `Rs. ${o.subtotal}`, false);
+  summaryLine('Delivery Fee', `Rs. ${o.deliveryFee}`, false);
+  doc.setDrawColor(220,220,220); doc.line(pw-220, y-4, pw-40, y-4);
+  summaryLine('Total Paid', `Rs. ${o.total}`, true);
+
+  y += 14;
+  doc.setFont(undefined,'normal'); doc.setFontSize(10); doc.setTextColor(100,100,100);
+  doc.text(`Payment Method: ${o.paymentMethod==='wallet' ? 'Raftaroo Wallet' : 'Cash on Delivery'}`, 40, y);
+  y += 15;
+  doc.text(`Status: ${(o.status||'pending').replace(/_/g,' ')}`, 40, y);
+
+  y += 34;
+  doc.setDrawColor(230,230,230); doc.line(40, y, pw-40, y);
+  y += 18;
+  doc.setFontSize(9); doc.setTextColor(140,140,140);
+  doc.text('Thank you for shopping with Raftaroo Mart! For support, contact us via the app.', 40, y);
+
+  return doc;
+}
+
+window.downloadSlip = async (orderId) => {
+  const o = shopOrdersCache[orderId];
+  if(!o){ toast('Order data nahi mila'); return; }
+  toast('Slip generate ho rahi hai...');
+  try{
+    const doc = await buildSlipPDF(orderId, o);
+    doc.save(`Raftaroo-Slip-${orderId.slice(-6).toUpperCase()}.pdf`);
+  }catch(e){
+    console.error(e); toast('Slip banane mein masla hua');
+  }
 };
 
 /* ---------------- DARK MODE (persisted, shared key with mart.html) ---------------- */

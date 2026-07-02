@@ -269,6 +269,8 @@ textarea.input-field { resize:vertical; min-height:64px; }
 .status-cancelled { background:#f8d7da; color:#842029; }
 .order-card .oc-items { font-size:12px; color:var(--text-muted); margin-bottom:6px; line-height:1.5; }
 .order-card .oc-bottom { display:flex; justify-content:space-between; align-items:center; font-size:13px; font-weight:700; }
+.slip-btn { width:100%; margin-top:12px; background:var(--input-bg); border:1px solid var(--border); color:var(--primary); font-weight:700; font-size:12.5px; padding:10px; border-radius:11px; display:flex; align-items:center; justify-content:center; gap:6px; }
+.slip-btn:active { opacity:.75; }
 
 /* ---------- PROFILE ---------- */
 .profile-hero { display:flex; align-items:center; gap:14px; padding:20px 16px; background:var(--card-bg); margin-bottom:12px; }
@@ -315,6 +317,24 @@ input:checked + .slider::before { transform:translateX(18px); }
 .share-opt.copy .share-ic { background:var(--text-muted); }
 .share-opt.more .share-ic { background:var(--primary); }
 .share-sheet-cancel { width:100%; padding:13px; border-radius:13px; background:var(--input-bg); color:var(--text-main); font-weight:700; font-size:13.5px; margin-top:6px; }
+
+/* ---------- VARIANTS ---------- */
+.var-qty-badge { position:absolute; top:-7px; right:-7px; background:var(--error); color:#fff; font-size:9.5px; font-weight:700; min-width:16px; height:16px; border-radius:8px; display:flex; align-items:center; justify-content:center; padding:0 3px; }
+.add-btn { position:relative; }
+.variant-sheet-head { display:flex; align-items:center; gap:10px; margin-bottom:14px; }
+.variant-sheet-head img { width:44px; height:44px; border-radius:10px; object-fit:cover; background:var(--input-bg); flex-shrink:0; }
+.variant-sheet-head h4 { font-size:14px; font-weight:700; text-align:left; margin:0; }
+.variant-sheet-rows { max-height:50vh; overflow-y:auto; }
+.variant-row { display:flex; align-items:center; gap:10px; padding:11px 4px; border-bottom:1px solid var(--border); }
+.variant-row:last-child { border-bottom:none; }
+.vr-img { width:44px; height:44px; border-radius:10px; object-fit:cover; background:var(--input-bg); flex-shrink:0; }
+.vr-info { flex:1; min-width:0; }
+.vr-label { font-size:13px; font-weight:600; }
+.vr-price { font-size:12.5px; color:var(--primary); font-weight:700; margin-top:2px; }
+.vr-stock { font-size:10.5px; color:var(--text-muted); margin-top:2px; }
+.vr-stock.out { color:var(--error); font-weight:600; }
+.pd-variants { margin-bottom:18px; }
+.pd-variants-title { font-size:12.5px; font-weight:700; color:var(--text-muted); margin-bottom:6px; text-transform:uppercase; letter-spacing:.3px; }
 .related-section { margin-top:8px; }
 .related-empty { padding:10px 16px 20px; color:var(--text-muted); font-size:12.5px; }
 
@@ -535,6 +555,7 @@ input:checked + .slider::before { transform:translateX(18px); }
     <div class="menu-item"><i class="fa-solid fa-wallet"></i> Wallet Balance <span style="margin-left:auto; font-weight:700; color:var(--primary);">Rs. <span id="profileWalletBal">0</span></span></div>
     <div class="menu-item" onclick="showView('orders-view')"><i class="fa-solid fa-receipt"></i> My Orders</div>
     <div class="menu-item" onclick="window.location.href='index.html'"><i class="fa-solid fa-motorcycle"></i> Book a Ride (Raftaroo)</div>
+    <div class="menu-item" onclick="window.open('https://www.raftaroo.online/shop-register.html','_blank')"><i class="fa-solid fa-store"></i> Shop Registration</div>
     <div class="menu-item">
       <i class="fa-solid fa-moon"></i> Dark Mode
       <label class="switch"><input type="checkbox" id="darkModeToggle"><span class="slider"></span></label>
@@ -606,8 +627,21 @@ input:checked + .slider::before { transform:translateX(18px); }
   </div>
 </div>
 
+<!-- VARIANT PICKER SHEET -->
+<div class="share-sheet-overlay" id="variantSheetOverlay" onclick="if(event.target===this)closeVariantSheet()">
+  <div class="share-sheet">
+    <div class="variant-sheet-head">
+      <img id="variantSheetImg" src="" alt="">
+      <h4 id="variantSheetTitle"></h4>
+    </div>
+    <div class="variant-sheet-rows" id="variantSheetRows"></div>
+    <button class="share-sheet-cancel" onclick="closeVariantSheet()">Done</button>
+  </div>
+</div>
+
 <div class="toast" id="toast"></div>
 
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script type="module">
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
 import { getDatabase, ref, onValue, get, set, update, push, remove, runTransaction, query, orderByChild, equalTo } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-database.js";
@@ -639,6 +673,7 @@ const CATEGORIES = [
   { id:'household', name:'Household', icon:'fa-broom' },
   { id:'personal', name:'Personal Care', icon:'fa-pump-soap' },
   { id:'electronics', name:'Electronics', icon:'fa-plug' },
+  { id:'pharmacy', name:'Pharmacy', icon:'fa-briefcase-medical' },
 ];
 const DELIVERY_FEE = 80;
 
@@ -879,9 +914,80 @@ function getSortedShops(list){
   return withDist;
 }
 
+/* ---------------- VARIANT HELPERS ---------------- */
+function priceDisplay(p){
+  if(p.hasVariants && Array.isArray(p.variants) && p.variants.length){
+    const prices = p.variants.map(v=>parseInt(v.price)||0);
+    const mn = Math.min(...prices), mx = Math.max(...prices);
+    return mn===mx ? `${mn}` : `${mn} - ${mx}`;
+  }
+  return `${parseInt(p.price)||0}`;
+}
+function productTotalQtyInCart(pid){
+  let total = 0;
+  Object.values(cart).forEach(c => { if((c.productId||'')===pid) total += c.qty; });
+  return total;
+}
+function variantRowsHTML(productId, p){
+  const variants = Array.isArray(p.variants) ? p.variants : [];
+  return variants.map(v => {
+    const stock = parseInt(v.stock)||0;
+    const key = `${productId}__${v.id}`;
+    const qty = cart[key]?.qty || 0;
+    return `<div class="variant-row">
+      <img class="vr-img" src="${v.image || p.image || 'https://via.placeholder.com/44'}" alt="">
+      <div class="vr-info">
+        <div class="vr-label">${v.label}</div>
+        <div class="vr-price">Rs. ${parseInt(v.price)||0}</div>
+        ${stock<=0 ? '<div class="vr-stock out">Out of Stock</div>' : (stock<=5?`<div class="vr-stock">Only ${stock} left</div>`:'')}
+      </div>
+      <div class="vr-action">
+        ${stock<=0 ? '' : (qty>0 ? `
+          <div class="qty-stepper">
+            <button onclick="changeQty('${productId}',-1,false,null,'${v.id}')">−</button>
+            <span>${qty}</span>
+            <button onclick="changeQty('${productId}',1,false,event,'${v.id}')">+</button>
+          </div>` : `<button class="add-btn" onclick="changeQty('${productId}',1,false,event,'${v.id}')"><i class="fa-solid fa-plus"></i></button>`)}
+      </div>
+    </div>`;
+  }).join('');
+}
+window.openVariantSheet = (id, evt) => {
+  if(evt){ evt.stopPropagation(); evt.preventDefault(); }
+  const p = allProducts[id]; if(!p) return;
+  document.getElementById('variantSheetTitle').textContent = p.name;
+  document.getElementById('variantSheetImg').src = p.image || 'https://via.placeholder.com/60';
+  document.getElementById('variantSheetRows').innerHTML = variantRowsHTML(id, p);
+  const overlay = document.getElementById('variantSheetOverlay');
+  overlay.dataset.pid = id;
+  overlay.classList.add('open');
+};
+window.closeVariantSheet = () => { document.getElementById('variantSheetOverlay').classList.remove('open'); };
+function refreshVariantSheet(){
+  const overlay = document.getElementById('variantSheetOverlay');
+  if(overlay && overlay.classList.contains('open')){
+    const id = overlay.dataset.pid;
+    const p = allProducts[id];
+    if(p) document.getElementById('variantSheetRows').innerHTML = variantRowsHTML(id, p);
+  }
+}
+function cardActionHTML(id, p, stock){
+  if(stock<=0) return '';
+  if(p.hasVariants && Array.isArray(p.variants) && p.variants.length){
+    const totalQty = productTotalQtyInCart(id);
+    return `<button class="add-btn" onclick="openVariantSheet('${id}', event)">${totalQty>0?`<span class="var-qty-badge">${totalQty}</span>`:''}<i class="fa-solid fa-plus"></i></button>`;
+  }
+  const qty = cart[id]?.qty || 0;
+  return qty>0 ? `
+    <div class="qty-stepper">
+      <button onclick="changeQty('${id}', -1)">−</button>
+      <span>${qty}</span>
+      <button onclick="changeQty('${id}', 1, false, event)">+</button>
+    </div>` : `<button class="add-btn" onclick="changeQty('${id}', 1, false, event)"><i class="fa-solid fa-plus"></i></button>`;
+}
+
 function homeProductCardHTML(id, p, distanceKm){
   const stock = parseInt(p.stock)||0;
-  const qty = cart[id]?.qty || 0;
   const shop = allShops[p.shopId];
   return `
   <div class="product-card">
@@ -893,13 +999,8 @@ function homeProductCardHTML(id, p, distanceKm){
       <div class="product-cat">${shop?shop.name:''}${distanceKm!=null?` · ${distanceKm.toFixed(1)} km`:''}</div>
       <div class="product-name" onclick="openProductModal('${id}')">${p.name}</div>
       <div class="product-bottom">
-        <div class="product-price">Rs. ${parseInt(p.price)||0}</div>
-        ${stock<=0 ? '' : (qty>0 ? `
-          <div class="qty-stepper">
-            <button onclick="changeQty('${id}', -1)">−</button>
-            <span>${qty}</span>
-            <button onclick="changeQty('${id}', 1, false, event)">+</button>
-          </div>` : `<button class="add-btn" onclick="changeQty('${id}', 1, false, event)"><i class="fa-solid fa-plus"></i></button>`)}
+        <div class="product-price">Rs. ${priceDisplay(p)}</div>
+        ${cardActionHTML(id, p, stock)}
       </div>
     </div>
   </div>`;
@@ -1032,7 +1133,7 @@ function getShareLinkAndText(){
   const id = modal.dataset.pid;
   const p = allProducts[id] || {};
   const url = `${window.location.origin}${window.location.pathname}?product=${id}`;
-  const text = `${p.name || 'Check this product'} - Rs. ${parseInt(p.price)||0} on Raftaroo Mart`;
+  const text = `${p.name || 'Check this product'} - Rs. ${priceDisplay(p)} on Raftaroo Mart`;
   return { id, p, url, text };
 }
 window.doShare = async (platform) => {
@@ -1066,7 +1167,6 @@ function getFilteredProducts(){
 
 function productCardHTML(id, p){
   const stock = parseInt(p.stock)||0;
-  const qty = cart[id]?.qty || 0;
   return `
   <div class="product-card">
     <div class="product-img-wrap" onclick="openProductModal('${id}')">
@@ -1077,13 +1177,8 @@ function productCardHTML(id, p){
       <div class="product-cat">${labelForCat(p.category)}</div>
       <div class="product-name" onclick="openProductModal('${id}')">${p.name}</div>
       <div class="product-bottom">
-        <div class="product-price">Rs. ${parseInt(p.price)||0}</div>
-        ${stock<=0 ? '' : (qty>0 ? `
-          <div class="qty-stepper">
-            <button onclick="changeQty('${id}', -1)">−</button>
-            <span>${qty}</span>
-            <button onclick="changeQty('${id}', 1, false, event)">+</button>
-          </div>` : `<button class="add-btn" onclick="changeQty('${id}', 1, false, event)"><i class="fa-solid fa-plus"></i></button>`)}
+        <div class="product-price">Rs. ${priceDisplay(p)}</div>
+        ${cardActionHTML(id, p, stock)}
       </div>
     </div>
   </div>`;
@@ -1149,7 +1244,7 @@ function globalProductCardHTML(id, p){
     <div class="product-info">
       <div class="product-cat">${shop?shop.name:''}</div>
       <div class="product-name" onclick="goToProductFromSearch('${id}')">${p.name}</div>
-      <div class="product-bottom"><div class="product-price">Rs. ${parseInt(p.price)||0}</div></div>
+      <div class="product-bottom"><div class="product-price">Rs. ${priceDisplay(p)}</div></div>
     </div>
   </div>`;
 }
@@ -1166,7 +1261,7 @@ window.openProductModal = (id) => {
   document.getElementById('pdImg').src = p.image || 'https://via.placeholder.com/400x340?text=Raftaroo+Mart';
   document.getElementById('pdCat').textContent = labelForCat(p.category);
   document.getElementById('pdName').textContent = p.name;
-  document.getElementById('pdPrice').textContent = parseInt(p.price)||0;
+  document.getElementById('pdPrice').textContent = priceDisplay(p);
   document.getElementById('pdDesc').textContent = p.description || 'No description available.';
   renderModalCartAction(id, p);
   renderRelatedProducts(id, p);
@@ -1205,9 +1300,13 @@ function renderRelatedProducts(id, p){
   wrap.innerHTML = related.map(([rid,rp]) => productCardHTML(rid, rp)).join('');
 }
 function renderModalCartAction(id, p){
+  const wrap = document.getElementById('pdCartAction');
+  if(p.hasVariants && Array.isArray(p.variants) && p.variants.length){
+    wrap.innerHTML = `<div class="pd-variants"><div class="pd-variants-title">Available Options</div>${variantRowsHTML(id, p)}</div>`;
+    return;
+  }
   const stock = parseInt(p.stock)||0;
   const qty = cart[id]?.qty || 0;
-  const wrap = document.getElementById('pdCartAction');
   if(stock<=0){ wrap.innerHTML = `<button class="primary-btn" style="margin:0; width:100%; opacity:.5;" disabled>Out of Stock</button>`; return; }
   if(qty>0){
     wrap.innerHTML = `<div class="qty-stepper" style="justify-content:center; padding:10px;">
@@ -1233,6 +1332,7 @@ function saveCart(){
   renderHomeProducts();
   if(!document.getElementById('cart-view').classList.contains('hidden')) renderCartView();
   if(!document.getElementById('search-view').classList.contains('hidden')) renderSearch();
+  refreshVariantSheet();
 }
 
 /* ---------------- FLY TO CART ANIMATION ---------------- */
@@ -1286,25 +1386,36 @@ function triggerFlyAnimation(sourceEl){
   flyToCart(imgEl.src, rect);
 }
 
-window.changeQty = (id, delta, fromModal, evt) => {
+window.changeQty = (id, delta, fromModal, evt, variantId) => {
   const p = allProducts[id]; if(!p) return;
   const cartEntries = Object.values(cart);
   if(delta>0 && cartEntries.length && cartEntries[0].shopId && cartEntries[0].shopId!==p.shopId){
     if(!confirm('Aapke cart mein kisi aur shop ke items hain. Naya shop select karne se cart khali ho jayega. Continue?')) return;
     cart = {};
   }
-  const stock = parseInt(p.stock)||0;
-  const current = cart[id]?.qty || 0;
+  let variant = null;
+  if(variantId && Array.isArray(p.variants)) variant = p.variants.find(v => v.id === variantId);
+  const stock = variant ? (parseInt(variant.stock)||0) : (parseInt(p.stock)||0);
+  const price = variant ? (parseInt(variant.price)||0) : (parseInt(p.price)||0);
+  const key = variantId ? `${id}__${variantId}` : id;
+  const current = cart[key]?.qty || 0;
   let next = current + delta;
   if(next > stock){ toast('Stock available: '+stock); next = stock; }
-  if(next <= 0){ delete cart[id]; }
-  else { cart[id] = { qty: next, price: parseInt(p.price)||0, name:p.name, image:p.image||'', shopId:p.shopId }; }
+  if(next <= 0){ delete cart[key]; }
+  else {
+    cart[key] = {
+      qty: next, price, name: p.name + (variant ? ` (${variant.label})` : ''),
+      image: (variant && variant.image) ? variant.image : (p.image||''), shopId: p.shopId,
+      productId: id, variantId: variant ? variant.id : null, variantLabel: variant ? variant.label : null
+    };
+  }
   if(delta>0){
     const ev = evt || window.event;
     if(ev && ev.target) triggerFlyAnimation(ev.target);
   }
   saveCart();
   if(fromModal) renderModalCartAction(id, p);
+  refreshVariantSheet();
 };
 
 window.removeFromCart = (id) => {
@@ -1363,20 +1474,24 @@ function renderCartView(){
   empty.classList.add('hidden'); goBtn.classList.remove('hidden');
   const { subtotal, delivery, total, count } = cartTotals();
   if(headerCount){ headerCount.textContent = `${count} item${count>1?'s':''}`; headerCount.classList.remove('hidden'); }
-  wrap.innerHTML = entries.map(([id,c], idx) => `
-    <div class="cart-item" id="cartRow-${id}" style="animation-delay:${idx*45}ms;">
+  wrap.innerHTML = entries.map(([key,c], idx) => {
+    const pid = c.productId || key;
+    const vidArg = c.variantId ? `'${c.variantId}'` : 'null';
+    return `
+    <div class="cart-item" id="cartRow-${key}" style="animation-delay:${idx*45}ms;">
       <img src="${c.image||'https://via.placeholder.com/60'}" alt="">
       <div class="cart-item-info">
         <div class="ci-name">${c.name}</div>
         <div class="ci-price">Rs. ${c.price*c.qty} <span class="ci-unit">(Rs. ${c.price} × ${c.qty})</span></div>
       </div>
       <div class="cart-item-actions">
-        <button class="ci-delete-btn" onclick="removeFromCart('${id}')"><i class="fa-solid fa-trash"></i></button>
+        <button class="ci-delete-btn" onclick="removeFromCart('${key}')"><i class="fa-solid fa-trash"></i></button>
         <div class="qty-stepper">
-          <button onclick="changeQty('${id}',-1)">−</button><span>${c.qty}</span><button onclick="changeQty('${id}',1)">+</button>
+          <button onclick="changeQty('${pid}',-1,false,null,${vidArg})">−</button><span>${c.qty}</span><button onclick="changeQty('${pid}',1,false,event,${vidArg})">+</button>
         </div>
       </div>
-    </div>`).join('');
+    </div>`;
+  }).join('');
   summaryWrap.innerHTML = `
     <div class="summary-box">
       <div class="summary-row"><span><i class="fa-solid fa-basket-shopping"></i>Subtotal</span><span>Rs. ${subtotal}</span></div>
@@ -1416,15 +1531,31 @@ window.placeOrder = async () => {
   btn.disabled = true; btn.textContent = 'Placing Order...';
 
   try{
-    // stock check + decrement via transaction
-    for(const [id,c] of Object.entries(cart)){
-      const stockRef = ref(db, `martProducts/${id}/stock`);
-      const result = await runTransaction(stockRef, (curr) => {
-        const cs = parseInt(curr)||0;
-        if(cs < c.qty) return; // abort
-        return cs - c.qty;
-      });
-      if(!result.committed){ throw new Error(`${c.name} - stock khatam ho chuka hai`); }
+    // stock check + decrement via transaction (variant-aware)
+    for(const [key,c] of Object.entries(cart)){
+      const pid = c.productId || key;
+      if(c.variantId){
+        const p = allProducts[pid];
+        const idx = Array.isArray(p?.variants) ? p.variants.findIndex(v => v.id === c.variantId) : -1;
+        if(idx < 0) throw new Error(`${c.name} - variant available nahi hai`);
+        const variantStockRef = ref(db, `martProducts/${pid}/variants/${idx}/stock`);
+        const result = await runTransaction(variantStockRef, (curr) => {
+          const cs = parseInt(curr)||0;
+          if(cs < c.qty) return; // abort
+          return cs - c.qty;
+        });
+        if(!result.committed){ throw new Error(`${c.name} - stock khatam ho chuka hai`); }
+        // keep aggregate product stock in sync (non-critical)
+        await runTransaction(ref(db, `martProducts/${pid}/stock`), (curr) => Math.max(0, (parseInt(curr)||0) - c.qty));
+      } else {
+        const stockRef = ref(db, `martProducts/${pid}/stock`);
+        const result = await runTransaction(stockRef, (curr) => {
+          const cs = parseInt(curr)||0;
+          if(cs < c.qty) return; // abort
+          return cs - c.qty;
+        });
+        if(!result.committed){ throw new Error(`${c.name} - stock khatam ho chuka hai`); }
+      }
     }
 
     if(selectedPayment==='wallet'){
@@ -1453,7 +1584,7 @@ window.placeOrder = async () => {
       shopLng: orderShop.lng ?? null,
       shopAddress: orderShop.address || '',
       shopPhone: orderShop.phone || '',
-      items: Object.entries(cart).map(([id,c]) => ({ productId:id, name:c.name, price:c.price, qty:c.qty })),
+      items: Object.entries(cart).map(([key,c]) => ({ productId: c.productId||key, variantId: c.variantId||null, variantLabel: c.variantLabel||null, name:c.name, price:c.price, qty:c.qty })),
       subtotal, deliveryFee: delivery, total,
       paymentMethod: selectedPayment,
       status: 'pending',
@@ -1491,10 +1622,12 @@ window.placeOrder = async () => {
 };
 
 /* ---------------- MY ORDERS ---------------- */
+let myOrdersCache = {};
 function listenMyOrders(){
   const q = query(ref(db, 'martOrders'), orderByChild('customerId'), equalTo(currentUser.uid));
   onValue(q, (snap) => {
     const data = snap.val() || {};
+    myOrdersCache = data;
     const wrap = document.getElementById('ordersWrap');
     const empty = document.getElementById('ordersEmpty');
     const entries = Object.entries(data).sort((a,b) => (b[1].createdAt||0)-(a[1].createdAt||0));
@@ -1511,8 +1644,137 @@ function orderCardHTML(id, o){
     <div class="oc-items">${itemsText}</div>
     ${o.captainId ? `<div class="oc-items">🏍️ Captain ${o.captainName||''} raste mein hai · 📞 ${o.captainPhone||''}</div>` : ''}
     <div class="oc-bottom"><span>${new Date(o.createdAt).toLocaleDateString()}</span><span>Rs. ${o.total}</span></div>
+    <button class="slip-btn" onclick="downloadSlip('${id}')"><i class="fa-solid fa-receipt"></i> Slip Download Karein</button>
   </div>`;
 }
+
+/* ---------------- ORDER SLIP (PDF) ---------------- */
+function loadImageAsDataURL(url){
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.crossOrigin = 'anonymous';
+    img.onload = () => {
+      try{
+        const canvas = document.createElement('canvas');
+        canvas.width = img.naturalWidth; canvas.height = img.naturalHeight;
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img,0,0);
+        resolve(canvas.toDataURL('image/png'));
+      }catch(e){ resolve(null); }
+    };
+    img.onerror = () => resolve(null);
+    img.src = url;
+  });
+}
+
+async function buildSlipPDF(orderId, o){
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF({ unit:'pt', format:'a4' });
+  const pw = doc.internal.pageSize.getWidth();
+  let y = 44;
+
+  const logoData = await loadImageAsDataURL('https://iili.io/C7kWnf4.png');
+  if(logoData){
+    try{ doc.addImage(logoData, 'PNG', 40, y, 40, 40); }catch(e){}
+  } else {
+    doc.setFillColor(40,167,69);
+    doc.roundedRect(40, y, 40, 40, 8, 8, 'F');
+    doc.setTextColor(255,255,255); doc.setFontSize(18); doc.setFont(undefined,'bold');
+    doc.text('R', 55, y+27);
+  }
+  doc.setTextColor(20,20,20); doc.setFontSize(18); doc.setFont(undefined,'bold');
+  doc.text('Raftaroo Mart', 90, y+16);
+  doc.setFontSize(10); doc.setFont(undefined,'normal'); doc.setTextColor(110,110,110);
+  doc.text('Grocery & Daily Essentials Delivery', 90, y+30);
+
+  y += 58;
+  doc.setDrawColor(225,225,225); doc.line(40, y, pw-40, y);
+  y += 22;
+
+  doc.setFontSize(13); doc.setFont(undefined,'bold'); doc.setTextColor(20,20,20);
+  doc.text('Order Receipt / Slip', 40, y);
+  doc.setFontSize(10); doc.setFont(undefined,'normal'); doc.setTextColor(20,20,20);
+  doc.text(`#${orderId.slice(-6).toUpperCase()}`, pw-40, y, {align:'right'});
+  y += 15;
+  doc.setTextColor(120,120,120);
+  doc.text(new Date(o.createdAt).toLocaleString(), pw-40, y, {align:'right'});
+  y += 24;
+
+  doc.setFontSize(10); doc.setFont(undefined,'bold'); doc.setTextColor(20,20,20);
+  doc.text('Shop', 40, y);
+  doc.text('Customer', pw/2+10, y);
+  y += 14;
+  doc.setFont(undefined,'normal'); doc.setTextColor(90,90,90);
+  doc.text(o.shopName || '-', 40, y);
+  doc.text(o.customerName || '-', pw/2+10, y);
+  y += 14;
+  doc.text(doc.splitTextToSize(o.shopAddress||'-', pw/2-60), 40, y);
+  doc.text(o.customerPhone || '-', pw/2+10, y);
+  y += 14;
+  doc.text(doc.splitTextToSize(o.address||'-', pw/2-60), pw/2+10, y);
+  y += 34;
+
+  doc.setFillColor(245,247,246); doc.rect(40, y, pw-80, 24, 'F');
+  doc.setFont(undefined,'bold'); doc.setFontSize(10); doc.setTextColor(20,20,20);
+  doc.text('Item', 48, y+16);
+  doc.text('Qty', pw-220, y+16);
+  doc.text('Price', pw-150, y+16);
+  doc.text('Amount', pw-48, y+16, {align:'right'});
+  y += 24;
+  doc.setFont(undefined,'normal');
+
+  (o.items||[]).forEach((it) => {
+    y += 22;
+    if(y > 740){ doc.addPage(); y = 60; }
+    const label = it.variantLabel ? `${it.name} (${it.variantLabel})` : it.name;
+    doc.setTextColor(40,40,40); doc.setFontSize(10);
+    doc.text(label, 48, y, {maxWidth: pw-320});
+    doc.text(String(it.qty), pw-220, y);
+    doc.text(`Rs. ${it.price}`, pw-150, y);
+    doc.text(`Rs. ${it.price*it.qty}`, pw-48, y, {align:'right'});
+    doc.setDrawColor(240,240,240); doc.line(40, y+8, pw-40, y+8);
+  });
+
+  y += 30;
+  const summaryLine = (label, val, bold) => {
+    doc.setFont(undefined, bold?'bold':'normal');
+    doc.setFontSize(bold?12:10);
+    doc.setTextColor(bold?20:100, bold?20:100, bold?20:100);
+    doc.text(label, pw-220, y);
+    doc.text(val, pw-48, y, {align:'right'});
+    y += bold?20:16;
+  };
+  summaryLine('Subtotal', `Rs. ${o.subtotal}`, false);
+  summaryLine('Delivery Fee', `Rs. ${o.deliveryFee}`, false);
+  doc.setDrawColor(220,220,220); doc.line(pw-220, y-4, pw-40, y-4);
+  summaryLine('Total Paid', `Rs. ${o.total}`, true);
+
+  y += 14;
+  doc.setFont(undefined,'normal'); doc.setFontSize(10); doc.setTextColor(100,100,100);
+  doc.text(`Payment Method: ${o.paymentMethod==='wallet' ? 'Raftaroo Wallet' : 'Cash on Delivery'}`, 40, y);
+  y += 15;
+  doc.text(`Status: ${(o.status||'pending').replace(/_/g,' ')}`, 40, y);
+
+  y += 34;
+  doc.setDrawColor(230,230,230); doc.line(40, y, pw-40, y);
+  y += 18;
+  doc.setFontSize(9); doc.setTextColor(140,140,140);
+  doc.text('Thank you for shopping with Raftaroo Mart! For support, contact us via the app.', 40, y);
+
+  return doc;
+}
+
+window.downloadSlip = async (orderId) => {
+  const o = myOrdersCache[orderId];
+  if(!o){ toast('Order data nahi mila'); return; }
+  toast('Slip generate ho rahi hai...');
+  try{
+    const doc = await buildSlipPDF(orderId, o);
+    doc.save(`Raftaroo-Slip-${orderId.slice(-6).toUpperCase()}.pdf`);
+  }catch(e){
+    console.error(e); toast('Slip banane mein masla hua');
+  }
+};
 
 /* ---------------- VIEW ROUTER ---------------- */
 window.showView = (viewId) => {
