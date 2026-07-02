@@ -675,7 +675,11 @@ const CATEGORIES = [
   { id:'electronics', name:'Electronics', icon:'fa-plug' },
   { id:'pharmacy', name:'Pharmacy', icon:'fa-briefcase-medical' },
 ];
-const DELIVERY_FEE = 80;
+const DELIVERY_FEE = 110;
+const DELIVERY_DISCOUNT_THRESHOLD = 500;
+const DELIVERY_DISCOUNT_PERCENT = 50;
+const DELIVERY_DISCOUNT_THRESHOLD_2 = 150;
+const DELIVERY_DISCOUNT_PERCENT_2 = 30;
 
 const SHOP_CATEGORIES = [
   { id:'all', name:'All', icon:'fa-border-all' },
@@ -1430,8 +1434,23 @@ window.removeFromCart = (id) => {
 function cartTotals(){
   let subtotal = 0, count = 0;
   Object.values(cart).forEach(c => { subtotal += c.qty*c.price; count += c.qty; });
-  const delivery = subtotal>0 ? DELIVERY_FEE : 0;
-  return { subtotal, count, delivery, total: subtotal+delivery };
+  let deliveryDiscountPercent = 0, deliveryDiscountLabel = '', nudgeMessage = '';
+  if(subtotal >= DELIVERY_DISCOUNT_THRESHOLD){
+    deliveryDiscountPercent = DELIVERY_DISCOUNT_PERCENT;
+    deliveryDiscountLabel = `Rs.${DELIVERY_DISCOUNT_THRESHOLD}+ shopping par ${DELIVERY_DISCOUNT_PERCENT}% delivery off`;
+  } else if(subtotal >= DELIVERY_DISCOUNT_THRESHOLD_2){
+    deliveryDiscountPercent = DELIVERY_DISCOUNT_PERCENT_2;
+    deliveryDiscountLabel = `Rs.${DELIVERY_DISCOUNT_THRESHOLD_2}+ shopping par ${DELIVERY_DISCOUNT_PERCENT_2}% delivery off`;
+    const remaining = DELIVERY_DISCOUNT_THRESHOLD - subtotal;
+    nudgeMessage = `Sirf Rs.${remaining} ki aur shopping karein aur delivery par ${DELIVERY_DISCOUNT_PERCENT}% off paayein!`;
+  } else if(subtotal > 0){
+    const remaining = DELIVERY_DISCOUNT_THRESHOLD_2 - subtotal;
+    nudgeMessage = `Sirf Rs.${remaining} ki aur shopping karein aur delivery par ${DELIVERY_DISCOUNT_PERCENT_2}% off paayein!`;
+  }
+  const deliveryDiscountApplied = deliveryDiscountPercent > 0;
+  const originalDelivery = subtotal>0 ? DELIVERY_FEE : 0;
+  const delivery = deliveryDiscountApplied ? Math.round(originalDelivery * (1 - deliveryDiscountPercent/100)) : originalDelivery;
+  return { subtotal, count, delivery, originalDelivery, deliveryDiscountApplied, deliveryDiscountLabel, nudgeMessage, total: subtotal+delivery };
 }
 
 function renderCartBadges(){
@@ -1472,7 +1491,7 @@ function renderCartView(){
     return;
   }
   empty.classList.add('hidden'); goBtn.classList.remove('hidden');
-  const { subtotal, delivery, total, count } = cartTotals();
+  const { subtotal, delivery, originalDelivery, deliveryDiscountApplied, deliveryDiscountLabel, nudgeMessage, total, count } = cartTotals();
   if(headerCount){ headerCount.textContent = `${count} item${count>1?'s':''}`; headerCount.classList.remove('hidden'); }
   wrap.innerHTML = entries.map(([key,c], idx) => {
     const pid = c.productId || key;
@@ -1495,7 +1514,9 @@ function renderCartView(){
   summaryWrap.innerHTML = `
     <div class="summary-box">
       <div class="summary-row"><span><i class="fa-solid fa-basket-shopping"></i>Subtotal</span><span>Rs. ${subtotal}</span></div>
-      <div class="summary-row"><span><i class="fa-solid fa-truck"></i>Delivery Fee</span><span>Rs. ${delivery}</span></div>
+      <div class="summary-row"><span><i class="fa-solid fa-truck"></i>Delivery Fee</span><span>${deliveryDiscountApplied ? `<span style="text-decoration:line-through;opacity:.55;margin-right:6px;">Rs. ${originalDelivery}</span>Rs. ${delivery}` : `Rs. ${delivery}`}</span></div>
+      ${deliveryDiscountApplied ? `<div class="summary-row" style="color:var(--primary);font-size:12.5px;"><span><i class="fa-solid fa-tag"></i> ${deliveryDiscountLabel}</span><span></span></div>` : ''}
+      ${nudgeMessage ? `<div class="summary-row" style="color:#e67e22;font-size:12.5px;background:#fff6ec;border-radius:8px;padding:8px 10px;margin-top:4px;"><span><i class="fa-solid fa-bolt"></i> ${nudgeMessage}</span><span></span></div>` : ''}
       <div class="summary-row total"><span>Total</span><span>Rs. ${total}</span></div>
     </div>`;
 }
@@ -1511,10 +1532,12 @@ window.selectPayment = (mode) => {
 };
 
 function renderCheckoutSummary(){
-  const { subtotal, delivery, total } = cartTotals();
+  const { subtotal, delivery, originalDelivery, deliveryDiscountApplied, deliveryDiscountLabel, nudgeMessage, total } = cartTotals();
   document.getElementById('checkoutSummaryBox').innerHTML = `
     <div class="summary-row"><span>Subtotal</span><span>Rs. ${subtotal}</span></div>
-    <div class="summary-row"><span>Delivery Fee</span><span>Rs. ${delivery}</span></div>
+    <div class="summary-row"><span>Delivery Fee</span><span>${deliveryDiscountApplied ? `<span style="text-decoration:line-through;opacity:.55;margin-right:6px;">Rs. ${originalDelivery}</span>Rs. ${delivery}` : `Rs. ${delivery}`}</span></div>
+    ${deliveryDiscountApplied ? `<div class="summary-row" style="color:var(--primary);font-size:12.5px;"><span><i class="fa-solid fa-tag"></i> ${deliveryDiscountLabel}</span><span></span></div>` : ''}
+    ${nudgeMessage ? `<div class="summary-row" style="color:#e67e22;font-size:12.5px;background:#fff6ec;border-radius:8px;padding:8px 10px;margin-top:4px;"><span><i class="fa-solid fa-bolt"></i> ${nudgeMessage}</span><span></span></div>` : ''}
     <div class="summary-row total"><span>Total Payable</span><span>Rs. ${total}</span></div>`;
 }
 
