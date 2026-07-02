@@ -148,7 +148,6 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
 @keyframes spin{to{transform:rotate(360deg);}}
 
 #request-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.92);backdrop-filter:blur(4px);z-index:10000;display:none;flex-direction:column;justify-content:center;align-items:center;padding:24px;}
-#mart-request-modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.92);backdrop-filter:blur(4px);z-index:10000;display:none;flex-direction:column;justify-content:center;align-items:center;padding:24px;}
 .request-modal-content{background:var(--white);padding:28px 24px;border-radius:24px;width:100%;max-width:400px;box-shadow:0 0 60px rgba(0,200,83,0.3);text-align:center;animation:modalPop 0.4s cubic-bezier(0.34,1.56,0.64,1);position:relative;overflow:hidden;}
 @keyframes modalPop{0%{transform:scale(0.7) translateY(40px);opacity:0;}100%{transform:scale(1) translateY(0);opacity:1;}}
 .modal-alert-stripe{position:absolute;top:0;left:0;right:0;height:5px;background:linear-gradient(90deg,var(--primary),#00E676,var(--primary));background-size:200% 100%;animation:stripe-anim 1.5s linear infinite;}
@@ -167,8 +166,8 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
 .modal-timer-bar{height:100%;width:100%;background:var(--primary);border-radius:2px;animation:timer-shrink 60s linear forwards;}
 @keyframes timer-shrink{from{width:100%;}to{width:0%;}}
 .modal-actions{display:flex;gap:10px;}
-.modal-actions #modalAcceptBtn,.modal-actions #martModalAcceptBtn{flex:1;background:var(--primary);color:#fff;border:none;padding:14px;border-radius:12px;font-weight:700;font-size:15px;cursor:pointer;}
-.modal-actions #modalRejectBtn,.modal-actions #martModalRejectBtn{background:#F1F5F9;color:var(--text-muted);border:none;padding:14px 18px;border-radius:12px;font-weight:600;font-size:14px;cursor:pointer;}
+.modal-actions #modalAcceptBtn{flex:1;background:var(--primary);color:#fff;border:none;padding:14px;border-radius:12px;font-weight:700;font-size:15px;cursor:pointer;}
+.modal-actions #modalRejectBtn{background:#F1F5F9;color:var(--text-muted);border:none;padding:14px 18px;border-radius:12px;font-weight:600;font-size:14px;cursor:pointer;}
 
 #offer-confirm-modal{position:fixed;inset:0;background:rgba(0,0,0,0.88);backdrop-filter:blur(4px);z-index:11000;display:none;flex-direction:column;justify-content:flex-end;align-items:center;padding:16px;}
 .offer-confirm-content{background:var(--white);padding:28px 22px 30px;border-radius:24px 24px 16px 16px;width:100%;max-width:440px;box-shadow:var(--shadow-lg);animation:slideUp 0.35s cubic-bezier(0.34,1.2,0.64,1);}
@@ -317,21 +316,6 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
 }
 
 @keyframes rpm-in{ from{opacity:0;transform:scale(0.95);}to{opacity:1;transform:scale(1);} }
-
-/* ══ MART DELIVERY PREVIEW MODAL (reuses .rpm-* styles) ══ */
-#mart-preview-modal{
-    position:fixed;inset:0;z-index:20000;
-    background:#0A0F1E;
-    display:none;flex-direction:column;overflow:hidden;
-}
-#mart-preview-modal.rpm-open{ display:flex!important; }
-#mart-rpm-map{ flex:1;position:relative;min-height:0; }
-
-/* ══ ACTIVE MART DELIVERY — INLINE LIVE MAP ══ */
-.mart-mini-map-wrap{ position:relative;height:190px;width:100%;border-radius:12px;margin:10px 0;overflow:hidden;border:1.5px solid var(--border); }
-.mart-mini-map-wrap #activeMartMiniMap{ height:100%;width:100%; }
-.mart-mini-map-badge{ position:absolute;top:8px;left:8px;z-index:1000;background:rgba(10,15,30,0.85);backdrop-filter:blur(6px);color:#fff;padding:4px 10px;border-radius:50px;font-size:10.5px;font-weight:700;display:flex;align-items:center;gap:5px; }
-.mart-mini-map-badge i{ color:#8B5CF6; }
 </style>
 </head>
 <body>
@@ -379,10 +363,6 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         <div class="tab-button" data-tab="requests-tab">
             <i class="fas fa-motorcycle"></i> Requests
             <span class="badge-pill" id="pendingRequestsCount">0</span>
-        </div>
-        <div class="tab-button" data-tab="mart-tab">
-            <i class="fas fa-cart-shopping"></i> Mart
-            <span class="badge-pill" id="pendingMartCount">0</span>
         </div>
     </div>
 
@@ -480,22 +460,6 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
                     <div class="empty-icon"><i class="fas fa-search-location"></i></div>
                     <h4>Koi Request Nahi</h4>
                     <p>Aap ke 10 km radius mein abhi koi ride request nahi hai</p>
-                </div>
-            </div>
-        </div>
-
-        <!-- MART DELIVERIES TAB -->
-        <div id="mart-tab" class="tab-panel hidden">
-            <div id="activeMartDeliveryWrap"></div>
-            <div class="requests-header">
-                <h3>Mart Deliveries — Ready for Pickup</h3>
-                <div class="requests-count-chip"><span id="martCountChip">0</span> available</div>
-            </div>
-            <div id="martOrdersList">
-                <div class="empty-state">
-                    <div class="empty-icon"><i class="fas fa-cart-shopping"></i></div>
-                    <h4>Koi Mart Delivery Nahi</h4>
-                    <p>Abhi koi shop se pickup ke liye ready order nahi hai</p>
                 </div>
             </div>
         </div>
@@ -623,85 +587,6 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
     </div>
 </div>
 
-<!-- ══════════════════════════ MART DELIVERY PREVIEW MAP MODAL ══════════════════════════ -->
-<div id="mart-preview-modal">
-    <div class="rpm-header">
-        <div style="display:flex;align-items:center;gap:12px;">
-            <button class="rpm-back-btn" onclick="closeMartPreview()"><i class="fas fa-arrow-left"></i></button>
-            <div>
-                <div class="rpm-title" id="mrpm-title">Mart Delivery Preview</div>
-                <div class="rpm-subtitle">Shop aur customer location map pe dekhen</div>
-            </div>
-        </div>
-        <div class="rpm-fare-badge" id="mrpm-fare-badge">Rs. 0</div>
-    </div>
-
-    <div id="mart-rpm-map"></div>
-
-    <div class="rpm-panel">
-        <div class="rpm-drag-handle"></div>
-
-        <div class="rpm-passenger-row">
-            <div class="rpm-avatar" style="background:linear-gradient(135deg,#6D28D9,#A78BFA);">
-                <i class="fas fa-store"></i>
-            </div>
-            <div style="flex:1;min-width:0;">
-                <div class="rpm-name" id="mrpm-shop-name">Shop</div>
-                <div style="display:flex;align-items:center;gap:6px;margin-top:3px;flex-wrap:wrap;">
-                    <span style="background:#EDE9FE;color:#6D28D9;font-size:11px;font-weight:800;padding:3px 9px;border-radius:6px;"><i class="fas fa-boxes-stacked"></i> <span id="mrpm-items-count">0</span> items</span>
-                </div>
-            </div>
-        </div>
-
-        <div class="rpm-stats-grid">
-            <div class="rpm-stat green">
-                <div class="rpm-stat-val" id="mrpm-shop-dist">0 km</div>
-                <div class="rpm-stat-label">Shop Tak</div>
-            </div>
-            <div class="rpm-stat blue">
-                <div class="rpm-stat-val" id="mrpm-total-dist">0 km</div>
-                <div class="rpm-stat-label">Total Delivery</div>
-            </div>
-            <div class="rpm-stat orange">
-                <div class="rpm-stat-val" id="mrpm-eta">— min</div>
-                <div class="rpm-stat-label">ETA</div>
-            </div>
-        </div>
-
-        <div class="rpm-route-box">
-            <div class="rpm-route-row" style="margin-bottom:6px;">
-                <div class="rpm-route-dot-col">
-                    <div class="rpm-route-dot-green"></div>
-                    <div class="rpm-route-dot-connector"></div>
-                </div>
-                <div style="flex:1;min-width:0;padding-bottom:8px;">
-                    <div class="rpm-route-label" style="color:#00A040;">🏬 Shop Se Pickup</div>
-                    <div class="rpm-route-addr" id="mrpm-shop-addr">—</div>
-                </div>
-            </div>
-            <div class="rpm-route-row">
-                <div class="rpm-route-dot-col">
-                    <div class="rpm-route-dot-red"></div>
-                </div>
-                <div style="flex:1;min-width:0;">
-                    <div class="rpm-route-label" style="color:#EF4444;">📍 Customer Ko Deliver</div>
-                    <div class="rpm-route-addr" id="mrpm-cust-addr">—</div>
-                    <div class="rpm-route-addr" id="mrpm-cust-phone" style="color:#1D4ED8;font-weight:700;"></div>
-                </div>
-            </div>
-        </div>
-
-        <div class="rpm-actions">
-            <button class="rpm-btn-proceed" id="mrpm-action-btn" style="background:#8B5CF6;box-shadow:0 4px 16px rgba(139,92,246,0.35);">
-                <i class="fas fa-check"></i> Delivery Accept Karein
-            </button>
-            <button class="rpm-btn-back" onclick="closeMartPreview()">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
-    </div>
-</div>
-
 <!-- REQUEST MODAL -->
 <div id="request-modal-overlay" style="display:none;">
     <div class="request-modal-content">
@@ -715,23 +600,6 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         <div class="modal-actions">
             <button id="modalAcceptBtn"><i class="fas fa-check"></i> Review &amp; Offer</button>
             <button id="modalRejectBtn">Ignore</button>
-        </div>
-    </div>
-</div>
-
-<!-- NEW MART ORDER ALERT MODAL -->
-<div id="mart-request-modal-overlay" style="display:none;">
-    <div class="request-modal-content">
-        <div class="modal-alert-stripe" style="background:linear-gradient(90deg,#8B5CF6,#C4B5FD,#8B5CF6);"></div>
-        <div class="modal-alert-icon" style="background:#EDE9FE;color:#6D28D9;"><i class="fas fa-cart-shopping"></i></div>
-        <h2>Naya Mart Delivery Order!</h2>
-        <div class="modal-fare-display" id="martModalFare" style="color:#6D28D9;">Rs. 0</div>
-        <div class="modal-meta" id="martModalMeta">0 items • distance N/A</div>
-        <div class="modal-details" id="martModalDetails"></div>
-        <div class="modal-timer"><div class="modal-timer-bar" id="martModalTimerBar" style="background:#8B5CF6;"></div></div>
-        <div class="modal-actions">
-            <button id="martModalAcceptBtn" style="background:#8B5CF6;"><i class="fas fa-map-marked-alt"></i> Map Pe Dekhen</button>
-            <button id="martModalRejectBtn">Ignore</button>
         </div>
     </div>
 </div>
@@ -769,7 +637,7 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
-    import { getDatabase, ref, update, onValue, get, push, runTransaction } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-database.js";
+    import { getDatabase, ref, update, onValue, get, push } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-database.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
 
     const firebaseConfig = {
@@ -836,31 +704,6 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         if (audioRetryInterval) { clearInterval(audioRetryInterval); audioRetryInterval = null; }
     }
 
-    /* ── Separate ringtone handling for Mart order alerts ── */
-    const martRingtoneAudio = new Audio(ringtoneUrl);
-    martRingtoneAudio.loop = false;
-    let martAudioRetryInterval = null;
-
-    function playMartRingtone() {
-        if (martAudioRetryInterval) clearInterval(martAudioRetryInterval);
-        try {
-            martRingtoneAudio.currentTime = 0;
-            const p = martRingtoneAudio.play();
-            if (p !== undefined) p.catch(() => {
-                martAudioRetryInterval = setInterval(() => {
-                    if (martAlertOverlay.style.display !== 'flex') { clearInterval(martAudioRetryInterval); martAudioRetryInterval = null; return; }
-                    martRingtoneAudio.currentTime = 0;
-                    martRingtoneAudio.play().then(() => { clearInterval(martAudioRetryInterval); martAudioRetryInterval = null; }).catch(() => {});
-                }, 1000);
-            });
-        } catch(e) {}
-    }
-
-    function stopMartRingtone() {
-        martRingtoneAudio.pause();
-        if (martAudioRetryInterval) { clearInterval(martAudioRetryInterval); martAudioRetryInterval = null; }
-    }
-
     const captainIcon = (vehicle) => {
         const v = (vehicle||'bike').toLowerCase().replace(/\s+/g,'-');
         let imgUrl = 'https://iili.io/ftViNi7.png'; // default bike
@@ -889,9 +732,10 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         currentPendingRequest = request;
         document.getElementById('modalFare').textContent = 'Rs. ' + request.fare;
         document.getElementById('modalMeta').textContent = request.distance + ' km ride \u2022 ' + distanceToPickup.toFixed(1) + ' km door aap se';
+        const modalRideLabel = request.tripMode === 'delivery' ? 'DELIVERY' : (request.vehicle || request.service || 'N/A').toUpperCase().replace(/\/SMALL DELIVERY|\/DELIVERY/gi, '').trim();
         document.getElementById('modalDetails').innerHTML = `
             <div class="modal-detail-row"><span class="label">🧑 Customer</span><span class="value">${request.name}</span></div>
-            <div class="modal-detail-row"><span class="label">🚘 Ride Type</span><span class="value">${(request.service||request.vehicle||'N/A').toUpperCase()}</span></div>
+            <div class="modal-detail-row"><span class="label">🚘 Ride Type</span><span class="value">${modalRideLabel}</span></div>
             <div class="modal-detail-row"><span class="label">📍 Pickup</span><span class="value">${request.pickup.address.substring(0,35)}...</span></div>
             <div class="modal-detail-row"><span class="label">🏁 Dropoff</span><span class="value">${request.destination.address.substring(0,35)}...</span></div>`;
         const tb = document.getElementById('modalTimerBar'); tb.style.animation='none'; tb.offsetHeight; tb.style.animation='timer-shrink 60s linear forwards';
@@ -908,38 +752,6 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
     function hideRequestModal() {
         requestModalOverlay.style.display = 'none'; stopRingtone(); currentPendingRequest = null;
         if (modalTimeout) { clearTimeout(modalTimeout); modalTimeout = null; }
-    }
-
-    /* ── New Mart Order Alert Popup (sound + visible card) ── */
-    const martAlertOverlay = document.getElementById('mart-request-modal-overlay');
-    let currentMartAlertId = null;
-    let martAlertTimeout = null;
-
-    function showMartRequestModal(id, o) {
-        if (martAlertOverlay.style.display === 'flex') return;
-        currentMartAlertId = id;
-        document.getElementById('martModalFare').textContent = 'Rs. ' + (o.deliveryFee||0);
-        const myLoc = getCaptainLatLng();
-        const d = (myLoc && o.shopLat) ? getDistance(myLoc.lat,myLoc.lng,o.shopLat,o.shopLng) : null;
-        document.getElementById('martModalMeta').textContent = (o.items||[]).length + ' items \u2022 ' + (d!=null ? d.toFixed(1)+' km door shop se' : 'distance N/A');
-        document.getElementById('martModalDetails').innerHTML = `
-            <div class="modal-detail-row"><span class="label">🏬 Shop</span><span class="value">${o.shopName||'Shop'}</span></div>
-            <div class="modal-detail-row"><span class="label">📍 Pickup</span><span class="value">${(o.shopAddress||'').substring(0,35)}...</span></div>
-            <div class="modal-detail-row"><span class="label">🏁 Deliver</span><span class="value">${(o.address||'').substring(0,35)}...</span></div>`;
-        const tb = document.getElementById('martModalTimerBar'); tb.style.animation='none'; tb.offsetHeight; tb.style.animation='timer-shrink 30s linear forwards';
-        document.getElementById('martModalAcceptBtn').onclick = () => {
-            hideMartRequestModal();
-            setTimeout(() => openMartPreview(id), 100);
-        };
-        document.getElementById('martModalRejectBtn').onclick = hideMartRequestModal;
-        martAlertOverlay.style.display = 'flex'; playMartRingtone();
-        if (martAlertTimeout) clearTimeout(martAlertTimeout);
-        martAlertTimeout = setTimeout(hideMartRequestModal, 30000);
-    }
-
-    function hideMartRequestModal() {
-        martAlertOverlay.style.display = 'none'; stopMartRingtone(); currentMartAlertId = null;
-        if (martAlertTimeout) { clearTimeout(martAlertTimeout); martAlertTimeout = null; }
     }
 
     const offerConfirmModal = document.getElementById('offer-confirm-modal');
@@ -1161,7 +973,6 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
             } else {
                 captainMarker.setLatLng([la,lo]); radiusCircle.setLatLng([la,lo]); map.setView([la,lo]);
             }
-            if (typeof updateActiveMartCaptainMarker === 'function') updateActiveMartCaptainMarker();
             await update(ref(db,'riders/'+currentCaptain.uid),{location:{lat:la,lng:lo},timestamp:new Date().toISOString()});
         },(err)=>{ if(err.code===err.PERMISSION_DENIED){alert("Location access deny kiya gaya.");document.getElementById('statusToggleSwitch').checked=false;toggleStatus(false);}},{enableHighAccuracy:true,timeout:5000,maximumAge:0});
     }
@@ -1180,301 +991,9 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
 
     function initializeDashboard() {
         initializeMap(); setupTabNavigation();
-        if (isApproved(captainData)) { listenForRideLockStatus(); listenForIncomingRequests(); loadWalletBalance(); listenForMartOrders(); }
+        if (isApproved(captainData)) { listenForRideLockStatus(); listenForIncomingRequests(); loadWalletBalance(); }
         else document.getElementById('incomingRequestsList').innerHTML='<div class="empty-state"><div class="empty-icon"><i class="fas fa-lock"></i></div><h4>Approved Nahi Hain</h4><p>Ride requests dekhne ke liye approval zaroori hai</p></div>';
     }
-
-    /* ══════════════════════════ MART DELIVERIES ══════════════════════════ */
-    let martOrdersCache = {};
-    let _seenMartOrderIds = null; // null = first snapshot not processed yet (avoid alerting for pre-existing orders)
-    function listenForMartOrders() {
-        onValue(ref(db,'martOrders'), (snap) => {
-            const newCache = snap.val() || {};
-
-            if (_seenMartOrderIds !== null) {
-                const newIds = Object.keys(newCache).filter(id =>
-                    !_seenMartOrderIds.has(id) && newCache[id].status === 'ready_for_pickup' && !newCache[id].captainId
-                );
-                if (newIds.length) {
-                    const hasActive = Object.values(newCache).some(o =>
-                        o.captainId === currentCaptain.uid && (o.status === 'out_for_delivery' || o.status === 'picked_up')
-                    );
-                    if (!hasActive && captainData.status === 'active' && isApproved(captainData)) {
-                        showMartRequestModal(newIds[0], newCache[newIds[0]]);
-                    }
-                }
-            }
-            _seenMartOrderIds = new Set(Object.keys(newCache));
-
-            martOrdersCache = newCache;
-            renderMartOrders();
-        });
-    }
-
-    function getCaptainLatLng() {
-        if (captainMarker) { const p = captainMarker.getLatLng(); return { lat: p.lat, lng: p.lng }; }
-        return null;
-    }
-
-    function renderMartOrders() {
-        const myLoc = getCaptainLatLng();
-        const entries = Object.entries(martOrdersCache);
-
-        // Active delivery this captain already accepted
-        const active = entries.find(([id,o]) => o.captainId===currentCaptain.uid && (o.status==='out_for_delivery' || o.status==='picked_up'));
-        const activeWrap = document.getElementById('activeMartDeliveryWrap');
-        if (active) {
-            const [id,o] = active;
-            const pickupBtn = o.status==='out_for_delivery' ? `<button class="btn-accept" onclick="markMartPickedUp('${id}')"><i class="fas fa-box"></i> Shop Se Pickup Ho Gaya</button>` : `<button class="btn-accept" onclick="markMartDelivered('${id}')"><i class="fas fa-flag-checkered"></i> Customer Ko Deliver Ho Gaya</button>`;
-            activeWrap.innerHTML = `<div class="request-card" style="border-left-color:#8B5CF6;">
-                <div class="request-card-top"><div><div class="request-card-type" style="background:#EDE9FE;color:#6D28D9;">Active Mart Delivery</div></div><div class="request-card-fare">Rs. ${o.deliveryFee||0} <span>delivery fee</span></div></div>
-                <div class="mart-mini-map-wrap">
-                    <div id="activeMartMiniMap"></div>
-                    <div class="mart-mini-map-badge"><i class="fas fa-route"></i> ${o.status==='picked_up' ? 'Customer Ki Taraf Ja Rahe Hain' : 'Shop Ki Taraf Ja Rahe Hain'}</div>
-                </div>
-                <div class="request-detail pickup"><i class="fas fa-store"></i><div><div class="detail-label">Pickup — ${o.shopName||'Shop'}</div><div class="detail-text">${(o.shopAddress||'').substring(0,60)}</div></div></div>
-                <div class="request-detail dropoff"><i class="fas fa-location-dot"></i><div><div class="detail-label">Deliver To — ${o.customerName||''}</div><div class="detail-text">${(o.address||'').substring(0,60)} · ${o.customerPhone||''}</div></div></div>
-                <div class="request-actions">
-                    <button class="btn-accept" style="background:#1D4ED8;" onclick="openMartPreview('${id}')"><i class="fas fa-map-marked-alt"></i> Poora Map Dekhen</button>
-                </div>
-                <div class="request-actions">${pickupBtn}</div>
-            </div>`;
-            activeWrap.classList.remove('hidden');
-            setTimeout(() => renderActiveMartMiniMap(id, o), 100);
-        } else {
-            activeWrap.innerHTML = ''; activeWrap.classList.add('hidden');
-            if (activeMartMap) { activeMartMap.remove(); activeMartMap = null; }
-            activeMartMarkers = {}; _activeMartMapKey = null;
-        }
-
-        // Available orders: ready_for_pickup, no captain assigned yet
-        let available = entries.filter(([id,o]) => o.status==='ready_for_pickup' && !o.captainId);
-        if (myLoc) {
-            available = available.map(([id,o]) => [id,o,getDistance(myLoc.lat,myLoc.lng,o.shopLat,o.shopLng)]);
-            available.sort((a,b) => (a[2]??999)-(b[2]??999));
-        } else {
-            available = available.map(([id,o]) => [id,o,null]);
-        }
-
-        document.getElementById('martCountChip').textContent = available.length;
-        document.getElementById('pendingMartCount').textContent = available.length;
-        document.getElementById('pendingMartCount').style.display = available.length ? 'inline-flex' : 'none';
-
-        const listWrap = document.getElementById('martOrdersList');
-        if (active) { listWrap.innerHTML = '<div class="empty-state"><div class="empty-icon"><i class="fas fa-lock"></i></div><h4>Ek Active Delivery Chal Rahi Hai</h4><p>Nayi delivery accept karne se pehle current delivery complete karein</p></div>'; return; }
-        if (available.length===0) { listWrap.innerHTML = '<div class="empty-state"><div class="empty-icon"><i class="fas fa-cart-shopping"></i></div><h4>Koi Mart Delivery Nahi</h4><p>Abhi koi shop se pickup ke liye ready order nahi hai</p></div>'; return; }
-
-        listWrap.innerHTML = available.map(([id,o,d]) => `
-            <div class="request-card" style="border-left-color:#8B5CF6;">
-                <div class="request-card-top"><div><div class="request-card-type" style="background:#EDE9FE;color:#6D28D9;">Mart Delivery</div></div><div class="request-card-fare">Rs. ${o.deliveryFee||0} <span>delivery fee</span></div></div>
-                <div class="request-detail pickup"><i class="fas fa-store"></i><div><div class="detail-label">Pickup — ${o.shopName||'Shop'}</div><div class="detail-text">${(o.shopAddress||'').substring(0,60)}</div></div></div>
-                <div class="request-detail dropoff"><i class="fas fa-location-dot"></i><div><div class="detail-label">Deliver To</div><div class="detail-text">${(o.address||'').substring(0,60)}</div></div></div>
-                <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;">
-                    <span style="background:#F1F5F9;color:var(--text-muted);font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;"><i class="fas fa-road"></i> ${d!=null?d.toFixed(1)+' km to shop':'distance N/A'}</span>
-                    <span style="background:#F1F5F9;color:var(--text-muted);font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;"><i class="fas fa-boxes-stacked"></i> ${(o.items||[]).length} items</span>
-                </div>
-                <div class="request-actions">
-                    <button class="btn-accept" style="background:#1D4ED8;" onclick="openMartPreview('${id}')"><i class="fas fa-map-marked-alt"></i> Map Pe Dekhen</button>
-                    <button class="btn-accept" onclick="acceptMartOrder('${id}')"><i class="fas fa-check"></i> Accept Karein</button>
-                </div>
-            </div>`).join('');
-    }
-
-    window.acceptMartOrder = async (id) => {
-        const result = await runTransaction(ref(db,'martOrders/'+id+'/captainId'), (curr) => {
-            if (curr) return; // already taken, abort
-            return currentCaptain.uid;
-        });
-        if (!result.committed) { alert('Yeh delivery kisi aur captain ne le li hai.'); return; }
-        await update(ref(db,'martOrders/'+id), {
-            captainName: captainData.fullName || 'Captain',
-            captainPhone: captainData.mobileNumber || '',
-            status: 'out_for_delivery',
-            acceptedAt: new Date().toISOString()
-        });
-        document.querySelector('.tab-button[data-tab="mart-tab"]').click();
-    };
-
-    window.markMartPickedUp = async (id) => {
-        await update(ref(db,'martOrders/'+id), { status: 'picked_up', pickedUpAt: new Date().toISOString() });
-    };
-
-    window.markMartDelivered = async (id) => {
-        const o = martOrdersCache[id];
-        if (!o) return;
-        const fee = parseInt(o.deliveryFee) || 0;
-        await runTransaction(ref(db,'riders/'+currentCaptain.uid+'/walletBalance'), (curr) => (parseInt(curr)||0) + fee);
-        await update(ref(db,'martOrders/'+id), { status: 'delivered', deliveredAt: new Date().toISOString() });
-    };
-
-    /* ══════════════════════ ACTIVE MART DELIVERY — INLINE LIVE MAP ══════════════════════ */
-    let activeMartMap = null, activeMartRouteCtrl = null, activeMartMarkers = {}, _activeMartMapKey = null;
-
-    function martShopIcon() {
-        return L.divIcon({ html:'<div style="background:#8B5CF6;width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:3px solid #fff;box-shadow:0 3px 10px rgba(139,92,246,0.5);"><i class="fas fa-store" style="color:#fff;font-size:14px;"></i></div>', className:'', iconSize:[34,34], iconAnchor:[17,17] });
-    }
-    function martCustIcon() {
-        return L.divIcon({ html:'<div style="background:#EF4444;width:32px;height:42px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;border:3px solid #fff;box-shadow:0 3px 10px rgba(239,68,68,0.5);"><i class="fas fa-location-dot" style="color:#fff;font-size:13px;transform:rotate(45deg);"></i></div>', className:'', iconSize:[32,42], iconAnchor:[16,42] });
-    }
-    function martCapIcon() {
-        const img = captainIcon(captainData.vehicleType||'bike').options.html;
-        return L.divIcon({ html:`<div style="filter:drop-shadow(0 4px 10px rgba(0,0,0,0.45));">${img}</div>`, className:'', iconSize:[40,40], iconAnchor:[20,20] });
-    }
-
-    function renderActiveMartMiniMap(id, o) {
-        const container = document.getElementById('activeMartMiniMap');
-        if (!container) return;
-        const key = id + '|' + o.status;
-        if (_activeMartMapKey === key && activeMartMap) { updateActiveMartCaptainMarker(); return; }
-        _activeMartMapKey = key;
-        if (activeMartMap) { activeMartMap.remove(); activeMartMap = null; }
-        activeMartMarkers = {};
-
-        activeMartMap = L.map('activeMartMiniMap', { zoomControl:false, attributionControl:false, scrollWheelZoom:false });
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{maxZoom:19}).addTo(activeMartMap);
-        activeMartMap.invalidateSize();
-
-        const bounds = [];
-        if (o.shopLat && o.shopLng) {
-            activeMartMarkers.shop = L.marker([o.shopLat,o.shopLng],{icon:martShopIcon()}).addTo(activeMartMap).bindPopup('<b>🏬 '+(o.shopName||'Shop')+'</b>');
-            bounds.push([o.shopLat,o.shopLng]);
-        }
-        if (o.lat && o.lng) {
-            activeMartMarkers.customer = L.marker([o.lat,o.lng],{icon:martCustIcon()}).addTo(activeMartMap).bindPopup('<b>📍 '+(o.customerName||'Customer')+'</b>');
-            bounds.push([o.lat,o.lng]);
-        }
-        const capPos = getCaptainLatLng();
-        if (capPos) {
-            activeMartMarkers.captain = L.marker([capPos.lat,capPos.lng],{icon:martCapIcon()}).addTo(activeMartMap).bindPopup('<b>🏍️ Aap Yahan Hain</b>');
-            bounds.push([capPos.lat,capPos.lng]);
-        }
-
-        const target = o.status==='picked_up' ? (o.lat&&o.lng?[o.lat,o.lng]:null) : (o.shopLat&&o.shopLng?[o.shopLat,o.shopLng]:null);
-        if (capPos && target) {
-            try {
-                activeMartRouteCtrl = L.Routing.control({
-                    waypoints:[ L.latLng(capPos.lat,capPos.lng), L.latLng(target[0],target[1]) ],
-                    router: L.Routing.osrmv1({ serviceUrl:'https://router.project-osrm.org/route/v1' }),
-                    routeWhileDragging:false, showAlternatives:false, fitSelectedRoutes:false,
-                    collapsible:false, addWaypoints:false,
-                    lineOptions:{ styles:[{ color:'#8B5CF6', opacity:0.85, weight:5 }] },
-                    createMarker:()=>false
-                }).addTo(activeMartMap);
-            } catch(e) { console.warn('active mart route err:', e); }
-        }
-
-        if (bounds.length) activeMartMap.fitBounds(bounds, { padding:[30,30] });
-        else activeMartMap.setView([24.86,67.01],12);
-    }
-
-    function updateActiveMartCaptainMarker() {
-        if (!activeMartMap || !activeMartMarkers.captain) return;
-        const capPos = getCaptainLatLng();
-        if (capPos) activeMartMarkers.captain.setLatLng([capPos.lat,capPos.lng]);
-    }
-
-    /* ══════════════════════ MART DELIVERY PREVIEW MAP MODAL ══════════════════════ */
-    let martRpmMap = null, martRpmRouteCtrl = null;
-
-    window.openMartPreview = function(id) {
-        const o = martOrdersCache[id];
-        if (!o) return;
-        _showMartPreviewModal(id, o);
-    };
-
-    function _showMartPreviewModal(id, o) {
-        const modal = document.getElementById('mart-preview-modal');
-        modal.classList.add('rpm-open');
-        document.body.style.overflow = 'hidden';
-
-        document.getElementById('mrpm-fare-badge').textContent = 'Rs. ' + (o.deliveryFee||0);
-        document.getElementById('mrpm-shop-name').textContent = o.shopName || 'Shop';
-        document.getElementById('mrpm-items-count').textContent = (o.items||[]).length;
-        document.getElementById('mrpm-shop-addr').textContent = o.shopAddress || '—';
-        document.getElementById('mrpm-cust-addr').textContent = o.address || '—';
-        document.getElementById('mrpm-cust-phone').textContent = o.customerPhone ? ('📞 '+o.customerPhone) : '';
-
-        const myLoc = getCaptainLatLng();
-        const dShop = (myLoc && o.shopLat) ? getDistance(myLoc.lat,myLoc.lng,o.shopLat,o.shopLng) : null;
-        const dTotal = (o.shopLat && o.lat) ? getDistance(o.shopLat,o.shopLng,o.lat,o.lng) : null;
-        document.getElementById('mrpm-shop-dist').textContent = dShop!=null ? dShop.toFixed(1)+' km' : '— km';
-        document.getElementById('mrpm-total-dist').textContent = dTotal!=null ? dTotal.toFixed(1)+' km' : '— km';
-        document.getElementById('mrpm-eta').textContent = '— min';
-
-        const actionBtn = document.getElementById('mrpm-action-btn');
-        const isMine = o.captainId === currentCaptain.uid;
-        if (!o.captainId) {
-            document.getElementById('mrpm-title').textContent = 'Mart Delivery Preview';
-            actionBtn.innerHTML = '<i class="fas fa-check"></i> Delivery Accept Karein';
-            actionBtn.onclick = async () => { await acceptMartOrder(id); closeMartPreview(); };
-        } else if (isMine && o.status==='out_for_delivery') {
-            document.getElementById('mrpm-title').textContent = 'Shop Ki Taraf Ja Rahe Hain';
-            actionBtn.innerHTML = '<i class="fas fa-box"></i> Shop Se Pickup Ho Gaya';
-            actionBtn.onclick = async () => { await markMartPickedUp(id); closeMartPreview(); };
-        } else if (isMine && o.status==='picked_up') {
-            document.getElementById('mrpm-title').textContent = 'Customer Ki Taraf Ja Rahe Hain';
-            actionBtn.innerHTML = '<i class="fas fa-flag-checkered"></i> Customer Ko Deliver Ho Gaya';
-            actionBtn.onclick = async () => { await markMartDelivered(id); closeMartPreview(); };
-        } else {
-            actionBtn.style.display = 'none';
-        }
-
-        setTimeout(() => _initMartRpmMap(o), 120);
-    }
-
-    function _initMartRpmMap(o) {
-        if (martRpmMap) { martRpmMap.remove(); martRpmMap = null; }
-        martRpmMap = L.map('mart-rpm-map', { zoomControl:false, attributionControl:false });
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{maxZoom:19}).addTo(martRpmMap);
-        martRpmMap.invalidateSize();
-
-        const sLat=o.shopLat, sLng=o.shopLng, cLat=o.lat, cLng=o.lng;
-        if (!sLat || !cLat) { martRpmMap.setView([24.86,67.01],13); return; }
-
-        const bounds = [[sLat,sLng],[cLat,cLng]];
-
-        L.marker([sLat,sLng],{icon:martShopIcon()}).addTo(martRpmMap)
-            .bindPopup(`<b>🏬 ${o.shopName||'Shop'}</b><br><small>${(o.shopAddress||'').substring(0,50)}</small>`);
-        L.marker([cLat,cLng],{icon:martCustIcon()}).addTo(martRpmMap)
-            .bindPopup(`<b>📍 ${o.customerName||'Customer'}</b><br><small>${(o.address||'').substring(0,50)}</small>`);
-
-        const capPos = getCaptainLatLng();
-        if (capPos) {
-            L.marker([capPos.lat,capPos.lng],{icon:martCapIcon()}).addTo(martRpmMap).bindPopup('<b>🏍️ Aap Yahan Hain</b>');
-            bounds.push([capPos.lat,capPos.lng]);
-        }
-
-        // Route: if already picked up, show shop→customer as the delivery leg; captain→target dashed
-        try {
-            martRpmRouteCtrl = L.Routing.control({
-                waypoints:[ L.latLng(sLat,sLng), L.latLng(cLat,cLng) ],
-                router: L.Routing.osrmv1({ serviceUrl:'https://router.project-osrm.org/route/v1' }),
-                routeWhileDragging:false, showAlternatives:false, fitSelectedRoutes:true, collapsible:true, collapsed:true,
-                lineOptions:{ styles:[{ color:'#8B5CF6', opacity:0.85, weight:5 }] },
-                createMarker:()=>false
-            }).addTo(martRpmMap);
-            martRpmRouteCtrl.on('routesfound', (e) => {
-                const route = e.routes[0];
-                if (route) document.getElementById('mrpm-eta').textContent = Math.round(route.summary.totalTime/60) + ' min';
-            });
-        } catch(err) { console.warn('mart rpm routing err:', err); }
-
-        const target = o.status==='picked_up' ? [cLat,cLng] : [sLat,sLng];
-        if (capPos) {
-            L.polyline([[capPos.lat,capPos.lng], target], { color:'#00C853', weight:3, opacity:0.6, dashArray:'8,6' }).addTo(martRpmMap);
-        }
-
-        martRpmMap.fitBounds(L.latLngBounds(bounds), { padding:[50,60] });
-    }
-
-    window.closeMartPreview = function() {
-        const modal = document.getElementById('mart-preview-modal');
-        modal.classList.remove('rpm-open');
-        document.body.style.overflow = '';
-        if (martRpmMap) { martRpmMap.remove(); martRpmMap = null; }
-        martRpmRouteCtrl = null;
-        document.getElementById('mrpm-action-btn').style.display = '';
-    };
 
     let lowBalanceChecked=false;
     function loadWalletBalance() {
@@ -1632,7 +1151,8 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
                     <div><b>Receiver Ph:</b> ${pd.recipientPhone}</div>
                 </div>
             </div>` : (isDelivery ? '<div style="background:#FEF9C3;border-radius:8px;padding:8px 12px;font-size:12px;color:#B45309;margin:8px 0;"><i class="fas fa-exclamation-circle"></i> Parcel details milti hain confirm ke baad</div>' : '');
-            el.innerHTML='<div class="request-card-top"><div><div class="request-card-type">'+(req.vehicle||req.service||'N/A').toUpperCase()+'</div></div><div class="request-card-fare">Rs. '+req.fare+' <span>offered</span></div></div><div class="request-detail customer"><i class="fas fa-user"></i><div><div class="detail-label">Customer</div><div class="detail-text">'+req.name+'</div></div></div><div class="request-detail pickup"><i class="fas fa-circle-dot"></i><div><div class="detail-label">Pickup (Sender)</div><div class="detail-text">'+req.pickup.address.substring(0,50)+'...</div></div></div><div class="request-detail dropoff"><i class="fas fa-location-dot"></i><div><div class="detail-label">'+(isDelivery?'Delivery Address':'Dropoff')+'</div><div class="detail-text">'+req.destination.address.substring(0,50)+'...</div></div></div>'+parcelBlock+'<div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;"><div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;"><span style="background:#F1F5F9;color:var(--text-muted);font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;"><i class="fas fa-road"></i> '+req.distance+' km '+(isDelivery?'delivery':'ride')+'</span>'+deliveryBadge+dc+'</div></div><div class="request-actions"><button class="btn-accept" data-id="'+req.id+'" data-fare="'+req.fare+'" onclick="openRidePreview(this.dataset.id,this.dataset.fare)"><i class="fas fa-map-marked-alt"></i> Map Pe Dekhen &amp; Offer</button><button class="btn-reject" onclick="this.closest(\'.request-card\').remove()">&#x2715;</button></div>';
+            const cardTypeLabel = isDelivery ? 'DELIVERY' : (req.vehicle||req.service||'N/A').toUpperCase().replace(/\/SMALL DELIVERY|\/DELIVERY/gi,'').trim();
+            el.innerHTML='<div class="request-card-top"><div><div class="request-card-type">'+cardTypeLabel+'</div></div><div class="request-card-fare">Rs. '+req.fare+' <span>offered</span></div></div><div class="request-detail customer"><i class="fas fa-user"></i><div><div class="detail-label">Customer</div><div class="detail-text">'+req.name+'</div></div></div><div class="request-detail pickup"><i class="fas fa-circle-dot"></i><div><div class="detail-label">Pickup (Sender)</div><div class="detail-text">'+req.pickup.address.substring(0,50)+'...</div></div></div><div class="request-detail dropoff"><i class="fas fa-location-dot"></i><div><div class="detail-label">'+(isDelivery?'Delivery Address':'Dropoff')+'</div><div class="detail-text">'+req.destination.address.substring(0,50)+'...</div></div></div>'+parcelBlock+'<div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px;"><div style="display:flex;gap:6px;flex-wrap:wrap;align-items:center;"><span style="background:#F1F5F9;color:var(--text-muted);font-size:11px;font-weight:700;padding:3px 8px;border-radius:6px;"><i class="fas fa-road"></i> '+req.distance+' km '+(isDelivery?'delivery':'ride')+'</span>'+deliveryBadge+dc+'</div></div><div class="request-actions"><button class="btn-accept" data-id="'+req.id+'" data-fare="'+req.fare+'" onclick="openRidePreview(this.dataset.id,this.dataset.fare)"><i class="fas fa-map-marked-alt"></i> Map Pe Dekhen &amp; Offer</button><button class="btn-reject" onclick="this.closest(\'.request-card\').remove()">&#x2715;</button></div>';
             con.appendChild(el);
         });
     }
@@ -1675,7 +1195,7 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         const name = req.name || 'Passenger';
         const rating = parseFloat(req.passengerRating || req.customerRating || 4.8).toFixed(1);
         const trips = parseInt(req.passengerTrips || req.totalRides || 0);
-        const vehicle = (req.vehicle || req.service || 'Motorcycle').toUpperCase();
+        const vehicle = req.tripMode === 'delivery' ? 'DELIVERY' : (req.vehicle || req.service || 'Motorcycle').toUpperCase().replace(/\/SMALL DELIVERY|\/DELIVERY/gi, '').trim();
 
         document.getElementById('rpm-avatar-letter').textContent = name.charAt(0).toUpperCase();
         document.getElementById('rpm-name').textContent = name;
