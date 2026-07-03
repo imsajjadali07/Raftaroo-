@@ -825,12 +825,11 @@ window.saveProduct = async () => {
 /* ---------------- ORDERS ---------------- */
 let shopOrdersCache = {};
 function listenMyOrders(){
-  onValue(ref(db, 'martOrders'), (snap) => {
+  onValue(ref(db, `martShopOrders/${selectedShopId}`), (snap) => {
     const data = snap.val() || {};
     shopOrdersCache = data;
     const wrap = document.getElementById('ordersList');
     const entries = Object.entries(data)
-      .filter(([id,o]) => o.shopId===selectedShopId)
       .sort((a,b) => (b[1].createdAt||0)-(a[1].createdAt||0));
     const countEl = document.getElementById('myOrdersCount');
     if(countEl) countEl.textContent = entries.length;
@@ -839,16 +838,14 @@ function listenMyOrders(){
     wrap.innerHTML = entries.map(([id,o]) => `
       <div class="order-card">
         <div class="oc-top"><span class="oc-id">#${id.slice(-6).toUpperCase()} · ${o.customerName||''}</span><span class="status-pill status-${o.status||'pending'}">${(o.status||'pending').replace(/_/g,' ')}</span></div>
+        ${o.multiShop ? `<div class="oc-items" style="color:#5a1a9e;">🔀 Ye order customer ne kisi aur shop(s) ke sath mila kar diya hai — sirf apna hissa neeche dikh raha hai</div>` : ''}
         <div class="oc-items">${(o.items||[]).map(i=>`${i.name} x${i.qty}`).join(', ')}</div>
         <div class="oc-items">📍 ${o.address||''} · 📞 ${o.customerPhone||''}</div>
-        ${o.captainId ? `<div class="oc-items">🏍️ Captain: ${o.captainName||'Assigned'} · 📞 ${o.captainPhone||''}</div>` : `<div class="oc-items" style="color:var(--text-muted);">🏍️ Koi captain assign nahi hua abhi</div>`}
-        <div class="oc-bottom"><span>Rs. ${o.total}</span>
+        <div class="oc-bottom"><span>Rs. ${o.shopSubtotal} <span style="font-size:10.5px; color:var(--text-muted); font-weight:400;">(aapka hissa)</span></span>
           <select onchange="updateOrderStatus('${id}', this.value)" style="font-size:11.5px; padding:6px 8px; border-radius:8px; border:1px solid var(--border); background:var(--input-bg); color:var(--text-main);">
             <option value="pending" ${o.status==='pending'?'selected':''}>Pending</option>
             <option value="confirmed" ${o.status==='confirmed'?'selected':''}>Confirmed</option>
             <option value="ready_for_pickup" ${o.status==='ready_for_pickup'?'selected':''}>Ready for Pickup</option>
-            <option value="out_for_delivery" ${o.status==='out_for_delivery'?'selected':''}>Out for Delivery</option>
-            <option value="delivered" ${o.status==='delivered'?'selected':''}>Delivered</option>
             <option value="cancelled" ${o.status==='cancelled'?'selected':''}>Cancelled</option>
           </select>
         </div>
@@ -857,8 +854,14 @@ function listenMyOrders(){
   });
 }
 window.updateOrderStatus = async (id, status) => {
-  const o = null; // no cross-shop check needed since query already filtered, but guard write path
-  await update(ref(db, `martOrders/${id}`), { status });
+  const o = shopOrdersCache[id];
+  const parentOrderId = o?.parentOrderId || id;
+  // Update this shop's own sub-order, and mirror the same status into this shop's slot
+  // on the parent order so the customer's single order reflects it. Other shops' data untouched.
+  const updates = {};
+  updates[`martShopOrders/${selectedShopId}/${id}/status`] = status;
+  updates[`martOrders/${parentOrderId}/pickups/${selectedShopId}/status`] = status;
+  await update(ref(db), updates);
   toast('Order status updated');
 };
 
@@ -906,13 +909,20 @@ async function buildSlipPDF(orderId, o){
   y += 22;
 
   doc.setFontSize(13); doc.setFont(undefined,'bold'); doc.setTextColor(20,20,20);
-  doc.text('Order Receipt / Slip', 40, y);
+  doc.text('Packing Slip', 40, y);
   doc.setFontSize(10); doc.setFont(undefined,'normal'); doc.setTextColor(20,20,20);
   doc.text(`#${orderId.slice(-6).toUpperCase()}`, pw-40, y, {align:'right'});
   y += 15;
   doc.setTextColor(120,120,120);
   doc.text(new Date(o.createdAt).toLocaleString(), pw-40, y, {align:'right'});
   y += 24;
+
+  if(o.multiShop){
+    doc.setFillColor(250,240,255); doc.rect(40, y-12, pw-80, 20, 'F');
+    doc.setFont(undefined,'normal'); doc.setFontSize(9); doc.setTextColor(90,26,158);
+    doc.text('Ye ek multi-shop order ka hissa hai — sirf aapki shop ke items neeche dikhaye gaye hain.', 48, y+2);
+    y += 26;
+  }
 
   doc.setFontSize(10); doc.setFont(undefined,'bold'); doc.setTextColor(20,20,20);
   doc.text('Shop', 40, y);
@@ -922,7 +932,6 @@ async function buildSlipPDF(orderId, o){
   doc.text(o.shopName || '-', 40, y);
   doc.text(o.customerName || '-', pw/2+10, y);
   y += 14;
-  doc.text(doc.splitTextToSize(o.shopAddress||'-', pw/2-60), 40, y);
   doc.text(o.customerPhone || '-', pw/2+10, y);
   y += 14;
   doc.text(doc.splitTextToSize(o.address||'-', pw/2-60), pw/2+10, y);
@@ -958,12 +967,15 @@ async function buildSlipPDF(orderId, o){
     doc.text(val, pw-48, y, {align:'right'});
     y += bold?20:16;
   };
-  summaryLine('Subtotal', `Rs. ${o.subtotal}`, false);
-  summaryLine('Delivery Fee', `Rs. ${o.deliveryFee}`, false);
   doc.setDrawColor(220,220,220); doc.line(pw-220, y-4, pw-40, y-4);
-  summaryLine('Total Paid', `Rs. ${o.total}`, true);
+  summaryLine('Shop Subtotal', `Rs. ${o.shopSubtotal}`, true);
+  if(o.multiShop){
+    doc.setFont(undefined,'normal'); doc.setFontSize(8.5); doc.setTextColor(140,140,140);
+    doc.text('(Delivery fee aur doosri shops ke items customer ke full order mein alag se shamil hain)', pw-220, y);
+    y += 14;
+  }
 
-  y += 14;
+  y += 10;
   doc.setFont(undefined,'normal'); doc.setFontSize(10); doc.setTextColor(100,100,100);
   doc.text(`Payment Method: ${o.paymentMethod==='wallet' ? 'Raftaroo Wallet' : 'Cash on Delivery'}`, 40, y);
   y += 15;

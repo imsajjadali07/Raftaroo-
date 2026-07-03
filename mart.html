@@ -754,6 +754,9 @@ function mixFreshProducts(products){
 }
 let walletBalance = 0;
 let customerLoc = null; // {lat,lng}
+let savedAddress = ''; // permanently saved delivery address (agar customer ne save karna chuna)
+let savedPhone = ''; // permanently saved phone number
+const MAX_SHOP_RADIUS_KM = 2; // sirf itni distance k andar shops customer ko dikhayi jayengi
 
 /* ---------------- LOCATION / DISTANCE ---------------- */
 function haversineKm(lat1, lng1, lat2, lng2){
@@ -763,6 +766,33 @@ function haversineKm(lat1, lng1, lat2, lng2){
   const dLng = (lng2-lng1) * Math.PI/180;
   const a = Math.sin(dLat/2)**2 + Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLng/2)**2;
   return R * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+}
+
+// GPS coordinates ko readable address mein convert karta hai (free OpenStreetMap Nominatim service, koi API key nahi chahiye)
+async function reverseGeocode(lat, lng){
+  try{
+    const res = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lng}&zoom=18&addressdetails=1`, {
+      headers: { 'Accept-Language': 'en' }
+    });
+    if(!res.ok) return null;
+    const data = await res.json();
+    return data?.display_name || null;
+  } catch(e){
+    console.warn('reverse geocode failed', e);
+    return null;
+  }
+}
+
+// Checkout khulte hi address/phone khud-ba-khud bhar dena — pehle saved address se, warna GPS se
+function prefillCheckout(){
+  const addressBox = document.getElementById('checkoutAddress');
+  const phoneBox = document.getElementById('checkoutPhone');
+  if(savedAddress && !addressBox.value.trim()) addressBox.value = savedAddress;
+  if(savedPhone && !phoneBox.value.trim()) phoneBox.value = savedPhone;
+  // Agar koi saved address nahi hai lekin GPS location maloom hai, khud reverse-geocode kar k address nikal lena
+  if(!savedAddress && !addressBox.value.trim() && customerLoc){
+    detectLocation(true);
+  }
 }
 
 window.detectLocation = (forCheckout) => {
@@ -775,13 +805,25 @@ window.detectLocation = (forCheckout) => {
     if(!forCheckout) document.getElementById('locationText').textContent = 'Location supported nahi — nearby shops sorted nahi honge';
     return;
   }
-  navigator.geolocation.getCurrentPosition((pos) => {
+  navigator.geolocation.getCurrentPosition(async (pos) => {
     customerLoc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
     if(!forCheckout){
       document.getElementById('locationText').innerHTML = `Aapki location mil gayi — nearby products dikha rahe hain`;
       renderHomeProducts();
+      renderShopList();
     } else {
-      document.getElementById('deliveryLocStatus').textContent = 'Current location delivery point set ho gayi ✓';
+      // GPS se address khud-ba-khud nikal kar textbox mein bhar dena — manually type nahi karna parega
+      document.getElementById('deliveryLocStatus').textContent = 'Address nikali ja rahi hai...';
+      const addr = await reverseGeocode(customerLoc.lat, customerLoc.lng);
+      const addressBox = document.getElementById('checkoutAddress');
+      if(addr){
+        addressBox.value = addr;
+        document.getElementById('deliveryLocStatus').textContent = 'Current location delivery point set ho gayi ✓';
+      } else {
+        document.getElementById('deliveryLocStatus').textContent = 'Location mil gayi, lekin address text khud likhein';
+      }
+      renderHomeProducts();
+      renderShopList();
     }
   }, (err) => {
     console.warn('geo error', err);
@@ -822,12 +864,17 @@ onAuthStateChanged(auth, async (user) => {
     const snap = await get(uRef);
     if(!snap.exists()){
       await set(uRef, { name:user.displayName||'Customer', email:user.email||'', wallet:0, createdAt:Date.now() });
+    } else {
+      // Pehle se save ki hui permanent address/phone (agar customer ne save kiya tha) load kar lena
+      const udata = snap.val() || {};
+      savedAddress = udata.savedAddress || '';
+      savedPhone = udata.savedPhone || '';
     }
 
     document.getElementById('profileImg').src = user.photoURL || `https://api.dicebear.com/7.x/initials/svg?seed=${user.displayName||'U'}`;
     document.getElementById('profileName').textContent = user.displayName || 'Customer';
     document.getElementById('profileEmail').textContent = user.email || '';
-    document.getElementById('checkoutPhone').value = '';
+    document.getElementById('checkoutPhone').value = savedPhone || '';
 
     loadCart();
     listenWallet();
@@ -916,6 +963,14 @@ function getSortedShops(list){
     return a[2]-b[2];
   });
   return withDist;
+}
+
+// Sirf MAX_SHOP_RADIUS_KM k andar wali shops return karta hai.
+// Agar customer ki location abhi maloom nahi, to filter apply nahi hota (sab shops dikhengi) taake app khali na lage.
+function getNearbyShops(list){
+  const sorted = getSortedShops(list);
+  if(!customerLoc) return sorted;
+  return sorted.filter(([id,s,d]) => d==null || d<=MAX_SHOP_RADIUS_KM);
 }
 
 /* ---------------- VARIANT HELPERS ---------------- */
@@ -1015,9 +1070,9 @@ function renderHomeProducts(){
   const empty = document.getElementById('shopsEmpty');
   if(!wrap) return;
 
-  // All shops sorted by distance (used for display order + distance badge on each product card)
+  // Sirf 2km k andar wali shops (agar location maloom hai) — display order + distance badge k liye
   const shopEntries = Object.entries(allShops);
-  const sortedShops = getSortedShops(shopEntries);
+  const sortedShops = getNearbyShops(shopEntries);
   const distanceById = {};
   const shopOrder = {};
   sortedShops.forEach(([id,s,d], i) => { distanceById[id] = d; shopOrder[id] = i; });
@@ -1034,7 +1089,14 @@ function renderHomeProducts(){
   }
 
   document.getElementById('shopGridCount').textContent = products.length ? `${products.length} products` : '';
-  if(products.length===0){ wrap.innerHTML=''; empty.classList.remove('hidden'); return; }
+  if(products.length===0){
+    wrap.innerHTML='';
+    empty.classList.remove('hidden');
+    empty.innerHTML = customerLoc
+      ? `<i class="fa-solid fa-map-location-dot"></i><p>Aapke ${MAX_SHOP_RADIUS_KM}km ke ander koi shop nahi mili</p>`
+      : `<i class="fa-solid fa-location-crosshairs"></i><p>Location allow karein taake nearby shops dikha sakein</p>`;
+    return;
+  }
   empty.classList.add('hidden');
   wrap.innerHTML = products.map(([id,p]) => homeProductCardHTML(id, p, distanceById[p.shopId])).join('');
 }
@@ -1044,10 +1106,17 @@ function renderShopList(){
   const empty = document.getElementById('shopsEmpty');
   if(!wrap) return;
   let entries = Object.entries(allShops);
-  document.getElementById('shopGridCount').textContent = entries.length ? `${entries.length} shops` : '';
-  if(entries.length===0){ wrap.innerHTML=''; empty.classList.remove('hidden'); return; }
+  const sorted = getNearbyShops(entries);
+  document.getElementById('shopGridCount').textContent = sorted.length ? `${sorted.length} shops` : '';
+  if(sorted.length===0){
+    wrap.innerHTML='';
+    empty.classList.remove('hidden');
+    empty.innerHTML = customerLoc
+      ? `<i class="fa-solid fa-map-location-dot"></i><p>Aapke ${MAX_SHOP_RADIUS_KM}km ke ander koi shop nahi mili</p>`
+      : `<i class="fa-solid fa-location-crosshairs"></i><p>Location allow karein taake nearby shops dikha sakein</p>`;
+    return;
+  }
   empty.classList.add('hidden');
-  const sorted = getSortedShops(entries);
   wrap.innerHTML = sorted.map(([id,s,d]) => shopCardHTML(id,s,d)).join('');
 }
 
@@ -1392,11 +1461,6 @@ function triggerFlyAnimation(sourceEl){
 
 window.changeQty = (id, delta, fromModal, evt, variantId) => {
   const p = allProducts[id]; if(!p) return;
-  const cartEntries = Object.values(cart);
-  if(delta>0 && cartEntries.length && cartEntries[0].shopId && cartEntries[0].shopId!==p.shopId){
-    if(!confirm('Aapke cart mein kisi aur shop ke items hain. Naya shop select karne se cart khali ho jayega. Continue?')) return;
-    cart = {};
-  }
   let variant = null;
   if(variantId && Array.isArray(p.variants)) variant = p.variants.find(v => v.id === variantId);
   const stock = variant ? (parseInt(variant.stock)||0) : (parseInt(p.stock)||0);
@@ -1493,24 +1557,50 @@ function renderCartView(){
   empty.classList.add('hidden'); goBtn.classList.remove('hidden');
   const { subtotal, delivery, originalDelivery, deliveryDiscountApplied, deliveryDiscountLabel, nudgeMessage, total, count } = cartTotals();
   if(headerCount){ headerCount.textContent = `${count} item${count>1?'s':''}`; headerCount.classList.remove('hidden'); }
-  wrap.innerHTML = entries.map(([key,c], idx) => {
-    const pid = c.productId || key;
-    const vidArg = c.variantId ? `'${c.variantId}'` : 'null';
-    return `
-    <div class="cart-item" id="cartRow-${key}" style="animation-delay:${idx*45}ms;">
-      <img src="${c.image||'https://via.placeholder.com/60'}" alt="">
-      <div class="cart-item-info">
-        <div class="ci-name">${c.name}</div>
-        <div class="ci-price">Rs. ${c.price*c.qty} <span class="ci-unit">(Rs. ${c.price} × ${c.qty})</span></div>
-      </div>
-      <div class="cart-item-actions">
-        <button class="ci-delete-btn" onclick="removeFromCart('${key}')"><i class="fa-solid fa-trash"></i></button>
-        <div class="qty-stepper">
-          <button onclick="changeQty('${pid}',-1,false,null,${vidArg})">−</button><span>${c.qty}</span><button onclick="changeQty('${pid}',1,false,event,${vidArg})">+</button>
+
+  // group cart items by shop so customer clearly sees which items come from which shop
+  const groups = {};
+  entries.forEach(([key,c]) => {
+    const sid = c.shopId || 'unknown';
+    if(!groups[sid]) groups[sid] = [];
+    groups[sid].push([key,c]);
+  });
+  const shopIds = Object.keys(groups);
+
+  const multiShopNote = shopIds.length>1 ? `
+    <div class="savings-strip" style="background:rgba(90,26,158,0.08); color:#5a1a9e;">
+      <i class="fa-solid fa-route"></i>
+      <span>Aapka order ${shopIds.length} alag shops se hai — ek hi delivery boy sab jagah se pickup karke aapko deliver karega.</span>
+    </div>` : '';
+
+  wrap.innerHTML = multiShopNote + shopIds.map(sid => {
+    const shop = allShops[sid];
+    const itemsHtml = groups[sid].map(([key,c], idx) => {
+      const pid = c.productId || key;
+      const vidArg = c.variantId ? `'${c.variantId}'` : 'null';
+      return `
+      <div class="cart-item" id="cartRow-${key}" style="animation-delay:${idx*45}ms;">
+        <img src="${c.image||'https://via.placeholder.com/60'}" alt="">
+        <div class="cart-item-info">
+          <div class="ci-name">${c.name}</div>
+          <div class="ci-price">Rs. ${c.price*c.qty} <span class="ci-unit">(Rs. ${c.price} × ${c.qty})</span></div>
         </div>
-      </div>
-    </div>`;
+        <div class="cart-item-actions">
+          <button class="ci-delete-btn" onclick="removeFromCart('${key}')"><i class="fa-solid fa-trash"></i></button>
+          <div class="qty-stepper">
+            <button onclick="changeQty('${pid}',-1,false,null,${vidArg})">−</button><span>${c.qty}</span><button onclick="changeQty('${pid}',1,false,event,${vidArg})">+</button>
+          </div>
+        </div>
+      </div>`;
+    }).join('');
+    return `
+    <div style="display:flex; align-items:center; gap:8px; margin:${shopIds.length>1?'16px':'0'} 16px 8px;">
+      <i class="fa-solid fa-shop" style="color:var(--primary); font-size:12px;"></i>
+      <span style="font-weight:700; font-size:12.5px; color:var(--text-main);">${shop?.name || 'Shop'}</span>
+    </div>
+    ${itemsHtml}`;
   }).join('');
+
   summaryWrap.innerHTML = `
     <div class="summary-box">
       <div class="summary-row"><span><i class="fa-solid fa-basket-shopping"></i>Subtotal</span><span>Rs. ${subtotal}</span></div>
@@ -1591,8 +1681,33 @@ window.placeOrder = async () => {
       if(!result.committed){ throw new Error('Wallet balance kafi nahi'); }
     }
 
-    const orderShopId = Object.values(cart)[0]?.shopId || currentShopId;
-    const orderShop = allShops[orderShopId] || {};
+    // group cart items by shop -> each shop becomes one pickup stop for the captain
+    const cartEntries = Object.entries(cart);
+    const groupsByShop = {};
+    cartEntries.forEach(([key,c]) => {
+      const sid = c.shopId || currentShopId;
+      if(!groupsByShop[sid]) groupsByShop[sid] = [];
+      groupsByShop[sid].push({ productId: c.productId||key, variantId: c.variantId||null, variantLabel: c.variantLabel||null, name:c.name, price:c.price, qty:c.qty });
+    });
+    // pickups is keyed by shopId (not an array) so each shop's status can be updated independently
+    // by their own dashboard without touching other shops' data.
+    const pickups = {};
+    Object.keys(groupsByShop).forEach(sid => {
+      const s = allShops[sid] || {};
+      pickups[sid] = {
+        shopId: sid,
+        shopName: s.name || '',
+        shopLat: s.lat ?? null,
+        shopLng: s.lng ?? null,
+        shopAddress: s.address || '',
+        shopPhone: s.phone || '',
+        items: groupsByShop[sid],
+        status: 'pending',
+        pickedUp: false
+      };
+    });
+    const pickupList = Object.values(pickups);
+
     const orderRef = push(ref(db, 'martOrders'));
     await set(orderRef, {
       customerId: currentUser.uid,
@@ -1601,13 +1716,9 @@ window.placeOrder = async () => {
       address,
       deliveryLat: customerLoc?.lat ?? null,
       deliveryLng: customerLoc?.lng ?? null,
-      shopId: orderShopId,
-      shopName: orderShop.name || '',
-      shopLat: orderShop.lat ?? null,
-      shopLng: orderShop.lng ?? null,
-      shopAddress: orderShop.address || '',
-      shopPhone: orderShop.phone || '',
-      items: Object.entries(cart).map(([key,c]) => ({ productId: c.productId||key, variantId: c.variantId||null, variantLabel: c.variantLabel||null, name:c.name, price:c.price, qty:c.qty })),
+      pickups,
+      shopCount: pickupList.length,
+      items: cartEntries.map(([key,c]) => ({ productId: c.productId||key, variantId: c.variantId||null, variantLabel: c.variantLabel||null, name:c.name, price:c.price, qty:c.qty, shopId: c.shopId||null, shopName: (allShops[c.shopId]?.name)||'' })),
       subtotal, deliveryFee: delivery, total,
       paymentMethod: selectedPayment,
       status: 'pending',
@@ -1617,14 +1728,39 @@ window.placeOrder = async () => {
       createdAt: Date.now()
     });
 
-    // WhatsApp par shop/admin ko order ki notification bhejna
+    // Backend split: write one sub-order per shop so each shop owner only sees their own items/status.
+    // Same key as the parent order, so both stay linked to a single order for the customer.
+    await Promise.all(pickupList.map(p => {
+      const shopSubtotal = p.items.reduce((sum, it) => sum + (it.price * it.qty), 0);
+      return set(ref(db, `martShopOrders/${p.shopId}/${orderRef.key}`), {
+        parentOrderId: orderRef.key,
+        shopId: p.shopId,
+        shopName: p.shopName,
+        customerName: currentUser.displayName || 'Customer',
+        customerPhone: phone,
+        address,
+        deliveryLat: customerLoc?.lat ?? null,
+        deliveryLng: customerLoc?.lng ?? null,
+        items: p.items,
+        shopSubtotal,
+        paymentMethod: selectedPayment,
+        multiShop: pickupList.length > 1,
+        status: 'pending',
+        pickedUp: false,
+        createdAt: Date.now()
+      });
+    }));
+
+    // WhatsApp par shop/admin ko order ki notification bhejna (shop-wise grouped)
+    const shopNamesList = pickupList.map(p => p.shopName).filter(Boolean).join(', ');
+    const pickupsText = pickupList.map((p,i) => `📍 *Stop ${i+1}: ${p.shopName || 'Shop'}*\n${p.items.map(it => `- ${it.name} x${it.qty} (Rs. ${it.price * it.qty})`).join('\n')}`).join('\n\n');
     const waMsg = `🛒 *Naya Order Aaya Hai!*\n\n` +
       `Order ID: ${orderRef.key}\n` +
       `Customer: ${currentUser.displayName || 'Customer'}\n` +
       `Phone: ${phone}\n` +
       `Address: ${address}\n` +
-      `Shop: ${orderShop.name || ''}\n\n` +
-      `Items:\n${Object.values(cart).map(c => `- ${c.name} x${c.qty} (Rs. ${c.price * c.qty})`).join('\n')}\n\n` +
+      `Shops (${pickupList.length}): ${shopNamesList}\n\n` +
+      `${pickupsText}\n\n` +
       `Subtotal: Rs. ${subtotal}\n` +
       `Delivery Fee: Rs. ${delivery}\n` +
       `Total: Rs. ${total}\n` +
@@ -1634,6 +1770,16 @@ window.placeOrder = async () => {
 
     cart = {};
     saveCart();
+
+    // Agar address/phone pehle se permanently saved nahi, ya change ho gaya hai, to ek hi baar pooch lena
+    if(address !== savedAddress || phone !== savedPhone){
+      if(confirm('Ye address aur number permanent save kar lein, taake agli baar dobara likhna na pare?')){
+        await update(ref(db, `users/${currentUser.uid}`), { savedAddress: address, savedPhone: phone });
+        savedAddress = address;
+        savedPhone = phone;
+      }
+    }
+
     toast('Order submit ho gaya! WhatsApp par message bhej dein, confirm hone ka wait karein.');
     showView('orders-view');
   } catch(e){
@@ -1659,14 +1805,34 @@ function listenMyOrders(){
     wrap.innerHTML = entries.map(([id,o]) => orderCardHTML(id,o)).join('');
   });
 }
+// Status priority: overall order isn't "ready" until every shop's pickup reaches that stage.
+// out_for_delivery/delivered/cancelled are set on the order itself (by the captain flow), so they
+// always take priority over per-shop prep statuses once set.
+const STATUS_ORDER = ['pending','confirmed','ready_for_pickup','out_for_delivery','delivered','cancelled'];
+function getOverallStatus(o){
+  if(o.status && ['out_for_delivery','delivered','cancelled'].includes(o.status)) return o.status;
+  const pickups = o.pickups ? Object.values(o.pickups) : [];
+  if(!pickups.length) return o.status || 'pending';
+  let minIdx = STATUS_ORDER.length - 1;
+  pickups.forEach(p => {
+    const idx = STATUS_ORDER.indexOf(p.status || 'pending');
+    if(idx>=0 && idx<minIdx) minIdx = idx;
+  });
+  return STATUS_ORDER[minIdx];
+}
 function orderCardHTML(id, o){
   const itemsText = (o.items||[]).map(i => `${i.name} x${i.qty}`).join(', ');
-  const statusClass = 'status-'+(o.status||'pending');
+  const overallStatus = getOverallStatus(o);
+  const statusClass = 'status-'+overallStatus;
+  const pickups = o.pickups ? Object.values(o.pickups) : (o.shopName ? [{ shopName: o.shopName }] : []);
+  const shopLabel = pickups.length>1 ? `${pickups.length} shops` : (pickups[0]?.shopName || o.shopName || '');
   return `<div class="order-card">
-    <div class="oc-top"><span class="oc-id">#${id.slice(-6).toUpperCase()} ${o.shopName?`· ${o.shopName}`:''}</span><span class="status-pill ${statusClass}">${(o.status||'pending').replace(/_/g,' ')}</span></div>
+    <div class="oc-top"><span class="oc-id">#${id.slice(-6).toUpperCase()} ${shopLabel?`· ${shopLabel}`:''}</span><span class="status-pill ${statusClass}">${overallStatus.replace(/_/g,' ')}</span></div>
+    ${pickups.length>1 ? `<div class="oc-items" style="color:#5a1a9e;">${pickups.map(p=>`🏪 ${p.shopName}: ${(p.status||'pending').replace(/_/g,' ')}`).join(' · ')}</div>` : ''}
     <div class="oc-items">${itemsText}</div>
     ${o.captainId ? `<div class="oc-items">🏍️ Captain ${o.captainName||''} raste mein hai · 📞 ${o.captainPhone||''}</div>` : ''}
     <div class="oc-bottom"><span>${new Date(o.createdAt).toLocaleDateString()}</span><span>Rs. ${o.total}</span></div>
+    ${(o.captainId && overallStatus!=='delivered' && overallStatus!=='cancelled') ? `<button class="slip-btn" style="background:#7C3AED;color:#fff;border-color:#7C3AED;margin-bottom:8px;" onclick="window.location.href='track-mart-order.html?orderId=${id}'"><i class="fa-solid fa-location-dot"></i> Live Track Karein</button>` : ''}
     <button class="slip-btn" onclick="downloadSlip('${id}')"><i class="fa-solid fa-receipt"></i> Slip Download Karein</button>
   </div>`;
 }
@@ -1723,17 +1889,20 @@ async function buildSlipPDF(orderId, o){
   doc.text(new Date(o.createdAt).toLocaleString(), pw-40, y, {align:'right'});
   y += 24;
 
+  const pickups = o.pickups ? Object.values(o.pickups) : (o.shopName ? [{ shopName: o.shopName, shopAddress: o.shopAddress }] : []);
+  const shopNamesJoined = pickups.map(p=>p.shopName).filter(Boolean).join(', ') || '-';
+
   doc.setFontSize(10); doc.setFont(undefined,'bold'); doc.setTextColor(20,20,20);
-  doc.text('Shop', 40, y);
+  doc.text(pickups.length>1 ? `Shops (${pickups.length})` : 'Shop', 40, y);
   doc.text('Customer', pw/2+10, y);
   y += 14;
   doc.setFont(undefined,'normal'); doc.setTextColor(90,90,90);
-  doc.text(o.shopName || '-', 40, y);
+  const shopNameLines = doc.splitTextToSize(shopNamesJoined, pw/2-60);
+  doc.text(shopNameLines, 40, y);
   doc.text(o.customerName || '-', pw/2+10, y);
   y += 14;
-  doc.text(doc.splitTextToSize(o.shopAddress||'-', pw/2-60), 40, y);
   doc.text(o.customerPhone || '-', pw/2+10, y);
-  y += 14;
+  y += Math.max(0, (shopNameLines.length-1)*11);
   doc.text(doc.splitTextToSize(o.address||'-', pw/2-60), pw/2+10, y);
   y += 34;
 
@@ -1746,16 +1915,33 @@ async function buildSlipPDF(orderId, o){
   y += 24;
   doc.setFont(undefined,'normal');
 
-  (o.items||[]).forEach((it) => {
-    y += 22;
-    if(y > 740){ doc.addPage(); y = 60; }
-    const label = it.variantLabel ? `${it.name} (${it.variantLabel})` : it.name;
-    doc.setTextColor(40,40,40); doc.setFontSize(10);
-    doc.text(label, 48, y, {maxWidth: pw-320});
-    doc.text(String(it.qty), pw-220, y);
-    doc.text(`Rs. ${it.price}`, pw-150, y);
-    doc.text(`Rs. ${it.price*it.qty}`, pw-48, y, {align:'right'});
-    doc.setDrawColor(240,240,240); doc.line(40, y+8, pw-40, y+8);
+  // group items by shop so each pickup stop's items are listed together
+  const groupsForSlip = {};
+  (o.items||[]).forEach(it => {
+    const gk = it.shopName || '';
+    if(!groupsForSlip[gk]) groupsForSlip[gk] = [];
+    groupsForSlip[gk].push(it);
+  });
+  const groupKeys = Object.keys(groupsForSlip);
+
+  groupKeys.forEach((gk) => {
+    if(groupKeys.length>1 && gk){
+      y += 18;
+      if(y > 740){ doc.addPage(); y = 60; }
+      doc.setFont(undefined,'bold'); doc.setFontSize(9.5); doc.setTextColor(90,26,158);
+      doc.text(`📍 ${gk}`, 48, y);
+    }
+    groupsForSlip[gk].forEach((it) => {
+      y += 22;
+      if(y > 740){ doc.addPage(); y = 60; }
+      const label = it.variantLabel ? `${it.name} (${it.variantLabel})` : it.name;
+      doc.setTextColor(40,40,40); doc.setFontSize(10); doc.setFont(undefined,'normal');
+      doc.text(label, 48, y, {maxWidth: pw-320});
+      doc.text(String(it.qty), pw-220, y);
+      doc.text(`Rs. ${it.price}`, pw-150, y);
+      doc.text(`Rs. ${it.price*it.qty}`, pw-48, y, {align:'right'});
+      doc.setDrawColor(240,240,240); doc.line(40, y+8, pw-40, y+8);
+    });
   });
 
   y += 30;
@@ -1807,7 +1993,7 @@ window.showView = (viewId) => {
   document.getElementById(viewId).classList.remove('hidden');
   document.querySelectorAll('.nav-item').forEach(n => n.classList.toggle('active', n.dataset.nav===viewId || (viewId==='shop-view' && n.dataset.nav==='home-view')));
   if(viewId==='cart-view') renderCartView();
-  if(viewId==='checkout-view'){ selectPayment(selectedPayment); renderCheckoutSummary(); }
+  if(viewId==='checkout-view'){ selectPayment(selectedPayment); renderCheckoutSummary(); prefillCheckout(); }
   if(viewId==='search-view') setTimeout(()=>document.getElementById('searchInput').focus(), 200);
   window.scrollTo(0,0);
 };

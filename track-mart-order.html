@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/android-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="/android-512.png">
+
+<!-- PWA Core -->
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#7C3AED" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#7C3AED" media="(prefers-color-scheme: dark)">
+
+<!-- iOS / Safari PWA -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Raftaroo Mart">
+<link rel="apple-touch-startup-image" href="/apple-touch-icon.png">
+
+<meta name="msapplication-TileColor" content="#7C3AED">
+<meta name="msapplication-TileImage" content="/android-192.png">
+<meta name="msapplication-config" content="none">
+<meta name="theme-color" content="#7C3AED">
+
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>Track Order | Raftaroo Mart</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css"/>
+
+<style>
+:root {
+    --primary: #7C3AED;
+    --primary-dark: #6D28D9;
+    --primary-light: #EDE9FE;
+    --primary-glow: rgba(124,58,237,0.25);
+    --secondary: #0A0F1E;
+    --white: #ffffff;
+    --bg: #F0F4F8;
+    --text-main: #0A0F1E;
+    --text-muted: #64748B;
+    --border: rgba(0,0,0,0.07);
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+    --shadow-md: 0 4px 20px rgba(0,0,0,0.12);
+    --shadow-lg: 0 12px 50px rgba(0,0,0,0.2);
+    --error: #EF4444;
+    --success: #16A34A;
+    --info: #3B82F6;
+    --warning: #F59E0B;
+    --whatsapp: #25D366;
+    --radius: 14px;
+    --radius-sm: 10px;
+    --radius-lg: 24px;
+}
+* { margin:0; padding:0; box-sizing:border-box; font-family:'Plus Jakarta Sans',sans-serif; -webkit-tap-highlight-color:transparent; }
+html, body { height:100%; overflow:hidden; background:var(--bg); color:var(--text-main); }
+.hidden { display:none !important; }
+
+#map { position:fixed; inset:0; z-index:1; }
+
+/* ─── LOADING / ERROR ─── */
+#loadingScreen, #errorScreen {
+    position:fixed; inset:0; z-index:900; background:linear-gradient(160deg,#0A0F1E,#1a0f2e);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; padding:40px 24px; text-align:center;
+}
+.spinner { width:46px; height:46px; border:4px solid rgba(124,58,237,0.25); border-top-color:var(--primary); border-radius:50%; animation:spin 0.9s linear infinite; margin-bottom:20px; }
+@keyframes spin { to { transform:rotate(360deg); } }
+#loadingScreen p, #errorScreen p { color:rgba(255,255,255,0.6); font-size:14px; }
+#errorScreen h3 { color:#fff; font-size:18px; font-weight:800; margin-bottom:8px; }
+#errorScreen i { font-size:38px; color:var(--error); margin-bottom:16px; }
+.back-to-mart-btn { margin-top:22px; background:var(--primary); color:#fff; border:none; padding:12px 26px; border-radius:12px; font-weight:700; font-size:14px; text-decoration:none; }
+
+/* ─── TOP UI ─── */
+.back-btn-map {
+    position:fixed; top:16px; left:16px; z-index:500;
+    background:rgba(255,255,255,0.95); backdrop-filter:blur(10px);
+    width:42px; height:42px; border-radius:50%;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow:0 2px 12px rgba(0,0,0,0.15); cursor:pointer; color:var(--text-main); font-size:16px;
+    text-decoration:none; border:1px solid rgba(0,0,0,0.05);
+}
+.map-brand-pill {
+    position:fixed; top:16px; left:50%; transform:translateX(-50%); z-index:500;
+    background:rgba(10,15,30,0.9); backdrop-filter:blur(10px); color:#fff; font-size:12px; font-weight:800;
+    padding:6px 14px; border-radius:50px; display:flex; align-items:center; gap:6px;
+    border:1px solid rgba(124,58,237,0.4); letter-spacing:0.5px; pointer-events:none;
+}
+.map-brand-pill i { color:var(--primary); }
+
+#floating-actions { position:fixed; right:14px; top:80px; display:none; flex-direction:column; gap:10px; z-index:500; }
+.floating-action-btn {
+    width:48px; height:48px; border-radius:50%; display:flex; align-items:center; justify-content:center;
+    box-shadow:0 4px 16px rgba(0,0,0,0.2); cursor:pointer; transition:transform 0.2s; text-decoration:none;
+    font-size:17px; color:#fff; border:2.5px solid rgba(255,255,255,0.4); backdrop-filter:blur(4px);
+}
+.floating-action-btn:active { transform:scale(0.9); }
+#callCaptainBtn { background:var(--success); }
+#waCaptainBtn { background:var(--whatsapp); }
+
+/* ─── BOTTOM SHEET ─── */
+#sheet {
+    position:fixed; bottom:0; left:0; right:0; background:var(--white);
+    border-radius:var(--radius-lg) var(--radius-lg) 0 0; box-shadow:0 -6px 40px rgba(0,0,0,0.15);
+    z-index:1000; display:flex; flex-direction:column; max-height:78vh;
+}
+.drag-handle { height:22px; display:flex; justify-content:center; align-items:center; flex-shrink:0; }
+.drag-handle::before { content:''; width:36px; height:4px; background:#CBD5E1; border-radius:2px; }
+#sheet-content { overflow-y:auto; flex:1; padding:0 16px 24px; }
+
+.status-banner { margin:0 0 14px; border-radius:var(--radius); padding:12px 16px; display:flex; align-items:center; gap:12px; border:1.5px solid transparent; }
+.status-banner.waiting { background:linear-gradient(135deg,#FFF8E1,#FFFDE7); border-color:rgba(245,158,11,0.3); }
+.status-banner.out_for_delivery { background:linear-gradient(135deg,var(--primary-light),#f5f0ff); border-color:rgba(124,58,237,0.3); }
+.status-banner.delivered { background:linear-gradient(135deg,#DCFCE7,#F0FFF4); border-color:rgba(22,163,74,0.3); }
+.status-banner.cancelled { background:linear-gradient(135deg,#FEF2F2,#FFF5F5); border-color:rgba(239,68,68,0.3); }
+.status-banner-icon { width:40px; height:40px; border-radius:12px; flex-shrink:0; display:flex; align-items:center; justify-content:center; font-size:18px; }
+.waiting .status-banner-icon { background:rgba(245,158,11,0.15); color:var(--warning); }
+.out_for_delivery .status-banner-icon { background:rgba(124,58,237,0.15); color:var(--primary); }
+.delivered .status-banner-icon { background:rgba(22,163,74,0.15); color:var(--success); }
+.cancelled .status-banner-icon { background:rgba(239,68,68,0.15); color:var(--error); }
+.status-banner-text h4 { font-size:14px; font-weight:800; }
+.status-banner-text p { font-size:12px; color:var(--text-muted); margin-top:2px; }
+.waiting .status-banner-text h4 { color:#92400E; }
+.out_for_delivery .status-banner-text h4 { color:var(--primary-dark); }
+.delivered .status-banner-text h4 { color:#15803D; }
+.cancelled .status-banner-text h4 { color:#B91C1C; }
+
+.captain-info-row { display:flex; align-items:center; gap:14px; padding-bottom:14px; margin-bottom:14px; border-bottom:1px solid var(--border); }
+.captain-avatar { width:54px; height:54px; border-radius:50%; flex-shrink:0; border:3px solid var(--primary); background:var(--primary-light); display:flex; align-items:center; justify-content:center; font-size:20px; font-weight:800; color:var(--primary-dark); box-shadow:0 0 0 3px var(--primary-glow); }
+.captain-meta { flex:1; min-width:0; }
+.captain-meta h3 { font-size:16px; font-weight:800; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; }
+.captain-meta p { font-size:12px; color:var(--text-muted); font-weight:600; }
+.captain-rating-badge { background:var(--primary-light); color:var(--primary-dark); padding:4px 10px; border-radius:50px; font-size:12px; font-weight:700; display:flex; align-items:center; gap:4px; flex-shrink:0; }
+.captain-rating-badge i { font-size:10px; color:#FBBF24; }
+
+.section-label { font-size:11px; font-weight:800; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; margin-bottom:8px; }
+
+.shop-track-block { background:#F8FAFC; border:1px solid var(--border); border-radius:var(--radius); padding:12px 14px; margin-bottom:8px; }
+.shop-track-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:4px; }
+.shop-track-name { font-weight:800; font-size:13px; }
+.shop-track-status { font-size:10px; font-weight:800; padding:2px 8px; border-radius:20px; text-transform:uppercase; }
+.shop-track-status.pending { background:#FEF3C7; color:#B45309; }
+.shop-track-status.confirmed { background:#DBEAFE; color:#1D4ED8; }
+.shop-track-status.ready_for_pickup { background:#FDE68A; color:#92400E; }
+.shop-track-status.picked_up { background:#DCFCE7; color:#15803D; }
+.shop-track-items { font-size:11px; color:var(--text-muted); }
+
+.location-strip { background:#F8FAFC; border:1px solid var(--border); border-radius:var(--radius); padding:12px 14px; margin:14px 0; }
+.location-row-item { display:flex; align-items:flex-start; gap:10px; padding:4px 0; }
+.loc-dot { width:10px; height:10px; border-radius:50%; flex-shrink:0; margin-top:4px; background:var(--error); box-shadow:0 0 0 3px rgba(239,68,68,0.12); }
+.loc-label { font-size:10px; font-weight:700; color:var(--text-muted); text-transform:uppercase; letter-spacing:0.5px; }
+.loc-addr { font-size:12px; font-weight:600; line-height:1.4; }
+
+.fare-row { display:flex; justify-content:space-between; align-items:center; background:var(--primary-light); border:1px solid rgba(124,58,237,0.2); border-radius:var(--radius-sm); padding:12px 14px; }
+.fare-row .label { font-size:13px; font-weight:600; color:var(--text-muted); }
+.fare-row .amount { font-size:19px; font-weight:800; color:var(--primary-dark); }
+
+.custom-div-icon { background:transparent; border:none; }
+</style>
+</head>
+<body>
+
+<div id="loadingScreen">
+    <div class="spinner"></div>
+    <p>Order load ho raha hai...</p>
+</div>
+
+<div id="errorScreen" class="hidden">
+    <i class="fas fa-circle-exclamation"></i>
+    <h3>Order Nahi Mila</h3>
+    <p id="errorMsg">Ye order link sahi nahi hai ya expire ho chuka hai.</p>
+    <a href="mart.html" class="back-to-mart-btn"><i class="fas fa-arrow-left"></i> Mart Par Wapis Jayein</a>
+</div>
+
+<div id="map"></div>
+<a href="mart.html" class="back-btn-map"><i class="fas fa-arrow-left"></i></a>
+<div class="map-brand-pill"><i class="fas fa-cart-shopping"></i> RAFTAROO MART</div>
+
+<div id="floating-actions">
+    <a href="#" id="callCaptainBtn" class="floating-action-btn"><i class="fas fa-phone"></i></a>
+    <a href="#" id="waCaptainBtn" class="floating-action-btn" target="_blank"><i class="fab fa-whatsapp"></i></a>
+</div>
+
+<div id="sheet" class="hidden">
+    <div class="drag-handle"></div>
+    <div id="sheet-content">
+        <div id="statusBanner" class="status-banner waiting">
+            <div class="status-banner-icon"><i class="fas fa-hourglass-half"></i></div>
+            <div class="status-banner-text">
+                <h4 id="statusTitle">Order Taiyar Ho Raha Hai</h4>
+                <p id="statusSub">Shops items taiyar kar rahe hain</p>
+            </div>
+        </div>
+
+        <div id="captainCard" class="hidden">
+            <div class="captain-info-row">
+                <div class="captain-avatar" id="captainAvatar">C</div>
+                <div class="captain-meta">
+                    <h3 id="captainNameDisplay">Captain</h3>
+                    <p id="captainVehicleDisplay">—</p>
+                </div>
+                <div class="captain-rating-badge"><i class="fas fa-star"></i> <span id="captainRatingDisplay">5.0</span></div>
+            </div>
+        </div>
+
+        <div class="section-label">Shops &amp; Pickup Status</div>
+        <div id="shopsList"></div>
+
+        <div class="location-strip">
+            <div class="location-row-item">
+                <div class="loc-dot"></div>
+                <div>
+                    <div class="loc-label">Delivery Address</div>
+                    <div class="loc-addr" id="deliveryAddrDisplay">—</div>
+                </div>
+            </div>
+        </div>
+
+        <div class="fare-row">
+            <span class="label" id="orderMetaLabel">Order Total</span>
+            <span class="amount" id="orderTotalDisplay">Rs. 0</span>
+        </div>
+    </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+import { getDatabase, ref, onValue, get } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-database.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBBS7jGzuVlTIIeN9VFBxpwHkNf-mIRzDo",
+  authDomain: "raftaroo-9ce8d.firebaseapp.com",
+  databaseURL: "https://raftaroo-9ce8d-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "raftaroo-9ce8d",
+  storageBucket: "raftaroo-9ce8d.firebasestorage.app",
+  messagingSenderId: "773738074182",
+  appId: "1:773738074182:web:b7a873959c7ab8edc0ba47"
+};
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const auth = getAuth(app);
+
+const params = new URLSearchParams(window.location.search);
+const orderId = params.get('orderId') || params.get('id');
+
+// ─── VEHICLE ICONS (same set used across Raftaroo) ───
+const VEHICLE_ICONS = {
+    'bike': 'https://iili.io/ftViNi7.png', 'motorcycle': 'https://iili.io/ftViNi7.png',
+    'rickshaw': 'https://iili.io/ftV61st.png', 'auto-rickshaw': 'https://iili.io/ftV61st.png',
+    'car': 'https://iili.io/ftV4mOl.png', 'car-economy': 'https://iili.io/ftV4mOl.png',
+    'car-comfort': 'https://iili.io/ftV4mOl.png', 'car-luxury': 'https://iili.io/ftV4mOl.png',
+    'pickup': 'https://iili.io/ftVPMZB.png', 'cargo': 'https://iili.io/ftVPMZB.png', 'truck': 'https://iili.io/ftVPMZB.png',
+    'default': 'https://iili.io/ftViNi7.png'
+};
+const captainIcon = (vehicle) => {
+    const v = (vehicle||'bike').toLowerCase().replace(/\s+/g,'-');
+    let key = 'default';
+    if (v.includes('car')||v.includes('sedan')||v.includes('suv')) key='car';
+    else if (v.includes('rickshaw')||v.includes('auto')) key='rickshaw';
+    else if (v.includes('pickup')||v.includes('cargo')||v.includes('truck')) key='pickup';
+    else if (v.includes('bike')||v.includes('moto')||v.includes('cycle')) key='bike';
+    const iconUrl = VEHICLE_ICONS[key] || VEHICLE_ICONS.default;
+    return L.divIcon({ html:`<div style="width:50px;height:50px;filter:drop-shadow(0 4px 10px rgba(124,58,237,0.6));"><img src="${iconUrl}" style="width:50px;height:50px;object-fit:contain;"/></div>`, className:'custom-div-icon', iconSize:[50,50], iconAnchor:[25,25] });
+};
+const shopIcon = (num) => L.divIcon({
+    html:`<div style="background:#7C3AED;width:28px;height:28px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:3px solid #fff;box-shadow:0 2px 10px rgba(124,58,237,0.4);color:#fff;font-size:12px;font-weight:800;">${num}</div>`,
+    className:'custom-div-icon', iconSize:[28,28], iconAnchor:[14,14]
+});
+const homeIcon = L.divIcon({
+    html:`<div style="background:#EF4444;width:32px;height:44px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;border:3px solid #fff;box-shadow:0 3px 12px rgba(239,68,68,0.4);"><i class="fas fa-house" style="color:#fff;font-size:12px;transform:rotate(45deg);"></i></div>`,
+    className:'custom-div-icon', iconSize:[32,44], iconAnchor:[16,44]
+});
+
+function getDistance(lat1,lon1,lat2,lon2){
+    const R=6371, dLat=(lat2-lat1)*Math.PI/180, dLon=(lon2-lon1)*Math.PI/180;
+    const a=Math.sin(dLat/2)**2+Math.cos(lat1*Math.PI/180)*Math.cos(lat2*Math.PI/180)*Math.sin(dLon/2)**2;
+    return R*2*Math.atan2(Math.sqrt(a),Math.sqrt(1-a));
+}
+
+let map=null, captainMarker=null, routingControl=null, shopMarkers=[], homeMarker=null;
+let lastNextStopKey=null, captainProfileLoaded=false;
+
+function initMap(centerLat, centerLng){
+    if(map) return;
+    map = L.map('map',{zoomControl:false,attributionControl:false}).setView([centerLat,centerLng],13);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{maxZoom:19}).addTo(map);
+    L.control.zoom({position:'bottomright'}).addTo(map);
+    map.invalidateSize();
+}
+
+function drawStaticMarkers(order){
+    shopMarkers.forEach(m=>map.removeLayer(m)); shopMarkers=[];
+    if(homeMarker) { map.removeLayer(homeMarker); homeMarker=null; }
+    const pickups = order.pickups ? Object.values(order.pickups) : [];
+    let i=0;
+    pickups.forEach(p=>{
+        i++;
+        if(p.shopLat && p.shopLng){
+            const m = L.marker([p.shopLat,p.shopLng],{icon:shopIcon(i)}).addTo(map).bindPopup('<b>🏪 '+(p.shopName||'Shop')+'</b>');
+            shopMarkers.push(m);
+        }
+    });
+    if(order.deliveryLat && order.deliveryLng){
+        homeMarker = L.marker([order.deliveryLat,order.deliveryLng],{icon:homeIcon}).addTo(map).bindPopup('<b>🏁 Delivery Address</b>');
+    }
+    const allPts = [...shopMarkers.map(m=>m.getLatLng())];
+    if(homeMarker) allPts.push(homeMarker.getLatLng());
+    if(allPts.length) map.fitBounds(L.latLngBounds(allPts).pad(0.3));
+}
+
+function nextStopFor(order){
+    const pickups = order.pickups ? Object.values(order.pickups) : [];
+    const pending = pickups.find(p=>!p.pickedUp);
+    if(pending && pending.shopLat && pending.shopLng) return {lat:pending.shopLat,lng:pending.shopLng,label:pending.shopName||'Shop'};
+    if(order.deliveryLat && order.deliveryLng) return {lat:order.deliveryLat,lng:order.deliveryLng,label:'Delivery Address'};
+    return null;
+}
+
+function updateCaptainMarker(lat,lng,vehicle,order){
+    const ll = L.latLng(lat,lng);
+    if(!captainMarker){
+        captainMarker = L.marker(ll,{icon:captainIcon(vehicle)}).addTo(map).bindPopup('<b>🚴 Aap ka Captain</b>');
+    } else {
+        captainMarker.setLatLng(ll);
+    }
+    const next = nextStopFor(order);
+    if(next){
+        const key = next.lat+','+next.lng;
+        try{
+            if(!routingControl){
+                routingControl = L.Routing.control({
+                    waypoints:[ll, L.latLng(next.lat,next.lng)],
+                    router:L.Routing.osrmv1({serviceUrl:'https://router.project-osrm.org/route/v1'}),
+                    routeWhileDragging:false, showAlternatives:false, fitSelectedRoutes:(lastNextStopKey===null),
+                    collapsible:true, collapsed:true,
+                    lineOptions:{styles:[{color:'#7C3AED',opacity:0.85,weight:5}]},
+                    createMarker:()=>false
+                }).addTo(map);
+            } else {
+                routingControl.setWaypoints([ll, L.latLng(next.lat,next.lng)]);
+            }
+        }catch(e){ console.warn('routing err',e); }
+        lastNextStopKey = key;
+    }
+}
+
+// ─── STATUS BANNER ───
+function renderStatusBanner(order){
+    const banner = document.getElementById('statusBanner');
+    const title = document.getElementById('statusTitle');
+    const sub = document.getElementById('statusSub');
+    let cls='waiting', t='Order Taiyar Ho Raha Hai', s='Shops items taiyar kar rahe hain';
+    if(order.status==='cancelled'){ cls='cancelled'; t='Order Cancel Ho Gaya'; s='Ye order cancel kar diya gaya hai'; }
+    else if(order.status==='delivered'){ cls='delivered'; t='Order Deliver Ho Gaya! 🎉'; s='Umeed hai aap ko order pasand aya hoga'; }
+    else if(order.status==='out_for_delivery' && order.captainId){
+        cls='out_for_delivery';
+        const next = nextStopFor(order);
+        if(next && next.label!=='Delivery Address'){ t='Captain Shop Ki Taraf Ja Raha Hai'; s='Agla stop: '+next.label; }
+        else { t='Captain Aap Ki Taraf Aa Raha Hai'; s='Order raste mein hai, jald pohanch jayega'; }
+    }
+    banner.className = 'status-banner '+cls;
+    banner.querySelector('.status-banner-icon').innerHTML = cls==='delivered' ? '<i class="fas fa-circle-check"></i>' : cls==='cancelled' ? '<i class="fas fa-circle-xmark"></i>' : cls==='out_for_delivery' ? '<i class="fas fa-motorcycle"></i>' : '<i class="fas fa-hourglass-half"></i>';
+    title.textContent = t; sub.textContent = s;
+}
+
+function renderShopsList(order){
+    const pickups = order.pickups || {};
+    const wrap = document.getElementById('shopsList');
+    wrap.innerHTML = Object.values(pickups).map(p=>{
+        const st = p.pickedUp ? 'picked_up' : (p.status||'pending');
+        const label = p.pickedUp ? 'Picked Up' : (st.replace(/_/g,' '));
+        const itemsTxt = (p.items||[]).map(it=>it.name+' x'+it.qty).join(', ');
+        return '<div class="shop-track-block"><div class="shop-track-head"><span class="shop-track-name"><i class="fas fa-store" style="color:#7C3AED;"></i> '+(p.shopName||'Shop')+'</span><span class="shop-track-status '+st+'">'+label+'</span></div><div class="shop-track-items">'+itemsTxt+'</div></div>';
+    }).join('');
+}
+
+function renderCaptainCard(order, riderData){
+    const card = document.getElementById('captainCard');
+    if(!order.captainId){ card.classList.add('hidden'); document.getElementById('floating-actions').style.display='none'; return; }
+    card.classList.remove('hidden');
+    document.getElementById('floating-actions').style.display='flex';
+    const name = order.captainName || riderData?.fullName || riderData?.name || 'Captain';
+    document.getElementById('captainNameDisplay').textContent = name;
+    document.getElementById('captainAvatar').textContent = name.charAt(0).toUpperCase();
+    const vehicle = riderData?.vehicleType || riderData?.vehicle || 'Delivery Rider';
+    const plate = riderData?.vehicleNumber || riderData?.vehiclePlate || riderData?.plateNumber || '';
+    document.getElementById('captainVehicleDisplay').textContent = vehicle + (plate?(' · '+plate.toUpperCase()):'');
+    if(riderData?.rating) document.getElementById('captainRatingDisplay').textContent = parseFloat(riderData.rating).toFixed(1);
+    const phone = order.captainPhone || riderData?.mobileNumber || '';
+    document.getElementById('callCaptainBtn').href = phone ? ('tel:'+phone) : '#';
+    document.getElementById('waCaptainBtn').href = phone ? ('https://wa.me/'+phone.replace(/[^0-9]/g,'')) : '#';
+}
+
+function renderOrderMeta(order){
+    document.getElementById('deliveryAddrDisplay').textContent = order.address || '—';
+    document.getElementById('orderTotalDisplay').textContent = 'Rs. '+(order.total||0);
+    const shopCount = order.shopCount || Object.keys(order.pickups||{}).length || 1;
+    document.getElementById('orderMetaLabel').textContent = shopCount+' shop(s) · Order Total';
+}
+
+function renderOrder(order){
+    document.getElementById('loadingScreen').classList.add('hidden');
+    document.getElementById('sheet').classList.remove('hidden');
+    initMap(order.deliveryLat || 24.8607, order.deliveryLng || 67.0011);
+    if(!window._staticDrawn){ drawStaticMarkers(order); window._staticDrawn = true; }
+    renderStatusBanner(order);
+    renderShopsList(order);
+    renderOrderMeta(order);
+
+    if(order.captainId){
+        if(!captainProfileLoaded){
+            captainProfileLoaded = true;
+            get(ref(db,'riders/'+order.captainId)).then(snap=>{
+                window._riderData = snap.val();
+                renderCaptainCard(order, window._riderData);
+            });
+        } else {
+            renderCaptainCard(order, window._riderData);
+        }
+        onValue(ref(db,'riders/'+order.captainId+'/location'), snap => {
+            const loc = snap.val();
+            if(loc && loc.lat && loc.lng){
+                updateCaptainMarker(loc.lat, loc.lng, window._riderData?.vehicleType, order);
+            }
+        });
+    } else {
+        document.getElementById('captainCard').classList.add('hidden');
+        document.getElementById('floating-actions').style.display='none';
+    }
+}
+
+function showError(msg){
+    document.getElementById('loadingScreen').classList.add('hidden');
+    document.getElementById('errorScreen').classList.remove('hidden');
+    if(msg) document.getElementById('errorMsg').textContent = msg;
+}
+
+if(!orderId){
+    showError('Order ID nahi mila. Link check karein.');
+} else {
+    onAuthStateChanged(auth, (user) => {
+        if(!user){ window.location.href = 'mart.html'; return; }
+        get(ref(db,'martOrders/'+orderId)).then(snap => {
+            const order = snap.val();
+            if(!order){ showError('Ye order nahi mila.'); return; }
+            if(order.customerId !== user.uid){ showError('Aap is order ko track nahi kar sakte.'); return; }
+            // Realtime listener for continuous updates
+            onValue(ref(db,'martOrders/'+orderId), s => {
+                const o = s.val();
+                if(o) renderOrder(o);
+            });
+        }).catch(()=>showError('Order load karne mein masla hua.'));
+    });
+}
+</script>
+</body>
+</html>

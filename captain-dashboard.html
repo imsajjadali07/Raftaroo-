@@ -142,6 +142,25 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
 .empty-state h4{font-size:16px;font-weight:700;color:var(--text-main);margin-bottom:6px;}
 .empty-state p{font-size:13px;color:var(--text-muted);}
 
+/* ══════════ MART DELIVERY CARDS ══════════ */
+.mart-order-card{background:var(--white);border-radius:var(--radius-lg);padding:16px;margin-bottom:12px;box-shadow:var(--shadow-sm);border:1px solid var(--border);border-left:4px solid #7C3AED;animation:fadeUp 0.4s ease-out;}
+.mart-order-card .request-card-type{background:#EDE9FE;color:#6D28D9;}
+.mart-shop-block{background:#F8FAFC;border:1px solid var(--border);border-radius:10px;padding:10px 12px;margin-bottom:8px;}
+.mart-shop-block .shop-block-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;}
+.mart-shop-block .shop-block-name{font-weight:800;font-size:13px;color:var(--text-main);}
+.mart-shop-status{font-size:10px;font-weight:800;padding:2px 8px;border-radius:20px;text-transform:uppercase;}
+.mart-shop-status.pending{background:#FEF3C7;color:#B45309;}
+.mart-shop-status.confirmed{background:#DBEAFE;color:#1D4ED8;}
+.mart-shop-status.ready_for_pickup{background:#DCFCE7;color:#15803D;}
+.mart-shop-status.cancelled{background:#FEE2E2;color:#B91C1C;}
+.mart-item-line{font-size:12px;color:var(--text-muted);display:flex;justify-content:space-between;padding:2px 0;}
+.pickup-check-btn{width:100%;margin-top:6px;padding:9px;border-radius:8px;border:1px dashed #94A3B8;background:#fff;color:var(--text-muted);font-weight:700;font-size:12px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px;}
+.pickup-check-btn.done{border:1px solid #16A34A;background:#DCFCE7;color:#15803D;}
+.mart-total-row{display:flex;justify-content:space-between;align-items:center;margin-top:10px;padding-top:10px;border-top:1px dashed var(--border);}
+.mart-total-row .mart-fee{font-size:18px;font-weight:800;color:#7C3AED;}
+.btn-deliver-done{width:100%;margin-top:12px;background:#16A34A;color:#fff;border:none;padding:13px;border-radius:var(--radius-sm);font-weight:800;font-size:14px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:8px;}
+.btn-deliver-done:disabled{background:#CBD5E1;cursor:not-allowed;}
+
 .message-box{margin:20px;padding:18px 20px;border-radius:var(--radius);text-align:center;font-weight:600;font-size:14px;}
 .loading-screen{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 20px;gap:16px;}
 .spinner{width:40px;height:40px;border:3px solid var(--primary-light);border-top:3px solid var(--primary);border-radius:50%;animation:spin 0.8s linear infinite;}
@@ -364,7 +383,12 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
             <i class="fas fa-motorcycle"></i> Requests
             <span class="badge-pill" id="pendingRequestsCount">0</span>
         </div>
+        <div class="tab-button" data-tab="mart-tab">
+            <i class="fas fa-cart-shopping"></i> Mart
+            <span class="badge-pill" id="pendingMartCount">0</span>
+        </div>
     </div>
+
 
     <div class="tab-content">
 
@@ -447,6 +471,7 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
             </div>
 
             <div id="active-ride-panel" class="hidden"></div>
+            <div id="active-mart-panel" class="hidden"></div>
         </div>
 
         <!-- REQUESTS TAB -->
@@ -460,6 +485,21 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
                     <div class="empty-icon"><i class="fas fa-search-location"></i></div>
                     <h4>Koi Request Nahi</h4>
                     <p>Aap ke 10 km radius mein abhi koi ride request nahi hai</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- MART TAB -->
+        <div id="mart-tab" class="tab-panel hidden">
+            <div class="requests-header">
+                <h3>Mart Delivery Orders</h3>
+                <div class="requests-count-chip"><span id="martCountChip">0</span> pending</div>
+            </div>
+            <div id="martOrdersList">
+                <div class="empty-state">
+                    <div class="empty-icon"><i class="fas fa-cart-shopping"></i></div>
+                    <h4>Koi Mart Order Nahi</h4>
+                    <p>Abhi koi delivery ke liye ready mart order nahi hai</p>
                 </div>
             </div>
         </div>
@@ -637,7 +677,7 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
 
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
-    import { getDatabase, ref, update, onValue, get, push } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-database.js";
+    import { getDatabase, ref, update, onValue, get, push, runTransaction, increment } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-database.js";
     import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
 
     const firebaseConfig = {
@@ -920,6 +960,7 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
             if (riderSnapshot.exists()) {
                 captainData = riderSnapshot.val();
                 if (captainData.currentRequestId) { window.location.href='captain-active-ride.html?rideId='+captainData.currentRequestId; return; }
+                if (captainData.currentMartOrderId) { window.location.href='captain-mart-delivery.html?orderId='+captainData.currentMartOrderId; return; }
                 if (!captainData.referralCode) {
                     const nc='CAP-'+user.uid.substring(0,4).toUpperCase();
                     await update(ref(db,'riders/'+user.uid),{referralCode:nc});
@@ -991,7 +1032,7 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
 
     function initializeDashboard() {
         initializeMap(); setupTabNavigation();
-        if (isApproved(captainData)) { listenForRideLockStatus(); listenForIncomingRequests(); loadWalletBalance(); }
+        if (isApproved(captainData)) { listenForRideLockStatus(); listenForIncomingRequests(); loadWalletBalance(); listenForMartLockStatus(); listenForMartOrders(); }
         else document.getElementById('incomingRequestsList').innerHTML='<div class="empty-state"><div class="empty-icon"><i class="fas fa-lock"></i></div><h4>Approved Nahi Hain</h4><p>Ride requests dekhne ke liye approval zaroori hai</p></div>';
     }
 
@@ -1156,6 +1197,147 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
             con.appendChild(el);
         });
     }
+
+    // ══════════════════════════ MART DELIVERY (Firebase Realtime) ══════════════════════════
+    const MART_STATUS_LABEL = {pending:'Pending',confirmed:'Confirmed',ready_for_pickup:'Ready',cancelled:'Cancelled'};
+
+    function listenForMartLockStatus() {
+        onValue(ref(db,'riders/'+currentCaptain.uid+'/currentMartOrderId'),(snap)=>{
+            const omi = snap.val();
+            const panel = document.getElementById('active-mart-panel');
+            if (omi) {
+                onValue(ref(db,'martOrders/'+omi), (s) => {
+                    const order = s.val();
+                    if (order && order.status !== 'delivered' && order.status !== 'cancelled') {
+                        panel.classList.remove('hidden');
+                        panel.innerHTML = buildMartOrderCard(omi, order, true);
+                    } else {
+                        panel.classList.add('hidden'); panel.innerHTML='';
+                    }
+                });
+            } else {
+                panel.classList.add('hidden'); panel.innerHTML='';
+            }
+        });
+    }
+
+    function listenForMartOrders() {
+        onValue(ref(db,'martOrders'), (snapshot) => {
+            const data = snapshot.val();
+            window._allMartOrdersCache = data || {};
+            renderMartOrders(data || {});
+        });
+    }
+
+    function renderMartOrders(data) {
+        const con = document.getElementById('martOrdersList');
+        const myActiveId = captainData.currentMartOrderId;
+        const list = Object.keys(data).filter(id => {
+            const o = data[id];
+            return o.status !== 'delivered' && o.status !== 'cancelled' && !o.captainId && id !== myActiveId;
+        }).sort((a,b) => (data[a].createdAt||0) - (data[b].createdAt||0));
+
+        document.getElementById('pendingMartCount').textContent = list.length;
+        document.getElementById('martCountChip').textContent = list.length;
+
+        if (list.length === 0) {
+            con.innerHTML = '<div class="empty-state"><div class="empty-icon"><i class="fas fa-cart-shopping"></i></div><h4>Koi Mart Order Nahi</h4><p>Abhi koi delivery ke liye ready mart order nahi hai</p></div>';
+            return;
+        }
+        con.innerHTML = list.map(id => buildMartOrderCard(id, data[id], false)).join('');
+    }
+
+    function buildMartOrderCard(orderId, order, isActive) {
+        const shopsHtml = Object.keys(order.pickups||{}).map(sid => {
+            const p = order.pickups[sid];
+            const st = p.status || 'pending';
+            const itemsHtml = (p.items||[]).map(it => '<div class="mart-item-line"><span>'+it.name+(it.variantLabel?' ('+it.variantLabel+')':'')+' x'+it.qty+'</span><span>Rs. '+(it.price*it.qty)+'</span></div>').join('');
+            const pickBtn = isActive ? ('<button class="pickup-check-btn'+(p.pickedUp?' done':'')+'" onclick="toggleMartPickup(\''+orderId+'\',\''+sid+'\','+(!p.pickedUp)+')"><i class="fas '+(p.pickedUp?'fa-circle-check':'fa-box')+'"></i> '+(p.pickedUp?'Utha Liya Hai':'Items Utha Kar Confirm Karein')+'</button>') : '';
+            return '<div class="mart-shop-block"><div class="shop-block-head"><div class="shop-block-name"><i class="fas fa-store" style="color:#7C3AED;"></i> '+(p.shopName||'Shop')+'</div><span class="mart-shop-status '+st+'">'+(MART_STATUS_LABEL[st]||st)+'</span></div>'+itemsHtml+(p.shopAddress?('<div style="font-size:11px;color:var(--text-muted);margin-top:4px;"><i class="fas fa-location-dot"></i> '+p.shopAddress+'</div>'):'')+pickBtn+'</div>';
+        }).join('');
+
+        const allPicked = Object.values(order.pickups||{}).every(p => p.pickedUp);
+        const acceptBtn = !isActive ? ('<div class="request-actions" style="margin-top:10px;"><button class="btn-accept" onclick="acceptMartOrder(\''+orderId+'\')"><i class="fas fa-cart-shopping"></i> Delivery Accept Karein</button></div>') : '';
+        const deliverBtn = isActive ? ('<button class="btn-deliver-done" '+(allPicked?'':'disabled')+' onclick="markMartDelivered(\''+orderId+'\')"><i class="fas fa-flag-checkered"></i> '+(allPicked?'Order Deliver Ho Gaya':'Pehle Sab Shops Se Items Uthayein')+'</button>') : '';
+        const callBtn = isActive ? ('<a href="tel:'+(order.customerPhone||'')+'" style="display:block;text-align:center;margin-top:8px;background:#F1F5F9;color:var(--text-main);padding:10px;border-radius:8px;font-weight:700;font-size:12px;text-decoration:none;"><i class="fas fa-phone"></i> Customer Ko Call Karein</a>') : '';
+
+        return '<div class="mart-order-card">'+
+            '<div class="request-card-top"><div><div class="request-card-type">MART ORDER</div></div><div class="request-card-fare">Rs. '+(order.deliveryFee||0)+' <span>delivery fee</span></div></div>'+
+            '<div class="request-detail customer"><i class="fas fa-user"></i><div><div class="detail-label">Customer</div><div class="detail-text">'+(order.customerName||'')+'</div></div></div>'+
+            '<div class="request-detail dropoff"><i class="fas fa-location-dot"></i><div><div class="detail-label">Delivery Address</div><div class="detail-text">'+(order.address||'')+'</div></div></div>'+
+            '<div style="margin-top:10px;">'+shopsHtml+'</div>'+
+            '<div class="mart-total-row"><span style="font-size:12px;color:var(--text-muted);font-weight:700;">'+(order.shopCount||1)+' shop(s) &middot; Order total Rs. '+(order.total||0)+'</span><span class="mart-fee">Rs. '+(order.deliveryFee||0)+'</span></div>'+
+            acceptBtn+deliverBtn+callBtn+
+        '</div>';
+    }
+
+    window.acceptMartOrder = async function(orderId) {
+        if (captainData.currentMartOrderId) { toast('Pehle apni chalti hui delivery mukammal karein'); return; }
+        try {
+            const claimRef = ref(db, 'martOrders/'+orderId+'/captainId');
+            const result = await runTransaction(claimRef, (curr) => {
+                if (curr) return; // already claimed by someone else, abort
+                return currentCaptain.uid;
+            });
+            if (!result.committed || result.snapshot.val() !== currentCaptain.uid) {
+                toast('Ye order kisi aur captain ne le liya hai');
+                return;
+            }
+            await update(ref(db,'martOrders/'+orderId), {
+                captainName: captainData.fullName || '',
+                captainPhone: captainData.mobileNumber || '',
+                status: 'out_for_delivery',
+                acceptedAt: Date.now()
+            });
+            await update(ref(db,'riders/'+currentCaptain.uid), { currentMartOrderId: orderId });
+            captainData.currentMartOrderId = orderId;
+            window.location.href = 'captain-mart-delivery.html?orderId='+orderId;
+        } catch(e) {
+            console.error(e); toast('Order accept nahi ho saka');
+        }
+    };
+
+    window.toggleMartPickup = async function(orderId, shopId, pickedUp) {
+        try {
+            const updates = {};
+            updates['martOrders/'+orderId+'/pickups/'+shopId+'/pickedUp'] = pickedUp;
+            updates['martShopOrders/'+shopId+'/'+orderId+'/pickedUp'] = pickedUp;
+            await update(ref(db), updates);
+        } catch(e) { console.error(e); toast('Update nahi ho saka'); }
+    };
+
+    window.markMartDelivered = async function(orderId) {
+        try {
+            const snap = await get(ref(db,'martOrders/'+orderId));
+            const order = snap.val();
+            if (!order) return;
+            const allPicked = Object.values(order.pickups||{}).every(p => p.pickedUp);
+            if (!allPicked) { toast('Pehle sab shops se items uthayein'); return; }
+            const fee = order.deliveryFee || 0;
+            const today = new Date().toISOString().split('T')[0];
+            const updates = {};
+            updates['martOrders/'+orderId+'/status'] = 'delivered';
+            updates['martOrders/'+orderId+'/deliveredAt'] = Date.now();
+            updates['riders/'+currentCaptain.uid+'/currentMartOrderId'] = null;
+            updates['riders/'+currentCaptain.uid+'/walletBalance'] = increment(fee);
+            updates['riders/'+currentCaptain.uid+'/earnings/'+today+'/martEarned'] = increment(fee);
+            updates['riders/'+currentCaptain.uid+'/earnings/'+today+'/martDeliveries'] = increment(1);
+            await update(ref(db), updates);
+            captainData.currentMartOrderId = null;
+            alert('🎉 Mart order deliver ho gaya!\n\n💵 Delivery Fee: Rs. '+fee+' aap ke wallet mein add ho gayi.');
+        } catch(e) { console.error(e); toast('Delivered mark nahi ho saka'); }
+    };
+
+    function toast(msg) {
+        if (window._martToastEl) window._martToastEl.remove();
+        const t = document.createElement('div');
+        t.textContent = msg;
+        t.style.cssText = 'position:fixed;bottom:90px;left:50%;transform:translateX(-50%);background:#1F2937;color:#fff;padding:10px 18px;border-radius:30px;font-size:13px;font-weight:600;z-index:9999;box-shadow:0 4px 14px rgba(0,0,0,0.2);';
+        document.body.appendChild(t);
+        window._martToastEl = t;
+        setTimeout(() => t.remove(), 2800);
+    }
+    // ══════════════════════════════════════════════════════════════════════════════════════
 
     window.showOfferConfirmationModal = showOfferConfirmationModal;
     window.sendOffer = sendOffer;

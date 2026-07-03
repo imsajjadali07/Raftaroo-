@@ -1,0 +1,482 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16.png">
+<link rel="icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="icon" type="image/png" sizes="192x192" href="/android-192.png">
+<link rel="icon" type="image/png" sizes="512x512" href="/android-512.png">
+
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#7C3AED" media="(prefers-color-scheme: light)">
+<meta name="theme-color" content="#7C3AED" media="(prefers-color-scheme: dark)">
+
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="Raftaroo">
+<link rel="apple-touch-startup-image" href="/apple-touch-icon.png">
+
+<meta name="msapplication-TileColor" content="#7C3AED">
+<meta name="msapplication-TileImage" content="/android-192.png">
+<meta name="msapplication-config" content="none">
+<meta name="theme-color" content="#7C3AED">
+
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"/>
+<title>Mart Delivery | Raftaroo</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.css"/>
+
+<style>
+:root {
+    --primary: #7C3AED;
+    --primary-dark: #6D28D9;
+    --primary-light: #EDE9FE;
+    --primary-glow: rgba(124,58,237,0.25);
+    --secondary: #0A0F1E;
+    --white: #ffffff;
+    --bg: #F0F4F8;
+    --text-main: #0A0F1E;
+    --text-muted: #64748B;
+    --border: rgba(0,0,0,0.07);
+    --shadow-sm: 0 2px 8px rgba(0,0,0,0.08);
+    --shadow-md: 0 4px 20px rgba(0,0,0,0.12);
+    --shadow-lg: 0 8px 40px rgba(0,0,0,0.18);
+    --error: #EF4444;
+    --success: #16A34A;
+    --info: #3B82F6;
+    --warning: #F59E0B;
+    --radius: 14px;
+    --radius-sm: 10px;
+    --radius-lg: 20px;
+}
+* { margin:0; padding:0; box-sizing:border-box; font-family:'Plus Jakarta Sans',sans-serif; -webkit-tap-highlight-color:transparent; }
+body { background:var(--bg); color:var(--text-main); overflow:hidden; height:100vh; }
+.hidden { display:none !important; }
+
+/* ─── HEADER ─── */
+.captain-header {
+    background: var(--secondary);
+    padding: 0 16px; height: 64px;
+    display: flex; justify-content: space-between; align-items: center;
+    position: fixed; top: 0; left: 0; right: 0; z-index: 1100;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.4);
+}
+.header-left { display:flex; flex-direction:column; gap:2px; }
+.header-title { font-size: 17px; font-weight: 800; color: #fff; letter-spacing: -0.3px; display: flex; align-items: center; gap: 8px; }
+.mart-status-pill {
+    display: inline-flex; align-items: center; gap: 5px;
+    background: var(--primary); color: #fff; font-size: 10px; font-weight: 800;
+    padding: 3px 9px; border-radius: 50px; text-transform: uppercase; letter-spacing: 0.5px;
+    animation: pulse-pill 2s infinite;
+}
+@keyframes pulse-pill { 0%,100%{box-shadow:0 0 0 0 var(--primary-glow);} 50%{box-shadow:0 0 0 5px transparent;} }
+.mart-status-pill::before { content:''; width:6px; height:6px; background:#fff; border-radius:50%; animation:blink 1s infinite; }
+@keyframes blink { 0%,100%{opacity:1;} 50%{opacity:0.3;} }
+.header-meta { font-size: 12px; font-weight: 600; display: flex; align-items: center; gap: 8px; }
+.header-customer-name { color: var(--primary); font-weight: 700; font-size: 13px; }
+.header-fee { color: rgba(255,255,255,0.6); }
+.home-btn {
+    width: 40px; height: 40px; background: rgba(255,255,255,0.08); border-radius: 50%;
+    display: flex; align-items: center; justify-content: center; color: rgba(255,255,255,0.7);
+    font-size: 16px; text-decoration: none; border: 1.5px solid rgba(255,255,255,0.12); transition: 0.2s;
+}
+.home-btn:hover { background: rgba(255,255,255,0.15); }
+
+/* ─── MAP ─── */
+#map-container { position: fixed; top: 64px; left: 0; right: 0; bottom: 0; z-index: 1; }
+#map { height: 100%; width: 100%; }
+
+/* ─── FLOATING ACTIONS ─── */
+#floating-actions { position: fixed; right: 14px; bottom: 340px; display: none; flex-direction: column; gap: 10px; z-index: 1001; }
+.floating-action-btn {
+    width: 48px; height: 48px; border-radius: 50%; display: flex; align-items: center; justify-content: center;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.25); cursor: pointer; transition: transform 0.2s; text-decoration: none;
+    font-size: 18px; color:#fff; border: 2px solid rgba(255,255,255,0.3);
+}
+.floating-action-btn:active { transform: scale(0.93); }
+#openCallBtn { background: var(--success); }
+#openSMSBtn { background: var(--warning); }
+
+/* ─── BOTTOM SHEET ─── */
+#delivery-card {
+    position: fixed; bottom: 0; left: 0; right: 0; z-index: 1000;
+    background: var(--white); border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+    box-shadow: 0 -4px 30px rgba(0,0,0,0.16); padding: 14px 16px 24px;
+    max-height: 62vh; display: flex; flex-direction: column;
+}
+#delivery-card::before { content:''; display:block; width:36px; height:4px; background:#CBD5E1; border-radius:2px; margin:0 auto 12px; flex-shrink:0; }
+#delivery-card-scroll { overflow-y: auto; }
+
+.order-info-strip { display: flex; gap: 8px; margin-bottom: 12px; flex-wrap: wrap; }
+.info-chip { display: flex; align-items: center; gap: 5px; background: #F8FAFC; border: 1px solid var(--border); border-radius: 8px; padding: 5px 10px; font-size: 12px; font-weight: 700; color: var(--text-muted); }
+.info-chip i { font-size: 11px; }
+.info-chip.customer-chip { background: linear-gradient(135deg, #EFF6FF, #DBEAFE); color: #1D4ED8; border-color: rgba(59,130,246,0.25); font-weight: 800; }
+.customer-chip-avatar { width: 20px; height: 20px; border-radius: 50%; background: #3B82F6; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 10px; font-weight: 800; flex-shrink: 0; }
+.info-chip.fee-chip { background: var(--primary-light); color: var(--primary-dark); border-color: rgba(124,58,237,0.2); }
+
+.section-label { font-size: 11px; font-weight: 800; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.5px; margin: 10px 0 6px; }
+
+.mart-shop-block { background:#F8FAFC; border:1px solid var(--border); border-radius:10px; padding:10px 12px; margin-bottom:8px; }
+.mart-shop-block.next-stop { border:1.5px solid var(--primary); box-shadow:0 0 0 3px var(--primary-glow); }
+.mart-shop-block .shop-block-head { display:flex; align-items:center; justify-content:space-between; margin-bottom:6px; }
+.mart-shop-block .shop-block-name { font-weight:800; font-size:13px; color:var(--text-main); }
+.mart-shop-status { font-size:10px; font-weight:800; padding:2px 8px; border-radius:20px; text-transform:uppercase; }
+.mart-shop-status.pending { background:#FEF3C7; color:#B45309; }
+.mart-shop-status.confirmed { background:#DBEAFE; color:#1D4ED8; }
+.mart-shop-status.ready_for_pickup { background:#DCFCE7; color:#15803D; }
+.mart-shop-status.cancelled { background:#FEE2E2; color:#B91C1C; }
+.mart-item-line { font-size:12px; color:var(--text-muted); display:flex; justify-content:space-between; padding:2px 0; }
+.pickup-check-btn { width:100%; margin-top:6px; padding:9px; border-radius:8px; border:1px dashed #94A3B8; background:#fff; color:var(--text-muted); font-weight:700; font-size:12px; cursor:pointer; display:flex; align-items:center; justify-content:center; gap:6px; }
+.pickup-check-btn.done { border:1px solid #16A34A; background:#DCFCE7; color:#15803D; }
+
+.delivery-addr-block { background:#FEF2F2; border:1px solid rgba(239,68,68,0.2); border-radius:10px; padding:10px 12px; margin-bottom:8px; display:flex; gap:10px; align-items:flex-start; }
+.delivery-addr-block i { color:var(--error); margin-top:2px; }
+.delivery-addr-block .addr-label { font-size:10px; font-weight:800; color:var(--error); text-transform:uppercase; letter-spacing:0.5px; }
+.delivery-addr-block .addr-text { font-size:12px; font-weight:600; color:var(--text-main); line-height:1.4; }
+
+.card-action-section { display: flex; gap: 8px; margin-top: 12px; flex-shrink:0; }
+.card-action-section button, .card-action-section a {
+    flex: 1; padding: 13px 8px; border: none; border-radius: var(--radius-sm); font-weight: 700; font-size: 13px;
+    cursor: pointer; transition: 0.2s; display: flex; align-items: center; justify-content: center; gap: 6px;
+    text-decoration: none; line-height: 1.2; text-align: center;
+}
+.btn-main-action { background: var(--success); color: #fff; box-shadow: 0 4px 14px rgba(22,163,74,0.3); flex: 1.6; }
+.btn-main-action:disabled { background: #94A3B8; box-shadow: none; cursor: not-allowed; }
+.btn-nav-action { background: var(--info); color: #fff; }
+.btn-call-action { background: #F1F5F9; color: var(--text-main); flex: 0.9; }
+
+/* Hide leaflet routing panel */
+.leaflet-routing-container { display: none !important; }
+.leaflet-control-attribution { display: none !important; }
+.custom-div-icon { background: none; border: none; }
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-thumb { background: #CBD5E1; border-radius: 4px; }
+
+/* ─── LOADING ─── */
+#loadingScreen {
+    position:fixed; inset:0; z-index:2000; background:linear-gradient(160deg,#0A0F1E,#1a0f2e);
+    display:flex; flex-direction:column; align-items:center; justify-content:center; padding:40px 24px; text-align:center;
+}
+.spinner { width:46px; height:46px; border:4px solid rgba(124,58,237,0.25); border-top-color:var(--primary); border-radius:50%; animation:spin 0.9s linear infinite; margin-bottom:20px; }
+@keyframes spin { to { transform:rotate(360deg); } }
+#loadingScreen p { color:rgba(255,255,255,0.6); font-size:14px; }
+</style>
+</head>
+<body>
+
+<div id="loadingScreen">
+    <div class="spinner"></div>
+    <p>Delivery load ho rahi hai...</p>
+</div>
+
+<header class="captain-header">
+    <div class="header-left">
+        <div class="header-title">
+            <span>Mart Delivery</span>
+            <span class="mart-status-pill" id="statusPill">Out for Delivery</span>
+        </div>
+        <div class="header-meta">
+            <span class="header-customer-name" id="headerCustomerName">Customer</span>
+            <span class="header-fee">Rs. <span id="headerFee">0</span> fee</span>
+        </div>
+    </div>
+    <a href="captain-dashboard.html" class="home-btn" title="Dashboard"><i class="fas fa-home"></i></a>
+</header>
+
+<div id="map-container"><div id="map"></div></div>
+
+<div id="floating-actions">
+    <a id="openCallBtn" class="floating-action-btn" href="tel:" title="Call Customer"><i class="fas fa-phone-alt"></i></a>
+    <a id="openSMSBtn" class="floating-action-btn" href="sms:" title="SMS Customer"><i class="fas fa-sms"></i></a>
+</div>
+
+<div id="delivery-card" class="hidden">
+    <div id="delivery-card-scroll">
+        <div class="order-info-strip">
+            <div class="info-chip customer-chip">
+                <div class="customer-chip-avatar" id="customerChipAvatar">C</div>
+                <span id="chipCustomerName">Customer</span>
+            </div>
+            <div class="info-chip fee-chip"><i class="fas fa-wallet"></i> <span id="chipFee">Rs. 0</span></div>
+            <div class="info-chip"><i class="fas fa-store"></i> <span id="chipShopCount">0 shop(s)</span></div>
+        </div>
+
+        <div class="section-label">Agla Stop</div>
+        <div id="nextStopLabel" class="info-chip fee-chip" style="width:100%;box-sizing:border-box;">—</div>
+
+        <div class="section-label">Shops &amp; Pickup</div>
+        <div id="shopsList"></div>
+
+        <div class="section-label">Delivery Address</div>
+        <div class="delivery-addr-block">
+            <i class="fas fa-location-dot"></i>
+            <div>
+                <div class="addr-label">Customer</div>
+                <div class="addr-text" id="deliveryAddrText">—</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card-action-section">
+        <button id="mainActionBtn" class="btn-main-action" disabled><i class="fas fa-flag-checkered"></i> Pehle Sab Shops Se Items Uthayein</button>
+        <a id="navBtn" class="btn-nav-action" target="_blank"><i class="fas fa-route"></i> Navigate</a>
+        <a id="callBtn" class="btn-call-action" href="tel:"><i class="fas fa-phone"></i></a>
+    </div>
+</div>
+
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+<script src="https://unpkg.com/leaflet-routing-machine@3.2.12/dist/leaflet-routing-machine.js"></script>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+import { getDatabase, ref, update, onValue, get, increment } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-database.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyBBS7jGzuVlTIIeN9VFBxpwHkNf-mIRzDo",
+  authDomain: "raftaroo-9ce8d.firebaseapp.com",
+  databaseURL: "https://raftaroo-9ce8d-default-rtdb.asia-southeast1.firebasedatabase.app",
+  projectId: "raftaroo-9ce8d",
+  storageBucket: "raftaroo-9ce8d.firebasestorage.app",
+  messagingSenderId: "773738074182",
+  appId: "1:773738074182:web:b7a873959c7ab8edc0ba47"
+};
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const auth = getAuth(app);
+
+const params = new URLSearchParams(window.location.search);
+let orderId = params.get('orderId');
+
+let currentCaptain = null, captainData = {};
+let map = null, captainMarker = null, routingControl = null;
+let shopMarkers = [], homeMarker = null;
+let geoWatchId = null, lastNextStopKey = null;
+let currentOrder = null;
+
+// ─── VEHICLE / MAP ICONS ───
+const VEHICLE_ICONS = {
+    'bike':'https://iili.io/ftViNi7.png','motorcycle':'https://iili.io/ftViNi7.png',
+    'rickshaw':'https://iili.io/ftV61st.png','auto':'https://iili.io/ftV61st.png',
+    'car':'https://iili.io/ftV4mOl.png','car-economy':'https://iili.io/ftV4mOl.png',
+    'car-comfort':'https://iili.io/ftV4mOl.png','car-luxury':'https://iili.io/ftV4mOl.png',
+    'pickup':'https://iili.io/ftVPMZB.png','cargo':'https://iili.io/ftVPMZB.png','truck':'https://iili.io/ftVPMZB.png',
+    'default':'https://iili.io/ftViNi7.png'
+};
+function getVehicleImgUrl(vehicleType){
+    const v=(vehicleType||'bike').toLowerCase().replace(/\s+/g,'-');
+    if(v.includes('car')||v.includes('sedan')||v.includes('suv')) return VEHICLE_ICONS['car'];
+    if(v.includes('rickshaw')||v.includes('auto')) return VEHICLE_ICONS['rickshaw'];
+    if(v.includes('pickup')||v.includes('cargo')||v.includes('truck')) return VEHICLE_ICONS['pickup'];
+    return VEHICLE_ICONS[v] || VEHICLE_ICONS['default'];
+}
+const captainIcon = (vehicle) => {
+    const imgUrl = getVehicleImgUrl(vehicle);
+    return L.divIcon({
+        html:`<div style="width:52px;height:52px;display:flex;align-items:center;justify-content:center;filter:drop-shadow(0 4px 10px rgba(124,58,237,0.7));"><img src="${imgUrl}" style="width:52px;height:52px;object-fit:contain;"/></div>`,
+        className:'custom-div-icon', iconSize:[52,52], iconAnchor:[26,26]
+    });
+};
+const shopIcon = (num, done) => L.divIcon({
+    html:`<div style="background:${done?'#16A34A':'#7C3AED'};width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;border:3px solid #fff;box-shadow:0 2px 10px rgba(0,0,0,0.3);color:#fff;font-size:13px;font-weight:800;">${done?'<i class="fas fa-check"></i>':num}</div>`,
+    className:'custom-div-icon', iconSize:[30,30], iconAnchor:[15,15]
+});
+const homeIcon = L.divIcon({
+    html:`<div style="background:#EF4444;width:32px;height:44px;border-radius:50% 50% 50% 0;transform:rotate(-45deg);display:flex;align-items:center;justify-content:center;border:3px solid #fff;box-shadow:0 3px 12px rgba(239,68,68,0.4);"><i class="fas fa-house" style="color:#fff;font-size:12px;transform:rotate(45deg);"></i></div>`,
+    className:'custom-div-icon', iconSize:[32,44], iconAnchor:[16,44]
+});
+
+function initMap(centerLat, centerLng){
+    if(map) return;
+    map = L.map('map',{zoomControl:false,attributionControl:false}).setView([centerLat||24.8607,centerLng||67.0011],13);
+    L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{maxZoom:19}).addTo(map);
+    L.control.zoom({position:'bottomright'}).addTo(map);
+    map.invalidateSize();
+}
+
+function drawStaticMarkers(order){
+    shopMarkers.forEach(m=>map.removeLayer(m)); shopMarkers=[];
+    if(homeMarker){ map.removeLayer(homeMarker); homeMarker=null; }
+    const pickups = order.pickups ? Object.entries(order.pickups) : [];
+    let i=0;
+    pickups.forEach(([sid,p])=>{
+        i++;
+        if(p.shopLat && p.shopLng){
+            const m = L.marker([p.shopLat,p.shopLng],{icon:shopIcon(i, !!p.pickedUp)}).addTo(map).bindPopup('<b>🏪 '+(p.shopName||'Shop')+'</b>');
+            shopMarkers.push(m);
+        }
+    });
+    if(order.deliveryLat && order.deliveryLng){
+        homeMarker = L.marker([order.deliveryLat,order.deliveryLng],{icon:homeIcon}).addTo(map).bindPopup('<b>🏁 Delivery Address</b>');
+    }
+    const allPts = shopMarkers.map(m=>m.getLatLng());
+    if(homeMarker) allPts.push(homeMarker.getLatLng());
+    if(allPts.length && !window._boundsFit){ map.fitBounds(L.latLngBounds(allPts).pad(0.3)); window._boundsFit = true; }
+}
+
+function nextStopFor(order){
+    const pickups = order.pickups ? Object.values(order.pickups) : [];
+    const pending = pickups.find(p=>!p.pickedUp);
+    if(pending && pending.shopLat && pending.shopLng) return {lat:pending.shopLat,lng:pending.shopLng,label:pending.shopName||'Shop'};
+    if(order.deliveryLat && order.deliveryLng) return {lat:order.deliveryLat,lng:order.deliveryLng,label:'Delivery Address'};
+    return null;
+}
+
+function updateCaptainMarker(lat,lng,vehicle,order){
+    const ll = L.latLng(lat,lng);
+    if(!captainMarker){
+        captainMarker = L.marker(ll,{icon:captainIcon(vehicle)}).addTo(map).bindPopup('<b>Aap Yahan Hain</b>');
+    } else {
+        captainMarker.setLatLng(ll);
+    }
+    const next = nextStopFor(order);
+    if(next){
+        const key = next.lat+','+next.lng;
+        try{
+            if(!routingControl){
+                routingControl = L.Routing.control({
+                    waypoints:[ll, L.latLng(next.lat,next.lng)],
+                    router:L.Routing.osrmv1({serviceUrl:'https://router.project-osrm.org/route/v1'}),
+                    routeWhileDragging:false, showAlternatives:false, fitSelectedRoutes:false,
+                    collapsible:true, collapsed:true,
+                    lineOptions:{styles:[{color:'#7C3AED',opacity:0.85,weight:5}]},
+                    createMarker:()=>false
+                }).addTo(map);
+            } else {
+                routingControl.setWaypoints([ll, L.latLng(next.lat,next.lng)]);
+            }
+        } catch(e){ console.warn('routing err',e); }
+        lastNextStopKey = key;
+    }
+}
+
+function startTracking(){
+    if(geoWatchId) return;
+    if(!navigator.geolocation){ alert('Geolocation support nahi hai.'); return; }
+    geoWatchId = navigator.geolocation.watchPosition(async (pos)=>{
+        const {latitude, longitude} = pos.coords;
+        if(currentOrder) updateCaptainMarker(latitude, longitude, captainData.vehicleType, currentOrder);
+        await update(ref(db, `riders/${currentCaptain.uid}`), { location:{lat:latitude,lng:longitude}, timestamp:new Date().toISOString() });
+        updateNavButton(latitude, longitude);
+    }, (e)=>console.error('Geo error', e), { enableHighAccuracy:true, timeout:5000, maximumAge:0 });
+}
+
+function updateNavButton(myLat, myLng){
+    if(!currentOrder) return;
+    const next = nextStopFor(currentOrder);
+    const navBtn = document.getElementById('navBtn');
+    if(!next){ navBtn.style.display='none'; return; }
+    navBtn.style.display='flex';
+    navBtn.href = `https://www.google.com/maps/dir/?api=1&origin=${myLat},${myLng}&destination=${next.lat},${next.lng}&travelmode=driving`;
+}
+
+function renderShopsList(order){
+    const pickups = order.pickups ? Object.entries(order.pickups) : [];
+    const next = nextStopFor(order);
+    document.getElementById('shopsList').innerHTML = pickups.map(([sid,p])=>{
+        const st = p.status || 'pending';
+        const itemsHtml = (p.items||[]).map(it=>'<div class="mart-item-line"><span>'+it.name+(it.variantLabel?' ('+it.variantLabel+')':'')+' x'+it.qty+'</span><span>Rs. '+(it.price*it.qty)+'</span></div>').join('');
+        const isNext = next && !p.pickedUp && next.label===(p.shopName||'Shop');
+        const pickBtn = '<button class="pickup-check-btn'+(p.pickedUp?' done':'')+'" onclick="window.toggleMartPickup(\''+sid+'\','+(!p.pickedUp)+')"><i class="fas '+(p.pickedUp?'fa-circle-check':'fa-box')+'"></i> '+(p.pickedUp?'Utha Liya Hai':'Items Utha Kar Confirm Karein')+'</button>';
+        return '<div class="mart-shop-block'+(isNext?' next-stop':'')+'"><div class="shop-block-head"><div class="shop-block-name"><i class="fas fa-store" style="color:#7C3AED;"></i> '+(p.shopName||'Shop')+'</div><span class="mart-shop-status '+st+'">'+(p.pickedUp?'Picked Up':st.replace(/_/g,' '))+'</span></div>'+itemsHtml+(p.shopAddress?('<div style="font-size:11px;color:var(--text-muted);margin-top:4px;"><i class="fas fa-location-dot"></i> '+p.shopAddress+'</div>'):'')+pickBtn+'</div>';
+    }).join('');
+}
+
+function renderOrder(order){
+    currentOrder = order;
+    document.getElementById('loadingScreen').classList.add('hidden');
+    document.getElementById('delivery-card').classList.remove('hidden');
+    document.getElementById('floating-actions').style.display = 'flex';
+
+    initMap(order.deliveryLat || 24.8607, order.deliveryLng || 67.0011);
+    drawStaticMarkers(order);
+
+    document.getElementById('headerCustomerName').textContent = order.customerName || 'Customer';
+    document.getElementById('headerFee').textContent = order.deliveryFee || 0;
+    document.getElementById('chipCustomerName').textContent = order.customerName || 'Customer';
+    document.getElementById('customerChipAvatar').textContent = (order.customerName||'C').charAt(0).toUpperCase();
+    document.getElementById('chipFee').textContent = 'Rs. '+(order.deliveryFee||0);
+    const shopCount = order.shopCount || Object.keys(order.pickups||{}).length || 1;
+    document.getElementById('chipShopCount').textContent = shopCount+' shop(s)';
+    document.getElementById('deliveryAddrText').textContent = order.address || '—';
+
+    const next = nextStopFor(order);
+    document.getElementById('nextStopLabel').innerHTML = next
+        ? '<i class="fas fa-location-arrow"></i>&nbsp; '+(next.label==='Delivery Address' ? 'Customer Ki Taraf: '+next.label : 'Shop: '+next.label)
+        : '—';
+
+    renderShopsList(order);
+
+    const phone = order.customerPhone || '';
+    document.getElementById('openCallBtn').href = phone ? ('tel:'+phone) : '#';
+    document.getElementById('openSMSBtn').href = phone ? ('sms:'+phone) : '#';
+    document.getElementById('callBtn').href = phone ? ('tel:'+phone) : '#';
+
+    const allPicked = Object.values(order.pickups||{}).every(p=>p.pickedUp);
+    const mainBtn = document.getElementById('mainActionBtn');
+    mainBtn.disabled = !allPicked;
+    mainBtn.innerHTML = allPicked
+        ? '<i class="fas fa-flag-checkered"></i> Order Deliver Ho Gaya'
+        : '<i class="fas fa-flag-checkered"></i> Pehle Sab Shops Se Items Uthayein';
+    mainBtn.onclick = allPicked ? markDelivered : null;
+
+    if(captainMarker) updateCaptainMarker(captainMarker.getLatLng().lat, captainMarker.getLatLng().lng, captainData.vehicleType, order);
+}
+
+window.toggleMartPickup = async function(shopId, pickedUp){
+    try{
+        const updates = {};
+        updates['martOrders/'+orderId+'/pickups/'+shopId+'/pickedUp'] = pickedUp;
+        updates['martShopOrders/'+shopId+'/'+orderId+'/pickedUp'] = pickedUp;
+        await update(ref(db), updates);
+    } catch(e){ console.error(e); alert('Pickup update nahi ho saka'); }
+};
+
+async function markDelivered(){
+    try{
+        const snap = await get(ref(db,'martOrders/'+orderId));
+        const order = snap.val();
+        if(!order) return;
+        const fee = order.deliveryFee || 0;
+        const today = new Date().toISOString().split('T')[0];
+        const updates = {};
+        updates['martOrders/'+orderId+'/status'] = 'delivered';
+        updates['martOrders/'+orderId+'/deliveredAt'] = Date.now();
+        updates['riders/'+currentCaptain.uid+'/currentMartOrderId'] = null;
+        updates['riders/'+currentCaptain.uid+'/earnings/'+today+'/martEarned'] = increment(fee);
+        updates['riders/'+currentCaptain.uid+'/earnings/'+today+'/martDeliveries'] = increment(1);
+        await update(ref(db), updates);
+        alert('🎉 Mart order deliver ho gaya!\n\n💵 Delivery Fee: Rs. '+fee+' aap ke wallet mein add ho gayi.');
+        window.location.href = 'captain-dashboard.html';
+    } catch(e){ console.error(e); alert('Order deliver mark nahi ho saka'); }
+}
+
+onAuthStateChanged(auth, async (user)=>{
+    if(!user){ window.location.href='index.html'; return; }
+    currentCaptain = user;
+    const riderSnap = await get(ref(db,'riders/'+user.uid));
+    if(!riderSnap.exists()){ window.location.href='captain-dashboard.html'; return; }
+    captainData = riderSnap.val();
+
+    if(!orderId) orderId = captainData.currentMartOrderId;
+    if(!orderId){ alert('Koi active mart delivery nahi mili.'); window.location.href='captain-dashboard.html'; return; }
+
+    onValue(ref(db,'martOrders/'+orderId), (snap)=>{
+        const order = snap.val();
+        if(!order){ window.location.href='captain-dashboard.html'; return; }
+        if(order.status === 'delivered' || order.status === 'cancelled'){
+            window.location.href='captain-dashboard.html'; return;
+        }
+        renderOrder(order);
+    });
+
+    startTracking();
+});
+</script>
+</body>
+</html>
