@@ -606,7 +606,7 @@ input:checked + .slider::before { transform:translateX(18px); }
   </div>
 
   <!-- FLOATING CART BAR (so cart stays visible inside product modal too) -->
-  <div class="floating-cart hidden" id="pdFloatingCart" style="position:fixed; z-index:8500;" onclick="closeProductModal(); showView('cart-view');">
+  <div class="floating-cart hidden" id="pdFloatingCart" style="position:fixed; z-index:8500;" onclick="goToCartFromModal();">
     <div class="fc-left"><img class="fc-trolley" src="https://iili.io/CY9UUCu.png" alt=""><b id="pdFcCount">0</b> items · Rs. <span id="pdFcTotal">0</span></div>
     <div class="fc-right">View Cart <i class="fa-solid fa-arrow-right"></i></div>
   </div>
@@ -1020,8 +1020,12 @@ window.openVariantSheet = (id, evt) => {
   const overlay = document.getElementById('variantSheetOverlay');
   overlay.dataset.pid = id;
   overlay.classList.add('open');
+  if(!navHandlingPop) history.pushState({type:'overlay', id:'variantSheet'}, '', '');
 };
-window.closeVariantSheet = () => { document.getElementById('variantSheetOverlay').classList.remove('open'); };
+window.closeVariantSheet = () => {
+  document.getElementById('variantSheetOverlay').classList.remove('open');
+  if(!navHandlingPop) history.back();
+};
 function refreshVariantSheet(){
   const overlay = document.getElementById('variantSheetOverlay');
   if(overlay && overlay.classList.contains('open')){
@@ -1197,9 +1201,11 @@ function listenProducts(){
 /* ---------------- SHARE ---------------- */
 window.openShareSheet = () => {
   document.getElementById('shareSheetOverlay').classList.add('open');
+  if(!navHandlingPop) history.pushState({type:'overlay', id:'shareSheet'}, '', '');
 };
 window.closeShareSheet = () => {
   document.getElementById('shareSheetOverlay').classList.remove('open');
+  if(!navHandlingPop) history.back();
 };
 function getShareLinkAndText(){
   const modal = document.getElementById('productModal');
@@ -1343,6 +1349,7 @@ window.openProductModal = (id) => {
   modal.dataset.pid = id;
   modal.scrollTop = 0;
   renderCartBadges();
+  if(!navHandlingPop) history.pushState({type:'overlay', id:'productModal'}, '', '');
 };
 
 function renderRelatedProducts(id, p){
@@ -1391,7 +1398,17 @@ function renderModalCartAction(id, p){
     wrap.innerHTML = `<button class="primary-btn" style="margin:0; width:100%;" onclick="changeQty('${id}',1,true,event)">Add to Cart</button>`;
   }
 }
-window.closeProductModal = () => { document.getElementById('productModal').classList.add('hidden'); renderCartBadges(); };
+window.closeProductModal = () => {
+  document.getElementById('productModal').classList.add('hidden');
+  renderCartBadges();
+  if(!navHandlingPop) history.back();
+};
+window.goToCartFromModal = () => {
+  document.getElementById('productModal').classList.add('hidden');
+  renderCartBadges();
+  applyViewSwitch('cart-view');
+  history.replaceState({type:'view', id:'cart-view'}, '', '');
+};
 
 /* ---------------- CART ---------------- */
 function loadCart(){
@@ -1986,7 +2003,10 @@ window.downloadSlip = async (orderId) => {
 };
 
 /* ---------------- VIEW ROUTER ---------------- */
-window.showView = (viewId) => {
+const ROOT_VIEWS = ['home-view','search-view','cart-view','orders-view','profile-view'];
+let navHandlingPop = false;
+
+function applyViewSwitch(viewId){
   const current = [...document.querySelectorAll('.view-panel')].find(v => !v.classList.contains('hidden'));
   if(current && current.id!=='search-view' && viewId==='search-view') previousView = current.id;
   document.querySelectorAll('.view-panel').forEach(v => v.classList.add('hidden'));
@@ -1996,7 +2016,44 @@ window.showView = (viewId) => {
   if(viewId==='checkout-view'){ selectPayment(selectedPayment); renderCheckoutSummary(); prefillCheckout(); }
   if(viewId==='search-view') setTimeout(()=>document.getElementById('searchInput').focus(), 200);
   window.scrollTo(0,0);
+}
+
+window.showView = (viewId) => {
+  const current = [...document.querySelectorAll('.view-panel')].find(v => !v.classList.contains('hidden'));
+  if(current && current.id===viewId) return;
+  applyViewSwitch(viewId);
+  if(navHandlingPop) return; // history already correct, we're just restoring UI after a back press
+  if(ROOT_VIEWS.includes(viewId)){
+    history.replaceState({type:'view', id: viewId}, '', ''); // lateral tab switch, don't grow the stack
+  } else {
+    history.pushState({type:'view', id: viewId}, '', ''); // drill-down (e.g. shop-view, checkout-view)
+  }
 };
+
+/* ---------------- MOBILE / HARDWARE BACK BUTTON ---------------- */
+window.addEventListener('popstate', () => {
+  navHandlingPop = true;
+  const variantOverlay = document.getElementById('variantSheetOverlay');
+  const shareOverlay = document.getElementById('shareSheetOverlay');
+  const productModal = document.getElementById('productModal');
+  if(variantOverlay.classList.contains('open')){
+    closeVariantSheet();
+  } else if(shareOverlay.classList.contains('open')){
+    closeShareSheet();
+  } else if(!productModal.classList.contains('hidden')){
+    closeProductModal();
+  } else {
+    const current = [...document.querySelectorAll('.view-panel')].find(v => !v.classList.contains('hidden'));
+    if(current && current.id !== 'home-view'){
+      let target = 'home-view';
+      if(current.id === 'checkout-view') target = 'cart-view';
+      else if(current.id === 'search-view') target = previousView || 'home-view';
+      showView(target);
+    }
+    // already on home-view with nothing open -> let the device handle it naturally (exits the app)
+  }
+  navHandlingPop = false;
+});
 
 </script>
 </body>
