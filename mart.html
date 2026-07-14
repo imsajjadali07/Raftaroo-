@@ -1689,11 +1689,13 @@ function renderCartBadges(){
   const badge = document.getElementById('navCartBadge');
   const fc = document.getElementById('floatingCart');
   const pdFc = document.getElementById('pdFloatingCart');
+  const currentView = [...document.querySelectorAll('.view-panel')].find(v => !v.classList.contains('hidden'));
+  const onCartOrCheckout = currentView && (currentView.id==='cart-view' || currentView.id==='checkout-view');
   if(count>0){
     badge.textContent = count; badge.classList.remove('hidden');
     document.getElementById('fcCount').textContent = count;
     document.getElementById('fcTotal').textContent = total.toLocaleString();
-    fc.classList.remove('hidden');
+    if(onCartOrCheckout) fc.classList.add('hidden'); else fc.classList.remove('hidden');
     if(pdFc){
       document.getElementById('pdFcCount').textContent = count;
       document.getElementById('pdFcTotal').textContent = total.toLocaleString();
@@ -2165,6 +2167,7 @@ function applyViewSwitch(viewId){
   if(viewId==='cart-view') renderCartView();
   if(viewId==='checkout-view'){ selectPayment(selectedPayment); renderCheckoutSummary(); prefillCheckout(); }
   if(viewId==='search-view') setTimeout(()=>document.getElementById('searchInput').focus(), 200);
+  renderCartBadges();
   window.scrollTo(0,0);
 }
 
