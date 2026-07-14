@@ -372,6 +372,7 @@ input:checked + .slider::before { transform:translateX(18px); }
 .shop-closed-badge { background:var(--error); color:#fff; font-size:9.5px; font-weight:700; padding:2px 8px; border-radius:20px; }
 
 /* ---------- SHOP HEADER (inside shop-view) ---------- */
+.shop-offer-badge { display:inline-flex; align-items:center; gap:4px; background:rgba(40,167,69,0.12); color:var(--primary); font-weight:700; font-size:10px; padding:3px 8px; border-radius:8px; margin-top:4px; }
 .shop-hero { padding:14px 16px; background:var(--card-bg); display:flex; gap:12px; align-items:center; box-shadow:var(--shadow); }
 .shop-hero img { width:52px; height:52px; border-radius:12px; object-fit:cover; background:var(--input-bg); }
 .shop-hero h3 { font-size:15px; font-weight:800; }
@@ -1217,6 +1218,17 @@ function renderShopList(){
   wrap.innerHTML = sorted.map(([id,s,d]) => shopCardHTML(id,s,d)).join('');
 }
 
+function shopDeliveryOfferActive(s){
+  const offer = s && s.deliveryOffer;
+  const bal = parseInt(s && s.deliveryWallet)||0;
+  return !!(offer && offer.active && bal>0 && (offer.type==='free' || offer.type==='percent'));
+}
+function shopOfferBadgeHTML(s){
+  if(!shopDeliveryOfferActive(s)) return '';
+  const offer = s.deliveryOffer;
+  const label = offer.type==='free' ? 'Free Delivery' : `${parseInt(offer.percent)||0}% Delivery Off`;
+  return `<span class="shop-offer-badge"><i class="fa-solid fa-truck-fast"></i> ${label}</span>`;
+}
 function shopCardHTML(id, s, distanceKm){
   return `
   <div class="shop-card" onclick="selectShop('${id}')">
@@ -1227,6 +1239,7 @@ function shopCardHTML(id, s, distanceKm){
       <div class="sc-meta">
         ${distanceKm!=null ? `<span><i class="fa-solid fa-location-dot"></i> ${distanceKm.toFixed(1)} km away</span>` : `<span><i class="fa-solid fa-location-dot"></i> Distance N/A</span>`}
       </div>
+      ${shopOfferBadgeHTML(s)}
     </div>
     <i class="fa-solid fa-chevron-right" style="color:var(--text-muted);"></i>
   </div>`;
@@ -1252,6 +1265,7 @@ function renderShopHero(){
     <div>
       <h3>${currentShopData.name} ${currentShopData.isOpen===false?'<span class="shop-closed-badge">Closed</span>':''}</h3>
       <p>${labelForShopCat(currentShopData.categories || currentShopData.category)} ${d!=null?` · ${d.toFixed(1)} km away`:''}${currentShopData.address?` · ${currentShopData.address}`:''}</p>
+      ${shopOfferBadgeHTML(currentShopData)}
     </div>`;
 }
 
@@ -1680,8 +1694,41 @@ function cartTotals(){
   }
   const deliveryDiscountApplied = deliveryDiscountPercent > 0;
   const originalDelivery = subtotal>0 ? DELIVERY_FEE : 0;
-  const delivery = deliveryDiscountApplied ? Math.round(originalDelivery * (1 - deliveryDiscountPercent/100)) : originalDelivery;
-  return { subtotal, count, delivery, originalDelivery, deliveryDiscountApplied, deliveryDiscountLabel, nudgeMessage, total: subtotal+delivery };
+  const poolAfterGlobalDiscount = deliveryDiscountApplied ? Math.round(originalDelivery * (1 - deliveryDiscountPercent/100)) : originalDelivery;
+
+  // Split the delivery fee pool per-shop (proportional to each shop's share of subtotal), then
+  // apply that shop's own free/percent delivery offer (funded from their deliveryWallet) on top.
+  const shopGroups = {};
+  Object.values(cart).forEach(c => {
+    const sid = c.shopId || 'unknown';
+    if(!shopGroups[sid]) shopGroups[sid] = 0;
+    shopGroups[sid] += c.qty*c.price;
+  });
+  const shopIds = Object.keys(shopGroups);
+  let delivery = 0, shopOfferSavings = 0, anyShopOfferApplied = false;
+  const shopDeliveryInfo = {};
+  shopIds.forEach(sid => {
+    const shopSubtotal = shopGroups[sid];
+    const baseShare = subtotal>0 ? Math.round(poolAfterGlobalDiscount * (shopSubtotal/subtotal)) : 0;
+    const shop = allShops[sid] || {};
+    let shopDiscount = 0, offerLabel = '';
+    if(shopDeliveryOfferActive(shop) && baseShare>0){
+      const offer = shop.deliveryOffer;
+      const walletBal = parseInt(shop.deliveryWallet)||0;
+      const wantedDiscount = offer.type==='free' ? baseShare : Math.round(baseShare*(parseInt(offer.percent)||0)/100);
+      shopDiscount = Math.min(wantedDiscount, baseShare, walletBal);
+      if(shopDiscount>0){
+        anyShopOfferApplied = true;
+        offerLabel = offer.type==='free' ? `${shop.name||'Shop'}: Free Delivery` : `${shop.name||'Shop'}: Delivery par ${offer.percent}% off`;
+      }
+    }
+    const finalShare = baseShare - shopDiscount;
+    delivery += finalShare;
+    shopOfferSavings += shopDiscount;
+    shopDeliveryInfo[sid] = { baseShare, shopDiscount, finalShare, offerLabel };
+  });
+
+  return { subtotal, count, delivery, originalDelivery, deliveryDiscountApplied, deliveryDiscountLabel, nudgeMessage, total: subtotal+delivery, shopDeliveryInfo, anyShopOfferApplied, shopOfferSavings };
 }
 
 function renderCartBadges(){
@@ -1724,7 +1771,7 @@ function renderCartView(){
     return;
   }
   empty.classList.add('hidden'); goBtn.classList.remove('hidden');
-  const { subtotal, delivery, originalDelivery, deliveryDiscountApplied, deliveryDiscountLabel, nudgeMessage, total, count } = cartTotals();
+  const { subtotal, delivery, originalDelivery, deliveryDiscountApplied, deliveryDiscountLabel, nudgeMessage, total, count, anyShopOfferApplied, shopOfferSavings } = cartTotals();
   if(headerCount){ headerCount.textContent = `${count} item${count>1?'s':''}`; headerCount.classList.remove('hidden'); }
 
   // group cart items by shop so customer clearly sees which items come from which shop
@@ -1766,6 +1813,7 @@ function renderCartView(){
     <div style="display:flex; align-items:center; gap:8px; margin:${shopIds.length>1?'16px':'0'} 16px 8px;">
       <i class="fa-solid fa-shop" style="color:var(--primary); font-size:12px;"></i>
       <span style="font-weight:700; font-size:12.5px; color:var(--text-main);">${shop?.name || 'Shop'}</span>
+      ${shopOfferBadgeHTML(shop)}
     </div>
     ${itemsHtml}`;
   }).join('');
@@ -1775,6 +1823,7 @@ function renderCartView(){
       <div class="summary-row"><span><i class="fa-solid fa-basket-shopping"></i>Subtotal</span><span>Rs. ${subtotal}</span></div>
       <div class="summary-row"><span><i class="fa-solid fa-truck"></i>Delivery Fee</span><span>${deliveryDiscountApplied ? `<span style="text-decoration:line-through;opacity:.55;margin-right:6px;">Rs. ${originalDelivery}</span>Rs. ${delivery}` : `Rs. ${delivery}`}</span></div>
       ${deliveryDiscountApplied ? `<div class="summary-row" style="color:var(--primary);font-size:12.5px;"><span><i class="fa-solid fa-tag"></i> ${deliveryDiscountLabel}</span><span></span></div>` : ''}
+      ${anyShopOfferApplied ? `<div class="summary-row" style="color:var(--primary);font-size:12.5px;"><span><i class="fa-solid fa-truck-fast"></i> Shop ki taraf se delivery discount</span><span>-Rs. ${shopOfferSavings}</span></div>` : ''}
       ${nudgeMessage ? `<div class="summary-row" style="color:#e67e22;font-size:12.5px;background:#fff6ec;border-radius:8px;padding:8px 10px;margin-top:4px;"><span><i class="fa-solid fa-bolt"></i> ${nudgeMessage}</span><span></span></div>` : ''}
       <div class="summary-row total"><span>Total</span><span>Rs. ${total}</span></div>
     </div>`;
@@ -1791,17 +1840,18 @@ window.selectPayment = (mode) => {
 };
 
 function renderCheckoutSummary(){
-  const { subtotal, delivery, originalDelivery, deliveryDiscountApplied, deliveryDiscountLabel, nudgeMessage, total } = cartTotals();
+  const { subtotal, delivery, originalDelivery, deliveryDiscountApplied, deliveryDiscountLabel, nudgeMessage, total, anyShopOfferApplied, shopOfferSavings } = cartTotals();
   document.getElementById('checkoutSummaryBox').innerHTML = `
     <div class="summary-row"><span>Subtotal</span><span>Rs. ${subtotal}</span></div>
     <div class="summary-row"><span>Delivery Fee</span><span>${deliveryDiscountApplied ? `<span style="text-decoration:line-through;opacity:.55;margin-right:6px;">Rs. ${originalDelivery}</span>Rs. ${delivery}` : `Rs. ${delivery}`}</span></div>
     ${deliveryDiscountApplied ? `<div class="summary-row" style="color:var(--primary);font-size:12.5px;"><span><i class="fa-solid fa-tag"></i> ${deliveryDiscountLabel}</span><span></span></div>` : ''}
+    ${anyShopOfferApplied ? `<div class="summary-row" style="color:var(--primary);font-size:12.5px;"><span><i class="fa-solid fa-truck-fast"></i> Shop ki taraf se delivery discount</span><span>-Rs. ${shopOfferSavings}</span></div>` : ''}
     ${nudgeMessage ? `<div class="summary-row" style="color:#e67e22;font-size:12.5px;background:#fff6ec;border-radius:8px;padding:8px 10px;margin-top:4px;"><span><i class="fa-solid fa-bolt"></i> ${nudgeMessage}</span><span></span></div>` : ''}
     <div class="summary-row total"><span>Total Payable</span><span>Rs. ${total}</span></div>`;
 }
 
 window.placeOrder = async () => {
-  const { subtotal, delivery, total, count } = cartTotals();
+  const { subtotal, delivery, total, count, shopDeliveryInfo } = cartTotals();
   if(count===0){ toast('Cart khali hai'); return; }
   const address = document.getElementById('checkoutAddress').value.trim();
   const phone = document.getElementById('checkoutPhone').value.trim();
@@ -1848,6 +1898,22 @@ window.placeOrder = async () => {
         return bal - total;
       });
       if(!result.committed){ throw new Error('Wallet balance kafi nahi'); }
+    }
+
+    // Deduct each shop's own delivery-discount contribution from their delivery wallet
+    // (funds the free/discounted delivery they offered). If wallet runs out mid-order,
+    // deduction is floored at 0 and the offer auto-switches off for future orders.
+    for(const [sid, info] of Object.entries(shopDeliveryInfo || {})){
+      if(!info.shopDiscount || info.shopDiscount<=0) continue;
+      const walletRef = ref(db, `martShops/${sid}/deliveryWallet`);
+      const result = await runTransaction(walletRef, (curr) => {
+        const bal = parseInt(curr)||0;
+        return Math.max(0, bal - info.shopDiscount);
+      });
+      const newBal = result?.snapshot?.val();
+      if(result.committed && (parseInt(newBal)||0) <= 0){
+        await update(ref(db, `martShops/${sid}/deliveryOffer`), { active: false });
+      }
     }
 
     // group cart items by shop -> each shop becomes one pickup stop for the captain
@@ -1901,6 +1967,7 @@ window.placeOrder = async () => {
     // Same key as the parent order, so both stay linked to a single order for the customer.
     await Promise.all(pickupList.map(p => {
       const shopSubtotal = p.items.reduce((sum, it) => sum + (it.price * it.qty), 0);
+      const dInfo = (shopDeliveryInfo && shopDeliveryInfo[p.shopId]) || { baseShare:0, shopDiscount:0, finalShare:0, offerLabel:'' };
       return set(ref(db, `martShopOrders/${p.shopId}/${orderRef.key}`), {
         parentOrderId: orderRef.key,
         shopId: p.shopId,
@@ -1912,6 +1979,10 @@ window.placeOrder = async () => {
         deliveryLng: customerLoc?.lng ?? null,
         items: p.items,
         shopSubtotal,
+        deliveryShare: dInfo.baseShare,
+        deliveryDiscount: dInfo.shopDiscount,
+        deliveryShareAfterDiscount: dInfo.finalShare,
+        deliveryOfferLabel: dInfo.offerLabel,
         paymentMethod: selectedPayment,
         multiShop: pickupList.length > 1,
         status: 'pending',

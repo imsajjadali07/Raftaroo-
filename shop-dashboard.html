@@ -160,6 +160,28 @@ input:checked + .slider::before { transform:translateX(18px); }
 .status-out_for_delivery { background:#e0cffc; color:#5a1a9e; }
 .status-delivered { background:#d1f5dc; color:#146c34; }
 .status-cancelled { background:#f8d7da; color:#842029; }
+.status-approved { background:#d1f5dc; color:#146c34; }
+.status-rejected { background:#f8d7da; color:#842029; }
+
+/* ---------- DELIVERY OFFER TAB ---------- */
+.wallet-card { background:linear-gradient(135deg, var(--primary), var(--primary-dark)); border-radius:16px; margin:0 16px 14px; padding:18px; color:#fff; box-shadow:0 8px 20px rgba(40,167,69,0.3); }
+.wallet-card .wc-label { font-size:11.5px; opacity:.85; font-weight:600; }
+.wallet-card .wc-amount { font-size:26px; font-weight:800; margin-top:4px; }
+.wallet-card .wc-hint { font-size:10.5px; opacity:.8; margin-top:8px; line-height:1.5; }
+.offer-type-grid { display:grid; grid-template-columns:repeat(3,1fr); gap:8px; margin:0 16px 12px; }
+.offer-type-chip { border:1.5px solid var(--border); background:var(--card-bg); border-radius:12px; padding:12px 6px; text-align:center; font-size:11.5px; font-weight:600; color:var(--text-muted); box-shadow:var(--shadow); }
+.offer-type-chip i { display:block; font-size:16px; margin-bottom:5px; }
+.offer-type-chip.active { background:var(--primary); border-color:var(--primary); color:#fff; }
+.percent-chip-row { display:flex; gap:8px; margin:0 16px 14px; flex-wrap:wrap; }
+.percent-chip { flex:1; min-width:56px; border:1.5px solid var(--border); background:var(--card-bg); border-radius:11px; padding:9px 6px; text-align:center; font-size:12.5px; font-weight:700; color:var(--text-muted); }
+.percent-chip.active { background:var(--primary); border-color:var(--primary); color:#fff; }
+.deposit-req-card { background:var(--card-bg); border-radius:14px; box-shadow:var(--shadow); margin:0 16px 10px; padding:12px 14px; }
+.deposit-req-card .dr-top { display:flex; align-items:center; justify-content:space-between; margin-bottom:4px; }
+.deposit-req-card .dr-amount { font-weight:800; font-size:14px; }
+.deposit-req-card .dr-date { font-size:10.5px; color:var(--text-muted); }
+.offer-status-banner { display:flex; align-items:center; gap:10px; margin:0 16px 14px; padding:12px 14px; border-radius:12px; font-size:12px; font-weight:600; }
+.offer-status-banner.on { background:rgba(40,167,69,0.12); color:var(--primary-dark); }
+.offer-status-banner.off { background:var(--input-bg); color:var(--text-muted); }
 .order-card .oc-items { font-size:12px; color:var(--text-muted); margin-bottom:6px; line-height:1.5; }
 .order-card .oc-bottom { display:flex; justify-content:space-between; align-items:center; font-size:13px; font-weight:700; gap:8px; }
 .slip-btn { width:100%; margin-top:12px; background:var(--input-bg); border:1px solid var(--border); color:var(--primary); font-weight:700; font-size:12.5px; padding:10px; border-radius:11px; display:flex; align-items:center; justify-content:center; gap:6px; }
@@ -254,6 +276,7 @@ input:checked + .slider::before { transform:translateX(18px); }
     <div class="admin-tab" data-tab="add" onclick="switchDashTab('add')"><i class="fa-solid fa-plus"></i> Add Product</div>
     <div class="admin-tab" data-tab="orders" onclick="switchDashTab('orders')"><i class="fa-solid fa-receipt"></i> Orders</div>
     <div class="admin-tab" data-tab="profile" onclick="switchDashTab('profile')"><i class="fa-solid fa-shop"></i> Shop Profile</div>
+    <div class="admin-tab" data-tab="delivery" onclick="switchDashTab('delivery')"><i class="fa-solid fa-truck-fast"></i> Delivery Offer</div>
   </div>
 
   <!-- PRODUCTS TAB -->
@@ -313,6 +336,48 @@ input:checked + .slider::before { transform:translateX(18px); }
     <input type="tel" class="input-field" id="shopPhoneInput" placeholder="Phone Number" style="margin:0 16px 12px; width:calc(100% - 32px);">
     <textarea class="input-field" id="shopAddressInput" placeholder="Address" style="margin:0 16px 12px; width:calc(100% - 32px);"></textarea>
     <button class="primary-btn" id="shopSaveBtn" onclick="saveShopProfile()">Save Shop Profile</button>
+  </div>
+
+  <!-- DELIVERY OFFER TAB -->
+  <div id="deliveryTab" class="hidden">
+    <div class="section-title"><h4>Delivery Wallet</h4></div>
+    <div class="wallet-card">
+      <div class="wc-label">Delivery Wallet Balance</div>
+      <div class="wc-amount">Rs. <span id="deliveryWalletBal">0</span></div>
+      <div class="wc-hint">Ye wallet aapke customers ko free/discount delivery dene ke liye use hoti hai. Har order par offer ka amount is wallet se cut hota hai. Balance khatam hote hi offer khud band ho jayega.</div>
+    </div>
+
+    <div id="offerStatusBanner" class="offer-status-banner off"><i class="fa-solid fa-circle-info"></i><span id="offerStatusText">Koi delivery offer active nahi hai</span></div>
+
+    <div class="section-title"><h4>Offer Type</h4></div>
+    <div class="offer-type-grid">
+      <div class="offer-type-chip" data-offer="none" onclick="selectOfferType('none')"><i class="fa-solid fa-ban"></i>Off</div>
+      <div class="offer-type-chip" data-offer="free" onclick="selectOfferType('free')"><i class="fa-solid fa-truck-fast"></i>Free Delivery</div>
+      <div class="offer-type-chip" data-offer="percent" onclick="selectOfferType('percent')"><i class="fa-solid fa-percent"></i>% Discount</div>
+    </div>
+
+    <div id="percentSection" class="hidden">
+      <label class="field-label">Delivery Discount %</label>
+      <div class="percent-chip-row">
+        <div class="percent-chip" data-pct="5" onclick="selectPercentValue(5)">5%</div>
+        <div class="percent-chip" data-pct="10" onclick="selectPercentValue(10)">10%</div>
+        <div class="percent-chip" data-pct="15" onclick="selectPercentValue(15)">15%</div>
+        <div class="percent-chip" data-pct="20" onclick="selectPercentValue(20)">20%</div>
+      </div>
+      <input type="number" class="input-field" id="customPercentInput" placeholder="Ya custom % likhein (1-100)" style="margin:0 16px 12px; width:calc(100% - 32px);" oninput="selectPercentValue(this.value, true)">
+    </div>
+
+    <div class="field-hint" style="margin:0 16px 14px;">Offer activate karne ke liye wallet mein kam se kam Rs. 500 security deposit hona zaroori hai.</div>
+    <button class="primary-btn" id="offerSaveBtn" onclick="saveDeliveryOffer()">Offer Save Karein</button>
+
+    <div class="section-title" style="margin-top:20px;"><h4>Wallet Mein Paisay Add Karein</h4></div>
+    <div class="field-hint" style="margin:0 16px 10px;">Request bhejein, hum payment confirm karke aapki wallet mein amount add kar denge.</div>
+    <input type="number" class="input-field" id="depositAmountInput" placeholder="Amount (Rs.) — kam se kam 500" value="500" style="margin:0 16px 12px; width:calc(100% - 32px);">
+    <textarea class="input-field" id="depositNoteInput" placeholder="Note (optional) — jaise payment reference/screenshot ka zikr" style="margin:0 16px 12px; width:calc(100% - 32px);"></textarea>
+    <button class="primary-btn" id="depositSubmitBtn" onclick="submitDepositRequest()">Deposit Request Bhejein</button>
+
+    <div class="section-title" style="margin-top:14px;"><h4>Meri Requests</h4></div>
+    <div id="depositRequestsList" style="padding-top:2px;"></div>
   </div>
 
 </div>
@@ -378,6 +443,9 @@ let selectedShopCategories = [];
 let pendingImageFile = null;
 let editingProductId = null;
 let pendingShopLogoFile = null;
+let selectedOfferType = 'none';
+let selectedOfferPercent = 10;
+let allDepositRequests = {};
 let currentVariants = []; // [{id, label, price, stock}] while editing/adding a product
 
 function toast(msg){
@@ -424,6 +492,7 @@ onAuthStateChanged(auth, async (user) => {
     populateCategorySelect();
     populateShopCategorySelect();
     listenShops();
+    listenDepositRequests();
   } else {
     currentUser = null;
     document.getElementById('app').classList.add('hidden');
@@ -481,6 +550,8 @@ window.onShopChange = (id) => {
   renderStats();
   listenMyOrders();
   loadShopProfileForm();
+  loadDeliveryOfferForm();
+  renderDepositRequests();
 };
 
 function currentShop(){ return allShops[selectedShopId]; }
@@ -501,6 +572,7 @@ function renderShopHeader(){
     logoImg.classList.add('hidden'); logoIcon.classList.remove('hidden');
   }
   loadShopProfileForm();
+  loadDeliveryOfferForm();
 }
 
 window.toggleMyShopOpen = async (isOpen) => {
@@ -524,9 +596,11 @@ window.switchDashTab = (tab) => {
   document.getElementById('addTab').classList.toggle('hidden', tab!=='add');
   document.getElementById('ordersTab').classList.toggle('hidden', tab!=='orders');
   document.getElementById('profileTab').classList.toggle('hidden', tab!=='profile');
+  document.getElementById('deliveryTab').classList.toggle('hidden', tab!=='delivery');
   if(tab==='products') renderProductList();
   if(tab==='add' && !editingProductId) resetProductForm(false);
   if(tab==='profile') loadShopProfileForm();
+  if(tab==='delivery') loadDeliveryOfferForm();
 };
 
 /* ---------------- SHOP PROFILE ---------------- */
@@ -594,6 +668,146 @@ window.saveShopProfile = async () => {
     console.error(e); toast('Save failed, try again');
   } finally {
     btn.disabled = false; btn.textContent = 'Save Shop Profile';
+  }
+};
+
+/* ---------------- DELIVERY OFFER (shop-funded free/discount delivery) ---------------- */
+const MIN_DELIVERY_DEPOSIT = 500;
+
+function loadDeliveryOfferForm(){
+  const s = currentShop();
+  if(!s) return;
+  const bal = parseInt(s.deliveryWallet)||0;
+  const walletEl = document.getElementById('deliveryWalletBal');
+  if(walletEl) walletEl.textContent = bal.toLocaleString();
+
+  const offer = s.deliveryOffer || {};
+  selectedOfferType = offer.type || 'none';
+  selectedOfferPercent = parseInt(offer.percent) || 10;
+  syncOfferTypeUI();
+  syncPercentUI();
+
+  const isActive = !!(offer.active && bal>0 && (offer.type==='free' || offer.type==='percent'));
+  const banner = document.getElementById('offerStatusBanner');
+  const bannerText = document.getElementById('offerStatusText');
+  if(banner && bannerText){
+    banner.className = 'offer-status-banner ' + (isActive ? 'on' : 'off');
+    if(isActive){
+      bannerText.textContent = offer.type==='free'
+        ? 'Free Delivery active hai — customers se delivery fee nahi liya jayega'
+        : `${offer.percent}% Delivery Discount active hai`;
+    } else if(offer.active && bal<=0){
+      bannerText.textContent = 'Wallet khatam ho gayi — offer automatically band ho gaya hai. Wallet mein paisay add karein.';
+    } else {
+      bannerText.textContent = 'Koi delivery offer active nahi hai';
+    }
+  }
+}
+
+function syncOfferTypeUI(){
+  document.querySelectorAll('.offer-type-chip').forEach(el => el.classList.toggle('active', el.dataset.offer===selectedOfferType));
+  document.getElementById('percentSection').classList.toggle('hidden', selectedOfferType!=='percent');
+}
+function syncPercentUI(){
+  document.querySelectorAll('.percent-chip').forEach(el => el.classList.toggle('active', parseInt(el.dataset.pct)===selectedOfferPercent));
+  const custom = document.getElementById('customPercentInput');
+  if(custom && ![5,10,15,20].includes(selectedOfferPercent)) custom.value = selectedOfferPercent;
+}
+
+window.selectOfferType = (type) => {
+  selectedOfferType = type;
+  syncOfferTypeUI();
+};
+window.selectPercentValue = (val, fromCustom) => {
+  const n = parseInt(val);
+  if(!n || n<1 || n>100) { if(!fromCustom) return; }
+  selectedOfferPercent = Math.min(100, Math.max(1, n||selectedOfferPercent));
+  syncPercentUI();
+};
+
+window.saveDeliveryOffer = async () => {
+  if(!selectedShopId) return;
+  const s = currentShop();
+  const bal = parseInt(s?.deliveryWallet)||0;
+  if(selectedOfferType!=='none' && bal < MIN_DELIVERY_DEPOSIT){
+    toast(`Offer activate karne ke liye wallet mein kam se kam Rs. ${MIN_DELIVERY_DEPOSIT} chahiye`);
+    return;
+  }
+  if(selectedOfferType==='percent' && (!selectedOfferPercent || selectedOfferPercent<1)){
+    toast('Sahi percent value select karein');
+    return;
+  }
+  const btn = document.getElementById('offerSaveBtn');
+  btn.disabled = true; btn.textContent = 'Saving...';
+  try{
+    await update(ref(db, `martShops/${selectedShopId}`), {
+      deliveryOffer: {
+        type: selectedOfferType,
+        percent: selectedOfferType==='percent' ? selectedOfferPercent : null,
+        active: selectedOfferType!=='none'
+      }
+    });
+    toast('Delivery offer save ho gaya');
+  } catch(e){
+    console.error(e); toast('Save failed, try again');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Offer Save Karein';
+  }
+};
+
+/* ---------------- DEPOSIT REQUESTS ---------------- */
+function listenDepositRequests(){
+  onValue(ref(db, 'deliveryDepositRequests'), (snap) => {
+    allDepositRequests = snap.val() || {};
+    renderDepositRequests();
+  });
+}
+
+function renderDepositRequests(){
+  const wrap = document.getElementById('depositRequestsList');
+  if(!wrap || !selectedShopId) return;
+  const entries = Object.entries(allDepositRequests)
+    .filter(([id,r]) => r.shopId===selectedShopId)
+    .sort((a,b) => (b[1].createdAt||0)-(a[1].createdAt||0));
+  if(entries.length===0){
+    wrap.innerHTML = `<div class="empty-state"><i class="fa-solid fa-wallet"></i><p>Abhi tak koi deposit request nahi bheji</p></div>`;
+    return;
+  }
+  wrap.innerHTML = entries.map(([id,r]) => `
+    <div class="deposit-req-card">
+      <div class="dr-top">
+        <span class="dr-amount">Rs. ${r.amount}</span>
+        <span class="status-pill status-${r.status||'pending'}">${r.status||'pending'}</span>
+      </div>
+      <div class="dr-date">${new Date(r.createdAt).toLocaleString()}</div>
+      ${r.note ? `<div class="dr-date" style="margin-top:3px;">${r.note}</div>` : ''}
+    </div>`).join('');
+}
+
+window.submitDepositRequest = async () => {
+  if(!selectedShopId){ toast('Pehle shop select karein'); return; }
+  const amount = parseInt(document.getElementById('depositAmountInput').value);
+  const note = document.getElementById('depositNoteInput').value.trim();
+  if(!amount || amount < MIN_DELIVERY_DEPOSIT){ toast(`Kam se kam Rs. ${MIN_DELIVERY_DEPOSIT} likhein`); return; }
+  const btn = document.getElementById('depositSubmitBtn');
+  btn.disabled = true; btn.textContent = 'Sending...';
+  try{
+    const s = currentShop();
+    await push(ref(db, 'deliveryDepositRequests'), {
+      shopId: selectedShopId,
+      shopName: s?.name || 'Shop',
+      ownerUid: currentUser.uid,
+      amount,
+      note,
+      status: 'pending',
+      createdAt: Date.now()
+    });
+    toast('Request bhej di gayi — approval ka intezar karein');
+    document.getElementById('depositNoteInput').value = '';
+  } catch(e){
+    console.error(e); toast('Request bhejne mein masla hua');
+  } finally {
+    btn.disabled = false; btn.textContent = 'Deposit Request Bhejein';
   }
 };
 
