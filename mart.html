@@ -112,11 +112,16 @@ input, textarea, select { font-family:'Poppins',sans-serif; }
 @keyframes pulse { 0%,100%{transform:scale(1);} 50%{transform:scale(1.08);} }
 
 /* ---------- AUTH ---------- */
-#auth-screen { min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:30px; text-align:center; background:#ffffff; color:#1a1a1a; }
-#auth-screen .mart-icon { width:96px; height:96px; border-radius:26px; background:transparent; display:flex; align-items:center; justify-content:center; font-size:44px; margin-bottom:18px; overflow:hidden; }
-#auth-screen .mart-icon img { width:100%; height:100%; object-fit:contain; }
-#auth-screen h1 { font-size:26px; font-weight:800; margin-bottom:6px; color:#1a1a1a; }
-#auth-screen p { font-size:13.5px; opacity:.75; max-width:300px; line-height:1.5; margin-bottom:34px; color:#1a1a1a; }
+#auth-screen, #location-gate { min-height:100vh; display:flex; flex-direction:column; align-items:center; justify-content:center; padding:30px; text-align:center; background:#ffffff; color:#1a1a1a; }
+#auth-screen .mart-icon, #location-gate .mart-icon { width:96px; height:96px; border-radius:26px; background:transparent; display:flex; align-items:center; justify-content:center; font-size:44px; margin-bottom:18px; overflow:hidden; }
+#auth-screen .mart-icon img, #location-gate .mart-icon img { width:100%; height:100%; object-fit:contain; }
+#auth-screen h1, #location-gate h1 { font-size:26px; font-weight:800; margin-bottom:6px; color:#1a1a1a; }
+#auth-screen p, #location-gate p { font-size:13.5px; opacity:.75; max-width:300px; line-height:1.5; margin-bottom:34px; color:#1a1a1a; }
+#location-gate .loc-gate-icon-wrap { width:96px; height:96px; border-radius:26px; background:var(--primary,#7C3AED); display:flex; align-items:center; justify-content:center; font-size:40px; color:#fff; margin-bottom:18px; }
+#location-gate .google-btn { cursor:pointer; }
+#location-gate .loc-gate-err { color:#dc2626; font-size:12.5px; font-weight:600; margin-top:14px; max-width:300px; line-height:1.5; }
+#location-gate .loc-gate-spin { animation:locSpin 1s linear infinite; }
+@keyframes locSpin { from{transform:rotate(0deg);} to{transform:rotate(360deg);} }
 .google-btn { display:flex; align-items:center; justify-content:center; gap:10px; background:#fff; color:#1a1a1a; font-weight:600; font-size:14.5px; padding:14px 26px; border-radius:14px; box-shadow:0 8px 22px rgba(0,0,0,0.18); width:100%; max-width:320px; border:1px solid #e5e7eb; }
 .google-btn img { width:20px; height:20px; }
 .auth-note { font-size:11px; opacity:.6; margin-top:16px; color:#1a1a1a; }
@@ -255,6 +260,11 @@ textarea.input-field { resize:vertical; min-height:64px; }
 
 .primary-btn { display:block; width:calc(100% - 32px); margin:16px auto 6px; background:var(--primary); color:#fff; font-weight:700; font-size:14.5px; padding:14px; border-radius:14px; text-align:center; }
 .primary-btn:disabled { opacity:.5; }
+.wa-float-btn { position:fixed; right:18px; bottom:90px; width:56px; height:56px; border-radius:50%; background:#25D366; color:#fff; display:flex; align-items:center; justify-content:center; font-size:26px; box-shadow:0 8px 20px rgba(37,211,102,0.45); z-index:8600; border:none; cursor:pointer; animation:waFloatPulse 2s infinite; }
+.wa-float-btn:active { transform:scale(0.94); }
+@keyframes waFloatPulse { 0%,100%{ box-shadow:0 8px 20px rgba(37,211,102,0.45);} 50%{ box-shadow:0 8px 24px rgba(37,211,102,0.75);} }
+.wa-request-btn { display:inline-flex; align-items:center; gap:8px; background:#25D366; color:#fff; font-weight:700; font-size:13px; padding:11px 22px; border-radius:14px; margin-top:14px; box-shadow:0 6px 16px rgba(37,211,102,0.3); }
+.wa-request-btn i { font-size:16px; }
 .ghost-btn { display:block; width:calc(100% - 32px); margin:0 auto 16px; background:transparent; border:1.5px solid var(--border); color:var(--text-main); font-weight:600; font-size:13px; padding:12px; border-radius:14px; text-align:center; }
 
 /* ---------- ORDERS ---------- */
@@ -387,6 +397,17 @@ input:checked + .slider::before { transform:translateX(18px); }
     Continue with Google
   </button>
   <p class="auth-note">Same Raftaroo account, ek hi wallet.</p>
+</div>
+
+<!-- LOCATION GATE (mandatory — app tab hi khulta hai jab tak location allow na ho) -->
+<div id="location-gate" class="hidden">
+  <div class="loc-gate-icon-wrap"><i class="fa-solid fa-location-crosshairs"></i></div>
+  <h1>Location Allow Karein</h1>
+  <p>Sirf aapke <b>2km ke radius</b> mein mojood shops aur products dikhane ke liye location zaroori hai. Location allow kiye baghair app aage nahi badhegi.</p>
+  <button class="google-btn" id="allowLocationBtn" onclick="requestMandatoryLocation()">
+    <i class="fa-solid fa-location-crosshairs"></i>&nbsp; Location Allow Karein
+  </button>
+  <div class="loc-gate-err hidden" id="locationGateErr"></div>
 </div>
 
 <!-- APP -->
@@ -611,6 +632,11 @@ input:checked + .slider::before { transform:translateX(18px); }
     <div class="fc-left"><img class="fc-trolley" src="https://iili.io/CY9UUCu.png" alt=""><b id="pdFcCount">0</b> items · Rs. <span id="pdFcTotal">0</span></div>
     <div class="fc-right">View Cart <i class="fa-solid fa-arrow-right"></i></div>
   </div>
+
+  <!-- FLOATING WHATSAPP ORDER BUTTON (sirf tab show hota hai jab product Out of Stock ho) -->
+  <button class="wa-float-btn hidden" id="pdWaFloatBtn" onclick="orderProductViaWhatsApp(document.getElementById('productModal').dataset.pid)">
+    <i class="fa-brands fa-whatsapp"></i>
+  </button>
 </div>
 
 <!-- SHARE SHEET -->
@@ -828,8 +854,68 @@ window.detectLocation = (forCheckout) => {
     }
   }, (err) => {
     console.warn('geo error', err);
-    if(!forCheckout) document.getElementById('locationText').textContent = 'Location allow nahi ki — Karachi (default) dikha rahe hain';
+    if(!forCheckout) document.getElementById('locationText').textContent = 'Location refresh nahi ho saki — pehli location hi use ho rahi hai';
     else document.getElementById('deliveryLocStatus').textContent = 'Location nahi mili — address text use hogi';
+  }, { enableHighAccuracy:true, timeout:10000 });
+};
+
+/* ---------------- MANDATORY LOCATION GATE ----------------
+   Jab tak customer location allow nahi karta, app (shops/products) bilkul nahi khulti.
+   Yeh gate login ke foran baad dikhaya jata hai aur sirf successful GPS fix par hatta hai. */
+let appDataLoaded = false;
+
+function showLocationGate(errMsg){
+  document.getElementById('app').classList.add('hidden');
+  document.getElementById('location-gate').classList.remove('hidden');
+  const errBox = document.getElementById('locationGateErr');
+  if(errMsg){
+    errBox.textContent = errMsg;
+    errBox.classList.remove('hidden');
+  } else {
+    errBox.classList.add('hidden');
+    errBox.textContent = '';
+  }
+}
+
+function enterAppAfterLocation(){
+  document.getElementById('location-gate').classList.add('hidden');
+  document.getElementById('app').classList.remove('hidden');
+  document.getElementById('locationText').innerHTML = 'Aapki location mil gayi — nearby products dikha rahe hain';
+  if(!appDataLoaded){
+    appDataLoaded = true;
+    loadCart();
+    listenWallet();
+    listenProducts();
+    listenShops();
+    listenMyOrders();
+  } else {
+    renderHomeProducts();
+    renderShopList();
+  }
+}
+
+window.requestMandatoryLocation = (silent) => {
+  const btn = document.getElementById('allowLocationBtn');
+  if(btn && !silent){
+    btn.disabled = true;
+    btn.innerHTML = '<i class="fa-solid fa-spinner loc-gate-spin"></i>&nbsp; Location Detect Ho Rahi Hai...';
+  }
+  if(!navigator.geolocation){
+    showLocationGate('Aapka browser location support nahi karta — kripya doosra browser istemal karein.');
+    if(btn){ btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-location-crosshairs"></i>&nbsp; Location Allow Karein'; }
+    return;
+  }
+  navigator.geolocation.getCurrentPosition((pos) => {
+    customerLoc = { lat: pos.coords.latitude, lng: pos.coords.longitude };
+    if(btn){ btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-location-crosshairs"></i>&nbsp; Location Allow Karein'; }
+    enterAppAfterLocation();
+  }, (err) => {
+    console.warn('mandatory geo error', err);
+    if(btn){ btn.disabled = false; btn.innerHTML = '<i class="fa-solid fa-location-crosshairs"></i>&nbsp; Location Allow Karein'; }
+    let msg = 'Location allow nahi ho saki. Nearby shops dikhane ke liye location zaroori hai — dobara try karein.';
+    if(err && err.code === 1) msg = 'Aapne location allow nahi ki. Browser/phone settings mein Raftaroo Mart ke liye location permission "Allow" karein, phir "Location Allow Karein" button dobara dabayein.';
+    else if(err && err.code === 3) msg = 'Location detect hone mein time lag raha hai. Dobara try karein.';
+    showLocationGate(msg);
   }, { enableHighAccuracy:true, timeout:10000 });
 };
 
@@ -858,7 +944,6 @@ onAuthStateChanged(auth, async (user) => {
     currentUser = user;
     console.log("Raftaroo Mart UID:", user.uid);
     document.getElementById('auth-screen').classList.add('hidden');
-    document.getElementById('app').classList.remove('hidden');
 
     // ensure base user record exists (shared with Raftaroo main app)
     const uRef = ref(db, `users/${user.uid}`);
@@ -877,15 +962,18 @@ onAuthStateChanged(auth, async (user) => {
     document.getElementById('profileEmail').textContent = user.email || '';
     document.getElementById('checkoutPhone').value = savedPhone || '';
 
-    loadCart();
-    listenWallet();
-    listenProducts();
-    listenShops();
-    listenMyOrders();
-    detectLocation();
+    // Location lazmi hai — jab tak GPS fix nahi milta, shops/products bilkul nahi dikhengi.
+    if(customerLoc){
+      enterAppAfterLocation();
+    } else {
+      showLocationGate();
+      requestMandatoryLocation(true);
+    }
   } else {
     currentUser = null;
+    appDataLoaded = false;
     document.getElementById('app').classList.add('hidden');
+    document.getElementById('location-gate').classList.add('hidden');
     document.getElementById('auth-screen').classList.remove('hidden');
   }
 });
@@ -967,10 +1055,11 @@ function getSortedShops(list){
 }
 
 // Sirf MAX_SHOP_RADIUS_KM k andar wali shops return karta hai.
-// Agar customer ki location abhi maloom nahi, to filter apply nahi hota (sab shops dikhengi) taake app khali na lage.
+// Customer ki location lazmi hai (location-gate is liye zameen hai) — agar kisi wajah se
+// abhi bhi maloom nahi, to koi shop return nahi hoti (khali list) taake location k baghair kuch na dikhe.
 function getNearbyShops(list){
+  if(!customerLoc) return [];
   const sorted = getSortedShops(list);
-  if(!customerLoc) return sorted;
   return sorted.filter(([id,s,d]) => d==null || d<=MAX_SHOP_RADIUS_KM);
 }
 
@@ -1097,9 +1186,11 @@ function renderHomeProducts(){
   if(products.length===0){
     wrap.innerHTML='';
     empty.classList.remove('hidden');
-    empty.innerHTML = customerLoc
+    const catLabel = activeHomeCategory!=='all' ? labelForCat(activeHomeCategory) : '';
+    empty.innerHTML = (customerLoc
       ? `<i class="fa-solid fa-map-location-dot"></i><p>Aapke ${MAX_SHOP_RADIUS_KM}km ke ander koi shop nahi mili</p>`
-      : `<i class="fa-solid fa-location-crosshairs"></i><p>Location allow karein taake nearby shops dikha sakein</p>`;
+      : `<i class="fa-solid fa-location-crosshairs"></i><p>Location allow karein taake nearby shops dikha sakein</p>`)
+      + `<button class="wa-request-btn" onclick="requestViaWhatsApp('${catLabel.replace(/'/g,"")}')"><i class="fa-brands fa-whatsapp"></i> WhatsApp par Mangwayein</button>`;
     return;
   }
   empty.classList.add('hidden');
@@ -1116,9 +1207,10 @@ function renderShopList(){
   if(sorted.length===0){
     wrap.innerHTML='';
     empty.classList.remove('hidden');
-    empty.innerHTML = customerLoc
+    empty.innerHTML = (customerLoc
       ? `<i class="fa-solid fa-map-location-dot"></i><p>Aapke ${MAX_SHOP_RADIUS_KM}km ke ander koi shop nahi mili</p>`
-      : `<i class="fa-solid fa-location-crosshairs"></i><p>Location allow karein taake nearby shops dikha sakein</p>`;
+      : `<i class="fa-solid fa-location-crosshairs"></i><p>Location allow karein taake nearby shops dikha sakein</p>`)
+      + `<button class="wa-request-btn" onclick="requestViaWhatsApp()"><i class="fa-brands fa-whatsapp"></i> WhatsApp par Mangwayein</button>`;
     return;
   }
   empty.classList.add('hidden');
@@ -1134,7 +1226,6 @@ function shopCardHTML(id, s, distanceKm){
       <div class="sc-cat">${labelForShopCat(s.categories || s.category)}</div>
       <div class="sc-meta">
         ${distanceKm!=null ? `<span><i class="fa-solid fa-location-dot"></i> ${distanceKm.toFixed(1)} km away</span>` : `<span><i class="fa-solid fa-location-dot"></i> Distance N/A</span>`}
-        ${s.phone ? `<span><i class="fa-solid fa-phone"></i> ${s.phone}</span>` : ''}
       </div>
     </div>
     <i class="fa-solid fa-chevron-right" style="color:var(--text-muted);"></i>
@@ -1273,7 +1364,15 @@ function renderProductGrid(){
   document.getElementById('gridCount').textContent = list.length ? `${list.length} items` : '';
   const grid = document.getElementById('productGrid');
   const empty = document.getElementById('homeEmpty');
-  if(list.length===0){ grid.innerHTML=''; empty.classList.remove('hidden'); return; }
+  if(list.length===0){
+    grid.innerHTML='';
+    empty.classList.remove('hidden');
+    const shopName = currentShopData ? currentShopData.name : '';
+    const catLabel = activeCategory==='all' ? '' : labelForCat(activeCategory);
+    empty.innerHTML = `<i class="fa-solid fa-box-open"></i><p>Koi product is category mein abhi available nahi.</p>`
+      + `<button class="wa-request-btn" onclick="requestViaWhatsApp('${catLabel.replace(/'/g,"")}','${shopName.replace(/'/g,"")}')"><i class="fa-brands fa-whatsapp"></i> WhatsApp par Mangwayein</button>`;
+    return;
+  }
   empty.classList.add('hidden');
   grid.innerHTML = list.map(([id,p]) => productCardHTML(id,p)).join('');
 }
@@ -1285,6 +1384,8 @@ function renderSearch(){
   const shopWrap = document.getElementById('searchShopList');
   const shopTitle = document.getElementById('searchShopsTitle');
   const prodTitle = document.getElementById('searchProductsTitle');
+  const existingWaBtn = empty.querySelector('.wa-request-btn');
+  if(existingWaBtn) existingWaBtn.remove();
   if(!q){
     grid.innerHTML=''; shopWrap.innerHTML=''; shopTitle.classList.add('hidden'); prodTitle.classList.add('hidden');
     empty.classList.remove('hidden'); empty.querySelector('p').textContent='Type kuch bhi search karne ke liye'; return;
@@ -1294,7 +1395,13 @@ function renderSearch(){
 
   if(shopResults.length===0 && prodResults.length===0){
     grid.innerHTML=''; shopWrap.innerHTML=''; shopTitle.classList.add('hidden'); prodTitle.classList.add('hidden');
-    empty.classList.remove('hidden'); empty.querySelector('p').textContent='Koi shop ya product nahi mila'; return;
+    empty.classList.remove('hidden'); empty.querySelector('p').textContent='Koi shop ya product nahi mila';
+    const btn = document.createElement('button');
+    btn.className = 'wa-request-btn';
+    btn.innerHTML = `<i class="fa-brands fa-whatsapp"></i> WhatsApp par Mangwayein`;
+    btn.onclick = () => requestViaWhatsApp(q);
+    empty.appendChild(btn);
+    return;
   }
   empty.classList.add('hidden');
 
@@ -1345,6 +1452,8 @@ window.openProductModal = (id) => {
   document.getElementById('pdDesc').textContent = p.description || 'No description available.';
   renderModalCartAction(id, p);
   renderRelatedProducts(id, p);
+  const pStock = parseInt(p.stock)||0;
+  document.getElementById('pdWaFloatBtn').classList.toggle('hidden', pStock>0);
   const modal = document.getElementById('productModal');
   modal.classList.remove('hidden');
   modal.dataset.pid = id;
@@ -1380,6 +1489,46 @@ function renderRelatedProducts(id, p){
   wrap.className = 'product-grid';
   wrap.innerHTML = related.map(([rid,rp]) => productCardHTML(rid, rp)).join('');
 }
+/* ---------------- WHATSAPP ORDER / REQUEST SYSTEM ---------------- */
+const MART_SUPPORT_WA = '923222732251'; // Raftaroo Mart support number (fallback jab shop ka phone na ho)
+
+function toWaNumber(phone){
+  if(!phone) return MART_SUPPORT_WA;
+  let digits = String(phone).replace(/\D/g,'');
+  if(!digits) return MART_SUPPORT_WA;
+  if(digits.startsWith('0')) digits = '92' + digits.slice(1);
+  else if(!digits.startsWith('92')) digits = '92' + digits;
+  return digits;
+}
+
+// Product select karke direct WhatsApp par order bhejne k liye (cart/checkout k bagair, quick order)
+window.orderProductViaWhatsApp = (id) => {
+  const p = allProducts[id]; if(!p) return;
+  const shop = allShops[p.shopId] || {};
+  const stock = parseInt(p.stock)||0;
+  const msg = `🛒 *Order Request - Raftaroo Mart*\n\n` +
+    `Product: ${p.name}\n` +
+    `Price: Rs. ${priceDisplay(p)}\n` +
+    `Shop: ${shop.name || 'N/A'}\n` +
+    (stock<=0 ? `\n⚠️ Ye product website par "Out of Stock" show ho raha hai, kya ye available karwa sakte hain?\n` : `\n`) +
+    `Quantity: 1\n` +
+    `Mera naam: ${currentUser?.displayName || ''}\n` +
+    `Mera address: \n\n` +
+    `Please confirm karein aur order process karein. Shukriya!`;
+  // Shop ka asal number kabhi customer ko show nahi karna — hamesha Raftaroo support number use karna
+  window.open(`https://wa.me/${MART_SUPPORT_WA}?text=${encodeURIComponent(msg)}`, '_blank');
+};
+
+// Jab category/search/nearby mein koi product na mile, customer apni demand WhatsApp par bhej sake
+window.requestViaWhatsApp = (searchTerm, shopName) => {
+  let msg = `👋 Assalam-o-Alaikum Raftaroo Mart,\n\nMujhe ye product/category chahiye:\n`;
+  msg += `➡️ ${searchTerm && searchTerm.trim() ? searchTerm.trim() : '(please details neeche likhein)'}\n`;
+  if(shopName) msg += `Shop: ${shopName}\n`;
+  if(customerLoc) msg += `Meri location: https://www.google.com/maps?q=${customerLoc.lat},${customerLoc.lng}\n`;
+  msg += `\nKya ye mujhe mil sakta hai / kisi shop mein add kiya ja sakta hai? Shukriya!`;
+  window.open(`https://wa.me/${MART_SUPPORT_WA}?text=${encodeURIComponent(msg)}`, '_blank');
+};
+
 function renderModalCartAction(id, p){
   const wrap = document.getElementById('pdCartAction');
   if(p.hasVariants && Array.isArray(p.variants) && p.variants.length){
