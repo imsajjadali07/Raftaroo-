@@ -147,20 +147,8 @@ input, textarea, select { font-family:'Poppins',sans-serif; }
 .cat-chip.active i { color:#fff; }
 .cat-chip.one-dollar-chip { background:linear-gradient(135deg,#ffd76a,#ffb703); color:#5c3d00; }
 .cat-chip.one-dollar-chip i { color:#5c3d00; }
-.cat-chip.one-dollar-chip.active { background:linear-gradient(135deg,#ff9f1c,#ff7b00); color:#fff; }
+.cat-chip.one-dollar-chip.active { background:linear-gradient(135deg,#ff9f1c,#ff7b00); color:#fff; box-shadow:0 6px 16px rgba(255,123,0,0.4); }
 .cat-chip.one-dollar-chip.active i { color:#fff; }
-
-/* ---------- $1 SHOP THEME ---------- */
-.one-dollar-hero { margin:12px 16px; border-radius:18px; padding:20px 18px; background:linear-gradient(135deg,#fff3d6,#ffe08a 55%,#ffb703); position:relative; overflow:hidden; animation:odhIn .35s ease-out; }
-.one-dollar-hero .odh-tag { display:inline-flex; align-items:center; gap:5px; background:rgba(92,61,0,0.12); color:#5c3d00; font-size:10.5px; font-weight:800; padding:4px 10px; border-radius:20px; margin-bottom:8px; letter-spacing:.3px; text-transform:uppercase; }
-.one-dollar-hero h3 { font-size:20px; font-weight:800; color:#4a3300; line-height:1.25; max-width:75%; }
-.one-dollar-hero p { font-size:12px; color:#7a5200; margin-top:5px; max-width:75%; }
-.one-dollar-hero .odh-icon { position:absolute; right:-6px; bottom:-10px; font-size:96px; color:rgba(255,255,255,0.45); transform:rotate(-12deg); }
-@keyframes odhIn { from{opacity:0; transform:translateY(-6px);} to{opacity:1; transform:translateY(0);} }
-.one-dollar-zone { border-radius:22px; padding-top:2px; margin:0 6px; }
-.one-dollar-zone .section-title { padding-left:10px; padding-right:10px; }
-.one-dollar-zone .product-grid { padding-left:10px; padding-right:10px; }
-.one-dollar-badge { position:absolute; top:8px; right:8px; z-index:2; background:linear-gradient(135deg,#ffd76a,#ff9f1c); color:#5c3d00; font-size:10px; font-weight:800; padding:3px 8px; border-radius:8px; }
 
 /* ---------- BANNER ---------- */
 .mart-banner { margin:12px 16px; border-radius:16px; overflow:hidden; position:relative; }
@@ -450,33 +438,24 @@ input:checked + .slider::before { transform:translateX(18px); }
 
     <div class="cat-scroll" id="shopCategoryScroll"></div>
 
-    <div class="mart-banner" id="martBannerDefault">
+    <div class="mart-banner">
       <img src="https://iili.io/C7vaynp.jpg" alt="Raftaroo Mart Banner">
     </div>
 
-    <div class="one-dollar-hero hidden" id="oneDollarHero">
-      <span class="odh-tag"><i class="fa-solid fa-bolt"></i> Sirf Rs. 300 tak</span>
-      <h3>$1 Shop Deals</h3>
-      <p>Sasty aur zaroori products, ek dollar (~Rs. 277) ke andar — sab shops se ek jagah.</p>
-      <i class="fa-solid fa-tags odh-icon"></i>
-    </div>
-
-    <div id="homeProductSection">
-      <div class="section-title">
-        <h4 id="shopGridTitle">Qareeb ki Shops ke Products</h4>
-        <div class="section-title-right">
-          <span id="shopGridCount"></span>
-          <select class="sort-select" id="homeSortSelect" onchange="setHomeSort(this.value)">
-            <option value="default">Sort: Default</option>
-            <option value="price-asc">Price: Low to High</option>
-            <option value="price-desc">Price: High to Low</option>
-            <option value="name-asc">Name: A to Z</option>
-          </select>
-        </div>
+    <div class="section-title">
+      <h4 id="shopGridTitle">Qareeb ki Shops ke Products</h4>
+      <div class="section-title-right">
+        <span id="shopGridCount"></span>
+        <select class="sort-select" id="homeSortSelect" onchange="setHomeSort(this.value)">
+          <option value="default">Sort: Default</option>
+          <option value="price-asc">Price: Low to High</option>
+          <option value="price-desc">Price: High to Low</option>
+          <option value="name-asc">Name: A to Z</option>
+        </select>
       </div>
-      <div class="product-grid" id="homeProductGrid"></div>
-      <div class="empty-state hidden" id="shopsEmpty"><i class="fa-solid fa-box-open"></i><p>Is category mein abhi koi product available nahi.</p></div>
     </div>
+    <div class="product-grid" id="homeProductGrid"></div>
+    <div class="empty-state hidden" id="shopsEmpty"><i class="fa-solid fa-box-open"></i><p>Is category mein abhi koi product available nahi.</p></div>
   </div>
 
   <!-- SHOP VIEW (products of a selected shop) -->
@@ -727,6 +706,7 @@ const CATEGORIES = [
   { id:'personal', name:'Personal Care', icon:'fa-pump-soap' },
   { id:'electronics', name:'Electronics', icon:'fa-plug' },
   { id:'pharmacy', name:'Pharmacy', icon:'fa-briefcase-medical' },
+  { id:'toys', name:'Toys', icon:'fa-baseball' },
 ];
 // $1 Shop: 1 USD ≈ Rs. 277 in Pakistan — is se neeche (Rs. 300 tak) k products yahan dikhte hain
 const ONE_DOLLAR_THRESHOLD = 300;
@@ -1171,14 +1151,13 @@ function cardActionHTML(id, p, stock){
     </div>` : `<button class="add-btn" onclick="changeQty('${id}', 1, false, event)"><i class="fa-solid fa-plus"></i></button>`;
 }
 
-function homeProductCardHTML(id, p, distanceKm, showOneDollarBadge){
+function homeProductCardHTML(id, p, distanceKm){
   const stock = parseInt(p.stock)||0;
   const shop = allShops[p.shopId];
   return `
   <div class="product-card">
     <div class="product-img-wrap" onclick="openProductModal('${id}')">
       <img src="${p.image||'https://via.placeholder.com/300x270?text=Raftaroo+Mart'}" alt="${p.name}">
-      ${showOneDollarBadge ? `<span class="one-dollar-badge"><i class="fa-solid fa-tag"></i> $1</span>` : ''}
       ${stock<=0 ? `<span class="stock-badge out">Out of Stock</span>` : (stock<=5?`<span class="stock-badge">Only ${stock} left</span>`:'')}
     </div>
     <div class="product-info">
@@ -1217,11 +1196,7 @@ function renderHomeProducts(){
   }
 
   const gridTitleEl = document.getElementById('shopGridTitle');
-  const isOneDollar = activeHomeCategory===ONE_DOLLAR_CAT_ID;
-  if(gridTitleEl) gridTitleEl.textContent = isOneDollar ? `$1 Shop — Rs. ${ONE_DOLLAR_THRESHOLD} tak k Products` : 'Qareeb ki Shops ke Products';
-  document.getElementById('martBannerDefault')?.classList.toggle('hidden', isOneDollar);
-  document.getElementById('oneDollarHero')?.classList.toggle('hidden', !isOneDollar);
-  document.getElementById('homeProductSection')?.classList.toggle('one-dollar-zone', isOneDollar);
+  if(gridTitleEl) gridTitleEl.textContent = activeHomeCategory===ONE_DOLLAR_CAT_ID ? `$1 Shop — Rs. ${ONE_DOLLAR_THRESHOLD} tak k Products` : 'Qareeb ki Shops ke Products';
   document.getElementById('shopGridCount').textContent = products.length ? `${products.length} products` : '';
   if(products.length===0){
     wrap.innerHTML='';
@@ -1236,7 +1211,7 @@ function renderHomeProducts(){
     return;
   }
   empty.classList.add('hidden');
-  wrap.innerHTML = products.map(([id,p]) => homeProductCardHTML(id, p, distanceById[p.shopId], isOneDollar)).join('');
+  wrap.innerHTML = products.map(([id,p]) => homeProductCardHTML(id, p, distanceById[p.shopId])).join('');
 }
 
 function renderShopList(){
