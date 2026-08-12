@@ -145,6 +145,10 @@ input, textarea, select { font-family:'Poppins',sans-serif; }
 .cat-chip i { font-size:18px; color:var(--primary); }
 .cat-chip.active { background:var(--primary); color:#fff; }
 .cat-chip.active i { color:#fff; }
+.cat-chip.one-dollar-chip { background:linear-gradient(135deg,#ffd76a,#ffb703); color:#5c3d00; }
+.cat-chip.one-dollar-chip i { color:#5c3d00; }
+.cat-chip.one-dollar-chip.active { background:linear-gradient(135deg,#ff9f1c,#ff7b00); color:#fff; box-shadow:0 6px 16px rgba(255,123,0,0.4); }
+.cat-chip.one-dollar-chip.active i { color:#fff; }
 
 /* ---------- BANNER ---------- */
 .mart-banner { margin:12px 16px; border-radius:16px; overflow:hidden; position:relative; }
@@ -703,6 +707,9 @@ const CATEGORIES = [
   { id:'electronics', name:'Electronics', icon:'fa-plug' },
   { id:'pharmacy', name:'Pharmacy', icon:'fa-briefcase-medical' },
 ];
+// $1 Shop: 1 USD ≈ Rs. 277 in Pakistan — is se neeche (Rs. 300 tak) k products yahan dikhte hain
+const ONE_DOLLAR_THRESHOLD = 300;
+const ONE_DOLLAR_CAT_ID = '__onedollar__';
 const DELIVERY_FEE = 110;
 const DELIVERY_DISCOUNT_THRESHOLD = 500;
 const DELIVERY_DISCOUNT_PERCENT = 50;
@@ -1015,6 +1022,9 @@ function renderShopCategories(){
   const wrap = document.getElementById('shopCategoryScroll');
   if(!wrap) return;
   wrap.innerHTML = `
+    <div class="cat-chip one-dollar-chip ${activeHomeCategory===ONE_DOLLAR_CAT_ID?'active':''}" onclick="selectShopCategory('${ONE_DOLLAR_CAT_ID}')">
+      <i class="fa-solid fa-tags"></i><span>$1 Shop</span>
+    </div>
     <div class="cat-chip ${activeHomeCategory==='all'?'active':''}" onclick="selectShopCategory('all')">
       <i class="fa-solid fa-border-all"></i><span>All</span>
     </div>` + CATEGORIES.map(c => `
@@ -1174,7 +1184,8 @@ function renderHomeProducts(){
 
   // Products are filtered by THEIR OWN category, regardless of which shop sells them
   let products = Object.entries(allProducts).filter(([id,p]) => shopOrder.hasOwnProperty(p.shopId));
-  if(activeHomeCategory!=='all') products = products.filter(([id,p]) => p.category===activeHomeCategory);
+  if(activeHomeCategory===ONE_DOLLAR_CAT_ID) products = products.filter(([id,p]) => (parseInt(p.price)||0) > 0 && (parseInt(p.price)||0) <= ONE_DOLLAR_THRESHOLD);
+  else if(activeHomeCategory!=='all') products = products.filter(([id,p]) => p.category===activeHomeCategory);
 
   if(homeSortMode==='default'){
     // Naya/purana mix — har app open par order thora shuffle hota hai
@@ -1183,14 +1194,18 @@ function renderHomeProducts(){
     products = sortProductEntries(products, homeSortMode);
   }
 
+  const gridTitleEl = document.getElementById('shopGridTitle');
+  if(gridTitleEl) gridTitleEl.textContent = activeHomeCategory===ONE_DOLLAR_CAT_ID ? `$1 Shop — Rs. ${ONE_DOLLAR_THRESHOLD} tak k Products` : 'Qareeb ki Shops ke Products';
   document.getElementById('shopGridCount').textContent = products.length ? `${products.length} products` : '';
   if(products.length===0){
     wrap.innerHTML='';
     empty.classList.remove('hidden');
     const catLabel = activeHomeCategory!=='all' ? labelForCat(activeHomeCategory) : '';
-    empty.innerHTML = (customerLoc
-      ? `<i class="fa-solid fa-map-location-dot"></i><p>Aapke ${MAX_SHOP_RADIUS_KM}km ke ander koi shop nahi mili</p>`
-      : `<i class="fa-solid fa-location-crosshairs"></i><p>Location allow karein taake nearby shops dikha sakein</p>`)
+    empty.innerHTML = (!customerLoc
+      ? `<i class="fa-solid fa-location-crosshairs"></i><p>Location allow karein taake nearby shops dikha sakein</p>`
+      : activeHomeCategory===ONE_DOLLAR_CAT_ID
+        ? `<i class="fa-solid fa-tags"></i><p>Abhi Rs. ${ONE_DOLLAR_THRESHOLD} se neeche koi product available nahi</p>`
+        : `<i class="fa-solid fa-map-location-dot"></i><p>Aapke ${MAX_SHOP_RADIUS_KM}km ke ander koi shop nahi mili</p>`)
       + `<button class="wa-request-btn" onclick="requestViaWhatsApp('${catLabel.replace(/'/g,"")}')"><i class="fa-brands fa-whatsapp"></i> WhatsApp par Mangwayein</button>`;
     return;
   }
@@ -1369,7 +1384,7 @@ function productCardHTML(id, p){
   </div>`;
 }
 
-function labelForCat(id){ return (CATEGORIES.find(c=>c.id===id)||{}).name || 'General'; }
+function labelForCat(id){ if(id===ONE_DOLLAR_CAT_ID) return '$1 Shop'; return (CATEGORIES.find(c=>c.id===id)||{}).name || 'General'; }
 
 function renderProductGrid(){
   let list = getFilteredProducts();
