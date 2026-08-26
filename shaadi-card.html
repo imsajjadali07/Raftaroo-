@@ -174,6 +174,7 @@
     padding:13px 22px; border-radius:3px; font-family:var(--label); font-size:.85rem; font-weight:500;
     text-decoration:none;
   }
+  .whatsapp-btn svg{width:17px; height:17px; flex:none;}
   .msg{font-size:.85rem; padding:10px 14px; border-radius:4px; margin-top:14px;}
   .msg.error{background:rgba(122,31,61,.25); border:1px solid var(--maroon); color:var(--blush);}
   .msg.ok{background:rgba(31,122,77,.2); border:1px solid #1F7A4D; color:#bfe9d3;}
@@ -256,6 +257,34 @@
   .rsvp-btn{margin-top:24px;}
   .invite-photo{width:120px; height:120px; border-radius:50%; object-fit:cover; border:3px solid var(--gold); margin:0 auto 14px;}
 
+  /* couple dual-photo layout */
+  .invite-photos{display:flex; align-items:center; justify-content:center; gap:14px; margin:0 auto 16px;}
+  .invite-photos .photo-slot{width:96px; height:96px; border-radius:50%; object-fit:cover; border:3px solid var(--gold); box-shadow:0 6px 18px rgba(0,0,0,.35); background:rgba(246,238,224,.06);}
+  .invite-photos .photo-slot.placeholder{display:flex; align-items:center; justify-content:center; font-family:var(--script); font-style:italic; color:rgba(246,238,224,.35); font-size:.72rem; text-align:center;}
+  .invite-photos .photo-amp{font-family:var(--script); font-style:italic; color:var(--gold-bright); font-size:1.5rem;}
+
+  /* directions button */
+  .directions-btn{
+    display:inline-flex; align-items:center; gap:7px; margin-top:8px; background:transparent;
+    border:1px solid var(--gold); color:var(--gold-bright); padding:8px 14px; border-radius:20px;
+    font-family:var(--label); font-size:.72rem; letter-spacing:.05em; text-transform:uppercase;
+    text-decoration:none; transition:.2s;
+  }
+  .directions-btn:hover{background:var(--gold); color:var(--ink);}
+  .directions-btn svg{width:13px; height:13px; flex:none;}
+
+  /* floating whatsapp contact button */
+  .wa-float{
+    position:fixed; right:20px; bottom:20px; z-index:60; display:inline-flex; align-items:center; gap:9px;
+    background:#1F7A4D; color:#fff; padding:13px 18px; border-radius:30px; text-decoration:none;
+    box-shadow:0 10px 26px rgba(0,0,0,.4); font-family:var(--label); font-size:.8rem; font-weight:500;
+    transition:.2s;
+  }
+  .wa-float:hover{transform:translateY(-2px); box-shadow:0 14px 30px rgba(0,0,0,.45);}
+  .wa-float svg{width:19px; height:19px; flex:none;}
+  .wa-float .wa-label{white-space:nowrap;}
+  @media (max-width:520px){ .wa-float .wa-label{display:none;} .wa-float{padding:13px;} }
+
   .not-ready{text-align:center; color:rgba(246,238,224,.7); max-width:420px; font-size:.95rem; line-height:1.7;}
 
   /* ---------- Admin ---------- */
@@ -310,13 +339,13 @@
     measurementId: "G-EM1R4LGZTD"
   };
 
-  const CLOUDINARY_CLOUD  = "YOUR_CLOUD_NAME";
-  const CLOUDINARY_PRESET = "YOUR_UNSIGNED_PRESET";
+  const CLOUDINARY_CLOUD  = "sdqipouz";
+  const CLOUDINARY_PRESET = "ml_default";
 
-  const EASYPAISA_NUMBER = "0300-0000000";
-  const JAZZCASH_NUMBER  = "0300-0000000";
-  const ACCOUNT_TITLE    = "Your Name";
-  const OWNER_WHATSAPP   = "923000000000"; // country code + number, digits only
+  const EASYPAISA_NUMBER = "0322-2732251";
+  const JAZZCASH_NUMBER  = "0322-2732251";
+  const ACCOUNT_TITLE    = "Sajjad Ali";
+  const OWNER_WHATSAPP   = "923222732251"; // country code + number, digits only
   const ADMIN_PASSCODE   = "shaadi786";
   const PRICE_PKR        = "999";
 
@@ -333,6 +362,9 @@
     <circle cx="18" cy="18" r="3.5" stroke="#D4AF6A" stroke-width="1.2"/>
     <path d="M60 45 C 68 55, 62 66, 50 64" stroke="#D4AF6A" stroke-width="1.2"/>
   </svg>`;
+
+  const WA_ICON = `<svg viewBox="0 0 32 32" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M16.02 3C9.4 3 4 8.37 4 15c0 2.36.66 4.56 1.8 6.44L4 29l7.76-1.75A11.9 11.9 0 0 0 16.02 27C22.64 27 28 21.63 28 15S22.64 3 16.02 3Zm0 21.7c-1.98 0-3.83-.55-5.4-1.5l-.39-.23-4.6 1.04 1.02-4.48-.25-.4A9.63 9.63 0 0 1 6.3 15c0-5.36 4.36-9.7 9.72-9.7 5.36 0 9.7 4.34 9.7 9.7s-4.34 9.7-9.7 9.7Zm5.34-7.27c-.29-.15-1.73-.85-2-.95-.27-.1-.46-.15-.66.15-.2.29-.76.95-.93 1.14-.17.2-.34.22-.63.07-.29-.14-1.22-.45-2.32-1.43-.86-.76-1.44-1.71-1.61-2-.17-.29-.02-.45.13-.6.13-.13.29-.34.44-.51.15-.17.2-.29.29-.49.1-.2.05-.37-.02-.51-.07-.15-.66-1.58-.9-2.17-.24-.57-.48-.5-.66-.5-.17 0-.37-.02-.56-.02-.2 0-.51.07-.78.37-.27.29-1.02 1-1.02 2.43s1.05 2.82 1.19 3.01c.15.2 2.06 3.15 5 4.42.7.3 1.24.48 1.67.61.7.22 1.34.19 1.84.12.56-.08 1.73-.71 1.98-1.39.24-.68.24-1.27.17-1.39-.07-.12-.27-.2-.56-.34Z"/></svg>`;
+  const PIN_ICON = `<svg viewBox="0 0 24 24" fill="currentColor" xmlns="http://www.w3.org/2000/svg"><path d="M12 2C7.86 2 4.5 5.36 4.5 9.5c0 5.5 6.32 11.53 6.6 11.79.25.23.6.35.9.35s.65-.12.9-.35c.28-.26 6.6-6.29 6.6-11.79C19.5 5.36 16.14 2 12 2Zm0 10.25a2.75 2.75 0 1 1 0-5.5 2.75 2.75 0 0 1 0 5.5Z"/></svg>`;
 
   /* ---------------- Router ---------------- */
   function router(){
@@ -395,6 +427,10 @@
       </div></section>
 
       <footer>Shaadi Card — Har rishtay ki khoobsurat shuruaat.</footer>
+
+      <a class="wa-float" href="https://wa.me/${OWNER_WHATSAPP}?text=${encodeURIComponent('Assalam o Alaikum! Mujhe Shaadi Card ke baray mein maloomat chahiye.')}" target="_blank" rel="noopener">
+        ${WA_ICON}<span class="wa-label">WhatsApp Karain</span>
+      </a>
     `;
     initWizard();
   }
@@ -403,8 +439,11 @@
   let wizStep = 1;
   let selectedPayMethod = null;
   let screenshotUrl = '';
+  let bridePhotoUrl = '';
+  let groomPhotoUrl = '';
   let walkinOpen = false;
-  let walkinPhotoUrl = '';
+  let walkinBridePhotoUrl = '';
+  let walkinGroomPhotoUrl = '';
 
   function initWizard(){
     wizStep = 1;
@@ -438,6 +477,22 @@
         <div class="field"><label>Doosre function ka venue (optional)</label><input id="ev2Venue" placeholder="Venue address"></div>
         <div class="field"><label>Ek pyara sa paigham (optional)</label><textarea id="msg" rows="2" placeholder="e.g. Bila apki dua ke ye lamha adhoora hai">${esc(orderData.msg)}</textarea></div>
         <div class="field"><label>RSVP WhatsApp number</label><input id="rsvpNumber" placeholder="923001234567" value="${esc(orderData.rsvpNumber)}"></div>
+        <div class="grid-2">
+          <div class="field">
+            <label>Dulhan ki tasveer (optional)</label>
+            <div class="upload-box ${bridePhotoUrl ? 'has-file' : ''}" id="bridePhotoBox">
+              <input type="file" id="bridePhotoInput" accept="image/*" style="display:none" onchange="handleBridePhotoUpload(this.files[0])">
+              <div id="bridePhotoLabel" onclick="document.getElementById('bridePhotoInput').click()" style="cursor:pointer;">${bridePhotoUrl ? '✓ Tasveer upload ho gayi' : '📎 Dulhan ki tasveer upload karain'}</div>
+            </div>
+          </div>
+          <div class="field">
+            <label>Dulha ki tasveer (optional)</label>
+            <div class="upload-box ${groomPhotoUrl ? 'has-file' : ''}" id="groomPhotoBox">
+              <input type="file" id="groomPhotoInput" accept="image/*" style="display:none" onchange="handleGroomPhotoUpload(this.files[0])">
+              <div id="groomPhotoLabel" onclick="document.getElementById('groomPhotoInput').click()" style="cursor:pointer;">${groomPhotoUrl ? '✓ Tasveer upload ho gayi' : '📎 Dulha ki tasveer upload karain'}</div>
+            </div>
+          </div>
+        </div>
         <div class="wizard-nav">
           <span></span>
           <button class="btn-primary" onclick="wizardNext()">Agla Marhala</button>
@@ -474,8 +529,8 @@
           <p style="color:rgba(246,238,224,.75); line-height:1.7;">Aapka order darj kar liya gaya hai. Payment confirm hote hi aapka animated invite link WhatsApp par bhej diya jayega.</p>
           <div class="order-id">Order ID: ${orderData.id}</div>
           <p class="hint">Ye ID sambhal ke rakhain — payment poochne ke waqt kaam ayegi.</p>
-          <a href="https://wa.me/${OWNER_WHATSAPP}?text=${encodeURIComponent('Assalam o Alaikum, mera order ID '+orderData.id+' hai, maine order place kiya hai.')}" target="_blank">
-            <button class="whatsapp-btn" style="margin-top:16px;">Humein WhatsApp Karain →</button>
+          <a href="https://wa.me/${OWNER_WHATSAPP}?text=${encodeURIComponent('Assalam o Alaikum, mera order ID '+orderData.id+' hai, maine order place kiya hai.')}" target="_blank" rel="noopener">
+            <button class="whatsapp-btn" style="margin-top:16px;">${WA_ICON} Humein WhatsApp Karain</button>
           </a>
         </div>
       `;
@@ -533,6 +588,52 @@
     }
   }
 
+  async function handleBridePhotoUpload(file){
+    if(!file) return;
+    const box = document.getElementById('bridePhotoBox');
+    const label = document.getElementById('bridePhotoLabel');
+    label.textContent = 'Upload ho raha hai...';
+    try{
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('upload_preset', CLOUDINARY_PRESET);
+      const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`, { method:'POST', body: fd });
+      const data = await res.json();
+      if(data.secure_url){
+        bridePhotoUrl = data.secure_url;
+        box.classList.add('has-file');
+        label.textContent = '✓ Tasveer upload ho gayi';
+      } else {
+        label.textContent = 'Upload fail hua, dobara koshish karain';
+      }
+    } catch(e){
+      label.textContent = 'Upload fail hua, dobara koshish karain';
+    }
+  }
+
+  async function handleGroomPhotoUpload(file){
+    if(!file) return;
+    const box = document.getElementById('groomPhotoBox');
+    const label = document.getElementById('groomPhotoLabel');
+    label.textContent = 'Upload ho raha hai...';
+    try{
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('upload_preset', CLOUDINARY_PRESET);
+      const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`, { method:'POST', body: fd });
+      const data = await res.json();
+      if(data.secure_url){
+        groomPhotoUrl = data.secure_url;
+        box.classList.add('has-file');
+        label.textContent = '✓ Tasveer upload ho gayi';
+      } else {
+        label.textContent = 'Upload fail hua, dobara koshish karain';
+      }
+    } catch(e){
+      label.textContent = 'Upload fail hua, dobara koshish karain';
+    }
+  }
+
   function wizardNext(){
     orderData.brideName   = document.getElementById('brideName').value.trim();
     orderData.brideFather = document.getElementById('brideFather').value.trim();
@@ -572,6 +673,8 @@
       ...orderData,
       payMethod: selectedPayMethod,
       screenshotUrl: screenshotUrl || null,
+      bridePhotoUrl: bridePhotoUrl || null,
+      groomPhotoUrl: groomPhotoUrl || null,
       status: 'pending_payment',
       createdAt: Date.now()
     };
@@ -626,11 +729,12 @@
     if(o.ev2Name && o.ev2DateTime){
       const d2 = new Date(o.ev2DateTime);
       const fmt2 = d2.toLocaleString('en-GB', { day:'numeric', month:'long', year:'numeric', hour:'numeric', minute:'2-digit' });
+      const mapLink2 = o.ev2Venue ? `https://www.google.com/maps/search/${encodeURIComponent(o.ev2Venue)}` : '#';
       ev2Html = `
         <div class="event-block">
           <div class="event-name">${esc(o.ev2Name)}</div>
           <div class="event-date">${fmt2}</div>
-          ${o.ev2Venue ? `<div class="event-venue"><a href="https://www.google.com/maps/search/${encodeURIComponent(o.ev2Venue)}" target="_blank">${esc(o.ev2Venue)}</a></div>` : ''}
+          ${o.ev2Venue ? `<div class="event-venue">${esc(o.ev2Venue)}<br><a class="directions-btn" href="${mapLink2}" target="_blank" rel="noopener">${PIN_ICON} Map Par Dekhain</a></div>` : ''}
         </div>`;
     }
 
@@ -650,7 +754,7 @@
         </div>
 
         <div id="inviteCard" class="invite-card" style="display:none;">
-          ${o.photoUrl ? `<img class="invite-photo" src="${esc(o.photoUrl)}" alt="">` : ''}
+          ${buildPhotosHtml(o)}
           <div class="invite-eyebrow">— Bismillah —</div>
           <div class="invite-names">
             ${esc(o.brideName)}${o.brideFather ? `<div style="font-size:.7rem; font-family:var(--label); color:rgba(246,238,224,.55); letter-spacing:.06em; margin-top:4px;">${esc(o.brideFather)}</div>` : ''}
@@ -663,21 +767,41 @@
           <div class="event-block">
             <div class="event-name">${esc(o.ev1Name || 'Waleema')}</div>
             <div class="event-date">${ev1Fmt}</div>
-            ${o.ev1Venue ? `<div class="event-venue"><a href="${mapLink}" target="_blank">${esc(o.ev1Venue)}</a></div>` : ''}
+            ${o.ev1Venue ? `<div class="event-venue">${esc(o.ev1Venue)}<br><a class="directions-btn" href="${mapLink}" target="_blank" rel="noopener">${PIN_ICON} Map Par Dekhain</a></div>` : ''}
           </div>
           ${ev2Html}
 
           <div class="countdown" id="countdown"></div>
 
           ${o.rsvpNumber ? `
-          <a class="rsvp-btn" href="https://wa.me/${esc(o.rsvpNumber)}?text=${encodeURIComponent('Assalam o Alaikum! Main '+o.brideName+' & '+o.groomName+' ki shaadi mein shirkat karna chahta/chahti hun.')}" target="_blank">
-            <button class="whatsapp-btn">RSVP on WhatsApp</button>
+          <a class="rsvp-btn" href="https://wa.me/${esc(o.rsvpNumber)}?text=${encodeURIComponent('Assalam o Alaikum! Main '+o.brideName+' & '+o.groomName+' ki shaadi mein shirkat karna chahta/chahti hun.')}" target="_blank" rel="noopener">
+            <button class="whatsapp-btn">${WA_ICON} RSVP on WhatsApp</button>
           </a>` : ''}
         </div>
+
+        ${o.rsvpNumber ? `
+        <a class="wa-float" href="https://wa.me/${esc(o.rsvpNumber)}?text=${encodeURIComponent('Assalam o Alaikum! Main '+o.brideName+' & '+o.groomName+' ki shaadi ke bare mein rabta karna chahta/chahti hun.')}" target="_blank" rel="noopener">
+          ${WA_ICON}<span class="wa-label">WhatsApp Karain</span>
+        </a>` : ''}
       </div>
     `;
 
     if(ev1Date) startCountdown(ev1Date);
+  }
+
+  function buildPhotosHtml(o){
+    const bride = o.bridePhotoUrl || (!o.groomPhotoUrl ? o.photoUrl : '');
+    const groom = o.groomPhotoUrl || '';
+    if(!bride && !groom) return '';
+    if(bride && groom){
+      return `
+        <div class="invite-photos">
+          <img class="photo-slot" src="${esc(bride)}" alt="Dulhan">
+          <span class="photo-amp">&amp;</span>
+          <img class="photo-slot" src="${esc(groom)}" alt="Dulha">
+        </div>`;
+    }
+    return `<img class="invite-photo" src="${esc(bride || groom)}" alt="">`;
   }
 
   function openEnvelope(){
@@ -770,6 +894,8 @@
             Payment method: ${o.payMethod === 'transfer' ? 'EasyPaisa/JazzCash Transfer' : 'WhatsApp Confirmation'}<br>
             RSVP number: ${esc(o.rsvpNumber || '-')}
             ${o.screenshotUrl ? `<br><a href="${o.screenshotUrl}" target="_blank" style="color:var(--gold-bright);">Screenshot dekhain →</a>` : ''}
+            ${o.bridePhotoUrl ? `<br><a href="${o.bridePhotoUrl}" target="_blank" style="color:var(--gold-bright);">Dulhan ki tasveer →</a>` : ''}
+            ${o.groomPhotoUrl ? `<br><a href="${o.groomPhotoUrl}" target="_blank" style="color:var(--gold-bright);">Dulha ki tasveer →</a>` : ''}
           </div>
           <div class="actions">
             ${o.status !== 'approved' ? `<button class="small-btn solid" onclick="approveOrder('${o.id}')">Payment Confirm &amp; Link Banayein</button>` : ''}
@@ -811,11 +937,20 @@
         <div class="field"><label>Doosre function ka venue (optional)</label><input id="wkEv2Venue" placeholder="Venue address"></div>
         <div class="field"><label>Ek pyara sa paigham (optional)</label><textarea id="wkMsg" rows="2"></textarea></div>
         <div class="field"><label>RSVP WhatsApp number</label><input id="wkRsvpNumber" placeholder="923001234567"></div>
-        <div class="field">
-          <label>Couple photo (optional)</label>
-          <div class="upload-box" id="wkUploadBox">
-            <input type="file" id="wkPhotoInput" accept="image/*" style="display:none" onchange="handleWalkinPhoto(this.files[0])">
-            <div id="wkUploadLabel" onclick="document.getElementById('wkPhotoInput').click()" style="cursor:pointer;">📎 Photo upload karain</div>
+        <div class="grid-2">
+          <div class="field">
+            <label>Dulhan ki tasveer (optional)</label>
+            <div class="upload-box" id="wkBridePhotoBox">
+              <input type="file" id="wkBridePhotoInput" accept="image/*" style="display:none" onchange="handleWalkinBridePhoto(this.files[0])">
+              <div id="wkBridePhotoLabel" onclick="document.getElementById('wkBridePhotoInput').click()" style="cursor:pointer;">📎 Photo upload karain</div>
+            </div>
+          </div>
+          <div class="field">
+            <label>Dulha ki tasveer (optional)</label>
+            <div class="upload-box" id="wkGroomPhotoBox">
+              <input type="file" id="wkGroomPhotoInput" accept="image/*" style="display:none" onchange="handleWalkinGroomPhoto(this.files[0])">
+              <div id="wkGroomPhotoLabel" onclick="document.getElementById('wkGroomPhotoInput').click()" style="cursor:pointer;">📎 Photo upload karain</div>
+            </div>
           </div>
         </div>
         <button class="btn-primary" onclick="submitWalkin()">Card Banayein — Link Foran Milega</button>
@@ -824,10 +959,10 @@
       </div>`;
   }
 
-  async function handleWalkinPhoto(file){
+  async function handleWalkinBridePhoto(file){
     if(!file) return;
-    const box = document.getElementById('wkUploadBox');
-    const label = document.getElementById('wkUploadLabel');
+    const box = document.getElementById('wkBridePhotoBox');
+    const label = document.getElementById('wkBridePhotoLabel');
     label.textContent = 'Upload ho raha hai...';
     try{
       const fd = new FormData();
@@ -836,7 +971,30 @@
       const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`, { method:'POST', body: fd });
       const data = await res.json();
       if(data.secure_url){
-        walkinPhotoUrl = data.secure_url;
+        walkinBridePhotoUrl = data.secure_url;
+        box.classList.add('has-file');
+        label.textContent = '✓ Photo upload ho gaya';
+      } else {
+        label.textContent = 'Upload fail hua, dobara koshish karain';
+      }
+    } catch(e){
+      label.textContent = 'Upload fail hua, dobara koshish karain';
+    }
+  }
+
+  async function handleWalkinGroomPhoto(file){
+    if(!file) return;
+    const box = document.getElementById('wkGroomPhotoBox');
+    const label = document.getElementById('wkGroomPhotoLabel');
+    label.textContent = 'Upload ho raha hai...';
+    try{
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('upload_preset', CLOUDINARY_PRESET);
+      const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`, { method:'POST', body: fd });
+      const data = await res.json();
+      if(data.secure_url){
+        walkinGroomPhotoUrl = data.secure_url;
         box.classList.add('has-file');
         label.textContent = '✓ Photo upload ho gaya';
       } else {
@@ -871,7 +1029,8 @@
       ev2Venue: document.getElementById('wkEv2Venue').value.trim(),
       msg: document.getElementById('wkMsg').value.trim(),
       rsvpNumber: document.getElementById('wkRsvpNumber').value.trim(),
-      photoUrl: walkinPhotoUrl || null,
+      bridePhotoUrl: walkinBridePhotoUrl || null,
+      groomPhotoUrl: walkinGroomPhotoUrl || null,
       payMethod: 'in_person',
       status: 'approved',
       createdAt: Date.now()
@@ -884,7 +1043,8 @@
         <div class="msg ok">Card ban gaya! Link neeche hai — customer ko bhej dain.</div>
         <div class="link-box">${link}</div>
         <a href="https://wa.me/${esc(record.rsvpNumber||'')}?text=${encodeURIComponent('Aapka Shaadi Card tayyar hai: '+link)}" target="_blank"><button class="small-btn" style="margin-top:10px;">WhatsApp par bhejain</button></a>`;
-      walkinPhotoUrl = '';
+      walkinBridePhotoUrl = '';
+      walkinGroomPhotoUrl = '';
     }catch(e){
       wkMsgBox.innerHTML = `<div class="msg error">Card save nahi ho saka. Firebase config check karain.</div>`;
     }
