@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="ur" dir="ltr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Shaadi Card — Animated Wedding Invitations</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,600&family=Cormorant+Garamond:ital,wght@0,500;1,500;1,600&family=Jost:wght@300;400;500;600&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
+
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
+
+<style>
+  :root{
+    --ink:#0F2E1D;          /* deep bottle green - primary */
+    --ink-2:#173D28;        /* slightly lighter green for panels */
+    --maroon:#7A1F3D;       /* rani/maroon accent */
+    --gold:#D4AF6A;         /* foil gold accent */
+    --gold-bright:#F0D48A;
+    --ivory:#F6EEE0;        /* warm ivory - text on dark / card bg */
+    --blush:#E9CBB4;        /* tertiary warm accent */
+    --line: rgba(212,175,106,0.35);
+    --shadow: 0 20px 60px rgba(0,0,0,.35);
+    --display: 'Playfair Display', serif;
+    --script: 'Cormorant Garamond', serif;
+    --body: 'Jost', sans-serif;
+    --label: 'Poppins', sans-serif;
+  }
+  *{box-sizing:border-box;}
+  html{scroll-behavior:smooth;}
+  body{
+    margin:0; background:var(--ink); color:var(--ivory);
+    font-family:var(--body); -webkit-font-smoothing:antialiased;
+  }
+  a{color:inherit;}
+  img{max-width:100%; display:block;}
+  button{font-family:inherit; cursor:pointer;}
+  ::selection{background:var(--gold); color:var(--ink);}
+
+  .eyebrow{
+    font-family:var(--label); font-size:.72rem; letter-spacing:.28em;
+    text-transform:uppercase; color:var(--gold); font-weight:600;
+  }
+
+  /* ---------- Layout shell ---------- */
+  .wrap{max-width:1080px; margin:0 auto; padding:0 24px;}
+  .site-nav{
+    position:sticky; top:0; z-index:40;
+    background:linear-gradient(180deg, var(--ink) 60%, rgba(15,46,29,.85));
+    border-bottom:1px solid var(--line);
+    backdrop-filter: blur(6px);
+  }
+  .site-nav .wrap{display:flex; align-items:center; justify-content:space-between; height:64px;}
+  .brand{font-family:var(--display); font-size:1.25rem; letter-spacing:.02em;}
+  .brand em{font-style:italic; color:var(--gold-bright); font-family:var(--script);}
+  .nav-cta{
+    border:1px solid var(--gold); color:var(--gold-bright); background:transparent;
+    padding:9px 18px; border-radius:2px; font-family:var(--label); font-size:.78rem;
+    letter-spacing:.08em; text-transform:uppercase; transition:.25s;
+  }
+  .nav-cta:hover{background:var(--gold); color:var(--ink);}
+
+  /* ---------- Hero ---------- */
+  .hero{
+    position:relative; padding:88px 0 70px; overflow:hidden;
+    background:
+      radial-gradient(ellipse 60% 50% at 50% 0%, rgba(212,175,106,.14), transparent 70%),
+      var(--ink);
+  }
+  .hero .wrap{display:grid; grid-template-columns:1.1fr .9fr; gap:56px; align-items:center;}
+  @media (max-width:860px){ .hero .wrap{grid-template-columns:1fr;} }
+
+  .hero h1{
+    font-family:var(--display); font-weight:700; font-size:clamp(2.1rem,4.2vw,3.4rem);
+    line-height:1.08; margin:14px 0 18px; color:var(--ivory);
+  }
+  .hero h1 i{font-style:italic; font-family:var(--script); color:var(--gold-bright); font-weight:500;}
+  .hero p.lead{
+    font-size:1.05rem; line-height:1.75; color:rgba(246,238,224,.82); max-width:46ch; margin:0 0 28px;
+  }
+  .hero-ctas{display:flex; gap:14px; flex-wrap:wrap;}
+  .btn-primary{
+    background:var(--gold); color:var(--ink); border:none; padding:15px 30px;
+    font-family:var(--label); font-weight:600; font-size:.85rem; letter-spacing:.06em;
+    text-transform:uppercase; border-radius:2px; box-shadow:var(--shadow); transition:.25s;
+  }
+  .btn-primary:hover{background:var(--gold-bright); transform:translateY(-1px);}
+  .btn-ghost{
+    background:transparent; border:1px solid rgba(246,238,224,.35); color:var(--ivory);
+    padding:15px 26px; font-family:var(--label); font-size:.85rem; letter-spacing:.06em;
+    text-transform:uppercase; border-radius:2px;
+  }
+
+  /* mock card preview in hero */
+  .mock-card-frame{
+    position:relative; background:var(--ink-2); border:1px solid var(--line);
+    border-radius:4px; padding:34px 26px; text-align:center; box-shadow:var(--shadow);
+    transform:rotate(1.5deg);
+  }
+  .mock-card-frame::before, .mock-card-frame::after{
+    content:''; position:absolute; width:46px; height:46px; border:1.5px solid var(--gold);
+    opacity:.7;
+  }
+  .mock-card-frame::before{top:10px; left:10px; border-right:none; border-bottom:none;}
+  .mock-card-frame::after{bottom:10px; right:10px; border-left:none; border-top:none;}
+  .mock-eyebrow{font-family:var(--script); font-style:italic; color:var(--gold-bright); font-size:1rem;}
+  .mock-names{font-family:var(--display); font-size:2rem; margin:10px 0; color:var(--ivory);}
+  .mock-amp{display:block; font-family:var(--script); font-style:italic; color:var(--gold); font-size:1.3rem; margin:2px 0;}
+  .mock-date{font-family:var(--label); font-size:.75rem; letter-spacing:.14em; color:rgba(246,238,224,.7); text-transform:uppercase; margin-top:12px;}
+  .shimmer{
+    position:absolute; inset:0; pointer-events:none;
+    background:linear-gradient(115deg, transparent 40%, rgba(240,212,138,.22) 50%, transparent 60%);
+    background-size:250% 250%; animation:shimmerMove 4.5s ease-in-out infinite;
+  }
+  @keyframes shimmerMove{ 0%{background-position:120% 0;} 100%{background-position:-20% 0;} }
+
+  /* ---------- How it works (real sequence -> numbers justified) ---------- */
+  .steps-section{padding:80px 0; border-top:1px solid var(--line);}
+  .steps-section h2{font-family:var(--display); font-size:1.9rem; margin-bottom:44px;}
+  .steps{display:grid; grid-template-columns:repeat(4,1fr); gap:28px;}
+  @media (max-width:860px){ .steps{grid-template-columns:1fr 1fr;} }
+  @media (max-width:520px){ .steps{grid-template-columns:1fr;} }
+  .step{border-top:1px solid var(--gold); padding-top:16px;}
+  .step .num{font-family:var(--script); font-style:italic; font-size:1.6rem; color:var(--gold);}
+  .step h3{font-family:var(--body); font-weight:500; font-size:1.02rem; margin:8px 0 6px;}
+  .step p{font-size:.88rem; color:rgba(246,238,224,.68); line-height:1.6; margin:0;}
+
+  /* ---------- Order wizard ---------- */
+  .order-section{padding:70px 0 100px; border-top:1px solid var(--line);}
+  .order-head{text-align:center; max-width:520px; margin:0 auto 40px;}
+  .order-head h2{font-family:var(--display); font-size:2rem; margin:12px 0;}
+  .card-box{
+    background:var(--ink-2); border:1px solid var(--line); border-radius:6px;
+    padding:36px; max-width:640px; margin:0 auto; box-shadow:var(--shadow);
+  }
+  .progress{display:flex; gap:8px; margin-bottom:30px;}
+  .progress span{flex:1; height:3px; background:rgba(246,238,224,.15); border-radius:2px;}
+  .progress span.active{background:var(--gold);}
+
+  .field{margin-bottom:18px;}
+  .field label{display:block; font-family:var(--label); font-size:.72rem; letter-spacing:.09em; text-transform:uppercase; color:var(--gold-bright); margin-bottom:7px;}
+  .field input, .field textarea{
+    width:100%; background:rgba(246,238,224,.06); border:1px solid rgba(246,238,224,.2);
+    color:var(--ivory); padding:12px 14px; font-family:var(--body); font-size:.95rem; border-radius:3px;
+  }
+  .field input::placeholder, .field textarea::placeholder{color:rgba(246,238,224,.35);}
+  .field input:focus, .field textarea:focus{outline:2px solid var(--gold); outline-offset:1px; border-color:var(--gold);}
+  .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
+  @media (max-width:520px){ .grid-2{grid-template-columns:1fr;} }
+  .hint{font-size:.78rem; color:rgba(246,238,224,.5); margin-top:6px;}
+
+  .wizard-nav{display:flex; justify-content:space-between; align-items:center; margin-top:26px; gap:12px;}
+
+  .pay-options{display:grid; gap:14px; margin:10px 0 20px;}
+  .pay-option{
+    border:1px solid rgba(246,238,224,.2); border-radius:5px; padding:16px 18px; cursor:pointer; transition:.2s;
+  }
+  .pay-option.selected{border-color:var(--gold); background:rgba(212,175,106,.08);}
+  .pay-option h4{margin:0 0 4px; font-family:var(--body); font-weight:500; font-size:.98rem;}
+  .pay-option p{margin:0; font-size:.82rem; color:rgba(246,238,224,.62);}
+  .pay-detail{margin-top:14px; padding-top:14px; border-top:1px dashed rgba(246,238,224,.2);}
+  .num-pill{
+    display:inline-block; background:var(--ink); border:1px solid var(--gold); color:var(--gold-bright);
+    padding:8px 14px; border-radius:3px; font-family:var(--label); letter-spacing:.05em; margin:6px 0;
+  }
+  .upload-box{
+    border:1.5px dashed rgba(246,238,224,.3); border-radius:5px; padding:20px; text-align:center; margin-top:10px;
+  }
+  .upload-box.has-file{border-color:var(--gold); border-style:solid;}
+  .price-tag{font-family:var(--display); font-size:1.5rem; color:var(--gold-bright); margin:2px 0 16px;}
+
+  .whatsapp-btn{
+    display:inline-flex; align-items:center; gap:8px; background:#1F7A4D; color:#fff; border:none;
+    padding:13px 22px; border-radius:3px; font-family:var(--label); font-size:.85rem; font-weight:500;
+    text-decoration:none;
+  }
+  .msg{font-size:.85rem; padding:10px 14px; border-radius:4px; margin-top:14px;}
+  .msg.error{background:rgba(122,31,61,.25); border:1px solid var(--maroon); color:var(--blush);}
+  .msg.ok{background:rgba(31,122,77,.2); border:1px solid #1F7A4D; color:#bfe9d3;}
+
+  .confirm-box{text-align:center; padding:20px 0;}
+  .confirm-box .order-id{
+    font-family:var(--label); letter-spacing:.08em; color:var(--gold-bright); font-size:1.05rem;
+    border:1px solid var(--gold); display:inline-block; padding:8px 18px; border-radius:3px; margin:14px 0;
+  }
+
+  footer{padding:34px 0; text-align:center; font-size:.8rem; color:rgba(246,238,224,.45); border-top:1px solid var(--line);}
+
+  /* ---------- Invite page ---------- */
+  .invite-page{min-height:100vh; background:
+      radial-gradient(ellipse 70% 50% at 50% -10%, rgba(212,175,106,.16), transparent 65%), var(--ink);
+    display:flex; align-items:center; justify-content:center; padding:26px; position:relative; overflow:hidden;}
+  .paisley-corner{position:absolute; width:120px; height:120px; opacity:.55;}
+  .paisley-corner.tl{top:18px; left:18px;}
+  .paisley-corner.tr{top:18px; right:18px; transform:scaleX(-1);}
+  .paisley-corner.bl{bottom:18px; left:18px; transform:scaleY(-1);}
+  .paisley-corner.br{bottom:18px; right:18px; transform:scale(-1,-1);}
+  @media (max-width:600px){ .paisley-corner{width:70px; height:70px;} }
+
+  /* envelope */
+  .envelope-wrap{position:relative; width:min(360px, 84vw); cursor:pointer; perspective:1200px;}
+  .envelope-body{
+    position:relative; background:linear-gradient(160deg, var(--maroon), #5c1730);
+    border:1px solid var(--gold); border-radius:6px; height:230px; box-shadow:var(--shadow);
+    display:flex; align-items:center; justify-content:center; overflow:hidden;
+  }
+  .envelope-flap{
+    position:absolute; top:0; left:0; width:100%; height:0; border-style:solid;
+    border-width:0 180px 140px 180px; border-color:transparent transparent #7A2143 transparent;
+    transform-origin:top; transition:transform .9s cubic-bezier(.6,.05,.2,1);
+    filter:drop-shadow(0 6px 6px rgba(0,0,0,.3));
+  }
+  .envelope-wrap.opened .envelope-flap{transform:rotateX(180deg);}
+  .wax-seal{
+    position:absolute; top:64%; left:50%; transform:translate(-50%,-50%); width:58px; height:58px;
+    border-radius:50%; background:radial-gradient(circle at 35% 30%, #C9A227, #7A1F3D 70%);
+    border:2px solid var(--gold-bright); z-index:5; display:flex; align-items:center; justify-content:center;
+    font-family:var(--script); font-style:italic; color:var(--gold-bright); font-size:1rem;
+    transition:transform .5s ease, opacity .5s ease;
+  }
+  .envelope-wrap.opened .wax-seal{transform:translate(-50%,-50%) scale(0); opacity:0;}
+  .envelope-hint{
+    text-align:center; margin-top:18px; font-family:var(--label); font-size:.72rem; letter-spacing:.14em;
+    text-transform:uppercase; color:var(--gold-bright); animation:pulse 1.8s ease-in-out infinite;
+  }
+  @keyframes pulse{ 0%,100%{opacity:.55;} 50%{opacity:1;} }
+
+  .invite-card{
+    width:min(460px, 92vw); background:var(--ink-2); border:1px solid var(--gold); border-radius:8px;
+    padding:44px 30px; text-align:center; box-shadow:var(--shadow); position:relative;
+    opacity:0; transform:translateY(24px) scale(.97); transition:opacity .8s ease .15s, transform .8s ease .15s;
+  }
+  .invite-card.show{opacity:1; transform:translateY(0) scale(1);}
+  .invite-card .divider{width:60px; height:1px; background:var(--gold); margin:16px auto;}
+  .invite-eyebrow{font-family:var(--script); font-style:italic; color:var(--gold-bright); font-size:1.15rem;}
+  .invite-names{font-family:var(--display); font-size:clamp(1.7rem,5vw,2.4rem); margin:10px 0; line-height:1.25;}
+  .invite-amp{display:block; font-family:var(--script); font-style:italic; color:var(--gold); font-size:1.4rem; margin:6px 0;}
+  .invite-parents{font-size:.82rem; color:rgba(246,238,224,.65); margin:4px 0;}
+  .invite-msg{font-family:var(--script); font-style:italic; font-size:1.05rem; color:rgba(246,238,224,.85); margin:16px 0 4px;}
+
+  .event-block{
+    text-align:left; background:rgba(246,238,224,.05); border:1px solid var(--line); border-radius:5px;
+    padding:16px 18px; margin-top:20px;
+  }
+  .event-block + .event-block{margin-top:12px;}
+  .event-name{font-family:var(--label); font-size:.72rem; letter-spacing:.12em; text-transform:uppercase; color:var(--gold-bright); margin-bottom:6px;}
+  .event-date{font-family:var(--display); font-size:1.15rem;}
+  .event-venue{font-size:.85rem; color:rgba(246,238,224,.7); margin-top:4px;}
+  .event-venue a{color:var(--gold-bright); text-decoration:underline;}
+
+  .countdown{display:flex; gap:10px; justify-content:center; margin:22px 0 6px;}
+  .cd-unit{background:rgba(212,175,106,.1); border:1px solid var(--line); border-radius:4px; padding:10px 12px; min-width:58px;}
+  .cd-unit .n{font-family:var(--display); font-size:1.3rem; display:block;}
+  .cd-unit .l{font-family:var(--label); font-size:.6rem; letter-spacing:.08em; text-transform:uppercase; color:rgba(246,238,224,.55);}
+
+  .rsvp-btn{margin-top:24px;}
+  .invite-photo{width:120px; height:120px; border-radius:50%; object-fit:cover; border:3px solid var(--gold); margin:0 auto 14px;}
+
+  .not-ready{text-align:center; color:rgba(246,238,224,.7); max-width:420px; font-size:.95rem; line-height:1.7;}
+
+  /* ---------- Admin ---------- */
+  .admin-wrap{max-width:760px; margin:0 auto; padding:60px 24px 100px;}
+  .admin-login{max-width:340px; margin:120px auto; text-align:center;}
+  .order-row{
+    background:var(--ink-2); border:1px solid var(--line); border-radius:5px; padding:18px 20px; margin-bottom:14px;
+  }
+  .order-row .top{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;}
+  .status-pill{font-family:var(--label); font-size:.68rem; letter-spacing:.06em; text-transform:uppercase; padding:4px 10px; border-radius:20px;}
+  .status-pill.pending_payment{background:rgba(212,175,106,.15); color:var(--gold-bright); border:1px solid var(--gold);}
+  .status-pill.approved{background:rgba(31,122,77,.2); color:#bfe9d3; border:1px solid #1F7A4D;}
+  .order-row .meta{font-size:.82rem; color:rgba(246,238,224,.65); margin-top:8px; line-height:1.7;}
+  .order-row .actions{margin-top:12px; display:flex; gap:10px; flex-wrap:wrap;}
+  .small-btn{
+    background:transparent; border:1px solid var(--gold); color:var(--gold-bright); padding:7px 14px;
+    border-radius:3px; font-family:var(--label); font-size:.75rem; letter-spacing:.04em;
+  }
+  .small-btn.solid{background:var(--gold); color:var(--ink);}
+  .link-box{
+    background:rgba(246,238,224,.06); border:1px solid var(--line); padding:8px 12px; border-radius:3px;
+    font-family:var(--label); font-size:.78rem; word-break:break-all; margin-top:8px;
+  }
+</style>
+</head>
+<body>
+
+<div id="app"></div>
+
+<script>
+/* =========================================================================
+   SHAADI CARD — single-file wedding invitation ordering + reveal site
+   -------------------------------------------------------------------------
+   SETUP BEFORE GOING LIVE — replace the placeholders below:
+   1) FIREBASE_CONFIG   -> your Firebase project config (Realtime Database)
+   2) CLOUDINARY_CLOUD   -> your Cloudinary cloud name
+   3) CLOUDINARY_PRESET  -> an UNSIGNED upload preset from your Cloudinary settings
+   4) EASYPAISA_NUMBER / JAZZCASH_NUMBER / ACCOUNT_TITLE -> your real numbers
+   5) OWNER_WHATSAPP     -> your WhatsApp number (with country code, no + or spaces)
+   6) ADMIN_PASSCODE     -> change this before sharing the admin link with anyone
+   7) PRICE_PKR          -> your price
+   ========================================================================= */
+
+  const FIREBASE_CONFIG = {
+    apiKey: "AIzaSyBBS7jGzuVlTIIeN9VFBxpwHkNf-mIRzDo",
+    authDomain: "raftaroo-9ce8d.firebaseapp.com",
+    databaseURL: "https://raftaroo-9ce8d-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "raftaroo-9ce8d",
+    storageBucket: "raftaroo-9ce8d.firebasestorage.app",
+    messagingSenderId: "773738074182",
+    appId: "1:773738074182:web:b7a873959c7ab8edc0ba47",
+    measurementId: "G-EM1R4LGZTD"
+  };
+
+  const CLOUDINARY_CLOUD  = "YOUR_CLOUD_NAME";
+  const CLOUDINARY_PRESET = "YOUR_UNSIGNED_PRESET";
+
+  const EASYPAISA_NUMBER = "0300-0000000";
+  const JAZZCASH_NUMBER  = "0300-0000000";
+  const ACCOUNT_TITLE    = "Your Name";
+  const OWNER_WHATSAPP   = "923000000000"; // country code + number, digits only
+  const ADMIN_PASSCODE   = "shaadi786";
+  const PRICE_PKR        = "999";
+
+  firebase.initializeApp(FIREBASE_CONFIG);
+  const db = firebase.database();
+
+  const app = document.getElementById('app');
+  const esc = (s) => (s || '').toString().replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
+  const genId = () => 'SC' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2,5).toUpperCase();
+
+  const PAISLEY_SVG = `<svg viewBox="0 0 120 120" fill="none" xmlns="http://www.w3.org/2000/svg">
+    <path d="M10 10 C 40 10, 40 40, 60 45 C 85 50, 95 25, 110 10" stroke="#D4AF6A" stroke-width="1.4"/>
+    <path d="M10 10 C 10 40, 40 40, 45 60 C 50 85, 25 95, 10 110" stroke="#D4AF6A" stroke-width="1.4"/>
+    <circle cx="18" cy="18" r="3.5" stroke="#D4AF6A" stroke-width="1.2"/>
+    <path d="M60 45 C 68 55, 62 66, 50 64" stroke="#D4AF6A" stroke-width="1.2"/>
+  </svg>`;
+
+  /* ---------------- Router ---------------- */
+  function router(){
+    const hash = location.hash || '#/';
+    if(hash.startsWith('#/invite/')){
+      renderInvite(decodeURIComponent(hash.replace('#/invite/','')));
+    } else if(hash.startsWith('#/admin')){
+      renderAdmin();
+    } else {
+      renderLanding();
+    }
+  }
+  window.addEventListener('hashchange', router);
+  window.addEventListener('DOMContentLoaded', router);
+
+  /* ============================================================
+     LANDING + ORDER WIZARD
+  ============================================================ */
+  function renderLanding(){
+    app.innerHTML = `
+      <nav class="site-nav"><div class="wrap">
+        <div class="brand">Shaadi <em>Card</em></div>
+        <a href="#order" class="nav-cta">Order Karain</a>
+      </div></nav>
+
+      <section class="hero"><div class="wrap">
+        <div>
+          <div class="eyebrow">Animated Wedding Invitations</div>
+          <h1>Aapki shaadi ki khushi, ek <i>khoobsurat animated link</i> mein</h1>
+          <p class="lead">Paise pay karain aur apni shaadi ki tamam tafseelat — naam, tareekh, venue — ek shandaar animated invitation card ki tarah bhejain. Sirf ek link, WhatsApp par share karne ke liye tayyar.</p>
+          <div class="hero-ctas">
+            <a href="#order"><button class="btn-primary">Apna Card Order Karain</button></a>
+            <a href="#how"><button class="btn-ghost">Kaam Kaise Karta Hai</button></a>
+          </div>
+        </div>
+        <div class="mock-card-frame">
+          <div class="shimmer"></div>
+          <div class="mock-eyebrow">— Walima Ki Dawat —</div>
+          <div class="mock-names">Ayesha<span class="mock-amp">&amp;</span>Hamza</div>
+          <div class="mock-date">12 December · Karachi</div>
+        </div>
+      </div></section>
+
+      <section class="steps-section" id="how"><div class="wrap">
+        <h2>Kaam Kaise Karta Hai</h2>
+        <div class="steps">
+          <div class="step"><span class="num">01</span><h3>Tafseelat bharain</h3><p>Dulha-dulhan ke naam, tareekh aur venue ki maloomat form mein likhain.</p></div>
+          <div class="step"><span class="num">02</span><h3>Payment karain</h3><p>EasyPaisa/JazzCash se transfer karain ya WhatsApp par confirm karayein.</p></div>
+          <div class="step"><span class="num">03</span><h3>Link tayyar hota hai</h3><p>Payment confirm hote hi aapka animated invite link WhatsApp par bhej diya jata hai.</p></div>
+          <div class="step"><span class="num">04</span><h3>Sabko bhejain</h3><p>Ek click mein sab mehmano ko WhatsApp ya SMS par khoobsurat card share karain.</p></div>
+        </div>
+      </div></section>
+
+      <section class="order-section" id="order"><div class="wrap">
+        <div class="order-head">
+          <div class="eyebrow">Order Form</div>
+          <h2>Apna Invitation Banwayein</h2>
+        </div>
+        <div class="card-box" id="wizard"></div>
+      </div></section>
+
+      <footer>Shaadi Card — Har rishtay ki khoobsurat shuruaat.</footer>
+    `;
+    initWizard();
+  }
+
+  const orderData = { };
+  let wizStep = 1;
+  let selectedPayMethod = null;
+  let screenshotUrl = '';
+  let walkinOpen = false;
+  let walkinPhotoUrl = '';
+
+  function initWizard(){
+    wizStep = 1;
+    renderWizardStep();
+  }
+
+  function progressHtml(){
+    let s = '<div class="progress">';
+    for(let i=1;i<=3;i++) s += `<span class="${i<=wizStep?'active':''}"></span>`;
+    return s + '</div>';
+  }
+
+  function renderWizardStep(){
+    const el = document.getElementById('wizard');
+    if(wizStep === 1){
+      el.innerHTML = `
+        ${progressHtml()}
+        <div class="field"><label>Dulhan ka naam</label><input id="brideName" placeholder="e.g. Ayesha" value="${esc(orderData.brideName)}"></div>
+        <div class="field"><label>Dulhan ke walid ka naam (optional)</label><input id="brideFather" placeholder="Binte Mr." value="${esc(orderData.brideFather)}"></div>
+        <div class="field"><label>Dulha ka naam</label><input id="groomName" placeholder="e.g. Hamza" value="${esc(orderData.groomName)}"></div>
+        <div class="field"><label>Dulha ke walid ka naam (optional)</label><input id="groomFather" placeholder="Bin Mr." value="${esc(orderData.groomFather)}"></div>
+        <div class="grid-2">
+          <div class="field"><label>Function ka naam</label><input id="ev1Name" placeholder="e.g. Walima" value="${esc(orderData.ev1Name)}"></div>
+          <div class="field"><label>Tareekh aur waqt</label><input id="ev1DateTime" type="datetime-local" value="${esc(orderData.ev1DateTime)}"></div>
+        </div>
+        <div class="field"><label>Venue (naam aur address)</label><input id="ev1Venue" placeholder="e.g. Pearl Continental, Karachi" value="${esc(orderData.ev1Venue)}"></div>
+        <div class="grid-2">
+          <div class="field"><label>Doosra function (optional)</label><input id="ev2Name" placeholder="e.g. Baraat"></div>
+          <div class="field"><label>Tareekh aur waqt</label><input id="ev2DateTime" type="datetime-local"></div>
+        </div>
+        <div class="field"><label>Doosre function ka venue (optional)</label><input id="ev2Venue" placeholder="Venue address"></div>
+        <div class="field"><label>Ek pyara sa paigham (optional)</label><textarea id="msg" rows="2" placeholder="e.g. Bila apki dua ke ye lamha adhoora hai">${esc(orderData.msg)}</textarea></div>
+        <div class="field"><label>RSVP WhatsApp number</label><input id="rsvpNumber" placeholder="923001234567" value="${esc(orderData.rsvpNumber)}"></div>
+        <div class="wizard-nav">
+          <span></span>
+          <button class="btn-primary" onclick="wizardNext()">Agla Marhala</button>
+        </div>
+        <div id="wizMsg"></div>
+      `;
+    } else if(wizStep === 2){
+      el.innerHTML = `
+        ${progressHtml()}
+        <div class="price-tag">Rs. ${PRICE_PKR}/-</div>
+        <div class="pay-options">
+          <div class="pay-option ${selectedPayMethod==='transfer'?'selected':''}" onclick="selectPay('transfer')">
+            <h4>EasyPaisa / JazzCash Transfer</h4>
+            <p>Number par paise bhejain aur screenshot yahan upload karain.</p>
+          </div>
+          <div class="pay-option ${selectedPayMethod==='whatsapp'?'selected':''}" onclick="selectPay('whatsapp')">
+            <h4>WhatsApp Par Confirm Karayein</h4>
+            <p>Order place karain, hum aapse WhatsApp par payment confirm karenge.</p>
+          </div>
+        </div>
+        <div id="payDetail"></div>
+        <div class="wizard-nav">
+          <button class="btn-ghost" onclick="wizStep=1; renderWizardStep();">Peechay</button>
+          <button class="btn-primary" onclick="submitOrder()">Order Confirm Karain</button>
+        </div>
+        <div id="wizMsg"></div>
+      `;
+      renderPayDetail();
+    } else if(wizStep === 3){
+      el.innerHTML = `
+        <div class="confirm-box">
+          <div class="eyebrow">Order Mil Gaya</div>
+          <h3 style="font-family:var(--display); font-size:1.5rem; margin:14px 0;">Shukriya, ${esc(orderData.brideName)} &amp; ${esc(orderData.groomName)}!</h3>
+          <p style="color:rgba(246,238,224,.75); line-height:1.7;">Aapka order darj kar liya gaya hai. Payment confirm hote hi aapka animated invite link WhatsApp par bhej diya jayega.</p>
+          <div class="order-id">Order ID: ${orderData.id}</div>
+          <p class="hint">Ye ID sambhal ke rakhain — payment poochne ke waqt kaam ayegi.</p>
+          <a href="https://wa.me/${OWNER_WHATSAPP}?text=${encodeURIComponent('Assalam o Alaikum, mera order ID '+orderData.id+' hai, maine order place kiya hai.')}" target="_blank">
+            <button class="whatsapp-btn" style="margin-top:16px;">Humein WhatsApp Karain →</button>
+          </a>
+        </div>
+      `;
+    }
+  }
+
+  function selectPay(method){ selectedPayMethod = method; renderWizardStep(); }
+
+  function renderPayDetail(){
+    const box = document.getElementById('payDetail');
+    if(!box) return;
+    if(selectedPayMethod === 'transfer'){
+      box.innerHTML = `
+        <div class="pay-detail">
+          <div><strong>EasyPaisa:</strong> <span class="num-pill">${EASYPAISA_NUMBER}</span></div>
+          <div><strong>JazzCash:</strong> <span class="num-pill">${JAZZCASH_NUMBER}</span></div>
+          <div class="hint">Account Title: ${ACCOUNT_TITLE}</div>
+          <div class="upload-box" id="uploadBox">
+            <input type="file" id="screenshotInput" accept="image/*" style="display:none" onchange="handleScreenshotUpload(this.files[0])">
+            <div id="uploadLabel" onclick="document.getElementById('screenshotInput').click()" style="cursor:pointer;">
+              📎 Payment screenshot upload karne ke liye yahan click karain
+            </div>
+          </div>
+        </div>`;
+    } else if(selectedPayMethod === 'whatsapp'){
+      box.innerHTML = `
+        <div class="pay-detail">
+          <p class="hint">Order confirm karte hi ek WhatsApp button milega — us par tap karke humein bata dain, hum payment ka tareeqa wahin discuss kar lenge.</p>
+        </div>`;
+    } else {
+      box.innerHTML = '';
+    }
+  }
+
+  async function handleScreenshotUpload(file){
+    if(!file) return;
+    const box = document.getElementById('uploadBox');
+    const label = document.getElementById('uploadLabel');
+    label.textContent = 'Upload ho raha hai...';
+    try{
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('upload_preset', CLOUDINARY_PRESET);
+      const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`, { method:'POST', body: fd });
+      const data = await res.json();
+      if(data.secure_url){
+        screenshotUrl = data.secure_url;
+        box.classList.add('has-file');
+        label.textContent = '✓ Screenshot upload ho gaya';
+      } else {
+        label.textContent = 'Upload fail hua, dobara koshish karain';
+      }
+    } catch(e){
+      label.textContent = 'Upload fail hua, dobara koshish karain';
+    }
+  }
+
+  function wizardNext(){
+    orderData.brideName   = document.getElementById('brideName').value.trim();
+    orderData.brideFather = document.getElementById('brideFather').value.trim();
+    orderData.groomName   = document.getElementById('groomName').value.trim();
+    orderData.groomFather = document.getElementById('groomFather').value.trim();
+    orderData.ev1Name     = document.getElementById('ev1Name').value.trim() || 'Walima';
+    orderData.ev1DateTime = document.getElementById('ev1DateTime').value;
+    orderData.ev1Venue    = document.getElementById('ev1Venue').value.trim();
+    orderData.ev2Name     = document.getElementById('ev2Name').value.trim();
+    orderData.ev2DateTime = document.getElementById('ev2DateTime').value;
+    orderData.ev2Venue    = document.getElementById('ev2Venue').value.trim();
+    orderData.msg         = document.getElementById('msg').value.trim();
+    orderData.rsvpNumber  = document.getElementById('rsvpNumber').value.trim();
+
+    const wizMsg = document.getElementById('wizMsg');
+    if(!orderData.brideName || !orderData.groomName || !orderData.ev1DateTime || !orderData.ev1Venue){
+      wizMsg.innerHTML = `<div class="msg error">Dulha/dulhan ka naam, tareekh aur venue zaroori hai.</div>`;
+      return;
+    }
+    wizStep = 2;
+    renderWizardStep();
+  }
+
+  async function submitOrder(){
+    const wizMsg = document.getElementById('wizMsg');
+    if(!selectedPayMethod){
+      wizMsg.innerHTML = `<div class="msg error">Payment ka tareeqa select karain.</div>`;
+      return;
+    }
+    if(selectedPayMethod === 'transfer' && !screenshotUrl){
+      wizMsg.innerHTML = `<div class="msg error">Payment screenshot upload karna zaroori hai.</div>`;
+      return;
+    }
+    const id = genId();
+    orderData.id = id;
+    const record = {
+      ...orderData,
+      payMethod: selectedPayMethod,
+      screenshotUrl: screenshotUrl || null,
+      status: 'pending_payment',
+      createdAt: Date.now()
+    };
+    try{
+      await db.ref('shaadiCardOrders/' + id).set(record);
+      wizStep = 3;
+      renderWizardStep();
+    }catch(e){
+      wizMsg.innerHTML = `<div class="msg error">Order save nahi ho saka. Firebase config check karain.</div>`;
+    }
+  }
+
+  /* ============================================================
+     INVITE PAGE
+  ============================================================ */
+  async function renderInvite(orderId){
+    app.innerHTML = `<div class="invite-page"><p style="color:var(--ivory)">Loading...</p></div>`;
+    let snap;
+    try{
+      snap = await db.ref('shaadiCardOrders/' + orderId).once('value');
+    }catch(e){
+      showInviteError('Ye link load nahi ho saka.');
+      return;
+    }
+    const order = snap.val();
+    if(!order){ showInviteError('Ye invite link mojood nahi hai.'); return; }
+    if(order.status !== 'approved'){
+      showInviteError('Ye invitation abhi tayyar ho rahi hai. Thori dair mein dobara check karain.');
+      return;
+    }
+    buildInviteDOM(order);
+  }
+
+  function showInviteError(text){
+    app.innerHTML = `
+      <div class="invite-page">
+        ${PAISLEY_SVG.replace('<svg','<svg class="paisley-corner tl"')}
+        ${PAISLEY_SVG.replace('<svg','<svg class="paisley-corner br"')}
+        <div class="not-ready">
+          <div class="eyebrow">Shaadi Card</div>
+          <p style="margin-top:14px;">${esc(text)}</p>
+        </div>
+      </div>`;
+  }
+
+  function buildInviteDOM(o){
+    const ev1Date = o.ev1DateTime ? new Date(o.ev1DateTime) : null;
+    const ev1Fmt = ev1Date ? ev1Date.toLocaleString('en-GB', { day:'numeric', month:'long', year:'numeric', hour:'numeric', minute:'2-digit' }) : '';
+    const mapLink = o.ev1Venue ? `https://www.google.com/maps/search/${encodeURIComponent(o.ev1Venue)}` : '#';
+
+    let ev2Html = '';
+    if(o.ev2Name && o.ev2DateTime){
+      const d2 = new Date(o.ev2DateTime);
+      const fmt2 = d2.toLocaleString('en-GB', { day:'numeric', month:'long', year:'numeric', hour:'numeric', minute:'2-digit' });
+      ev2Html = `
+        <div class="event-block">
+          <div class="event-name">${esc(o.ev2Name)}</div>
+          <div class="event-date">${fmt2}</div>
+          ${o.ev2Venue ? `<div class="event-venue"><a href="https://www.google.com/maps/search/${encodeURIComponent(o.ev2Venue)}" target="_blank">${esc(o.ev2Venue)}</a></div>` : ''}
+        </div>`;
+    }
+
+    app.innerHTML = `
+      <div class="invite-page">
+        ${PAISLEY_SVG.replace('<svg','<svg class="paisley-corner tl"')}
+        ${PAISLEY_SVG.replace('<svg','<svg class="paisley-corner tr"')}
+        ${PAISLEY_SVG.replace('<svg','<svg class="paisley-corner bl"')}
+        ${PAISLEY_SVG.replace('<svg','<svg class="paisley-corner br"')}
+
+        <div id="envelopeWrap" class="envelope-wrap" onclick="openEnvelope()">
+          <div class="envelope-body">
+            <div class="wax-seal">&amp;</div>
+          </div>
+          <div class="envelope-flap"></div>
+          <div class="envelope-hint">Kholne ke liye tap karain</div>
+        </div>
+
+        <div id="inviteCard" class="invite-card" style="display:none;">
+          ${o.photoUrl ? `<img class="invite-photo" src="${esc(o.photoUrl)}" alt="">` : ''}
+          <div class="invite-eyebrow">— Bismillah —</div>
+          <div class="invite-names">
+            ${esc(o.brideName)}${o.brideFather ? `<div style="font-size:.7rem; font-family:var(--label); color:rgba(246,238,224,.55); letter-spacing:.06em; margin-top:4px;">${esc(o.brideFather)}</div>` : ''}
+            <span class="invite-amp">&amp;</span>
+            ${esc(o.groomName)}${o.groomFather ? `<div style="font-size:.7rem; font-family:var(--label); color:rgba(246,238,224,.55); letter-spacing:.06em; margin-top:4px;">${esc(o.groomFather)}</div>` : ''}
+          </div>
+          <div class="divider"></div>
+          ${o.msg ? `<div class="invite-msg">"${esc(o.msg)}"</div>` : ''}
+
+          <div class="event-block">
+            <div class="event-name">${esc(o.ev1Name || 'Waleema')}</div>
+            <div class="event-date">${ev1Fmt}</div>
+            ${o.ev1Venue ? `<div class="event-venue"><a href="${mapLink}" target="_blank">${esc(o.ev1Venue)}</a></div>` : ''}
+          </div>
+          ${ev2Html}
+
+          <div class="countdown" id="countdown"></div>
+
+          ${o.rsvpNumber ? `
+          <a class="rsvp-btn" href="https://wa.me/${esc(o.rsvpNumber)}?text=${encodeURIComponent('Assalam o Alaikum! Main '+o.brideName+' & '+o.groomName+' ki shaadi mein shirkat karna chahta/chahti hun.')}" target="_blank">
+            <button class="whatsapp-btn">RSVP on WhatsApp</button>
+          </a>` : ''}
+        </div>
+      </div>
+    `;
+
+    if(ev1Date) startCountdown(ev1Date);
+  }
+
+  function openEnvelope(){
+    const wrap = document.getElementById('envelopeWrap');
+    wrap.classList.add('opened');
+    setTimeout(() => {
+      wrap.style.display = 'none';
+      const card = document.getElementById('inviteCard');
+      card.style.display = 'block';
+      requestAnimationFrame(() => card.classList.add('show'));
+    }, 750);
+  }
+
+  function startCountdown(targetDate){
+    const el = document.getElementById('countdown');
+    if(!el) return;
+    function tick(){
+      const diff = targetDate.getTime() - Date.now();
+      if(diff <= 0){ el.innerHTML = `<div class="cd-unit"><span class="n">🎉</span><span class="l">Mubarak Ho</span></div>`; return; }
+      const d = Math.floor(diff/86400000);
+      const h = Math.floor((diff%86400000)/3600000);
+      const m = Math.floor((diff%3600000)/60000);
+      el.innerHTML = `
+        <div class="cd-unit"><span class="n">${d}</span><span class="l">Din</span></div>
+        <div class="cd-unit"><span class="n">${h}</span><span class="l">Ghantay</span></div>
+        <div class="cd-unit"><span class="n">${m}</span><span class="l">Minute</span></div>`;
+      setTimeout(tick, 60000);
+    }
+    tick();
+  }
+
+  /* ============================================================
+     ADMIN PANEL
+  ============================================================ */
+  function renderAdmin(){
+    if(sessionStorage.getItem('sc_admin') === '1'){
+      loadAdminOrders();
+      return;
+    }
+    walkinOpen = false;
+    app.innerHTML = `
+      <div class="admin-login">
+        <div class="eyebrow">Admin</div>
+        <h2 style="font-family:var(--display); margin:14px 0;">Passcode Darj Karain</h2>
+        <div class="field"><input id="adminPass" type="password" placeholder="Passcode"></div>
+        <button class="btn-primary" onclick="checkAdminPass()">Login</button>
+        <div id="adminMsg"></div>
+      </div>`;
+  }
+
+  function checkAdminPass(){
+    const val = document.getElementById('adminPass').value;
+    if(val === ADMIN_PASSCODE){
+      sessionStorage.setItem('sc_admin','1');
+      loadAdminOrders();
+    } else {
+      document.getElementById('adminMsg').innerHTML = `<div class="msg error">Ghalat passcode.</div>`;
+    }
+  }
+
+  async function loadAdminOrders(){
+    app.innerHTML = `
+      <div class="admin-wrap">
+        <div class="top" style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
+          <div><div class="eyebrow">Admin</div><h2 style="font-family:var(--display); margin:8px 0 0;">Orders</h2></div>
+          <button class="btn-primary" onclick="toggleWalkin()">${walkinOpen ? 'Band Karain' : '+ Naya Card Banayein (Shop Par)'}</button>
+        </div>
+        <div id="walkinBox" style="margin:24px 0;"></div>
+        <div id="orderList" style="margin-top:30px;">Loading...</div>
+      </div>`;
+    if(walkinOpen) renderWalkinForm();
+    const snap = await db.ref('shaadiCardOrders').orderByChild('createdAt').once('value');
+    const orders = [];
+    snap.forEach(child => orders.push({ id: child.key, ...child.val() }));
+    orders.reverse();
+    const list = document.getElementById('orderList');
+    if(!orders.length){ list.innerHTML = '<p style="color:rgba(246,238,224,.6)">Abhi tak koi order nahi.</p>'; return; }
+
+    list.innerHTML = orders.map(o => {
+      const link = location.origin + location.pathname + '#/invite/' + o.id;
+      return `
+        <div class="order-row">
+          <div class="top">
+            <strong>${esc(o.brideName)} &amp; ${esc(o.groomName)}</strong>
+            <span class="status-pill ${o.status}">${o.status === 'approved' ? 'Approved' : 'Pending Payment'}</span>
+          </div>
+          <div class="meta">
+            Order ID: ${o.id}<br>
+            Event: ${esc(o.ev1Name)} · ${esc(o.ev1Venue)}<br>
+            Payment method: ${o.payMethod === 'transfer' ? 'EasyPaisa/JazzCash Transfer' : 'WhatsApp Confirmation'}<br>
+            RSVP number: ${esc(o.rsvpNumber || '-')}
+            ${o.screenshotUrl ? `<br><a href="${o.screenshotUrl}" target="_blank" style="color:var(--gold-bright);">Screenshot dekhain →</a>` : ''}
+          </div>
+          <div class="actions">
+            ${o.status !== 'approved' ? `<button class="small-btn solid" onclick="approveOrder('${o.id}')">Payment Confirm &amp; Link Banayein</button>` : ''}
+            ${o.status === 'approved' ? `<div class="link-box">${link}</div>
+              <a href="https://wa.me/${esc(o.rsvpNumber||'')}?text=${encodeURIComponent('Aapka Shaadi Card tayyar hai: '+link)}" target="_blank"><button class="small-btn">Customer ko WhatsApp bhejain</button></a>` : ''}
+          </div>
+        </div>`;
+    }).join('');
+  }
+
+  async function approveOrder(id){
+    await db.ref('shaadiCardOrders/' + id + '/status').set('approved');
+    loadAdminOrders();
+  }
+
+  function toggleWalkin(){
+    walkinOpen = !walkinOpen;
+    loadAdminOrders();
+  }
+
+  function renderWalkinForm(){
+    const box = document.getElementById('walkinBox');
+    box.innerHTML = `
+      <div class="card-box" style="margin:0; max-width:none;">
+        <h3 style="font-family:var(--display); margin:0 0 18px;">Walk-in Customer — Card Details</h3>
+        <div class="field"><label>Dulhan ka naam</label><input id="wkBrideName" placeholder="e.g. Ayesha"></div>
+        <div class="field"><label>Dulhan ke walid ka naam (optional)</label><input id="wkBrideFather" placeholder="Binte Mr."></div>
+        <div class="field"><label>Dulha ka naam</label><input id="wkGroomName" placeholder="e.g. Hamza"></div>
+        <div class="field"><label>Dulha ke walid ka naam (optional)</label><input id="wkGroomFather" placeholder="Bin Mr."></div>
+        <div class="grid-2">
+          <div class="field"><label>Function ka naam</label><input id="wkEv1Name" placeholder="e.g. Walima"></div>
+          <div class="field"><label>Tareekh aur waqt</label><input id="wkEv1DateTime" type="datetime-local"></div>
+        </div>
+        <div class="field"><label>Venue (naam aur address)</label><input id="wkEv1Venue" placeholder="e.g. Pearl Continental, Karachi"></div>
+        <div class="grid-2">
+          <div class="field"><label>Doosra function (optional)</label><input id="wkEv2Name" placeholder="e.g. Baraat"></div>
+          <div class="field"><label>Tareekh aur waqt</label><input id="wkEv2DateTime" type="datetime-local"></div>
+        </div>
+        <div class="field"><label>Doosre function ka venue (optional)</label><input id="wkEv2Venue" placeholder="Venue address"></div>
+        <div class="field"><label>Ek pyara sa paigham (optional)</label><textarea id="wkMsg" rows="2"></textarea></div>
+        <div class="field"><label>RSVP WhatsApp number</label><input id="wkRsvpNumber" placeholder="923001234567"></div>
+        <div class="field">
+          <label>Couple photo (optional)</label>
+          <div class="upload-box" id="wkUploadBox">
+            <input type="file" id="wkPhotoInput" accept="image/*" style="display:none" onchange="handleWalkinPhoto(this.files[0])">
+            <div id="wkUploadLabel" onclick="document.getElementById('wkPhotoInput').click()" style="cursor:pointer;">📎 Photo upload karain</div>
+          </div>
+        </div>
+        <button class="btn-primary" onclick="submitWalkin()">Card Banayein — Link Foran Milega</button>
+        <div id="wkMsg"></div>
+        <div id="wkResult"></div>
+      </div>`;
+  }
+
+  async function handleWalkinPhoto(file){
+    if(!file) return;
+    const box = document.getElementById('wkUploadBox');
+    const label = document.getElementById('wkUploadLabel');
+    label.textContent = 'Upload ho raha hai...';
+    try{
+      const fd = new FormData();
+      fd.append('file', file);
+      fd.append('upload_preset', CLOUDINARY_PRESET);
+      const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`, { method:'POST', body: fd });
+      const data = await res.json();
+      if(data.secure_url){
+        walkinPhotoUrl = data.secure_url;
+        box.classList.add('has-file');
+        label.textContent = '✓ Photo upload ho gaya';
+      } else {
+        label.textContent = 'Upload fail hua, dobara koshish karain';
+      }
+    } catch(e){
+      label.textContent = 'Upload fail hua, dobara koshish karain';
+    }
+  }
+
+  async function submitWalkin(){
+    const brideName = document.getElementById('wkBrideName').value.trim();
+    const groomName = document.getElementById('wkGroomName').value.trim();
+    const ev1DateTime = document.getElementById('wkEv1DateTime').value;
+    const ev1Venue = document.getElementById('wkEv1Venue').value.trim();
+    const wkMsgBox = document.getElementById('wkMsg');
+
+    if(!brideName || !groomName || !ev1DateTime || !ev1Venue){
+      wkMsgBox.innerHTML = `<div class="msg error">Dulha/dulhan ka naam, tareekh aur venue zaroori hai.</div>`;
+      return;
+    }
+
+    const id = genId();
+    const record = {
+      brideName, groomName,
+      brideFather: document.getElementById('wkBrideFather').value.trim(),
+      groomFather: document.getElementById('wkGroomFather').value.trim(),
+      ev1Name: document.getElementById('wkEv1Name').value.trim() || 'Walima',
+      ev1DateTime, ev1Venue,
+      ev2Name: document.getElementById('wkEv2Name').value.trim(),
+      ev2DateTime: document.getElementById('wkEv2DateTime').value,
+      ev2Venue: document.getElementById('wkEv2Venue').value.trim(),
+      msg: document.getElementById('wkMsg').value.trim(),
+      rsvpNumber: document.getElementById('wkRsvpNumber').value.trim(),
+      photoUrl: walkinPhotoUrl || null,
+      payMethod: 'in_person',
+      status: 'approved',
+      createdAt: Date.now()
+    };
+
+    try{
+      await db.ref('shaadiCardOrders/' + id).set(record);
+      const link = location.origin + location.pathname + '#/invite/' + id;
+      document.getElementById('wkResult').innerHTML = `
+        <div class="msg ok">Card ban gaya! Link neeche hai — customer ko bhej dain.</div>
+        <div class="link-box">${link}</div>
+        <a href="https://wa.me/${esc(record.rsvpNumber||'')}?text=${encodeURIComponent('Aapka Shaadi Card tayyar hai: '+link)}" target="_blank"><button class="small-btn" style="margin-top:10px;">WhatsApp par bhejain</button></a>`;
+      walkinPhotoUrl = '';
+    }catch(e){
+      wkMsgBox.innerHTML = `<div class="msg error">Card save nahi ho saka. Firebase config check karain.</div>`;
+    }
+  }
+</script>
+</body>
+</html>
