@@ -4,7 +4,7 @@
   "name": "Raftaroo - Pakistan's Fastest Ride",
   "short_name": "Raftaroo",
   "description": "Pakistan ka sabse tez ride-hailing, delivery aur cargo platform. Bike, car ya cargo — sirf minutes mein book karein!",
-  "start_url": "/",
+  "start_url": "/index.html",
   "scope": "/",
   "scope_extensions": [
     {
@@ -95,7 +95,7 @@
       "name": "Ride Book Karein",
       "short_name": "Book Ride",
       "description": "Abhi ride book karein",
-      "url": "/?action=book-ride&amp;source=shortcut",
+      "url": "/?action=book-ride&amp;amp;source=shortcut",
       "icons": [
         {
           "src": "/android-192.png",
@@ -142,6 +142,11 @@
           "type": "image/png"
         }
       ]
+    },
+    {
+      "name": null,
+      "url": null,
+      "description": null
     }
   ],
   "share_target": {
@@ -176,5 +181,6 @@
   ],
   "edge_side_panel": {
     "preferred_width": 400
-  }
+  },
+  "iarc_rating_id": "9211"
 }
