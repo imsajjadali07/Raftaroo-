@@ -1,102 +1,106 @@
 <!DOCTYPE html>
-<html lang="ur" dir="ltr">
+<html lang="en">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Shaadi Card — Admin</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;1,600&family=Jost:wght@300;400;500;600&family=Poppins:wght@400;500;600&display=swap" rel="stylesheet">
-
-<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
-
+<meta name="robots" content="noindex, nofollow">
+<title>Admin Panel | Raftaroo</title>
+<link rel="icon" href="/favicon.ico">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
 <style>
-  :root{
-    --ink:#0F2E1D; --ink-2:#173D28; --maroon:#7A1F3D; --gold:#D4AF6A; --gold-bright:#F0D48A;
-    --ivory:#F6EEE0; --line: rgba(212,175,106,0.35); --shadow: 0 20px 60px rgba(0,0,0,.35);
-    --display:'Playfair Display', serif; --body:'Jost', sans-serif; --label:'Poppins', sans-serif;
-  }
-  *{box-sizing:border-box;}
-  body{margin:0; background:var(--ink); color:var(--ivory); font-family:var(--body); -webkit-font-smoothing:antialiased;}
-  a{color:inherit;} button{font-family:inherit; cursor:pointer;}
-  .eyebrow{font-family:var(--label); font-size:.72rem; letter-spacing:.28em; text-transform:uppercase; color:var(--gold); font-weight:600;}
-
-  .topbar{
-    border-bottom:1px solid var(--line); position:sticky; top:0; background:var(--ink); z-index:10;
-  }
-  .topbar .inner{max-width:820px; margin:0 auto; padding:16px 24px; display:flex; justify-content:space-between; align-items:center;}
-  .brand{font-family:var(--display); font-size:1.15rem;}
-  .logout-btn{background:transparent; border:1px solid rgba(246,238,224,.3); color:var(--ivory); padding:8px 14px; border-radius:3px; font-family:var(--label); font-size:.72rem; letter-spacing:.06em; text-transform:uppercase;}
-
-  .admin-wrap{max-width:820px; margin:0 auto; padding:34px 24px 100px;}
-  .admin-login{max-width:340px; margin:130px auto; text-align:center;}
-
-  .field{margin-bottom:16px; text-align:left;}
-  .field label{display:block; font-family:var(--label); font-size:.72rem; letter-spacing:.09em; text-transform:uppercase; color:var(--gold-bright); margin-bottom:7px;}
-  .field input, .field textarea{
-    width:100%; background:rgba(246,238,224,.06); border:1px solid rgba(246,238,224,.2);
-    color:var(--ivory); padding:12px 14px; font-family:var(--body); font-size:.95rem; border-radius:3px;
-  }
-  .field input:focus, .field textarea:focus{outline:2px solid var(--gold); outline-offset:1px; border-color:var(--gold);}
-  .grid-2{display:grid; grid-template-columns:1fr 1fr; gap:16px;}
-  @media (max-width:520px){ .grid-2{grid-template-columns:1fr;} }
-
-  .btn-primary{
-    background:var(--gold); color:var(--ink); border:none; padding:14px 26px;
-    font-family:var(--label); font-weight:600; font-size:.82rem; letter-spacing:.06em;
-    text-transform:uppercase; border-radius:2px; transition:.25s;
-  }
-  .btn-primary:hover{background:var(--gold-bright);}
-  .small-btn{
-    background:transparent; border:1px solid var(--gold); color:var(--gold-bright); padding:7px 14px;
-    border-radius:3px; font-family:var(--label); font-size:.75rem; letter-spacing:.04em;
-  }
-  .small-btn.solid{background:var(--gold); color:var(--ink);}
-
-  .card-box{background:var(--ink-2); border:1px solid var(--line); border-radius:6px; padding:30px; box-shadow:var(--shadow);}
-
-  .upload-box{border:1.5px dashed rgba(246,238,224,.3); border-radius:5px; padding:18px; text-align:center; margin-top:6px;}
-  .upload-box.has-file{border-color:var(--gold); border-style:solid;}
-
-  .msg{font-size:.85rem; padding:10px 14px; border-radius:4px; margin-top:14px;}
-  .msg.error{background:rgba(122,31,61,.25); border:1px solid var(--maroon); color:#f2c9d6;}
-  .msg.ok{background:rgba(31,122,77,.2); border:1px solid #1F7A4D; color:#bfe9d3;}
-
-  .link-box{background:rgba(246,238,224,.06); border:1px solid var(--line); padding:8px 12px; border-radius:3px; font-family:var(--label); font-size:.78rem; word-break:break-all; margin-top:8px;}
-
-  .filter-bar{display:flex; gap:10px; margin:26px 0 18px; flex-wrap:wrap;}
-  .filter-bar button{
-    background:transparent; border:1px solid rgba(246,238,224,.25); color:rgba(246,238,224,.7);
-    padding:8px 16px; border-radius:20px; font-family:var(--label); font-size:.75rem; letter-spacing:.04em;
-  }
-  .filter-bar button.active{border-color:var(--gold); color:var(--gold-bright); background:rgba(212,175,106,.1);}
-
-  .order-row{background:var(--ink-2); border:1px solid var(--line); border-radius:5px; padding:18px 20px; margin-bottom:14px;}
-  .order-row .top{display:flex; justify-content:space-between; align-items:center; gap:10px; flex-wrap:wrap;}
-  .status-pill{font-family:var(--label); font-size:.68rem; letter-spacing:.06em; text-transform:uppercase; padding:4px 10px; border-radius:20px;}
-  .status-pill.pending_payment{background:rgba(212,175,106,.15); color:var(--gold-bright); border:1px solid var(--gold);}
-  .status-pill.approved{background:rgba(31,122,77,.2); color:#bfe9d3; border:1px solid #1F7A4D;}
-  .order-row .meta{font-size:.82rem; color:rgba(246,238,224,.65); margin-top:8px; line-height:1.7;}
-  .order-row .actions{margin-top:12px; display:flex; gap:10px; flex-wrap:wrap; align-items:center;}
+:root{--primary:#00C853;--primary-dark:#00A040;--primary-light:#E8F5E9;--secondary:#0A0F1E;--bg:#F0F4F8;--white:#fff;--text:#0A0F1E;--muted:#64748B;--border:rgba(0,0,0,.08);--error:#EF4444;--warning:#F59E0B;--shadow:0 4px 20px rgba(0,0,0,.10);}
+*{box-sizing:border-box;margin:0;padding:0;font-family:'Plus Jakarta Sans',sans-serif;}
+body{background:var(--bg);color:var(--text);min-height:100vh;}
+.hidden{display:none!important;}
+header{background:var(--secondary);color:#fff;padding:14px 20px;display:flex;align-items:center;justify-content:space-between;}
+.brand{display:flex;align-items:center;gap:10px;font-weight:800;font-size:17px;}
+.logo{width:34px;height:34px;background:var(--primary);border-radius:10px;display:flex;align-items:center;justify-content:center;}
+.btn-logout{background:rgba(255,255,255,.1);color:#fff;border:1px solid rgba(255,255,255,.2);padding:8px 14px;border-radius:10px;font-weight:600;font-size:13px;cursor:pointer;}
+.wrap{max-width:560px;margin:0 auto;padding:20px;}
+.card{background:var(--white);border-radius:20px;padding:24px;box-shadow:var(--shadow);margin-bottom:16px;}
+h2{font-size:18px;margin-bottom:6px;}
+.sub{color:var(--muted);font-size:13px;margin-bottom:18px;}
+label{display:block;font-size:12px;font-weight:700;color:var(--muted);margin:12px 0 6px;}
+input{width:100%;padding:13px 14px;border:1.5px solid var(--border);border-radius:12px;font-size:15px;outline:none;}
+input:focus{border-color:var(--primary);}
+.btn-google{width:100%;margin-top:6px;background:#fff;color:var(--text);border:1.5px solid var(--border);padding:14px;border-radius:12px;font-weight:700;font-size:15px;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:10px;}
+.btn-google i{color:#DB4437;font-size:18px;}
+.btn-google:disabled{opacity:.6;}
+.btn-main{width:100%;margin-top:18px;background:var(--primary);color:#fff;border:none;padding:14px;border-radius:12px;font-weight:800;font-size:15px;cursor:pointer;}
+.err{color:var(--error);font-size:13px;font-weight:600;margin-top:12px;min-height:18px;}
+/* status */
+.status{border-radius:16px;padding:20px;text-align:center;margin-bottom:18px;transition:.25s;}
+.status.free{background:var(--primary-light);border:2px solid var(--primary);}
+.status.paid{background:#FEF3C7;border:2px solid var(--warning);}
+.status.load{background:#F1F5F9;border:2px solid #CBD5E1;}
+.status .ico{font-size:34px;margin-bottom:8px;}
+.status.free .ico{color:var(--primary-dark);}
+.status.paid .ico{color:#B45309;}
+.status .t{font-size:20px;font-weight:800;}
+.status .d{font-size:13px;color:var(--muted);margin-top:4px;}
+.btns{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.sw{border:2px solid var(--border);background:#fff;border-radius:14px;padding:16px 10px;font-weight:800;font-size:14px;cursor:pointer;display:flex;flex-direction:column;align-items:center;gap:6px;transition:.2s;color:var(--text);}
+.sw i{font-size:22px;}
+.sw small{font-weight:600;font-size:11px;color:var(--muted);}
+.sw.free{border-color:var(--primary);color:var(--primary-dark);}
+.sw.paid{border-color:var(--warning);color:#B45309;}
+.sw.active{color:#fff;box-shadow:0 4px 15px rgba(0,0,0,.2);}
+.sw.active small{color:rgba(255,255,255,.85);}
+.sw.free.active{background:var(--primary);}
+.sw.paid.active{background:var(--warning);}
+.sw:disabled{opacity:.6;cursor:not-allowed;}
+.meta{font-size:12px;color:var(--muted);text-align:center;margin-top:14px;}
+.toast{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:var(--secondary);color:#fff;padding:12px 20px;border-radius:12px;font-weight:600;font-size:14px;box-shadow:var(--shadow);z-index:99;}
 </style>
 </head>
 <body>
-<div id="app"></div>
 
-<script>
-/* =========================================================================
-   SHAADI CARD — ADMIN PANEL (standalone)
-   -------------------------------------------------------------------------
-   Replace before going live:
-   1) FIREBASE_CONFIG   -> same config as your main site (shaadi-card.html)
-   2) CLOUDINARY_CLOUD / CLOUDINARY_PRESET -> for walk-in photo uploads
-   3) ADMIN_PASSCODE     -> change this before sharing this file with anyone
-   4) OWNER_WHATSAPP     -> not required here, kept for reference only
-   5) SITE_FILE          -> filename of your public site, used to build invite links.
-                             Assumes admin.html sits in the same folder as that file.
-   ========================================================================= */
+<!-- LOGIN -->
+<div id="loginView" class="wrap" style="padding-top:60px;">
+    <div class="card">
+        <div class="brand" style="color:var(--text);margin-bottom:14px;"><div class="logo"><i class="fas fa-shield-halved" style="color:#fff"></i></div> Raftaroo Admin</div>
+        <h2>Admin Login</h2>
+        <p class="sub">Sirf admin Google account se login hoga.</p>
+        <button class="btn-google" id="loginBtn"><i class="fab fa-google"></i> Google se Login karein</button>
+        <div class="err" id="loginErr"></div>
+    </div>
+</div>
 
-  const FIREBASE_CONFIG = {
+<!-- PANEL -->
+<div id="panelView" class="hidden">
+    <header>
+        <div class="brand"><div class="logo"><i class="fas fa-shield-halved"></i></div> Admin Panel</div>
+        <button class="btn-logout" id="logoutBtn"><i class="fas fa-right-from-bracket"></i> Logout</button>
+    </header>
+    <div class="wrap">
+        <div class="card">
+            <h2><i class="fas fa-percent" style="color:var(--primary)"></i> Commission Control</h2>
+            <p class="sub">Ek click mein poori app commission free ya commission wali kar dein. Change foran saare captains par lag jata hai.</p>
+
+            <div class="status load" id="statusBox">
+                <div class="ico"><i class="fas fa-spinner fa-spin"></i></div>
+                <div class="t" id="statusTitle">Loading...</div>
+                <div class="d" id="statusDesc"></div>
+            </div>
+
+            <div class="btns">
+                <button class="sw free" id="btnFree"><i class="fas fa-gift"></i>Commission Free<small>0% — poori kamayi captain ki</small></button>
+                <button class="sw paid" id="btnPaid"><i class="fas fa-coins"></i>With Commission<small>10% per ride</small></button>
+            </div>
+            <div class="meta" id="metaText"></div>
+        </div>
+    </div>
+</div>
+
+<div class="toast hidden" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+import { getDatabase, ref, update, onValue } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-database.js";
+import { getAuth, onAuthStateChanged, GoogleAuthProvider, signInWithPopup, signOut } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+
+const firebaseConfig = {
     apiKey: "AIzaSyBBS7jGzuVlTIIeN9VFBxpwHkNf-mIRzDo",
     authDomain: "raftaroo-9ce8d.firebaseapp.com",
     databaseURL: "https://raftaroo-9ce8d-default-rtdb.asia-southeast1.firebasedatabase.app",
@@ -105,236 +109,87 @@
     messagingSenderId: "773738074182",
     appId: "1:773738074182:web:b7a873959c7ab8edc0ba47",
     measurementId: "G-EM1R4LGZTD"
-  };
+};
+const ADMIN_UID = "NaTu8bPLebTvSKuJn64oOGmZDkH3";
 
-  const CLOUDINARY_CLOUD  = "YOUR_CLOUD_NAME";
-  const CLOUDINARY_PRESET = "YOUR_UNSIGNED_PRESET";
-  const ADMIN_PASSCODE    = "shaadi786";
-  const SITE_FILE         = "shaadi-card.html";
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const auth = getAuth(app);
+const $ = (id) => document.getElementById(id);
 
-  firebase.initializeApp(FIREBASE_CONFIG);
-  const db = firebase.database();
+let unsub = null;
+let currentFree = null;
 
-  const app = document.getElementById('app');
-  const esc = (s) => (s || '').toString().replace(/[&<>"']/g, m => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[m]));
-  const genId = () => 'SC' + Date.now().toString(36).toUpperCase() + Math.random().toString(36).slice(2,5).toUpperCase();
-  const inviteLink = (id) => location.href.replace(/[^/]*$/, '') + SITE_FILE + '#/invite/' + id;
+function toast(msg) {
+    const t = $('toast'); t.textContent = msg; t.classList.remove('hidden');
+    setTimeout(() => t.classList.add('hidden'), 2600);
+}
 
-  let walkinOpen = false;
-  let walkinPhotoUrl = '';
-  let currentFilter = 'all';
-
-  function boot(){
-    if(sessionStorage.getItem('sc_admin') === '1'){
-      renderAdminShell();
-    } else {
-      renderLogin();
+// ─── AUTH ───
+$('loginBtn').onclick = async () => {
+    $('loginErr').textContent = '';
+    $('loginBtn').disabled = true;
+    try { await signInWithPopup(auth, new GoogleAuthProvider()); }
+    catch (e) {
+        if (e.code !== 'auth/popup-closed-by-user' && e.code !== 'auth/cancelled-popup-request')
+            $('loginErr').textContent = 'Google login fail: ' + (e.code || e.message);
     }
-  }
-  window.addEventListener('DOMContentLoaded', boot);
+    $('loginBtn').disabled = false;
+};
+$('logoutBtn').onclick = () => signOut(auth);
 
-  function renderLogin(){
-    app.innerHTML = `
-      <div class="admin-login">
-        <div class="eyebrow">Shaadi Card</div>
-        <h2 style="font-family:var(--display); margin:14px 0;">Admin Passcode</h2>
-        <div class="field"><input id="adminPass" type="password" placeholder="Passcode"></div>
-        <button class="btn-primary" onclick="checkAdminPass()">Login</button>
-        <div id="adminMsg"></div>
-      </div>`;
-    document.getElementById('adminPass').addEventListener('keydown', e => { if(e.key==='Enter') checkAdminPass(); });
-  }
-
-  function checkAdminPass(){
-    const val = document.getElementById('adminPass').value;
-    if(val === ADMIN_PASSCODE){
-      sessionStorage.setItem('sc_admin','1');
-      renderAdminShell();
-    } else {
-      document.getElementById('adminMsg').innerHTML = `<div class="msg error">Ghalat passcode.</div>`;
+onAuthStateChanged(auth, async (user) => {
+    if (unsub) { unsub(); unsub = null; }
+    if (!user) { $('panelView').classList.add('hidden'); $('loginView').classList.remove('hidden'); return; }
+    if (user.uid !== ADMIN_UID) {
+        await signOut(auth);
+        $('loginErr').textContent = 'Yeh account admin nahi hai.';
+        return;
     }
-  }
+    $('loginView').classList.add('hidden');
+    $('panelView').classList.remove('hidden');
+    unsub = onValue(ref(db, 'settings'), (snap) => {
+        const v = snap.val() || {};
+        render(v.commissionFree === true, v.commissionUpdatedAt);
+    }, () => toast('Settings load nahi hui — database rules check karein.'));
+});
 
-  function logout(){
-    sessionStorage.removeItem('sc_admin');
-    renderLogin();
-  }
+// ─── UI ───
+function render(isFree, ts) {
+    currentFree = isFree;
+    const box = $('statusBox');
+    box.className = 'status ' + (isFree ? 'free' : 'paid');
+    box.querySelector('.ico').innerHTML = isFree ? '<i class="fas fa-circle-check"></i>' : '<i class="fas fa-coins"></i>';
+    $('statusTitle').textContent = isFree ? 'App COMMISSION FREE hai' : 'Commission ON hai (10%)';
+    $('statusDesc').textContent = isFree
+        ? 'Captains se koi commission nahi kat raha, wallet balance bhi zaroori nahi.'
+        : 'Har completed ride par 10% commission wallet se kat raha hai.';
+    $('btnFree').classList.toggle('active', isFree);
+    $('btnPaid').classList.toggle('active', !isFree);
+    $('metaText').textContent = ts ? 'Aakhri change: ' + new Date(ts).toLocaleString() : '';
+}
 
-  function renderAdminShell(){
-    app.innerHTML = `
-      <div class="topbar"><div class="inner">
-        <div class="brand">Shaadi <span style="color:var(--gold-bright); font-style:italic;">Card</span> Admin</div>
-        <button class="logout-btn" onclick="logout()">Logout</button>
-      </div></div>
-      <div class="admin-wrap">
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px;">
-          <h2 style="font-family:var(--display); margin:0;">Orders</h2>
-          <button class="btn-primary" onclick="toggleWalkin()">${walkinOpen ? 'Band Karain' : '+ Naya Card Banayein (Shop Par)'}</button>
-        </div>
-        <div id="walkinBox" style="margin:22px 0;"></div>
-        <div class="filter-bar" id="filterBar"></div>
-        <div id="orderList">Loading...</div>
-      </div>`;
-    if(walkinOpen) renderWalkinForm();
-    renderFilterBar();
-    loadOrders();
-  }
-
-  function renderFilterBar(){
-    const bar = document.getElementById('filterBar');
-    const opts = [['all','Sab'],['pending_payment','Pending'],['approved','Approved']];
-    bar.innerHTML = opts.map(([key,label]) =>
-      `<button class="${currentFilter===key?'active':''}" onclick="setFilter('${key}')">${label}</button>`
-    ).join('');
-  }
-  function setFilter(key){ currentFilter = key; renderFilterBar(); loadOrders(); }
-
-  function toggleWalkin(){
-    walkinOpen = !walkinOpen;
-    renderAdminShell();
-  }
-
-  function renderWalkinForm(){
-    const box = document.getElementById('walkinBox');
-    box.innerHTML = `
-      <div class="card-box">
-        <h3 style="font-family:var(--display); margin:0 0 18px;">Walk-in Customer — Card Details</h3>
-        <div class="field"><label>Dulhan ka naam</label><input id="wkBrideName" placeholder="e.g. Ayesha"></div>
-        <div class="field"><label>Dulhan ke walid ka naam (optional)</label><input id="wkBrideFather" placeholder="Binte Mr."></div>
-        <div class="field"><label>Dulha ka naam</label><input id="wkGroomName" placeholder="e.g. Hamza"></div>
-        <div class="field"><label>Dulha ke walid ka naam (optional)</label><input id="wkGroomFather" placeholder="Bin Mr."></div>
-        <div class="grid-2">
-          <div class="field"><label>Function ka naam</label><input id="wkEv1Name" placeholder="e.g. Walima"></div>
-          <div class="field"><label>Tareekh aur waqt</label><input id="wkEv1DateTime" type="datetime-local"></div>
-        </div>
-        <div class="field"><label>Venue (naam aur address)</label><input id="wkEv1Venue" placeholder="e.g. Pearl Continental, Karachi"></div>
-        <div class="grid-2">
-          <div class="field"><label>Doosra function (optional)</label><input id="wkEv2Name" placeholder="e.g. Baraat"></div>
-          <div class="field"><label>Tareekh aur waqt</label><input id="wkEv2DateTime" type="datetime-local"></div>
-        </div>
-        <div class="field"><label>Doosre function ka venue (optional)</label><input id="wkEv2Venue" placeholder="Venue address"></div>
-        <div class="field"><label>Ek pyara sa paigham (optional)</label><textarea id="wkMsg" rows="2"></textarea></div>
-        <div class="field"><label>RSVP WhatsApp number</label><input id="wkRsvpNumber" placeholder="923001234567"></div>
-        <div class="field">
-          <label>Couple photo (optional)</label>
-          <div class="upload-box" id="wkUploadBox">
-            <input type="file" id="wkPhotoInput" accept="image/*" style="display:none" onchange="handleWalkinPhoto(this.files[0])">
-            <div id="wkUploadLabel" onclick="document.getElementById('wkPhotoInput').click()" style="cursor:pointer;">📎 Photo upload karain</div>
-          </div>
-        </div>
-        <button class="btn-primary" onclick="submitWalkin()">Card Banayein — Link Foran Milega</button>
-        <div id="wkMsg"></div>
-        <div id="wkResult"></div>
-      </div>`;
-  }
-
-  async function handleWalkinPhoto(file){
-    if(!file) return;
-    const box = document.getElementById('wkUploadBox');
-    const label = document.getElementById('wkUploadLabel');
-    label.textContent = 'Upload ho raha hai...';
-    try{
-      const fd = new FormData();
-      fd.append('file', file);
-      fd.append('upload_preset', CLOUDINARY_PRESET);
-      const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD}/image/upload`, { method:'POST', body: fd });
-      const data = await res.json();
-      if(data.secure_url){
-        walkinPhotoUrl = data.secure_url;
-        box.classList.add('has-file');
-        label.textContent = '✓ Photo upload ho gaya';
-      } else {
-        label.textContent = 'Upload fail hua, dobara koshish karain';
-      }
-    } catch(e){
-      label.textContent = 'Upload fail hua, dobara koshish karain';
+async function setCommission(free) {
+    if (currentFree === free) { toast('Yeh option pehle se active hai'); return; }
+    const msg = free
+        ? 'Poori app COMMISSION FREE kar dein?\nAbhi se har ride par 0% commission hoga.'
+        : 'Commission dobara ON kar dein?\nHar ride par 10% commission katega.';
+    if (!confirm(msg)) return;
+    $('btnFree').disabled = $('btnPaid').disabled = true;
+    try {
+        await update(ref(db, 'settings'), {
+            commissionFree: free,
+            commissionUpdatedAt: Date.now(),
+            commissionUpdatedBy: ADMIN_UID
+        });
+        toast(free ? '🎉 App ab Commission Free hai' : '✅ Commission ON kar diya');
+    } catch (e) {
+        toast('Save nahi hua: ' + e.message);
     }
-  }
-
-  async function submitWalkin(){
-    const brideName = document.getElementById('wkBrideName').value.trim();
-    const groomName = document.getElementById('wkGroomName').value.trim();
-    const ev1DateTime = document.getElementById('wkEv1DateTime').value;
-    const ev1Venue = document.getElementById('wkEv1Venue').value.trim();
-    const wkMsgBox = document.getElementById('wkMsg');
-
-    if(!brideName || !groomName || !ev1DateTime || !ev1Venue){
-      wkMsgBox.innerHTML = `<div class="msg error">Dulha/dulhan ka naam, tareekh aur venue zaroori hai.</div>`;
-      return;
-    }
-
-    const id = genId();
-    const record = {
-      brideName, groomName,
-      brideFather: document.getElementById('wkBrideFather').value.trim(),
-      groomFather: document.getElementById('wkGroomFather').value.trim(),
-      ev1Name: document.getElementById('wkEv1Name').value.trim() || 'Walima',
-      ev1DateTime, ev1Venue,
-      ev2Name: document.getElementById('wkEv2Name').value.trim(),
-      ev2DateTime: document.getElementById('wkEv2DateTime').value,
-      ev2Venue: document.getElementById('wkEv2Venue').value.trim(),
-      msg: document.getElementById('wkMsg').value.trim(),
-      rsvpNumber: document.getElementById('wkRsvpNumber').value.trim(),
-      photoUrl: walkinPhotoUrl || null,
-      payMethod: 'in_person',
-      status: 'approved',
-      createdAt: Date.now()
-    };
-
-    try{
-      await db.ref('shaadiCardOrders/' + id).set(record);
-      const link = inviteLink(id);
-      document.getElementById('wkResult').innerHTML = `
-        <div class="msg ok">Card ban gaya! Link neeche hai — customer ko bhej dain.</div>
-        <div class="link-box">${link}</div>
-        <a href="https://wa.me/${esc(record.rsvpNumber||'')}?text=${encodeURIComponent('Aapka Shaadi Card tayyar hai: '+link)}" target="_blank"><button class="small-btn" style="margin-top:10px;">WhatsApp par bhejain</button></a>`;
-      walkinPhotoUrl = '';
-      loadOrders();
-    }catch(e){
-      wkMsgBox.innerHTML = `<div class="msg error">Card save nahi ho saka. Firebase config check karain.</div>`;
-    }
-  }
-
-  async function loadOrders(){
-    const list = document.getElementById('orderList');
-    list.innerHTML = 'Loading...';
-    const snap = await db.ref('shaadiCardOrders').orderByChild('createdAt').once('value');
-    let orders = [];
-    snap.forEach(child => orders.push({ id: child.key, ...child.val() }));
-    orders.reverse();
-    if(currentFilter !== 'all'){
-      orders = orders.filter(o => o.status === currentFilter);
-    }
-    if(!orders.length){ list.innerHTML = '<p style="color:rgba(246,238,224,.6)">Koi order nahi mila.</p>'; return; }
-
-    list.innerHTML = orders.map(o => {
-      const link = inviteLink(o.id);
-      return `
-        <div class="order-row">
-          <div class="top">
-            <strong>${esc(o.brideName)} &amp; ${esc(o.groomName)}</strong>
-            <span class="status-pill ${o.status}">${o.status === 'approved' ? 'Approved' : 'Pending Payment'}</span>
-          </div>
-          <div class="meta">
-            Order ID: ${o.id}<br>
-            Event: ${esc(o.ev1Name)} · ${esc(o.ev1Venue)}<br>
-            Payment method: ${o.payMethod === 'transfer' ? 'EasyPaisa/JazzCash Transfer' : (o.payMethod === 'in_person' ? 'Shop Walk-in' : 'WhatsApp Confirmation')}<br>
-            RSVP number: ${esc(o.rsvpNumber || '-')}
-            ${o.screenshotUrl ? `<br><a href="${o.screenshotUrl}" target="_blank" style="color:var(--gold-bright);">Screenshot dekhain →</a>` : ''}
-          </div>
-          <div class="actions">
-            ${o.status !== 'approved' ? `<button class="small-btn solid" onclick="approveOrder('${o.id}')">Payment Confirm &amp; Link Banayein</button>` : ''}
-            ${o.status === 'approved' ? `<div class="link-box" style="flex-basis:100%;">${link}</div>
-              <a href="https://wa.me/${esc(o.rsvpNumber||'')}?text=${encodeURIComponent('Aapka Shaadi Card tayyar hai: '+link)}" target="_blank"><button class="small-btn">Customer ko WhatsApp bhejain</button></a>` : ''}
-          </div>
-        </div>`;
-    }).join('');
-  }
-
-  async function approveOrder(id){
-    await db.ref('shaadiCardOrders/' + id + '/status').set('approved');
-    loadOrders();
-  }
+    $('btnFree').disabled = $('btnPaid').disabled = false;
+}
+$('btnFree').onclick = () => setCommission(true);
+$('btnPaid').onclick = () => setCommission(false);
 </script>
 </body>
 </html>

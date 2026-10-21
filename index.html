@@ -1634,6 +1634,41 @@ input:checked + .slider:before {
 
     <!-- Leaflet JS -->
     <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <script>
+    // ===== MAP TILES CONFIG =====
+    // 1) Google Maps (recommended): apni key yahan paste karein.
+    //    Google Cloud Console mein "Maps JavaScript API" enable honi chahiye aur billing on.
+    //    Key ko HTTP referrer (raftaroo.online) se restrict zaroor karein.
+    const GOOGLE_MAPS_API_KEY = '';
+
+    // 2) Optional fallback: CARTO free key (carto.com/basemaps/apikey)
+    const CARTO_API_KEY = '';
+
+    // Google API aur plugin leaflet.js ke baad, sync load hote hain taake map banne se pehle ready hon
+    if (GOOGLE_MAPS_API_KEY) {
+        document.write('<script src="https://maps.googleapis.com/maps/api/js?key=' + encodeURIComponent(GOOGLE_MAPS_API_KEY) + '"><\/script>');
+        document.write('<script src="https://unpkg.com/leaflet.gridlayer.googlemutant@0.15.0/dist/Leaflet.GoogleMutant.js"><\/script>');
+    }
+
+    function createBaseTileLayer() {
+        // Google Maps
+        if (GOOGLE_MAPS_API_KEY && window.google && window.google.maps && L.gridLayer && L.gridLayer.googleMutant) {
+            return L.gridLayer.googleMutant({ type: 'roadmap', maxZoom: 20 });
+        }
+        // CARTO (key ke saath)
+        if (CARTO_API_KEY) {
+            return L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png?key=' + CARTO_API_KEY, {
+                maxZoom: 19,
+                attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>, &copy; <a href="https://carto.com/attributions">CARTO</a>'
+            });
+        }
+        // Default fallback: OpenStreetMap
+        return L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', {
+            maxZoom: 19,
+            attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+        });
+    }
+    </script>
     
     <!-- FIREBASE & LOGIC -->
     <script type="module">
@@ -1878,7 +1913,7 @@ input:checked + .slider:before {
                  // Ensure map container is visible before initializing/invalidating
                  document.getElementById('map-overlay').style.display = 'flex';
                  map = L.map('map', { zoomControl: false }).setView([defaultCenter.lat, defaultCenter.lng], 14);
-                 L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(map);
+                 createBaseTileLayer().addTo(map);
                  mapInitializedForWaiting = true;
              }
              
@@ -3070,7 +3105,7 @@ input:checked + .slider:before {
             // Default center: Last saved pickup location or default Karachi
             const defaultCenter = tripDetails.pickup || JSON.parse(localStorage.getItem(LOCATION_KEY)) || { lat: 24.8607, lng: 67.0011 }; 
             map = L.map('map', { zoomControl: false }).setView([defaultCenter.lat, defaultCenter.lng], 14);
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png').addTo(map);
+            createBaseTileLayer().addTo(map);
             mapInitializedForWaiting = true; 
             
             mapPickerMarker = L.marker([defaultCenter.lat, defaultCenter.lng], { icon: pickupIconDiv }).addTo(map);
