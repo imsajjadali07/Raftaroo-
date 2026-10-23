@@ -874,7 +874,7 @@ body { background:var(--bg); color:var(--text-main); overflow:hidden; height:100
     function initializeMap() {
         if (map) map.remove();
         map = L.map('map', { zoomControl: false, attributionControl: false });
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { maxZoom: 19 }).addTo(map);
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom: 19 }).addTo(map);
         map.invalidateSize();
 
         if (navigator.geolocation) {

@@ -1110,7 +1110,8 @@ input:checked + .slider:before {
     justify-content: center !important;
 }
 
-    </style>
+    .leaflet-control-attribution{display:none !important;}
+</style>
 </head>
 <body>
 
@@ -1912,7 +1913,7 @@ input:checked + .slider:before {
                  const defaultCenter = JSON.parse(localStorage.getItem(LOCATION_KEY)) || { lat: 24.8607, lng: 67.0011 }; 
                  // Ensure map container is visible before initializing/invalidating
                  document.getElementById('map-overlay').style.display = 'flex';
-                 map = L.map('map', { zoomControl: false }).setView([defaultCenter.lat, defaultCenter.lng], 14);
+                 map = L.map('map', { zoomControl: false, attributionControl: false }).setView([defaultCenter.lat, defaultCenter.lng], 14);
                  createBaseTileLayer().addTo(map);
                  mapInitializedForWaiting = true;
              }
@@ -3104,7 +3105,7 @@ input:checked + .slider:before {
             
             // Default center: Last saved pickup location or default Karachi
             const defaultCenter = tripDetails.pickup || JSON.parse(localStorage.getItem(LOCATION_KEY)) || { lat: 24.8607, lng: 67.0011 }; 
-            map = L.map('map', { zoomControl: false }).setView([defaultCenter.lat, defaultCenter.lng], 14);
+            map = L.map('map', { zoomControl: false, attributionControl: false }).setView([defaultCenter.lat, defaultCenter.lng], 14);
             createBaseTileLayer().addTo(map);
             mapInitializedForWaiting = true; 
             

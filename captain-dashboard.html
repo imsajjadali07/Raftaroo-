@@ -991,7 +991,7 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
         if (map) map.remove();
         map=L.map('map',{zoomControl:false,attributionControl:false});
         L.control.zoom({position:'bottomright'}).addTo(map);
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png',{maxZoom:19}).addTo(map);
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{maxZoom:19}).addTo(map);
         map.invalidateSize();
     }
 
@@ -1306,7 +1306,7 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
     function _initRpmMap(req) {
         if (rpmMap) { rpmMap.remove(); rpmMap = null; }
         rpmMap = L.map('rpm-map', { zoomControl: false, attributionControl: false });
-        L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { maxZoom:19 }).addTo(rpmMap);
+        L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom:19 }).addTo(rpmMap);
         rpmMap.invalidateSize();
 
         const pLat = req.pickup?.lat, pLng = req.pickup?.lng;

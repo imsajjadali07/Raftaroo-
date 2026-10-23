@@ -866,7 +866,7 @@ html, body { height:100%; overflow:hidden; background:var(--bg); color:var(--tex
     function initializeMap(request, isFindingMode=false) {
         if (!map) {
             map = L.map('map', { zoomControl:false, attributionControl:false }).setView([request.pickup.lat, request.pickup.lng], 14);
-            L.tileLayer('https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png', { maxZoom:19 }).addTo(map);
+            L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png', { maxZoom:19 }).addTo(map);
         }
         map.eachLayer(layer => { if (layer instanceof L.Marker) map.removeLayer(layer); });
         if (routingControl) { map.removeControl(routingControl); routingControl=null; }
