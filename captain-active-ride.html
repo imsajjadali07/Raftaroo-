@@ -629,6 +629,14 @@ body { background:var(--bg); color:var(--text-main); overflow:hidden; height:100
     const db = getDatabase(app);
     const auth = getAuth(app);
 
+    // ─── GLOBAL COMMISSION SWITCH (admin.html se control hota hai) ───
+    let COMM_FREE_GLOBAL = false;
+    onValue(ref(db, 'settings/commissionFree'), (s) => {
+        COMM_FREE_GLOBAL = s.val() === true;
+        if (typeof onGlobalCommChange === 'function') onGlobalCommChange();
+    });
+
+
     // ─── CONSTANTS ───
     const DESTINATION_TOLERANCE_KM = 0.2;
     const WAIT_TIME_MS = 10 * 60 * 1000;
@@ -1175,7 +1183,7 @@ body { background:var(--bg); color:var(--text-main); overflow:hidden; height:100
 
         if (rideData) {
             const fare = parseInt(rideData.fare || 0);
-            const isFree = rideData.isFreeRide;
+            const isFree = rideData.isFreeRide || COMM_FREE_GLOBAL;
             const isWallet = rideData.paymentMethod === 'wallet';
             const comm = isFree ? 0 : Math.round(fare * COMMISSION_RATE);
             const net = fare - comm;
@@ -1232,7 +1240,9 @@ body { background:var(--bg); color:var(--text-main); overflow:hidden; height:100
             const captainInfo = captainSnap.val() || {};
             const totalRidesDone = parseInt(captainInfo.totalRides || 0);
             const FREE_RIDES_LIMIT = 3;
-            const isFreeRide = totalRidesDone < FREE_RIDES_LIMIT;
+            const gcSnap = await get(ref(db, 'settings/commissionFree'));
+            const globalCommFree = gcSnap.val() === true;
+            const isFreeRide = totalRidesDone < FREE_RIDES_LIMIT || globalCommFree;
 
             const commission = isFreeRide ? 0 : Math.round(totalFare * COMMISSION_RATE);
             const captainNet = totalFare - commission;

@@ -1,0 +1,488 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Admin Panel | Raftaroo</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+:root{
+  --primary:#16a34a; --primary-hover:#15803d; --primary-bg:#f0fdf4; --primary-border:#bbf7d0;
+  --secondary:#111827; --bg:#f4f6f8; --bg-card:#fff; --bg-surface:#f8fafc;
+  --border:#e2e8f0; --text:#111827; --text-muted:#6b7280;
+  --error:#dc2626; --error-bg:#fef2f2; --error-border:#fecaca;
+  --warning:#d97706; --warning-bg:#fffbeb; --warning-border:#fde68a;
+  --success:#16a34a; --shadow:0 4px 20px rgba(0,0,0,.08); --shadow-sm:0 1px 4px rgba(0,0,0,.07);
+  --radius:14px; --radius-sm:10px; --t:all .2s ease;
+}
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box;font-family:'Poppins',sans-serif;-webkit-tap-highlight-color:transparent;}
+body{background:var(--bg);color:var(--text);min-height:100vh;}
+.site-header{position:sticky;top:0;z-index:900;background:rgba(255,255,255,.96);backdrop-filter:blur(14px);border-bottom:1px solid var(--border);padding:0 20px;box-shadow:var(--shadow-sm);}
+.header-inner{max-width:1100px;margin:0 auto;height:60px;display:flex;align-items:center;justify-content:space-between;}
+.brand{font-weight:800;font-size:17px;color:var(--secondary);display:flex;align-items:center;gap:8px;}
+.brand i{color:var(--primary);}
+.btn{border:none;border-radius:30px;font-weight:700;font-size:13px;padding:9px 18px;cursor:pointer;transition:var(--t);display:inline-flex;align-items:center;gap:7px;}
+.btn-primary{background:var(--primary);color:#fff;}
+.btn-primary:hover{background:var(--primary-hover);}
+.btn-outline{background:#fff;border:1px solid var(--border);color:var(--text);}
+.btn-outline:hover{background:var(--bg-surface);}
+
+/* ---- Centered auth / gate screens ---- */
+.gate-wrap{max-width:420px;margin:80px auto;padding:0 16px;text-align:center;}
+.gate-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow);padding:36px 28px;}
+.gate-icon{width:64px;height:64px;border-radius:50%;background:var(--primary-bg);border:1px solid var(--primary-border);display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 18px;}
+.gate-card.denied .gate-icon{background:var(--error-bg);border-color:var(--error-border);color:var(--error);}
+.gate-card h2{font-size:19px;font-weight:800;margin-bottom:8px;}
+.gate-card p{font-size:13px;color:var(--text-muted);line-height:1.6;margin-bottom:22px;}
+.login-field{margin-bottom:14px;text-align:left;}
+.login-field label{display:block;font-size:12px;font-weight:700;color:var(--text-soft,#374151);margin-bottom:6px;}
+.login-field input{width:100%;padding:12px 14px;border:1px solid var(--border);border-radius:var(--radius-sm);font-size:14px;background:#fff;color:var(--text);transition:var(--t);}
+.login-field input:focus{outline:none;border-color:var(--primary);box-shadow:0 0 0 3px rgba(22,163,74,.12);}
+.login-submit{width:100%;background:var(--primary);color:#fff;border:none;border-radius:var(--radius-sm);padding:12px;font-weight:700;font-size:14px;cursor:pointer;transition:var(--t);margin-top:4px;}
+.login-submit:hover{background:var(--primary-hover);}
+.login-submit:disabled{opacity:.6;cursor:not-allowed;}
+.login-error{background:var(--error-bg);border:1px solid var(--error-border);color:var(--error);font-size:12.5px;font-weight:600;padding:10px 12px;border-radius:var(--radius-sm);margin-bottom:14px;text-align:left;display:none;}
+.login-error.show{display:block;}
+
+/* ---- Dashboard ---- */
+.page-body{max-width:1100px;margin:0 auto;padding:26px 16px 60px;}
+.userbar{display:flex;align-items:center;justify-content:space-between;gap:12px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:12px 16px;margin-bottom:20px;box-shadow:var(--shadow-sm);flex-wrap:wrap;}
+.userbar .who{display:flex;align-items:center;gap:10px;font-size:13px;color:var(--text-muted);}
+.userbar .avatar{width:34px;height:34px;border-radius:50%;background:var(--primary);color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:14px;}
+
+.tabs{display:flex;gap:8px;margin-bottom:18px;flex-wrap:wrap;}
+.tab-btn{background:#fff;border:1px solid var(--border);border-radius:30px;padding:9px 18px;font-size:13px;font-weight:700;color:var(--text-muted);cursor:pointer;transition:var(--t);}
+.tab-btn.active{background:var(--secondary);color:#fff;border-color:var(--secondary);}
+
+.filters{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;}
+.filter-chip{background:var(--bg-surface);border:1px solid var(--border);border-radius:20px;padding:6px 14px;font-size:12px;font-weight:600;color:var(--text-muted);cursor:pointer;}
+.filter-chip.active{background:var(--primary-bg);border-color:var(--primary-border);color:var(--primary);}
+
+.stats-row{display:flex;gap:12px;margin-bottom:20px;flex-wrap:wrap;}
+.stat-box{flex:1;min-width:120px;background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius-sm);padding:14px 16px;box-shadow:var(--shadow-sm);}
+.stat-box .num{font-size:22px;font-weight:800;}
+.stat-box .lbl{font-size:11px;color:var(--text-muted);font-weight:600;margin-top:2px;}
+
+.card-list{display:flex;flex-direction:column;gap:14px;}
+.entry-card{background:var(--bg-card);border:1px solid var(--border);border-radius:var(--radius);box-shadow:var(--shadow-sm);overflow:hidden;}
+.entry-head{display:flex;align-items:center;gap:12px;padding:14px 18px;border-bottom:1px solid var(--border);background:var(--bg-surface);flex-wrap:wrap;}
+.entry-photo{width:44px;height:44px;border-radius:10px;object-fit:cover;background:var(--border);flex-shrink:0;}
+.entry-title{font-size:14px;font-weight:700;}
+.entry-sub{font-size:12px;color:var(--text-muted);}
+.status-pill{margin-left:auto;font-size:11px;font-weight:700;padding:5px 12px;border-radius:20px;text-transform:capitalize;}
+.status-pill.pending{background:var(--warning-bg);color:var(--warning);border:1px solid var(--warning-border);}
+.status-pill.approved{background:var(--primary-bg);color:var(--primary);border:1px solid var(--primary-border);}
+.status-pill.rejected{background:var(--error-bg);color:var(--error);border:1px solid var(--error-border);}
+
+.entry-body{padding:16px 18px;}
+.detail-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px 16px;margin-bottom:14px;}
+.detail-item{font-size:12.5px;}
+.detail-item .k{color:var(--text-muted);font-weight:600;display:block;margin-bottom:2px;}
+.detail-item .v{font-weight:700;}
+
+.docs-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;}
+.doc-link{font-size:11px;font-weight:700;color:var(--primary);background:var(--primary-bg);border:1px solid var(--primary-border);border-radius:8px;padding:6px 10px;text-decoration:none;display:inline-flex;align-items:center;gap:5px;}
+.doc-link:hover{background:var(--primary-border);}
+
+.action-row{display:flex;gap:10px;flex-wrap:wrap;}
+.action-row .btn{padding:8px 16px;font-size:12.5px;}
+.btn-approve{background:var(--primary);color:#fff;}
+.btn-approve:hover{background:var(--primary-hover);}
+.btn-reject{background:var(--error-bg);color:var(--error);border:1px solid var(--error-border);}
+.btn-reject:hover{background:#fee2e2;}
+.btn-reset{background:var(--bg-surface);color:var(--text-muted);border:1px solid var(--border);}
+
+.empty-state{text-align:center;padding:50px 20px;color:var(--text-muted);}
+.empty-state i{font-size:36px;margin-bottom:12px;display:block;color:var(--border);}
+
+.loading-wrap{text-align:center;padding:60px 20px;color:var(--text-muted);font-size:13px;}
+.spin{animation:spin 1s linear infinite;}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+.msg-toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--secondary);color:#fff;padding:12px 20px;border-radius:10px;font-size:13px;font-weight:600;box-shadow:var(--shadow-lg,0 10px 40px rgba(0,0,0,.2));z-index:9999;opacity:0;transition:opacity .25s;pointer-events:none;}
+.msg-toast.show{opacity:1;}
+.hidden{display:none !important;}
+</style>
+</head>
+<body>
+
+<header class="site-header">
+  <div class="header-inner">
+    <div class="brand"><i class="fa-solid fa-shield-halved"></i> Raftaroo Admin</div>
+    <button class="btn btn-outline hidden" id="signOutBtn"><i class="fa-solid fa-arrow-right-from-bracket"></i> Sign Out</button>
+  </div>
+</header>
+
+<!-- Signed-out gate -->
+<div class="gate-wrap" id="loginGate">
+  <div class="gate-card">
+    <div class="gate-icon"><i class="fa-solid fa-lock"></i></div>
+    <h2>Admin Login</h2>
+    <p>Sign in with your authorized admin email and password to access the Raftaroo admin panel.</p>
+    <div class="login-error" id="loginError"></div>
+    <form id="loginForm">
+      <div class="login-field">
+        <label for="loginEmail">Email</label>
+        <input type="email" id="loginEmail" autocomplete="username" required placeholder="admin@example.com">
+      </div>
+      <div class="login-field">
+        <label for="loginPassword">Password</label>
+        <input type="password" id="loginPassword" autocomplete="current-password" required placeholder="••••••••">
+      </div>
+      <button type="submit" class="login-submit" id="loginSubmitBtn">Sign In</button>
+    </form>
+  </div>
+</div>
+
+<!-- Access denied gate -->
+<div class="gate-wrap hidden" id="deniedGate">
+  <div class="gate-card denied">
+    <div class="gate-icon"><i class="fa-solid fa-ban"></i></div>
+    <h2>Access Denied</h2>
+    <p id="deniedText">This account is not authorized to view the admin panel.</p>
+    <button class="btn btn-outline" id="signOutBtnDenied" style="width:100%;justify-content:center;">Sign Out &amp; Try Another Account</button>
+  </div>
+</div>
+
+<!-- Loading -->
+<div class="loading-wrap hidden" id="loadingWrap">
+  <i class="fa-solid fa-spinner spin"></i><br><br>Loading...
+</div>
+
+<!-- Dashboard -->
+<div class="page-body hidden" id="dashboard">
+
+  <div class="userbar">
+    <div class="who">
+      <div class="avatar" id="adminAvatar">A</div>
+      <span id="adminEmail"></span>
+    </div>
+  </div>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="riders" id="tabRiders">🏍️ Riders <span id="ridersCount"></span></button>
+    <button class="tab-btn" data-tab="shops" id="tabShops">🏪 Shops <span id="shopsCount"></span></button>
+  </div>
+
+  <div class="stats-row" id="statsRow"></div>
+
+  <div class="filters" id="filters">
+    <div class="filter-chip active" data-status="all">All</div>
+    <div class="filter-chip" data-status="pending">Pending</div>
+    <div class="filter-chip" data-status="approved">Approved</div>
+    <div class="filter-chip" data-status="rejected">Rejected</div>
+  </div>
+
+  <div class="card-list" id="cardList"></div>
+  <div class="empty-state hidden" id="emptyState">
+    <i class="fa-solid fa-inbox"></i>
+    No entries in this view.
+  </div>
+</div>
+
+<div class="msg-toast" id="toast"></div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
+import { getDatabase, ref, get, update, set, remove } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-database.js";
+import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
+
+const firebaseConfig = {
+    apiKey: "AIzaSyBBS7jGzuVlTIIeN9VFBxpwHkNf-mIRzDo",
+    authDomain: "raftaroo-9ce8d.firebaseapp.com",
+    databaseURL: "https://raftaroo-9ce8d-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "raftaroo-9ce8d",
+    storageBucket: "raftaroo-9ce8d.firebasestorage.app",
+    messagingSenderId: "773738074182",
+    appId: "1:773738074182:web:b7a873959c7ab8edc0ba47",
+    measurementId: "G-EM1R4LGZTD"
+};
+
+// Only this UID is allowed into the admin panel.
+const ADMIN_UID = "MYXrPrjdB3R7F7Dc641HmtLn89I3";
+
+const app = initializeApp(firebaseConfig);
+const db = getDatabase(app);
+const auth = getAuth(app);
+
+const $ = id => document.getElementById(id);
+const loginGate = $('loginGate'), deniedGate = $('deniedGate'), loadingWrap = $('loadingWrap'), dashboard = $('dashboard');
+const signOutBtn = $('signOutBtn');
+
+let activeTab = 'riders';
+let activeFilter = 'all';
+let ridersData = {};
+let shopsData = {};
+
+function showToast(text){
+  const t = $('toast');
+  t.textContent = text;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'), 2200);
+}
+
+function showOnly(el){
+  [loginGate, deniedGate, loadingWrap, dashboard].forEach(e => e.classList.add('hidden'));
+  el.classList.remove('hidden');
+}
+
+/* ── AUTH ────────────────────────────────────── */
+$('loginForm').addEventListener('submit', async (e) => {
+  e.preventDefault();
+  const email = $('loginEmail').value.trim();
+  const password = $('loginPassword').value;
+  const errBox = $('loginError');
+  const btn = $('loginSubmitBtn');
+  errBox.classList.remove('show');
+  btn.disabled = true;
+  btn.textContent = 'Signing in...';
+  try {
+    await signInWithEmailAndPassword(auth, email, password);
+  } catch (e) {
+    errBox.textContent = 'Sign-in failed: ' + (e.code === 'auth/invalid-credential' || e.code === 'auth/wrong-password' || e.code === 'auth/user-not-found' ? 'Incorrect email or password.' : e.message);
+    errBox.classList.add('show');
+  }
+  btn.disabled = false;
+  btn.textContent = 'Sign In';
+});
+signOutBtn.addEventListener('click', () => signOut(auth));
+$('signOutBtnDenied').addEventListener('click', () => signOut(auth));
+
+onAuthStateChanged(auth, async (user) => {
+  if (!user) {
+    signOutBtn.classList.add('hidden');
+    showOnly(loginGate);
+    return;
+  }
+  if (user.uid !== ADMIN_UID) {
+    $('deniedText').textContent = `The account "${user.email}" is not authorized to view the admin panel.`;
+    showOnly(deniedGate);
+    return;
+  }
+  signOutBtn.classList.remove('hidden');
+  $('adminEmail').textContent = user.email;
+  $('adminAvatar').textContent = (user.displayName || user.email || '?').charAt(0).toUpperCase();
+  showOnly(loadingWrap);
+  await loadData();
+  showOnly(dashboard);
+  render();
+});
+
+/* ── DATA LOADING ────────────────────────────── */
+async function loadData(){
+  try{
+    const [ridersSnap, shopsSnap, martShopsSnap] = await Promise.all([
+      get(ref(db, 'riders')),
+      get(ref(db, 'shopRequests')),
+      get(ref(db, 'martShops'))
+    ]);
+    ridersData = ridersSnap.exists() ? ridersSnap.val() : {};
+    shopsData  = shopsSnap.exists()  ? shopsSnap.val()  : {};
+    const martShopsData = martShopsSnap.exists() ? martShopsSnap.val() : {};
+    await syncApprovedShops(martShopsData);
+  } catch(e){
+    console.error(e);
+    showToast('Failed to load data: ' + e.message);
+  }
+}
+
+// One-time backfill: any shopRequests already marked 'approved' (e.g. approved before
+// this martShops sync existed) but missing from martShops get pushed in automatically.
+async function syncApprovedShops(martShopsData){
+  const fixes = [];
+  for(const [id, d] of Object.entries(shopsData)){
+    if(d.status === 'approved' && !martShopsData[id]){
+      fixes.push(set(ref(db, 'martShops/'+id), {
+        name: d.name || '',
+        categories: d.categories || [d.category || 'grocery'],
+        category: d.category || (d.categories ? d.categories[0] : 'grocery'),
+        description: d.description || '',
+        phone: d.phone || '',
+        address: d.address || '',
+        logoUrl: d.logoUrl || '',
+        lat: d.lat ?? null,
+        lng: d.lng ?? null,
+        ownerUid: d.ownerUid,
+        ownerName: d.ownerName || '',
+        ownerEmail: d.ownerEmail || '',
+        status: 'approved',
+        createdAt: d.createdAt || Date.now()
+      }));
+    }
+  }
+  if(fixes.length){
+    await Promise.all(fixes);
+    console.log(`Synced ${fixes.length} previously-approved shop(s) into martShops.`);
+  }
+}
+
+/* ── TABS / FILTERS ──────────────────────────── */
+document.querySelectorAll('.tab-btn').forEach(btn => {
+  btn.addEventListener('click', () => {
+    document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    activeTab = btn.dataset.tab;
+    render();
+  });
+});
+document.querySelectorAll('.filter-chip').forEach(chip => {
+  chip.addEventListener('click', () => {
+    document.querySelectorAll('.filter-chip').forEach(c => c.classList.remove('active'));
+    chip.classList.add('active');
+    activeFilter = chip.dataset.status;
+    render();
+  });
+});
+
+/* ── RENDER ──────────────────────────────────── */
+function norm(status){
+  return (status || 'pending').toLowerCase();
+}
+
+function render(){
+  const isRiders = activeTab === 'riders';
+  const source = isRiders ? ridersData : shopsData;
+  const entries = Object.entries(source || {});
+
+  $('ridersCount').textContent = `(${Object.keys(ridersData).length})`;
+  $('shopsCount').textContent = `(${Object.keys(shopsData).length})`;
+
+  // stats
+  const counts = { pending:0, approved:0, rejected:0 };
+  entries.forEach(([,d]) => { const s = norm(d.status); if (counts[s] !== undefined) counts[s]++; });
+  $('statsRow').innerHTML = `
+    <div class="stat-box"><div class="num">${entries.length}</div><div class="lbl">TOTAL</div></div>
+    <div class="stat-box"><div class="num" style="color:var(--warning)">${counts.pending}</div><div class="lbl">PENDING</div></div>
+    <div class="stat-box"><div class="num" style="color:var(--primary)">${counts.approved}</div><div class="lbl">APPROVED</div></div>
+    <div class="stat-box"><div class="num" style="color:var(--error)">${counts.rejected}</div><div class="lbl">REJECTED</div></div>
+  `;
+
+  let filtered = entries;
+  if (activeFilter !== 'all') filtered = entries.filter(([,d]) => norm(d.status) === activeFilter);
+  filtered.sort((a,b) => (b[1].applicationDate || b[1].createdAt || 0) > (a[1].applicationDate || a[1].createdAt || 0) ? 1 : -1);
+
+  const list = $('cardList');
+  $('emptyState').classList.toggle('hidden', filtered.length > 0);
+  list.innerHTML = filtered.map(([id, d]) => isRiders ? riderCard(id, d) : shopCard(id, d)).join('');
+
+  // wire action buttons
+  list.querySelectorAll('[data-action]').forEach(btn => {
+    btn.addEventListener('click', () => handleAction(btn.dataset.action, btn.dataset.id));
+  });
+}
+
+function riderCard(id, d){
+  const status = norm(d.status);
+  const docs = [
+    ['cnicFrontUrl','CNIC Front'], ['cnicBackUrl','CNIC Back'],
+    ['licenseUrl','License'], ['vehicleRegUrl','Reg. Card'], ['vehicleImageUrl','Vehicle Photo']
+  ].filter(([k]) => d[k]);
+  return `
+  <div class="entry-card">
+    <div class="entry-head">
+      <img class="entry-photo" src="${d.riderImageUrl || ''}" onerror="this.style.display='none'">
+      <div>
+        <div class="entry-title">${d.fullName || d.name || 'Unnamed'}</div>
+        <div class="entry-sub">${d.email || ''} • ${d.mobileNumber || d.phone || ''}</div>
+      </div>
+      <span class="status-pill ${status}">${d.status || 'Pending'}</span>
+    </div>
+    <div class="entry-body">
+      <div class="detail-grid">
+        <div class="detail-item"><span class="k">CNIC</span><span class="v">${d.cnicNumber || '—'}</span></div>
+        <div class="detail-item"><span class="k">City</span><span class="v">${d.area || d.city || '—'}</span></div>
+        <div class="detail-item"><span class="k">Vehicle</span><span class="v">${d.vehicleType || '—'} ${d.vehicleName || ''}</span></div>
+        <div class="detail-item"><span class="k">Plate</span><span class="v">${d.vehicleNumber || d.vehiclePlate || '—'}</span></div>
+        <div class="detail-item"><span class="k">Color</span><span class="v">${d.vehicleColor || '—'}</span></div>
+        <div class="detail-item"><span class="k">Applied</span><span class="v">${d.applicationDate ? new Date(d.applicationDate).toLocaleDateString() : '—'}</span></div>
+      </div>
+      <div class="docs-row">${docs.map(([k,l]) => `<a class="doc-link" href="${d[k]}" target="_blank" rel="noopener"><i class="fa-solid fa-file"></i> ${l}</a>`).join('')}</div>
+      <div class="action-row">
+        ${status !== 'approved' ? `<button class="btn btn-approve" data-action="approve-rider" data-id="${id}"><i class="fa-solid fa-check"></i> Approve</button>` : ''}
+        ${status !== 'rejected' ? `<button class="btn btn-reject" data-action="reject-rider" data-id="${id}"><i class="fa-solid fa-xmark"></i> Reject</button>` : ''}
+        ${status !== 'pending' ? `<button class="btn btn-reset" data-action="reset-rider" data-id="${id}">Reset to Pending</button>` : ''}
+      </div>
+    </div>
+  </div>`;
+}
+
+function shopCard(id, d){
+  const status = norm(d.status);
+  const docs = [['cnicFrontUrl','CNIC Front'], ['cnicBackUrl','CNIC Back']].filter(([k]) => d[k]);
+  return `
+  <div class="entry-card">
+    <div class="entry-head">
+      <img class="entry-photo" src="${d.logoUrl || ''}" onerror="this.style.display='none'">
+      <div>
+        <div class="entry-title">${d.name || 'Unnamed Shop'}</div>
+        <div class="entry-sub">${d.ownerEmail || ''} • ${d.phone || ''}</div>
+      </div>
+      <span class="status-pill ${status}">${d.status || 'pending'}</span>
+    </div>
+    <div class="entry-body">
+      <div class="detail-grid">
+        <div class="detail-item"><span class="k">Owner</span><span class="v">${d.ownerName || '—'}</span></div>
+        <div class="detail-item"><span class="k">CNIC</span><span class="v">${d.cnicNumber || '—'}</span></div>
+        <div class="detail-item"><span class="k">Category</span><span class="v">${d.category || '—'}</span></div>
+        <div class="detail-item"><span class="k">Address</span><span class="v">${d.address || '—'}</span></div>
+        <div class="detail-item"><span class="k">Applied</span><span class="v">${d.createdAt ? new Date(d.createdAt).toLocaleDateString() : '—'}</span></div>
+      </div>
+      <div class="docs-row">${docs.map(([k,l]) => `<a class="doc-link" href="${d[k]}" target="_blank" rel="noopener"><i class="fa-solid fa-file"></i> ${l}</a>`).join('')}</div>
+      <div class="action-row">
+        ${status !== 'approved' ? `<button class="btn btn-approve" data-action="approve-shop" data-id="${id}"><i class="fa-solid fa-check"></i> Approve</button>` : ''}
+        ${status !== 'rejected' ? `<button class="btn btn-reject" data-action="reject-shop" data-id="${id}"><i class="fa-solid fa-xmark"></i> Reject</button>` : ''}
+        ${status !== 'pending' ? `<button class="btn btn-reset" data-action="reset-shop" data-id="${id}">Reset to Pending</button>` : ''}
+      </div>
+    </div>
+  </div>`;
+}
+
+/* ── ACTIONS ─────────────────────────────────── */
+async function handleAction(action, id){
+  try{
+    if (action === 'approve-rider') { await update(ref(db, 'riders/'+id), { status:'Approved' }); ridersData[id].status='Approved'; }
+    else if (action === 'reject-rider') { await update(ref(db, 'riders/'+id), { status:'Rejected' }); ridersData[id].status='Rejected'; }
+    else if (action === 'reset-rider') { await update(ref(db, 'riders/'+id), { status:'Pending' }); ridersData[id].status='Pending'; }
+    else if (action === 'approve-shop') {
+      await update(ref(db, 'shopRequests/'+id), { status:'approved' });
+      shopsData[id].status='approved';
+      // Push shop into martShops so it goes live on Raftaroo Mart + becomes visible in shop-dashboard
+      const d = shopsData[id];
+      await set(ref(db, 'martShops/'+id), {
+        name: d.name || '',
+        categories: d.categories || [d.category || 'grocery'],
+        category: d.category || (d.categories ? d.categories[0] : 'grocery'),
+        description: d.description || '',
+        phone: d.phone || '',
+        address: d.address || '',
+        logoUrl: d.logoUrl || '',
+        lat: d.lat ?? null,
+        lng: d.lng ?? null,
+        ownerUid: d.ownerUid,
+        ownerName: d.ownerName || '',
+        ownerEmail: d.ownerEmail || '',
+        status: 'approved',
+        createdAt: d.createdAt || Date.now()
+      });
+    }
+    else if (action === 'reject-shop') {
+      await update(ref(db, 'shopRequests/'+id), { status:'rejected' });
+      shopsData[id].status='rejected';
+      await remove(ref(db, 'martShops/'+id)); // pull shop off the live mart
+    }
+    else if (action === 'reset-shop') {
+      await update(ref(db, 'shopRequests/'+id), { status:'pending' });
+      shopsData[id].status='pending';
+      await remove(ref(db, 'martShops/'+id)); // pull shop off the live mart until re-approved
+    }
+    showToast('Updated successfully');
+    render();
+  } catch(e){
+    console.error(e);
+    showToast('Update failed: ' + e.message);
+  }
+}
+</script>
+</body>
+</html>
