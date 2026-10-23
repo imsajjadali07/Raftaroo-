@@ -657,9 +657,16 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
 
     // ─── GLOBAL COMMISSION SWITCH (admin.html se control hota hai) ───
     let COMM_FREE_GLOBAL = false;
+    let _commReadyResolve;
+    const commReadyPromise = new Promise(r => { _commReadyResolve = r; });
     onValue(ref(db, 'settings/commissionFree'), (s) => {
         COMM_FREE_GLOBAL = s.val() === true;
+        _commReadyResolve();   // pehli dafa value aate hi wallet check ko green signal
         if (typeof onGlobalCommChange === 'function') onGlobalCommChange();
+        if (typeof applyWalletState === 'function') applyWalletState();
+    }, (err) => {
+        console.warn('commissionFree read fail:', err);
+        _commReadyResolve();   // fail ho to bhi app na atke
     });
 
     function onGlobalCommChange() {
@@ -1024,9 +1031,18 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
 
     let lowBalanceChecked=false;
     function loadWalletBalance() {
+        onValue(ref(db,'riders/'+currentCaptain.uid+'/walletBalance'), async (snap)=>{
+            captainData.walletBalance = snap.val()||0;
+            await commReadyPromise;   // pehle admin ka commission setting load hone do
+            applyWalletState();
+        });
+    }
+
+    function applyWalletState() {
         const FREE_RIDES_LIMIT = 3;
-        onValue(ref(db,'riders/'+currentCaptain.uid+'/walletBalance'),(snap)=>{
-            const bal=snap.val()||0; captainData.walletBalance=bal; document.getElementById('walletDisplay').textContent=bal;
+        if (!currentCaptain || captainData.walletBalance === undefined) return;
+        {
+            const bal=captainData.walletBalance||0; document.getElementById('walletDisplay').textContent=bal;
             const walletBadge = document.querySelector('.wallet-badge');
             const walletLowBanner = document.getElementById('walletLowBanner');
             const walletLowBannerText = document.getElementById('walletLowBannerText');
@@ -1068,7 +1084,7 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
                 alert(msg);
                 setTimeout(()=>window.location.href='captain-profile.html',300);
             }
-        });
+        }
     }
 
     function setupTabNavigation() {
@@ -1110,6 +1126,7 @@ input:disabled+.slider{opacity:0.5;cursor:not-allowed;}
 
     function listenForIncomingRequests() {
         onValue(ref(db,'requests'), async(snapshot)=>{
+            await commReadyPromise;
             const rd=snapshot.val(); let pending=[], closest=null, minD=Infinity;
             const rs=await get(ref(db,'riders/'+currentCaptain.uid)); if(rs.exists()) captainData=rs.val();
             const cl=captainMarker?captainMarker.getLatLng():captainData.location, cv=captainData.vehicleType||'';
