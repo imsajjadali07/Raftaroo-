@@ -98,6 +98,13 @@ body{background:var(--bg);color:var(--text);min-height:100vh;}
 .btn-wa{background:#25d366;color:#fff;}
 .btn-wa:hover{background:#1ebe5b;}
 .btn:disabled{opacity:.6;cursor:not-allowed;}
+.wa-modal{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:10000;display:flex;align-items:center;justify-content:center;padding:16px;}
+.wa-card{background:#fff;border-radius:var(--radius);padding:22px 20px;max-width:360px;width:100%;text-align:center;display:flex;flex-direction:column;gap:12px;box-shadow:var(--shadow);}
+.wa-title{font-weight:800;font-size:16px;color:var(--primary);}
+.wa-sub{font-size:13px;font-weight:700;}
+.wa-note{font-size:12px;color:var(--text-muted);line-height:1.5;}
+.wa-card .btn{justify-content:center;text-decoration:none;}
+.wa-go{padding:13px 18px;font-size:14px;}
 
 .empty-state{text-align:center;padding:50px 20px;color:var(--text-muted);}
 .empty-state i{font-size:36px;margin-bottom:12px;display:block;color:var(--border);}
@@ -623,15 +630,35 @@ async function buildCertificate(id, d){
   return { doc, fileName: `Raftaroo-Certificate-${safe}.pdf` };
 }
 
+// Opens the rider's WhatsApp chat. On phones we always show a "WhatsApp kholein" button, because a real tap
+// is the only thing mobile browsers reliably let hand over to the WhatsApp app.
+function showWaModal(name, num, url, note){
+  const old = document.getElementById('waModal'); if (old) old.remove();
+  const el = document.createElement('div');
+  el.id = 'waModal'; el.className = 'wa-modal';
+  el.innerHTML = `<div class="wa-card">
+    <div class="wa-title"><i class="fa-solid fa-circle-check"></i> Certificate tayyar hai</div>
+    <div class="wa-sub"></div>
+    <div class="wa-note"></div>
+    <a class="btn btn-wa wa-go" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> WhatsApp kholein</a>
+    <button class="btn btn-outline wa-close" type="button">Band karein</button>
+  </div>`;
+  el.querySelector('.wa-sub').textContent = `${name} • +${num}`;
+  el.querySelector('.wa-note').textContent = note;
+  const go = el.querySelector('.wa-go');
+  go.href = url;
+  go.addEventListener('click', () => setTimeout(() => el.remove(), 400));
+  el.querySelector('.wa-close').addEventListener('click', () => el.remove());
+  el.addEventListener('click', e => { if (e.target === el) el.remove(); });
+  document.body.appendChild(el);
+}
+
 async function certificateAction(action, id){
   const d = ridersData[id];
   if (!d) return;
   const btn = document.querySelector(`[data-action="${action}"][data-id="${id}"]`);
   const oldHtml = btn ? btn.innerHTML : '';
   if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner spin"></i> Preparing...'; }
-  // WhatsApp tab is opened right now (inside the click) so the browser doesn't block it after the upload
-  const waTab = action === 'wa-rider' ? window.open('', '_blank') : null;
-  const openChat = (url) => { if (waTab) waTab.location.href = url; else window.open(url, '_blank'); };
   try{
     if (!window.jspdf) throw new Error('PDF library load nahi hui — internet check karein');
     const { doc, fileName } = await buildCertificate(id, d);
@@ -642,17 +669,13 @@ async function certificateAction(action, id){
       return;
     }
 
-    // ── WhatsApp: always opens the RIDER's own chat ──
+    // ── WhatsApp: the RIDER's own chat ──
     const name = (d.fullName || d.name || '').trim();
     const rawNum = d.whatsapp || d.whatsappNumber || d.mobileNumber || d.phone || d.phoneNumber || d.contactNumber || '';
     const num = waNumber(rawNum);
-    if (!num) {
-      if (waTab) waTab.close();
-      showToast('Is rider ka mobile number record mein nahi mila', 4500);
-      return;
-    }
+    if (!num) { showToast('Is rider ka mobile number record mein nahi mila', 4500); return; }
 
-    // 1) upload the PDF so the link can be put in the message
+    // 1) upload the PDF so a download link can go inside the message
     let link = '', upErr = '';
     try {
       const fileRef = sRef(storage, `certificates/${id}.pdf`);
@@ -660,20 +683,24 @@ async function certificateAction(action, id){
       link = await getDownloadURL(fileRef);
     } catch(e){ upErr = e.code || e.message; console.warn('Certificate upload failed:', e); }
 
+    let text, note;
     if (link) {
-      const text = `Assalam o Alaikum ${name},\nAap ka Raftaroo Verification Certificate ready hai. Yahan se download karein:\n${link}\n\nKisi bhi contract/work ke waqt ye certificate dikha sakte hain.`;
-      openChat(`https://wa.me/${num}?text=${encodeURIComponent(text)}`);
-      showToast(`WhatsApp khul gaya (+${num}) — bas Send dabayein`, 4500);
-      return;
+      text = `Assalam o Alaikum ${name},\nAap ka Raftaroo Verification Certificate ready hai. Yahan se download karein:\n${link}\n\nKisi bhi contract/work ke waqt ye certificate dikha sakte hain.`;
+      note = 'Neeche button dabayein — rider ki chat khulegi, message aur certificate ka link pehle se likha hoga. Bas Send dabayein.';
+    } else {
+      doc.save(fileName);
+      text = `Assalam o Alaikum ${name}, aap ka Raftaroo Verification Certificate (PDF) bhej raha hoon. Kisi bhi contract/work ke waqt ye dikha sakte hain.`;
+      note = `Link nahi ban saka (${upErr}). PDF download ho gayi hai — chat khol kar usay attach kar dein.`;
     }
+    const url = `https://wa.me/${num}?text=${encodeURIComponent(text)}`;
 
-    // 2) upload failed -> still open the rider's chat, and download the PDF to attach by hand
-    doc.save(fileName);
-    const text = `Assalam o Alaikum ${name}, aap ka Raftaroo Verification Certificate (PDF) bhej raha hoon. Kisi bhi contract/work ke waqt ye dikha sakte hain.`;
-    openChat(`https://wa.me/${num}?text=${encodeURIComponent(text)}`);
-    showToast(`Link nahi ban saka (${upErr}). PDF download ho gayi — chat mein attach kar dein`, 8000);
+    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
+    if (!isMobile && link) {
+      const w = window.open(url, '_blank');
+      if (w) { showToast(`WhatsApp khul gaya (+${num}) — bas Send dabayein`, 4500); return; }
+    }
+    showWaModal(name, num, url, note);
   } catch(e){
-    if (waTab) waTab.close();
     console.error(e);
     showToast('Certificate failed: ' + e.message, 4000);
   } finally {
