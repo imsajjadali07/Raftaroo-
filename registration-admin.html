@@ -631,6 +631,7 @@ async function certificateAction(action, id){
   if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner spin"></i> Preparing...'; }
   // WhatsApp tab is opened right now (inside the click) so the browser doesn't block it after the upload
   const waTab = action === 'wa-rider' ? window.open('', '_blank') : null;
+  const openChat = (url) => { if (waTab) waTab.location.href = url; else window.open(url, '_blank'); };
   try{
     if (!window.jspdf) throw new Error('PDF library load nahi hui — internet check karein');
     const { doc, fileName } = await buildCertificate(id, d);
@@ -641,37 +642,36 @@ async function certificateAction(action, id){
       return;
     }
 
-    // ── WhatsApp: upload the PDF, then open the rider's chat with the link already typed ──
+    // ── WhatsApp: always opens the RIDER's own chat ──
     const name = (d.fullName || d.name || '').trim();
-    const num = waNumber(d.mobileNumber || d.phone);
-    const blob = doc.output('blob');
-    let link = '';
+    const rawNum = d.whatsapp || d.whatsappNumber || d.mobileNumber || d.phone || d.phoneNumber || d.contactNumber || '';
+    const num = waNumber(rawNum);
+    if (!num) {
+      if (waTab) waTab.close();
+      showToast('Is rider ka mobile number record mein nahi mila', 4500);
+      return;
+    }
+
+    // 1) upload the PDF so the link can be put in the message
+    let link = '', upErr = '';
     try {
       const fileRef = sRef(storage, `certificates/${id}.pdf`);
-      await uploadBytes(fileRef, blob, { contentType:'application/pdf' });
+      await uploadBytes(fileRef, doc.output('blob'), { contentType:'application/pdf' });
       link = await getDownloadURL(fileRef);
-    } catch(e){ console.warn('Certificate upload failed:', e); }
+    } catch(e){ upErr = e.code || e.message; console.warn('Certificate upload failed:', e); }
 
     if (link) {
       const text = `Assalam o Alaikum ${name},\nAap ka Raftaroo Verification Certificate ready hai. Yahan se download karein:\n${link}\n\nKisi bhi contract/work ke waqt ye certificate dikha sakte hain.`;
-      const url = `https://wa.me/${num}?text=${encodeURIComponent(text)}`;
-      if (waTab) waTab.location.href = url; else window.open(url, '_blank');
-      showToast(num ? 'WhatsApp khul gaya — bas Send dabayein' : 'Rider ka number nahi mila — WhatsApp mein contact chun lein', 4500);
+      openChat(`https://wa.me/${num}?text=${encodeURIComponent(text)}`);
+      showToast(`WhatsApp khul gaya (+${num}) — bas Send dabayein`, 4500);
       return;
     }
 
-    // Fallback (upload not allowed / offline): share sheet on phones, download + chat on desktop
-    if (waTab) waTab.close();
-    const text = `Assalam o Alaikum ${name}, aap ka Raftaroo Verification Certificate ready hai. Kisi bhi contract/work ke waqt ye PDF dikha sakte hain.`;
-    const file = new File([blob], fileName, { type:'application/pdf' });
-    if (navigator.canShare && navigator.canShare({ files:[file] })) {
-      try { await navigator.share({ files:[file], text }); }
-      catch(e){ if (e.name !== 'AbortError') throw e; }
-      return;
-    }
+    // 2) upload failed -> still open the rider's chat, and download the PDF to attach by hand
     doc.save(fileName);
-    window.open(`https://wa.me/${num}?text=${encodeURIComponent(text)}`, '_blank', 'noopener');
-    showToast('Upload nahi hua — PDF download ho gayi, WhatsApp chat mein attach kar dein', 6000);
+    const text = `Assalam o Alaikum ${name}, aap ka Raftaroo Verification Certificate (PDF) bhej raha hoon. Kisi bhi contract/work ke waqt ye dikha sakte hain.`;
+    openChat(`https://wa.me/${num}?text=${encodeURIComponent(text)}`);
+    showToast(`Link nahi ban saka (${upErr}). PDF download ho gayi — chat mein attach kar dein`, 8000);
   } catch(e){
     if (waTab) waTab.close();
     console.error(e);
