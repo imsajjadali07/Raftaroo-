@@ -104,7 +104,8 @@ body{background:var(--bg);color:var(--text);min-height:100vh;}
 .wa-sub{font-size:13px;font-weight:700;}
 .wa-note{font-size:12px;color:var(--text-muted);line-height:1.5;}
 .wa-card .btn{justify-content:center;text-decoration:none;}
-.wa-go{padding:13px 18px;font-size:14px;}
+.wa-go,.wa-file{padding:13px 18px;font-size:14px;}
+.wa-go.disabled{opacity:.55;pointer-events:none;}
 
 .empty-state{text-align:center;padding:50px 20px;color:var(--text-muted);}
 .empty-state i{font-size:36px;margin-bottom:12px;display:block;color:var(--border);}
@@ -200,7 +201,6 @@ body{background:var(--bg);color:var(--text);min-height:100vh;}
 import { initializeApp } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-app.js";
 import { getDatabase, ref, get, update, set, remove } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-database.js";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-auth.js";
-import { getStorage, ref as sRef, uploadBytes, getDownloadURL } from "https://www.gstatic.com/firebasejs/12.8.0/firebase-storage.js";
 
 const firebaseConfig = {
     apiKey: "AIzaSyBBS7jGzuVlTIIeN9VFBxpwHkNf-mIRzDo",
@@ -219,7 +219,6 @@ const ADMIN_UID = "MYXrPrjdB3R7F7Dc641HmtLn89I3";
 const app = initializeApp(firebaseConfig);
 const db = getDatabase(app);
 const auth = getAuth(app);
-const storage = getStorage(app);
 
 const $ = id => document.getElementById(id);
 const loginGate = $('loginGate'), deniedGate = $('deniedGate'), loadingWrap = $('loadingWrap'), dashboard = $('dashboard');
@@ -555,7 +554,7 @@ async function buildCertificate(id, d){
   doc.roundedRect(24, 113, 249, 41, 2, 2, 'FD');
 
   const px = 31, py = 116.5, ps = 34;
-  const photo = await loadPhoto(d.riderImageUrl);
+  const photo = await Promise.race([loadPhoto(d.riderImageUrl), new Promise(r => setTimeout(() => r(null), 3000))]);
   doc.setFillColor(...WHITE); doc.rect(px-1, py-1, ps+2, ps+2, 'F');
   if (photo) {
     doc.addImage(photo, 'JPEG', px, py, ps, ps);
@@ -630,76 +629,75 @@ async function buildCertificate(id, d){
   return { doc, fileName: `Raftaroo-Certificate-${safe}.pdf` };
 }
 
-// Opens the rider's WhatsApp chat. On phones we always show a "WhatsApp kholein" button, because a real tap
-// is the only thing mobile browsers reliably let hand over to the WhatsApp app.
-function showWaModal(name, num, url, note){
+// Sheet shown after the certificate is ready.
+//  - "PDF file bhejein": phone share sheet WITH the PDF attached (the only way to send a real file) -> pick WhatsApp -> pick the rider
+//  - "Rider ki chat kholein": opens the rider's own chat with a typed message (+ download link when the upload worked)
+function showWaModal({ name, num, file, shareText }){
   const old = document.getElementById('waModal'); if (old) old.remove();
+  const canFile = !!(file && navigator.canShare && navigator.canShare({ files:[file] }));
   const el = document.createElement('div');
   el.id = 'waModal'; el.className = 'wa-modal';
   el.innerHTML = `<div class="wa-card">
     <div class="wa-title"><i class="fa-solid fa-circle-check"></i> Certificate tayyar hai</div>
     <div class="wa-sub"></div>
     <div class="wa-note"></div>
-    <a class="btn btn-wa wa-go" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> WhatsApp kholein</a>
+    <button class="btn btn-wa wa-file" type="button"><i class="fa-solid fa-file-pdf"></i> PDF file bhejein</button>
+    <a class="btn wa-go disabled" target="_blank" rel="noopener"><i class="fa-brands fa-whatsapp"></i> <span>Link ban raha hai...</span></a>
     <button class="btn btn-outline wa-close" type="button">Band karein</button>
   </div>`;
+  const note = el.querySelector('.wa-note'), go = el.querySelector('.wa-go'), fileBtn = el.querySelector('.wa-file');
   el.querySelector('.wa-sub').textContent = `${name} • +${num}`;
-  el.querySelector('.wa-note').textContent = note;
-  const go = el.querySelector('.wa-go');
-  go.href = url;
-  go.addEventListener('click', () => setTimeout(() => el.remove(), 400));
+  go.classList.add(canFile ? 'btn-outline' : 'btn-wa');
+  if (canFile) {
+    note.textContent = `"PDF file bhejein" dabayein → WhatsApp chunein → ${name} (+${num}) ko select karein. PDF message ke saath attach hoke jayegi.`;
+    fileBtn.addEventListener('click', async () => {
+      try { await navigator.share({ files:[file], text: shareText }); }
+      catch(e){ if (e.name !== 'AbortError') showToast('Share nahi hua: ' + e.message, 4000); }
+    });
+  } else {
+    fileBtn.remove();
+    note.textContent = 'Is device par file seedhi share nahi ho sakti — chat khol kar PDF khud attach karni hogi.';
+  }
+  go.addEventListener('click', e => { if (go.classList.contains('disabled')) { e.preventDefault(); return; } setTimeout(() => el.remove(), 400); });
   el.querySelector('.wa-close').addEventListener('click', () => el.remove());
   el.addEventListener('click', e => { if (e.target === el) el.remove(); });
   document.body.appendChild(el);
+  return {
+    canFile,
+    setChat(url, label, extraNote){
+      go.href = url; go.classList.remove('disabled');
+      go.querySelector('span').textContent = label;
+      if (extraNote) note.textContent = (canFile ? note.textContent + ' ' : '') + extraNote;
+    }
+  };
 }
 
+// WhatsApp button: just opens the rider's own chat with a typed message (no PDF is built here)
+function openRiderChat(id){
+  const d = ridersData[id];
+  if (!d) return;
+  const name = (d.fullName || d.name || '').trim();
+  const rawNum = d.whatsapp || d.whatsappNumber || d.mobileNumber || d.phone || d.phoneNumber || d.contactNumber || '';
+  const num = waNumber(rawNum);
+  if (!num) { showToast('Is rider ka mobile number record mein nahi mila', 4500); return; }
+  const text = `Assalam o Alaikum ${name}, aap ka Raftaroo Verification Certificate bhej raha hoon. Kisi bhi contract/work ke waqt ye dikha sakte hain.`;
+  const url = `https://wa.me/${num}?text=${encodeURIComponent(text)}`;
+  const w = window.open(url, '_blank');
+  if (!w) showWaModal({ name, num, file: null, shareText: text }).setChat(url, 'Rider ki chat kholein', 'Neeche button dabayein — rider ki chat message ke saath khul jayegi.');
+}
+
+// Certificate PDF button: builds and downloads the PDF
 async function certificateAction(action, id){
   const d = ridersData[id];
   if (!d) return;
   const btn = document.querySelector(`[data-action="${action}"][data-id="${id}"]`);
   const oldHtml = btn ? btn.innerHTML : '';
-  if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner spin"></i> Preparing...'; }
+  if (btn) { btn.disabled = true; btn.innerHTML = '<i class="fa-solid fa-spinner spin"></i> PDF ban rahi hai...'; }
   try{
     if (!window.jspdf) throw new Error('PDF library load nahi hui — internet check karein');
     const { doc, fileName } = await buildCertificate(id, d);
-
-    if (action === 'cert-rider') {
-      doc.save(fileName);
-      showToast('Certificate download ho gaya');
-      return;
-    }
-
-    // ── WhatsApp: the RIDER's own chat ──
-    const name = (d.fullName || d.name || '').trim();
-    const rawNum = d.whatsapp || d.whatsappNumber || d.mobileNumber || d.phone || d.phoneNumber || d.contactNumber || '';
-    const num = waNumber(rawNum);
-    if (!num) { showToast('Is rider ka mobile number record mein nahi mila', 4500); return; }
-
-    // 1) upload the PDF so a download link can go inside the message
-    let link = '', upErr = '';
-    try {
-      const fileRef = sRef(storage, `certificates/${id}.pdf`);
-      await uploadBytes(fileRef, doc.output('blob'), { contentType:'application/pdf' });
-      link = await getDownloadURL(fileRef);
-    } catch(e){ upErr = e.code || e.message; console.warn('Certificate upload failed:', e); }
-
-    let text, note;
-    if (link) {
-      text = `Assalam o Alaikum ${name},\nAap ka Raftaroo Verification Certificate ready hai. Yahan se download karein:\n${link}\n\nKisi bhi contract/work ke waqt ye certificate dikha sakte hain.`;
-      note = 'Neeche button dabayein — rider ki chat khulegi, message aur certificate ka link pehle se likha hoga. Bas Send dabayein.';
-    } else {
-      doc.save(fileName);
-      text = `Assalam o Alaikum ${name}, aap ka Raftaroo Verification Certificate (PDF) bhej raha hoon. Kisi bhi contract/work ke waqt ye dikha sakte hain.`;
-      note = `Link nahi ban saka (${upErr}). PDF download ho gayi hai — chat khol kar usay attach kar dein.`;
-    }
-    const url = `https://wa.me/${num}?text=${encodeURIComponent(text)}`;
-
-    const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
-    if (!isMobile && link) {
-      const w = window.open(url, '_blank');
-      if (w) { showToast(`WhatsApp khul gaya (+${num}) — bas Send dabayein`, 4500); return; }
-    }
-    showWaModal(name, num, url, note);
+    doc.save(fileName);
+    showToast('Certificate download ho gaya');
   } catch(e){
     console.error(e);
     showToast('Certificate failed: ' + e.message, 4000);
@@ -710,7 +708,8 @@ async function certificateAction(action, id){
 
 /* ── ACTIONS ─────────────────────────────────── */
 async function handleAction(action, id){
-  if (action === 'cert-rider' || action === 'wa-rider') return certificateAction(action, id);
+  if (action === 'cert-rider') return certificateAction(action, id);
+  if (action === 'wa-rider') return openRiderChat(id);
   try{
     if (action === 'approve-rider') { const ts = Date.now(); await update(ref(db, 'riders/'+id), { status:'Approved', verifiedAt: ts }); ridersData[id].status='Approved'; ridersData[id].verifiedAt = ts; }
     else if (action === 'reject-rider') { await update(ref(db, 'riders/'+id), { status:'Rejected' }); ridersData[id].status='Rejected'; }
